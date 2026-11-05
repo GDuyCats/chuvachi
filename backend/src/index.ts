@@ -4,6 +4,7 @@ import cors from "cors";
 import { prisma } from "./lib/prisma";
 import { healthRouter } from "./routes/health";
 import { catalogRouter } from "./routes/catalog";
+import { ordersRouter } from "./routes/orders";
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use("/health", healthRouter);
 app.use("/api", catalogRouter);
+app.use("/api", ordersRouter);
 
 // Unknown routes
 app.use((_req: Request, res: Response) => {

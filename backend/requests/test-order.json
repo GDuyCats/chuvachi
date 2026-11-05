@@ -1,0 +1,19 @@
+{
+  "customerName": "Test Customer",
+  "customerPhone": "0912345678",
+  "address": "123 Test Street, Ward 1",
+  "note": "This is a test order",
+  "deliveryZoneId": 1,
+  "deliveryDate": "2026-11-07",
+  "deliverySlot": "14:00-16:00",
+  "paymentMethod": "BANK_TRANSFER",
+  "locale": "vi",
+  "items": [
+    {
+      "productId": 1,
+      "flavorOptionId": 1,
+      "packageOptionId": 5,
+      "quantity": 1
+    }
+  ]
+}

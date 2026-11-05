@@ -177,6 +177,9 @@ model ShopSetting {
   smallOrderLeadHours  Int     @default(3)  // minimum hours in advance for small orders
   largeOrderLeadHours  Int     @default(24) // minimum hours in advance for large orders
   defaultDailyCapacity Int     @default(20) // portions per day when no DailyCapacity row exists
+  maxDaysAhead         Int     @default(7)  // how many days ahead customers may order
+  deliverySlots        String[] @default(["09:00-11:00", "11:00-13:00", "14:00-16:00", "16:00-18:00", "18:00-20:00"])
+  closedWeekdays       Int[]   @default([]) // 0 = Sunday ... 6 = Saturday
   bankName             String?
   bankAccountNumber    String?
   bankAccountName      String?

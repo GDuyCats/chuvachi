@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "ShopSetting" ADD COLUMN     "closedWeekdays" INTEGER[] DEFAULT ARRAY[]::INTEGER[],
+ADD COLUMN     "deliverySlots" TEXT[] DEFAULT ARRAY['09:00-11:00', '11:00-13:00', '14:00-16:00', '16:00-18:00', '18:00-20:00']::TEXT[],
+ADD COLUMN     "maxDaysAhead" INTEGER NOT NULL DEFAULT 7;

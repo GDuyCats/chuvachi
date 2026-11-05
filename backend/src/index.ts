@@ -1,8 +1,9 @@
 import "dotenv/config";
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { prisma } from "./lib/prisma";
 import { healthRouter } from "./routes/health";
+import { catalogRouter } from "./routes/catalog";
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
@@ -16,6 +17,18 @@ app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 app.use("/health", healthRouter);
+app.use("/api", catalogRouter);
+
+// Unknown routes
+app.use((_req: Request, res: Response) => {
+  res.status(404).json({ error: "Not found" });
+});
+
+// Unexpected errors (Express 5 forwards errors from async handlers here)
+app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
+  console.error("Unhandled error:", error);
+  res.status(500).json({ error: "Internal server error" });
+});
 
 const server = app.listen(port, () => {
   console.log(`API listening on http://localhost:${port}`);

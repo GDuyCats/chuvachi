@@ -1,0 +1,194 @@
+// Prisma schema for the Chuvachi dessert shop.
+// All money values are stored in VND as whole numbers (Int).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Enums ----------
+
+enum OptionType {
+  FLAVOR  // e.g. passion fruit mousse, mango panna cotta
+  PACKAGE // e.g. single cup, box of 4, box of 6
+}
+
+enum PaymentMethod {
+  COD
+  BANK_TRANSFER
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
+}
+
+enum OrderStatus {
+  PENDING    // just placed, waiting for the shop to confirm
+  CONFIRMED  // shop accepted the order
+  PREPARING  // being made
+  DELIVERING // handed to the courier
+  COMPLETED  // delivered
+  CANCELLED
+}
+
+// ---------- Catalog ----------
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  slug      String    @unique
+  nameVi    String
+  nameEn    String
+  sortOrder Int       @default(0)
+  products  Product[]
+}
+
+model Product {
+  id            Int             @id @default(autoincrement())
+  slug          String          @unique
+  nameVi        String
+  nameEn        String
+  descriptionVi String?
+  descriptionEn String?
+  imageUrl      String?
+  basePrice     Int             // price of one portion in VND
+  isActive      Boolean         @default(true)
+  sortOrder     Int             @default(0)
+  categoryId    Int
+  category      Category        @relation(fields: [categoryId], references: [id])
+  options       ProductOption[]
+  comboItems    ComboItem[]
+  orderItems    OrderItem[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model ProductOption {
+  id         Int        @id @default(autoincrement())
+  productId  Int
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  type       OptionType
+  nameVi     String
+  nameEn     String
+  priceDelta Int        @default(0) // extra price added to the base price
+  portions   Int        @default(1) // portions per unit (PACKAGE only, e.g. box of 4 = 4)
+  isActive   Boolean    @default(true)
+  sortOrder  Int        @default(0)
+}
+
+model Combo {
+  id            Int         @id @default(autoincrement())
+  slug          String      @unique
+  nameVi        String
+  nameEn        String
+  descriptionVi String?
+  descriptionEn String?
+  imageUrl      String?
+  price         Int         // fixed combo price in VND
+  isActive      Boolean     @default(true)
+  items         ComboItem[]
+  orderItems    OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model ComboItem {
+  id        Int     @id @default(autoincrement())
+  comboId   Int
+  combo     Combo   @relation(fields: [comboId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int     // number of portions of this product in the combo
+}
+
+// ---------- Orders ----------
+
+model Order {
+  id             Int           @id @default(autoincrement())
+  code           String        @unique // short code the customer uses to look up the order
+  customerName   String
+  customerPhone  String
+  address        String
+  note           String?
+  locale         String        @default("vi") // language the customer ordered in
+  deliveryZoneId Int
+  deliveryZone   DeliveryZone  @relation(fields: [deliveryZoneId], references: [id])
+  deliveryDate   DateTime      @db.Date
+  deliverySlot   String        // e.g. "14:00-16:00"
+  totalPortions  Int           // used to check the daily capacity and lead time
+  subtotal       Int
+  shippingFee    Int
+  total          Int
+  paymentMethod  PaymentMethod
+  paymentStatus  PaymentStatus @default(UNPAID)
+  status         OrderStatus   @default(PENDING)
+  items          OrderItem[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([deliveryDate])
+  @@index([status])
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int?
+  product   Product? @relation(fields: [productId], references: [id])
+  comboId   Int?
+  combo     Combo?   @relation(fields: [comboId], references: [id])
+  // Snapshots keep the order correct even if the product is renamed or repriced later.
+  nameSnapshot    String
+  optionsSnapshot Json?
+  unitPrice       Int
+  quantity        Int
+  portions        Int    // total portions for this line
+  note            String?
+}
+
+// ---------- Delivery and capacity ----------
+
+model DeliveryZone {
+  id        Int     @id @default(autoincrement())
+  nameVi    String
+  nameEn    String
+  fee       Int     // shipping fee in VND
+  isActive  Boolean @default(true)
+  sortOrder Int     @default(0)
+  orders    Order[]
+}
+
+model DailyCapacity {
+  date           DateTime @id @db.Date
+  maxPortions    Int
+  bookedPortions Int      @default(0)
+}
+
+// Single-row table (id = 1) holding shop-wide settings editable in the admin panel.
+model ShopSetting {
+  id                   Int     @id @default(1)
+  largeOrderThreshold  Int     @default(10) // orders with this many portions or more are "large"
+  smallOrderLeadHours  Int     @default(3)  // minimum hours in advance for small orders
+  largeOrderLeadHours  Int     @default(24) // minimum hours in advance for large orders
+  defaultDailyCapacity Int     @default(20) // portions per day when no DailyCapacity row exists
+  bankName             String?
+  bankAccountNumber    String?
+  bankAccountName      String?
+  updatedAt            DateTime @updatedAt
+}
+
+// ---------- Admin ----------
+
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+}

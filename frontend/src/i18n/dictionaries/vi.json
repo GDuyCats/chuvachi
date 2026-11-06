@@ -86,7 +86,10 @@
     "alsoLike": "Có thể bạn sẽ thích",
     "view": "Xem",
     "ingredientsTitle": "Thành phần",
-    "allergensTitle": "Chất gây dị ứng"
+    "allergensTitle": "Chất gây dị ứng",
+    "photoOf": "Ảnh {number}/{total}",
+    "previousPhoto": "Ảnh trước",
+    "nextPhoto": "Ảnh sau"
   },
   "order": {
     "title": "Đơn hàng của bạn",

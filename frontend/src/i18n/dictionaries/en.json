@@ -86,7 +86,10 @@
     "alsoLike": "You may also like",
     "view": "View",
     "ingredientsTitle": "Ingredients",
-    "allergensTitle": "Allergens"
+    "allergensTitle": "Allergens",
+    "photoOf": "Photo {number} of {total}",
+    "previousPhoto": "Previous photo",
+    "nextPhoto": "Next photo"
   },
   "order": {
     "title": "Your order",

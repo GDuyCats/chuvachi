@@ -18,7 +18,8 @@ export type Product = {
   description: string | null;
   ingredients: string | null;
   allergens: string | null;
-  imageUrl: string | null;
+  imageUrl: string | null; // cover photo
+  images: string[]; // all photos in display order
   basePrice: number;
   isNew: boolean;
   category: { slug: string; name: string };

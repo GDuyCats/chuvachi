@@ -155,7 +155,7 @@ export type AdminProductInput = {
   ingredientsEn: string | null;
   allergensVi: string | null;
   allergensEn: string | null;
-  imageUrl: string | null;
+  images: string[]; // photos in display order; the first one is the cover
   basePrice: number;
   isActive: boolean;
   isNew: boolean;
@@ -165,6 +165,7 @@ export type AdminProductInput = {
 
 export type AdminProduct = AdminProductInput & {
   id: number;
+  imageUrl: string | null; // cover photo
   category: AdminCategory;
   options: (AdminOption & { id: number })[];
 };

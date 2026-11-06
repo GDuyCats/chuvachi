@@ -257,7 +257,7 @@
     "change": "Change photo",
     "remove": "Remove photo",
     "uploading": "Uploading...",
-    "productHint": "JPG, PNG or WebP, up to 8 MB. Square photos look best. Location data is removed automatically.",
+    "productHint": "JPG, PNG or WebP, up to 8 MB each; you can pick several at once. Square photos look best. Location data is removed automatically.",
     "bannerHint": "JPG, PNG or WebP, up to 8 MB. Wide photos (about 16:9) look best. Location data is removed automatically.",
     "uploaded": "Photo uploaded.",
     "unsaved": "Press \"{button}\" to put it on the shop.",
@@ -265,7 +265,18 @@
     "badType": "Please choose a JPG, PNG or WebP photo.",
     "notConfigured": "Photo storage is not set up yet (R2 settings in the backend .env).",
     "tooMany": "Too many uploads. Please wait a little and try again.",
-    "failed": "Upload failed. Please try again."
+    "failed": "Upload failed. Please try again.",
+    "galleryTitle": "Photos",
+    "galleryHint": "The first photo is the cover, shown on the menu and in the cart.",
+    "cover": "Cover",
+    "makeCover": "Make cover",
+    "moveLeft": "Move left",
+    "moveRight": "Move right",
+    "addMore": "Add photos",
+    "uploadedCount": "{count} photo(s) uploaded.",
+    "someSkipped": "Some files were skipped: only JPG, PNG or WebP up to 8 MB.",
+    "tooManyPhotos": "A cake can have up to {max} photos; the extra ones were skipped.",
+    "photoNumber": "Photo {number}"
   },
   "home": {
     "title": "Homepage",

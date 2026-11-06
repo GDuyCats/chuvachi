@@ -257,7 +257,7 @@
     "change": "Đổi ảnh",
     "remove": "Xóa ảnh",
     "uploading": "Đang tải lên...",
-    "productHint": "JPG, PNG hoặc WebP, tối đa 8 MB. Ảnh vuông sẽ đẹp nhất. Thông tin vị trí trong ảnh được tự động xóa.",
+    "productHint": "JPG, PNG hoặc WebP, tối đa 8 MB mỗi ảnh, chọn được nhiều ảnh cùng lúc. Ảnh vuông sẽ đẹp nhất. Thông tin vị trí trong ảnh được tự động xóa.",
     "bannerHint": "JPG, PNG hoặc WebP, tối đa 8 MB. Ảnh ngang (khoảng 16:9) sẽ đẹp nhất. Thông tin vị trí trong ảnh được tự động xóa.",
     "uploaded": "Đã tải ảnh lên.",
     "unsaved": "Bấm \"{button}\" để đưa ảnh lên trang.",
@@ -265,7 +265,18 @@
     "badType": "Vui lòng chọn ảnh JPG, PNG hoặc WebP.",
     "notConfigured": "Chưa cài đặt nơi lưu ảnh (phần R2 trong file .env của backend).",
     "tooMany": "Tải lên quá nhiều lần. Vui lòng đợi một chút rồi thử lại.",
-    "failed": "Tải lên không được. Vui lòng thử lại."
+    "failed": "Tải lên không được. Vui lòng thử lại.",
+    "galleryTitle": "Ảnh",
+    "galleryHint": "Ảnh đầu tiên là ảnh bìa, hiện ở menu và giỏ hàng.",
+    "cover": "Ảnh bìa",
+    "makeCover": "Làm ảnh bìa",
+    "moveLeft": "Dời sang trái",
+    "moveRight": "Dời sang phải",
+    "addMore": "Thêm ảnh",
+    "uploadedCount": "Đã tải lên {count} ảnh.",
+    "someSkipped": "Một số file bị bỏ qua: chỉ nhận JPG, PNG hoặc WebP, tối đa 8 MB.",
+    "tooManyPhotos": "Mỗi bánh tối đa {max} ảnh; các ảnh dư đã bị bỏ qua.",
+    "photoNumber": "Ảnh {number}"
   },
   "home": {
     "title": "Trang chủ",

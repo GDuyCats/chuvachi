@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PhotoBox } from "@/components/PhotoBox";
 import { ProductCard } from "@/components/ProductCard";
+import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductOptions, type OptionChoice } from "@/components/product/ProductOptions";
 import { isLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
@@ -61,13 +62,16 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[s
       </nav>
 
       <section className="flex flex-col gap-8 px-4 pb-16 pt-6 md:flex-row md:items-start md:gap-14 md:px-10">
-        <div className="min-w-0 md:flex-1">
-          <PhotoBox
-            src={product.imageUrl}
+        <div className="min-w-0 md:sticky md:top-4 md:flex-1">
+          <ProductGallery
+            images={product.images}
             alt={product.name}
-            fallbackText={dict.product.photoComingSoon}
-            className="aspect-square bg-surface!"
-            sizes="(min-width: 768px) 50vw, 100vw"
+            labels={{
+              photoComingSoon: dict.product.photoComingSoon,
+              photoOf: labels.photoOf,
+              previousPhoto: labels.previousPhoto,
+              nextPhoto: labels.nextPhoto,
+            }}
           />
         </div>
 

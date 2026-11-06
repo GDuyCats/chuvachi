@@ -25,6 +25,8 @@ function toProductResponse(product: ProductWithRelations, locale: Locale) {
     ingredients: pickText(locale, product.ingredientsVi, product.ingredientsEn),
     allergens: pickText(locale, product.allergensVi, product.allergensEn),
     imageUrl: product.imageUrl,
+    // All photos in order (older products may only have the cover photo).
+    images: product.images.length > 0 ? product.images : product.imageUrl ? [product.imageUrl] : [],
     basePrice: product.basePrice,
     isNew: product.isNew,
     category: {

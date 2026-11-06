@@ -26,6 +26,8 @@ const optionalText = (max: number) =>
     .nullable()
     .optional();
 
+export const MAX_PRODUCT_IMAGES = 8;
+
 const optionSchema = z.object({
   id: z.number().int().positive().optional(), // existing option; leave out for a new one
   type: z.nativeEnum(OptionType),
@@ -48,14 +50,10 @@ const productSchema = z.object({
   ingredientsEn: optionalText(1000),
   allergensVi: optionalText(300),
   allergensEn: optionalText(300),
-  // Only pictures uploaded to our own storage are accepted.
-  imageUrl: z
-    .string()
-    .trim()
-    .max(500)
-    .refine(isOwnImageUrl, "Upload the photo with the upload button")
-    .nullable()
-    .optional(),
+  // Photos in display order; the first one is the cover. Only files uploaded to our own storage.
+  images: z
+    .array(z.string().trim().max(500).refine(isOwnImageUrl, "Upload the photo with the upload button"))
+    .max(MAX_PRODUCT_IMAGES),
   basePrice: z.number().int().min(0).max(100_000_000),
   isActive: z.boolean(),
   isNew: z.boolean(),
@@ -90,8 +88,19 @@ const productInclude = {
 } satisfies Prisma.ProductInclude;
 
 function productData(input: z.infer<typeof productSchema>) {
-  const { options: _options, categoryId, ...fields } = input;
-  return { ...fields, category: { connect: { id: categoryId } } };
+  const { options: _options, categoryId, images, ...fields } = input;
+  const unique = [...new Set(images)];
+  return { ...fields, images: unique, imageUrl: unique[0] ?? null, category: { connect: { id: categoryId } } };
+}
+
+// Products saved before the photo list existed only have "imageUrl".
+function photosOf(product: { images: string[]; imageUrl: string | null }): string[] {
+  if (product.images.length > 0) return product.images;
+  return product.imageUrl ? [product.imageUrl] : [];
+}
+
+function toAdminProduct<T extends { images: string[]; imageUrl: string | null }>(product: T): T {
+  return { ...product, images: photosOf(product) };
 }
 
 // Updates options in place (so carts and old orders keep working), creates new ones,
@@ -125,7 +134,7 @@ adminProductsRouter.get("/products", async (_req, res) => {
     include: productInclude,
     orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
   });
-  res.json(products);
+  res.json(products.map(toAdminProduct));
 });
 
 // GET /api/admin/products/:id
@@ -137,7 +146,7 @@ adminProductsRouter.get("/products/:id", async (req, res) => {
     res.status(404).json({ error: "NOT_FOUND" });
     return;
   }
-  res.json(product);
+  res.json(toAdminProduct(product));
 });
 
 // POST /api/admin/products
@@ -151,7 +160,7 @@ adminProductsRouter.post("/products", async (req, res) => {
       return tx.product.findUniqueOrThrow({ where: { id: created.id }, include: productInclude });
     });
     console.log(`Product ${product.slug} created by admin ${req.admin!.email}`);
-    res.status(201).json(product);
+    res.status(201).json(toAdminProduct(product));
   } catch (error) {
     if (isDuplicateSlug(error)) {
       res.status(409).json({ error: "SLUG_TAKEN" });
@@ -168,18 +177,21 @@ adminProductsRouter.put("/products/:id", async (req, res) => {
   if (!id.success) return badRequest(res);
   if (!parsed.success) return badRequest(res, parsed.error);
   try {
-    const previous = await prisma.product.findUnique({ where: { id: id.data }, select: { imageUrl: true } });
+    const previous = await prisma.product.findUnique({ where: { id: id.data }, select: { imageUrl: true, images: true } });
     const product = await prisma.$transaction(async (tx) => {
       await tx.product.update({ where: { id: id.data }, data: productData(parsed.data) });
       await syncOptions(tx, id.data, parsed.data.options);
       return tx.product.findUniqueOrThrow({ where: { id: id.data }, include: productInclude });
     });
     console.log(`Product ${product.slug} updated by admin ${req.admin!.email}`);
-    // The photo was replaced or removed: delete the old file from storage.
-    if (previous?.imageUrl && previous.imageUrl !== product.imageUrl) {
-      void deleteImageByUrl(previous.imageUrl);
+    // Photos that were removed: delete their files from storage.
+    if (previous) {
+      const kept = new Set(product.images);
+      for (const url of photosOf(previous)) {
+        if (!kept.has(url)) void deleteImageByUrl(url);
+      }
     }
-    res.json(product);
+    res.json(toAdminProduct(product));
   } catch (error) {
     if (isDuplicateSlug(error)) {
       res.status(409).json({ error: "SLUG_TAKEN" });

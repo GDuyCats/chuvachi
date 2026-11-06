@@ -16,7 +16,7 @@ import {
 } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
 import { AdminFormSkeleton } from "./AdminSkeletons";
-import { ImageUploadField } from "./ImageUploadField";
+import { ImageGalleryField } from "./ImageGalleryField";
 import { useToast } from "./Toast";
 
 const EMPTY_PRODUCT: AdminProductInput = {
@@ -30,7 +30,7 @@ const EMPTY_PRODUCT: AdminProductInput = {
   ingredientsEn: null,
   allergensVi: null,
   allergensEn: null,
-  imageUrl: null,
+  images: [],
   basePrice: 0,
   isActive: true,
   isNew: false,
@@ -50,7 +50,7 @@ function toInput(product: AdminProduct): AdminProductInput {
     ingredientsEn: product.ingredientsEn,
     allergensVi: product.allergensVi,
     allergensEn: product.allergensEn,
-    imageUrl: product.imageUrl,
+    images: product.images,
     basePrice: product.basePrice,
     isActive: product.isActive,
     isNew: product.isNew,
@@ -348,11 +348,10 @@ export function ProductEditor() {
             {e.isNew}
           </label>
         </div>
-        <ImageUploadField
-          kind="product"
-          value={form.imageUrl}
-          onChange={(url) => update("imageUrl", url)}
-          invalid={isBad("imageUrl")}
+        <ImageGalleryField
+          value={form.images}
+          onChange={(images) => update("images", images)}
+          invalid={isBad("images")}
           saveLabel={e.save}
         />
       </Section>

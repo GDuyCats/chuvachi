@@ -69,9 +69,18 @@ export function ConfirmationView({ lang, labels }: Props) {
   return (
     <div className="flex flex-col gap-10">
       <div className="flex flex-col gap-3.5">
-        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-black text-white">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-black text-white motion-safe:animate-[circle-in_300ms_ease-out]">
           <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M5 12.5l4.5 4.5L19 7.5"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray="24"
+              className="motion-safe:animate-[check-draw_420ms_ease-out_200ms_both]"
+            />
           </svg>
         </span>
         <h1 className="font-display text-4xl uppercase leading-[1.05] md:text-[64px]">{labels.title}</h1>

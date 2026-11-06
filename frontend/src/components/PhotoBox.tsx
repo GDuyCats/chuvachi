@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { FadeInImage } from "./FadeInImage";
 
 type Props = {
   src: string | null;
@@ -19,7 +19,14 @@ export function PhotoBox({ src, alt, fallbackText, className = "", sizes = "(min
   }
   return (
     <div className={`relative overflow-hidden bg-white ${className}`}>
-      <Image src={src} alt={alt} fill sizes={sizes} className="object-cover" />
+      {/* Inside a card (class "group"), the photo zooms in slightly on hover. */}
+      <FadeInImage
+        src={src}
+        alt={alt}
+        fill
+        sizes={sizes}
+        className="object-cover group-hover:scale-[1.04]"
+      />
     </div>
   );
 }

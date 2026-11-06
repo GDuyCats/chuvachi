@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { FadeInImage } from "../FadeInImage";
 import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import type { HomeContent } from "@/lib/api";
@@ -29,7 +29,7 @@ export function HomeHero({ lang, hero, fallbackCta }: Props) {
 
       {hero.imageUrl && (
         <div className="relative aspect-[4/3] flex-1 overflow-hidden md:aspect-[16/11]">
-          <Image src={hero.imageUrl} alt={hero.title} fill priority sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+          <FadeInImage src={hero.imageUrl} alt={hero.title} fill priority sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
         </div>
       )}
     </section>

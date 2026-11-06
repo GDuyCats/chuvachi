@@ -96,9 +96,11 @@ export function MenuGrid({ lang, items, labels, cardLabels }: Props) {
         {visible.length === 0 ? (
           <p className="border border-dashed border-[#a8a8a8] p-8 text-center text-muted">{labels.empty}</p>
         ) : (
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-6 xl:grid-cols-4">
-            {visible.map((item) => (
+          <div key={active} className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-6 xl:grid-cols-4">
+            {visible.map((item, index) => (
               <ProductCard
+                className="animate-card-in"
+                style={{ animationDelay: `${Math.min(index, 8) * 45}ms` }}
                 key={item.slug}
                 lang={lang}
                 slug={item.slug}

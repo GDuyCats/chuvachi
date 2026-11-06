@@ -13,7 +13,11 @@ export function CartBadge() {
   if (count === 0) return null;
 
   return (
-    <span className="absolute right-0 top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-black px-1 text-[11px] font-bold text-white">
+    // A new key on every change replays the little "bump" animation.
+    <span
+      key={count}
+      className="animate-badge-bump absolute right-0 top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-black px-1 text-[11px] font-bold text-white"
+    >
       {count > 99 ? "99+" : count}
     </span>
   );

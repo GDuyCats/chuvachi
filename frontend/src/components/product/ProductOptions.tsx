@@ -141,7 +141,11 @@ export function ProductOptions({ lang, slug, basePrice, flavors, packages, label
       </div>
 
       {addedCount !== null && (
-        <div role="status" className="flex flex-wrap items-center justify-between gap-2 bg-surface px-4 py-3.5">
+        <div
+          key={addedCount}
+          role="status"
+          className="animate-pop-in flex flex-wrap items-center justify-between gap-2 bg-surface px-4 py-3.5"
+        >
           <span className="text-[15px] font-semibold">{labels.added.replace("{count}", String(addedCount))}</span>
           <Link href={`/${lang}/order`} className="py-1.5 text-[15px] font-bold underline">
             {labels.viewOrder}

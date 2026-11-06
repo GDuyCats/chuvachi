@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { FadeInImage } from "../FadeInImage";
 import { useRef, useState } from "react";
 
 type Labels = {
@@ -67,7 +68,7 @@ export function ProductGallery({ images, alt, labels }: Props) {
         >
           {images.map((src, index) => (
             <div key={src} className="relative h-full w-full shrink-0 snap-center" aria-label={photoLabel(index)} role="group">
-              <Image
+              <FadeInImage
                 src={src}
                 alt={index === 0 ? alt : `${alt} (${photoLabel(index)})`}
                 fill
@@ -109,9 +110,9 @@ export function ProductGallery({ images, alt, labels }: Props) {
               onClick={() => goTo(index)}
               aria-label={photoLabel(index)}
               aria-current={index === current ? "true" : undefined}
-              className={`relative h-16 w-16 shrink-0 overflow-hidden border-2 md:h-20 md:w-20 ${index === current ? "border-black" : "border-transparent opacity-70 hover:opacity-100"}`}
+              className={`relative h-16 w-16 shrink-0 overflow-hidden border-2 transition-[opacity,border-color] duration-200 md:h-20 md:w-20 ${index === current ? "border-black" : "border-transparent opacity-70 hover:opacity-100"}`}
             >
-              <Image src={src} alt="" fill sizes="80px" className="object-cover" />
+              <Image src={src} alt="" fill sizes="80px" className="object-cover transition-opacity" />
             </button>
           ))}
         </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import type { Locale } from "@/i18n/config";
 import { formatPrice } from "@/lib/format";
 import { PhotoBox } from "./PhotoBox";
@@ -20,6 +21,7 @@ type Props = {
   actionLabel: string;
   eyebrow?: string;
   className?: string;
+  style?: CSSProperties;
 };
 
 // Grey card with photo, thin divider, name, price and an underlined action link.
@@ -34,9 +36,14 @@ export function ProductCard({
   actionLabel,
   eyebrow,
   className = "",
+  style,
 }: Props) {
   return (
-    <Link href={`/${lang}/menu/${slug}`} className={`group flex flex-col gap-3 rounded-xl bg-surface p-3 md:gap-4 md:p-5 ${className}`}>
+    <Link
+      href={`/${lang}/menu/${slug}`}
+      style={style}
+      className={`group flex flex-col gap-3 rounded-xl bg-surface p-3 md:gap-4 md:p-5 ${className}`}
+    >
       <div className="relative">
         <PhotoBox src={imageUrl} alt={name} fallbackText={labels.photoComingSoon} className="aspect-square" />
         {isNew && (

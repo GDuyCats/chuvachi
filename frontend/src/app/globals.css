@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+/* Design tokens shared by the whole site (black and white theme). */
+@theme inline {
+  --font-sans: var(--font-be-vietnam), system-ui, sans-serif;
+  --font-display: var(--font-anton), sans-serif;
+
+  --color-ink: #111111;
+  --color-muted: #555555;
+  --color-line: #e5e5e5;
+  --color-surface: #f2f2f2;
+}
+
+/* Hide scrollbars on horizontal swipe rows while keeping them scrollable. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #ffffff;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #000000;
+  outline-offset: 2px;
+}

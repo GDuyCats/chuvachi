@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "title": "Chuvachi — Panna cotta, tiramisu, mousse & brownies",
+    "description": "Fresh desserts made every day in Ho Chi Minh City. Order online for delivery."
+  },
+  "announcement": {
+    "left": "Delivery across Ho Chi Minh City",
+    "center": "New: Passion fruit mousse is on the menu.",
+    "centerLink": "See it",
+    "right": "Order 3 hours ahead"
+  },
+  "nav": {
+    "label": "Main menu",
+    "menu": "Menu",
+    "new": "New",
+    "seasonal": "Seasonal",
+    "comingSoon": "Coming Soon",
+    "contact": "Contact",
+    "language": "Language",
+    "cart": "Your order"
+  },
+  "footer": {
+    "tagline": "Panna cotta, tiramisu, mousse and brownies — made fresh every day.",
+    "orderTitle": "Order",
+    "messenger": "Messenger",
+    "phone": "Phone",
+    "leadTime": "Order 3 hours ahead · 1 day ahead for 10+ portions",
+    "hoursTitle": "Opening hours",
+    "delivery": "Delivered by Grab / Ahamove",
+    "followTitle": "Follow us",
+    "comingSoon": "Coming soon",
+    "policies": "Policies",
+    "trackOrder": "Track your order",
+    "rights": "All rights reserved."
+  },
+  "home": {
+    "placeholderTitle": "Fresh desserts, made every day",
+    "placeholderText": "The homepage is being built. Check back soon!"
+  }
+}

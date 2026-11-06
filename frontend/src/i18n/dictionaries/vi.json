@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "title": "Chuvachi — Panna cotta, tiramisu, mousse & brownie",
+    "description": "Bánh ngọt làm mới mỗi ngày tại TP.HCM. Đặt online, giao tận nơi."
+  },
+  "announcement": {
+    "left": "Giao hàng khu vực TP.HCM",
+    "center": "Mới: Mousse chanh dây đã có trong menu.",
+    "centerLink": "Xem ngay",
+    "right": "Đặt trước 3 giờ"
+  },
+  "nav": {
+    "label": "Menu chính",
+    "menu": "Menu",
+    "new": "Bánh mới",
+    "seasonal": "Theo mùa",
+    "comingSoon": "Sắp ra mắt",
+    "contact": "Liên hệ",
+    "language": "Ngôn ngữ",
+    "cart": "Đơn hàng của bạn"
+  },
+  "footer": {
+    "tagline": "Panna cotta, tiramisu, mousse và brownie — làm mới mỗi ngày.",
+    "orderTitle": "Đặt bánh",
+    "messenger": "Messenger",
+    "phone": "Điện thoại",
+    "leadTime": "Đặt trước 3 giờ · từ 10 phần đặt trước 1 ngày",
+    "hoursTitle": "Giờ mở cửa",
+    "delivery": "Giao qua Grab / Ahamove",
+    "followTitle": "Theo dõi",
+    "comingSoon": "Đang cập nhật",
+    "policies": "Chính sách",
+    "trackOrder": "Tra cứu đơn hàng",
+    "rights": "Bảo lưu mọi quyền."
+  },
+  "home": {
+    "placeholderTitle": "Bánh ngọt làm mới mỗi ngày",
+    "placeholderText": "Trang chủ đang được xây dựng. Hẹn bạn sớm quay lại!"
+  }
+}

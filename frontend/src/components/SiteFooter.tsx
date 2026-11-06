@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { shopConfig } from "@/lib/shop-config";
+import { getShopInfo } from "@/lib/api";
 
 type Props = {
   lang: Locale;
@@ -9,7 +9,7 @@ type Props = {
 };
 
 // Shows a link when the URL is set, otherwise a "coming soon" note.
-function ExternalItem({ label, url, fallback }: { label: string; url: string; fallback: string }) {
+function ExternalItem({ label, url, fallback }: { label: string; url: string | null; fallback: string }) {
   if (!url) {
     return (
       <span className="text-[#c7c7c7]">
@@ -24,7 +24,10 @@ function ExternalItem({ label, url, fallback }: { label: string; url: string; fa
   );
 }
 
-export function SiteFooter({ lang, dict }: Props) {
+export async function SiteFooter({ lang, dict }: Props) {
+  const shop = await getShopInfo();
+  const hours = shop.openTime && shop.closeTime ? `${shop.openTime} – ${shop.closeTime}` : null;
+
   return (
     <footer id="contact" className="mt-auto flex flex-col gap-10 bg-black px-4 pb-8 pt-14 text-white md:px-10">
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -35,24 +38,24 @@ export function SiteFooter({ lang, dict }: Props) {
 
         <div className="flex flex-col gap-2.5 text-sm">
           <h2 className="font-bold uppercase tracking-widest">{dict.orderTitle}</h2>
-          <ExternalItem label={dict.messenger} url={shopConfig.messengerUrl} fallback={dict.comingSoon} />
+          <ExternalItem label={dict.messenger} url={shop.messengerUrl} fallback={dict.comingSoon} />
           <span className="text-[#c7c7c7]">
-            {dict.phone}: {shopConfig.phone || dict.comingSoon}
+            {dict.phone}: {shop.phone ? <a href={`tel:${shop.phone.replace(/\s/g, "")}`} className="underline hover:text-white">{shop.phone}</a> : dict.comingSoon}
           </span>
           <span className="text-[#c7c7c7]">{dict.leadTime}</span>
         </div>
 
         <div className="flex flex-col gap-2.5 text-sm">
           <h2 className="font-bold uppercase tracking-widest">{dict.hoursTitle}</h2>
-          <span className="text-[#c7c7c7]">{shopConfig.openingHours || dict.comingSoon}</span>
+          <span className="text-[#c7c7c7]">{hours ?? dict.comingSoon}</span>
           <span className="text-[#c7c7c7]">{dict.delivery}</span>
         </div>
 
         <div className="flex flex-col gap-2.5 text-sm">
           <h2 className="font-bold uppercase tracking-widest">{dict.followTitle}</h2>
-          <ExternalItem label="Facebook" url={shopConfig.facebookUrl} fallback={dict.comingSoon} />
-          <ExternalItem label="Instagram" url={shopConfig.instagramUrl} fallback={dict.comingSoon} />
-          <ExternalItem label="TikTok" url={shopConfig.tiktokUrl} fallback={dict.comingSoon} />
+          <ExternalItem label="Facebook" url={shop.facebookUrl} fallback={dict.comingSoon} />
+          <ExternalItem label="Instagram" url={shop.instagramUrl} fallback={dict.comingSoon} />
+          <ExternalItem label="TikTok" url={shop.tiktokUrl} fallback={dict.comingSoon} />
         </div>
       </div>
 

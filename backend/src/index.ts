@@ -9,6 +9,8 @@ import { catalogRouter } from "./routes/catalog";
 import { ordersRouter } from "./routes/orders";
 import { adminAuthRouter } from "./routes/admin-auth";
 import { adminOrdersRouter } from "./routes/admin-orders";
+import { adminSettingsRouter } from "./routes/admin-settings";
+import { shopInfoRouter } from "./routes/shop-info";
 import { startBackgroundJobs } from "./jobs/background-jobs";
 
 const app = express();
@@ -35,8 +37,10 @@ app.use(cookieParser());
 app.use("/health", healthRouter);
 app.use("/api", catalogRouter);
 app.use("/api", ordersRouter);
+app.use("/api", shopInfoRouter);
 app.use("/api/admin", adminAuthRouter);
 app.use("/api/admin/orders", adminOrdersRouter);
+app.use("/api/admin", adminSettingsRouter);
 
 // Unknown routes
 app.use((_req: Request, res: Response) => {

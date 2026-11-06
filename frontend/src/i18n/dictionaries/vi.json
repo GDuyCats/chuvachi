@@ -210,7 +210,8 @@
     "track": "Tra cứu đơn hàng",
     "backToMenu": "Về menu",
     "missingTitle": "Không hiển thị được đơn ở đây",
-    "missingText": "Nếu bạn đã đặt hàng, hãy dùng mã đơn và số điện thoại để tra cứu."
+    "missingText": "Nếu bạn đã đặt hàng, hãy dùng mã đơn và số điện thoại để tra cứu.",
+    "qrAlt": "Mã QR thanh toán — quét bằng app ngân hàng"
   },
   "track": {
     "title": "Tra cứu đơn hàng",

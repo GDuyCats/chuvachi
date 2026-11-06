@@ -4,7 +4,8 @@
   "signOut": "Sign out",
   "language": "Language",
   "nav": {
-    "orders": "Orders"
+    "orders": "Orders",
+    "settings": "Settings"
   },
   "login": {
     "title": "Staff sign in",
@@ -77,7 +78,7 @@
       "close": "Close"
     },
     "actions": {
-      "PENDING": "Payment received \u2014 confirm order",
+      "PENDING": "Payment received — confirm order",
       "CONFIRMED": "Start preparing",
       "PREPARING": "Mark as ready for driver",
       "READY": "Mark as delivered",
@@ -101,6 +102,76 @@
       "CANNOT_CANCEL": "This order can't be cancelled.",
       "CANNOT_REFUND": "Only cancelled, paid orders can be marked as refunded.",
       "UNKNOWN": "Something went wrong. Please try again."
+    }
+  },
+  "settings": {
+    "title": "Shop settings",
+    "save": "Save changes",
+    "saving": "Saving...",
+    "saved": "Saved.",
+    "loadError": "Couldn't load the settings. Check the connection and refresh.",
+    "invalid": "Please check the highlighted fields.",
+    "unknownError": "Something went wrong. Please try again.",
+    "bank": {
+      "title": "Bank account",
+      "hint": "Shown to customers after they order, with a QR code they can scan.",
+      "bank": "Bank",
+      "chooseBank": "Choose a bank",
+      "accountNumber": "Account number",
+      "accountName": "Account holder name",
+      "accountNameHint": "Write it exactly as the bank shows it, without accents (e.g. NGUYEN VAN A).",
+      "preview": "QR preview (100,000 VND, message TEST)"
+    },
+    "contact": {
+      "title": "Contact",
+      "hint": "Shown in the website footer. Leave a field empty to show “Coming soon”. Links must start with https://",
+      "phone": "Phone",
+      "messenger": "Messenger link",
+      "facebook": "Facebook link",
+      "instagram": "Instagram link",
+      "tiktok": "TikTok link"
+    },
+    "rules": {
+      "title": "Hours and order rules",
+      "openTime": "Opening time",
+      "closeTime": "Closing time",
+      "closedDays": "Closed on",
+      "weekdays": [
+        "Sun",
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat"
+      ],
+      "slots": "Delivery time slots",
+      "slotsHint": "One slot per line, like 14:00-16:00",
+      "smallLead": "Hours of notice for small orders",
+      "largeLead": "Hours of notice for large orders",
+      "threshold": "A large order starts at (portions)",
+      "capacity": "Portions per day (default)",
+      "maxDays": "Customers can order up to (days ahead)",
+      "unpaid": "Cancel unpaid orders after (minutes, 0 = never)"
+    },
+    "zones": {
+      "title": "Delivery areas",
+      "hint": "Customers choose one of the active areas. Switch an area off instead of deleting it.",
+      "nameVi": "Name (Vietnamese)",
+      "nameEn": "Name (English)",
+      "active": "Active",
+      "order": "Order",
+      "add": "Add area",
+      "saveRow": "Save"
+    },
+    "capacity": {
+      "title": "Portions per day (next 14 days)",
+      "hint": "Change a single day, e.g. more for a holiday or 0 for a day off. Lowering a day only stops new orders.",
+      "date": "Date",
+      "booked": "Booked",
+      "max": "Maximum",
+      "custom": "custom",
+      "saveRow": "Save"
     }
   }
 }

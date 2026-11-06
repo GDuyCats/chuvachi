@@ -6,8 +6,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { ProductOptions, type OptionChoice } from "@/components/product/ProductOptions";
 import { isLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { getProduct, getProducts, type Product } from "@/lib/api";
-import { shopConfig } from "@/lib/shop-config";
+import { getProduct, getProducts, getShopInfo, type Product } from "@/lib/api";
 
 // Pre-build a page for every product in each language. New products added later
 // are rendered on their first visit.
@@ -42,7 +41,7 @@ function toChoices(product: Product, type: "FLAVOR" | "PACKAGE"): OptionChoice[]
 export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[slug]">) {
   const { lang, slug } = await params;
   const { locale, product } = await loadProduct(lang, slug);
-  const [dict, allProducts] = await Promise.all([getDictionary(locale), getProducts(locale)]);
+  const [dict, allProducts, shop] = await Promise.all([getDictionary(locale), getProducts(locale), getShopInfo()]);
   const labels = dict.productDetail;
 
   const related = allProducts.filter((p) => p.slug !== product.slug).slice(0, 4);
@@ -97,9 +96,9 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[s
             labels={labels}
           />
 
-          {shopConfig.messengerUrl && (
+          {shop.messengerUrl && (
             <a
-              href={shopConfig.messengerUrl}
+              href={shop.messengerUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="self-start py-1.5 text-[15px] font-semibold underline"

@@ -189,9 +189,15 @@ model ShopSetting {
   unpaidCancelMinutes  Int      @default(30) // unpaid orders are cancelled after this many minutes
   deliverySlots        String[] @default(["09:00-11:00", "11:00-13:00", "14:00-16:00", "16:00-18:00", "18:00-20:00"])
   closedWeekdays       Int[]    @default([]) // 0 = Sunday ... 6 = Saturday
+  bankBin              String?  // VietQR bank code (BIN), e.g. "970436" for Vietcombank
   bankName             String?
   bankAccountNumber    String?
   bankAccountName      String?
+  phone                String?
+  messengerUrl         String?
+  facebookUrl          String?
+  instagramUrl         String?
+  tiktokUrl            String?
   updatedAt            DateTime @updatedAt
 }
 

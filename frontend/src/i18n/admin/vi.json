@@ -4,7 +4,8 @@
   "signOut": "Đăng xuất",
   "language": "Ngôn ngữ",
   "nav": {
-    "orders": "Đơn hàng"
+    "orders": "Đơn hàng",
+    "settings": "Cài đặt"
   },
   "login": {
     "title": "Đăng nhập nhân viên",
@@ -101,6 +102,76 @@
       "CANNOT_CANCEL": "Đơn này không hủy được.",
       "CANNOT_REFUND": "Chỉ đơn đã hủy và đã thanh toán mới đánh dấu hoàn tiền được.",
       "UNKNOWN": "Có lỗi xảy ra. Vui lòng thử lại."
+    }
+  },
+  "settings": {
+    "title": "Cài đặt tiệm",
+    "save": "Lưu thay đổi",
+    "saving": "Đang lưu...",
+    "saved": "Đã lưu.",
+    "loadError": "Không tải được cài đặt. Kiểm tra mạng rồi tải lại trang.",
+    "invalid": "Vui lòng kiểm tra lại các ô được đánh dấu.",
+    "unknownError": "Có lỗi xảy ra. Vui lòng thử lại.",
+    "bank": {
+      "title": "Tài khoản ngân hàng",
+      "hint": "Hiện cho khách sau khi đặt hàng, kèm mã QR để quét chuyển khoản.",
+      "bank": "Ngân hàng",
+      "chooseBank": "Chọn ngân hàng",
+      "accountNumber": "Số tài khoản",
+      "accountName": "Tên chủ tài khoản",
+      "accountNameHint": "Ghi đúng như ngân hàng hiển thị, không dấu (ví dụ NGUYEN VAN A).",
+      "preview": "Xem trước mã QR (100.000 ₫, nội dung TEST)"
+    },
+    "contact": {
+      "title": "Liên hệ",
+      "hint": "Hiện ở cuối trang web. Để trống thì web ghi “Đang cập nhật”. Link phải bắt đầu bằng https://",
+      "phone": "Số điện thoại",
+      "messenger": "Link Messenger",
+      "facebook": "Link Facebook",
+      "instagram": "Link Instagram",
+      "tiktok": "Link TikTok"
+    },
+    "rules": {
+      "title": "Giờ mở cửa và quy tắc đặt hàng",
+      "openTime": "Giờ mở cửa",
+      "closeTime": "Giờ đóng cửa",
+      "closedDays": "Ngày nghỉ",
+      "weekdays": [
+        "CN",
+        "T2",
+        "T3",
+        "T4",
+        "T5",
+        "T6",
+        "T7"
+      ],
+      "slots": "Khung giờ giao",
+      "slotsHint": "Mỗi dòng một khung giờ, ví dụ 14:00-16:00",
+      "smallLead": "Số giờ đặt trước cho đơn nhỏ",
+      "largeLead": "Số giờ đặt trước cho đơn lớn",
+      "threshold": "Đơn lớn tính từ (số phần)",
+      "capacity": "Số phần mỗi ngày (mặc định)",
+      "maxDays": "Khách được đặt trước tối đa (ngày)",
+      "unpaid": "Tự hủy đơn chưa chuyển khoản sau (phút, 0 = không hủy)"
+    },
+    "zones": {
+      "title": "Khu vực giao",
+      "hint": "Khách chọn một trong các khu vực đang bật. Muốn bỏ khu vực nào thì tắt đi, đừng xóa.",
+      "nameVi": "Tên (tiếng Việt)",
+      "nameEn": "Tên (tiếng Anh)",
+      "active": "Đang bật",
+      "order": "Thứ tự",
+      "add": "Thêm khu vực",
+      "saveRow": "Lưu"
+    },
+    "capacity": {
+      "title": "Số phần theo ngày (14 ngày tới)",
+      "hint": "Chỉnh riêng từng ngày, ví dụ tăng cho ngày lễ hoặc đặt 0 cho ngày nghỉ. Giảm số phần chỉ chặn đơn mới.",
+      "date": "Ngày",
+      "booked": "Đã nhận",
+      "max": "Tối đa",
+      "custom": "đã chỉnh",
+      "saveRow": "Lưu"
     }
   }
 }

@@ -42,7 +42,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
     return <div className="min-h-screen bg-[#fafafa]" />;
   }
 
-  const tabs = [{ href: "/admin/orders", label: t.nav.orders }];
+  const tabs = [
+    { href: "/admin/orders", label: t.nav.orders },
+    { href: "/admin/settings", label: t.nav.settings },
+  ];
 
   return (
     <AdminMeContext.Provider value={me}>

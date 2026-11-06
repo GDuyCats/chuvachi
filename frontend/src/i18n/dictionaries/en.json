@@ -210,7 +210,8 @@
     "track": "Track your order",
     "backToMenu": "Back to menu",
     "missingTitle": "We can't show this order here",
-    "missingText": "If you placed an order, use your order code and phone number to look it up."
+    "missingText": "If you placed an order, use your order code and phone number to look it up.",
+    "qrAlt": "Payment QR code — scan with your banking app"
   },
   "track": {
     "title": "Track your order",

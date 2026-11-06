@@ -74,15 +74,53 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
   if (!response.ok) {
     let code = "UNKNOWN";
+    let fields: string[] = [];
     try {
-      const body = (await response.json()) as { error?: unknown };
+      const body = (await response.json()) as { error?: unknown; details?: { field?: unknown }[] };
       if (typeof body.error === "string") code = body.error;
+      if (Array.isArray(body.details)) {
+        fields = body.details.map((d) => (typeof d.field === "string" ? d.field : "")).filter(Boolean);
+      }
     } catch {
       // keep UNKNOWN
     }
+    if (code === "VALIDATION_ERROR") throw new AdminValidationError(fields);
     throw new AdminApiError(code, response.status);
   }
   return (await response.json()) as T;
+}
+
+export type ShopSettings = {
+  openTime: string;
+  closeTime: string;
+  closedWeekdays: number[];
+  deliverySlots: string[];
+  smallOrderLeadHours: number;
+  largeOrderLeadHours: number;
+  largeOrderThreshold: number;
+  defaultDailyCapacity: number;
+  maxDaysAhead: number;
+  unpaidCancelMinutes: number;
+  bankBin: string | null;
+  bankName: string | null;
+  bankAccountNumber: string | null;
+  bankAccountName: string | null;
+  phone: string | null;
+  messengerUrl: string | null;
+  facebookUrl: string | null;
+  instagramUrl: string | null;
+  tiktokUrl: string | null;
+};
+
+export type DeliveryZoneRow = { id: number; nameVi: string; nameEn: string; isActive: boolean; sortOrder: number };
+export type CapacityDay = { date: string; maxPortions: number; bookedPortions: number; isCustom: boolean };
+export type SettingsBundle = { settings: ShopSettings; zones: DeliveryZoneRow[]; capacity: CapacityDay[] };
+
+// Validation problems returned by the server, field by field.
+export class AdminValidationError extends AdminApiError {
+  constructor(public readonly fields: string[]) {
+    super("VALIDATION_ERROR", 400);
+  }
 }
 
 export const adminApi = {
@@ -100,4 +138,15 @@ export const adminApi = {
       body: JSON.stringify({ expectedStatus, note: note || undefined }),
     }),
   refund: (code: string) => request<AdminOrder>(`/orders/${code}/refund`, { method: "POST", body: "{}" }),
+  getSettings: () => request<SettingsBundle>("/settings"),
+  saveSettings: (settings: ShopSettings) =>
+    request<SettingsBundle>("/settings", { method: "PUT", body: JSON.stringify(settings) }),
+  addZone: (zone: Omit<DeliveryZoneRow, "id">) =>
+    request<SettingsBundle>("/zones", { method: "POST", body: JSON.stringify(zone) }),
+  updateZone: (zone: DeliveryZoneRow) => {
+    const { id, ...data } = zone;
+    return request<SettingsBundle>(`/zones/${id}`, { method: "PUT", body: JSON.stringify(data) });
+  },
+  setCapacity: (date: string, maxPortions: number) =>
+    request<SettingsBundle>(`/capacity/${date}`, { method: "PUT", body: JSON.stringify({ maxPortions }) }),
 };

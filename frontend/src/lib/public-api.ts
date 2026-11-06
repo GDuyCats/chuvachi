@@ -51,6 +51,7 @@ export type PlaceOrderResult = {
   total: number;
   unpaidCancelMinutes: number;
   bankTransfer: {
+    bankBin: string | null;
     bankName: string | null;
     accountNumber: string | null;
     accountName: string | null;

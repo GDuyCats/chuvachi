@@ -60,3 +60,37 @@ export async function getProducts(locale: Locale): Promise<Product[]> {
   cacheLife("minutes");
   return getJson<Product[]>(`/api/products?locale=${locale}`);
 }
+
+export type ShopInfo = {
+  phone: string | null;
+  messengerUrl: string | null;
+  facebookUrl: string | null;
+  instagramUrl: string | null;
+  tiktokUrl: string | null;
+  openTime: string | null;
+  closeTime: string | null;
+  closedWeekdays: number[];
+};
+
+const EMPTY_SHOP_INFO: ShopInfo = {
+  phone: null,
+  messengerUrl: null,
+  facebookUrl: null,
+  instagramUrl: null,
+  tiktokUrl: null,
+  openTime: null,
+  closeTime: null,
+  closedWeekdays: [],
+};
+
+// Contact details and opening hours, edited by staff in the admin page.
+// If the API is unreachable the footer simply shows "coming soon" instead of breaking every page.
+export async function getShopInfo(): Promise<ShopInfo> {
+  "use cache";
+  cacheLife("minutes");
+  try {
+    return await getJson<ShopInfo>("/api/shop-info");
+  } catch {
+    return EMPTY_SHOP_INFO;
+  }
+}

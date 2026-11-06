@@ -223,6 +223,7 @@ export async function createOrder(input: CreateOrderInput) {
         total: order.total,
         unpaidCancelMinutes: settings.unpaidCancelMinutes,
         bankTransfer: {
+          bankBin: settings.bankBin,
           bankName: settings.bankName,
           accountNumber: settings.bankAccountNumber,
           accountName: settings.bankAccountName,

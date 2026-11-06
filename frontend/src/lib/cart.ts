@@ -12,6 +12,7 @@ export type CartLine = {
 const STORAGE_KEY = "chuvachi-cart";
 const CHANGE_EVENT = "chuvachi-cart-change";
 export const MAX_LINE_QUANTITY = 20;
+const EMPTY: CartLine[] = [];
 
 function isCartLine(value: unknown): value is CartLine {
   if (typeof value !== "object" || value === null) return false;
@@ -25,21 +26,52 @@ function isCartLine(value: unknown): value is CartLine {
   );
 }
 
-export function readCart(): CartLine[] {
+function readRaw(): string | null {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
+    return window.localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function parse(raw: string | null): CartLine[] {
+  if (!raw) return EMPTY;
+  try {
     const parsed: unknown = JSON.parse(raw);
     // Ignore anything that doesn't look like a cart line (old or tampered data).
-    return Array.isArray(parsed) ? parsed.filter(isCartLine) : [];
+    return Array.isArray(parsed) ? parsed.filter(isCartLine) : EMPTY;
   } catch {
-    return [];
+    return EMPTY;
   }
+}
+
+export function readCart(): CartLine[] {
+  return parse(readRaw());
+}
+
+// Returns the same array object until the cart changes (needed by React's useSyncExternalStore).
+let cachedRaw: string | null | undefined;
+let cachedLines: CartLine[] = EMPTY;
+export function getCartSnapshot(): CartLine[] {
+  const raw = readRaw();
+  if (raw !== cachedRaw) {
+    cachedRaw = raw;
+    cachedLines = parse(raw);
+  }
+  return cachedLines;
+}
+
+export function getServerCartSnapshot(): CartLine[] {
+  return EMPTY;
 }
 
 export function writeCart(lines: CartLine[]): void {
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
+    if (lines.length === 0) {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } else {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
+    }
   } catch {
     // Storage can be blocked (private mode); the cart then only lasts for this page view.
   }
@@ -65,6 +97,27 @@ export function addToCart(line: CartLine): CartLine[] {
     : [...lines, { ...line, quantity: Math.min(MAX_LINE_QUANTITY, line.quantity) }];
   writeCart(next);
   return next;
+}
+
+export function setLineQuantity(index: number, quantity: number): void {
+  const lines = readCart();
+  if (!lines[index]) return;
+  const next = lines.map((line, i) =>
+    i === index ? { ...line, quantity: Math.max(1, Math.min(MAX_LINE_QUANTITY, quantity)) } : line,
+  );
+  writeCart(next);
+}
+
+export function removeLine(index: number): void {
+  writeCart(readCart().filter((_, i) => i !== index));
+}
+
+export function removeLines(shouldRemove: (line: CartLine) => boolean): void {
+  writeCart(readCart().filter((line) => !shouldRemove(line)));
+}
+
+export function clearCart(): void {
+  writeCart([]);
 }
 
 export function cartItemCount(lines: CartLine[]): number {

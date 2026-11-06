@@ -1,0 +1,142 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import type { Locale } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/dictionaries";
+import { formatLongDate, formatSlot } from "@/lib/delivery-time";
+import { formatPrice } from "@/lib/format";
+import { loadLastOrder, type LastOrder } from "@/lib/last-order";
+
+type Props = {
+  lang: Locale;
+  labels: Dictionary["thanks"];
+};
+
+export function ConfirmationView({ lang, labels }: Props) {
+  // undefined = still reading the browser storage, null = nothing to show
+  const [order, setOrder] = useState<LastOrder | null | undefined>(undefined);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    setOrder(loadLastOrder());
+  }, []);
+
+  if (order === undefined) {
+    return <div className="min-h-96" />;
+  }
+
+  if (order === null) {
+    return (
+      <div className="flex flex-col items-start gap-4 py-10">
+        <h1 className="font-display text-4xl uppercase md:text-5xl">{labels.missingTitle}</h1>
+        <p className="text-muted">{labels.missingText}</p>
+        <Link href={`/${lang}/track`} className="flex min-h-12 items-center bg-black px-8 font-bold text-white">
+          {labels.track}
+        </Link>
+      </div>
+    );
+  }
+
+  async function copyCode(code: string) {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard can be blocked; the code is still visible to copy by hand.
+    }
+  }
+
+  const bank = order.bankTransfer;
+  const hasBank = Boolean(bank.bankName && bank.accountNumber);
+  const deliveryText =
+    order.deliveryType === "ASAP"
+      ? labels.deliveryAsap
+      : `${formatLongDate(order.deliveryDate, lang)} · ${order.deliverySlot ? formatSlot(order.deliverySlot) : ""}`;
+
+  return (
+    <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-3.5">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-black text-white">
+          <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+        <h1 className="font-display text-4xl uppercase leading-[1.05] md:text-[64px]">{labels.title}</h1>
+        <p className="max-w-2xl leading-relaxed text-[#333333]">{labels.intro}</p>
+        <div className="mt-1 flex flex-wrap items-center gap-x-5 gap-y-3">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-bold uppercase tracking-widest text-muted">{labels.codeLabel}</span>
+            <span className="font-display text-[40px] tracking-[0.08em]">{order.code}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => copyCode(order.code)}
+            className="min-h-11 border-[1.5px] border-black px-4 text-sm font-bold hover:bg-surface"
+          >
+            {copied ? labels.copied : labels.copy}
+          </button>
+        </div>
+        <p className="max-w-2xl text-sm text-muted">{labels.saveCode}</p>
+      </div>
+
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
+        <div className="flex min-w-0 flex-col gap-5 border-[1.5px] border-black p-5 md:p-8 lg:flex-1">
+          <h2 className="font-display text-[26px] uppercase tracking-wide">{labels.payTitle}</h2>
+          {hasBank ? (
+            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2.5 text-[15px]">
+              <dt className="text-muted">{labels.bank}</dt>
+              <dd className="font-semibold">{bank.bankName}</dd>
+              <dt className="text-muted">{labels.account}</dt>
+              <dd className="font-semibold">{bank.accountNumber}</dd>
+              <dt className="text-muted">{labels.accountName}</dt>
+              <dd className="font-semibold">{bank.accountName}</dd>
+              <dt className="text-muted">{labels.amount}</dt>
+              <dd className="font-bold">{formatPrice(bank.amount, lang)}</dd>
+              <dt className="text-muted">{labels.message}</dt>
+              <dd className="font-bold">{bank.transferContent}</dd>
+            </dl>
+          ) : (
+            <p className="text-[15px]">
+              {labels.bankMissing} <strong>{formatPrice(bank.amount, lang)}</strong>
+            </p>
+          )}
+          <p className="bg-surface px-3.5 py-3 text-sm">
+            {labels.payNote.replace("{minutes}", String(order.unpaidCancelMinutes))}
+          </p>
+        </div>
+
+        <div className="flex min-w-0 flex-col gap-4 bg-surface p-5 md:p-8 lg:w-[400px] lg:shrink-0">
+          <h2 className="font-display text-[26px] uppercase tracking-wide">{labels.detailsTitle}</h2>
+          <p className="font-semibold">{deliveryText}</p>
+          {order.deliveryZoneName && <p className="text-muted">{order.deliveryZoneName}</p>}
+          <ul className="flex flex-col gap-2 border-t border-[#d4d4d4] pt-3 text-[15px]">
+            {order.items.map((item) => (
+              <li key={item.name} className="flex justify-between gap-3">
+                <span>
+                  {item.name} × {item.quantity}
+                </span>
+                <span className="whitespace-nowrap">{formatPrice(item.lineTotal, lang)}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="flex justify-between border-t-[1.5px] border-black pt-2.5 text-lg font-bold">
+            <span>{labels.amount}</span>
+            <span>{formatPrice(order.total, lang)}</span>
+          </div>
+          <p className="text-[13px] text-muted">{labels.shippingNote}</p>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        <Link href={`/${lang}/track`} className="flex min-h-13 items-center bg-black px-7 font-bold text-white">
+          {labels.track}
+        </Link>
+        <Link href={`/${lang}/menu`} className="flex min-h-13 items-center border-[1.5px] border-black px-7 font-bold">
+          {labels.backToMenu}
+        </Link>
+      </div>
+    </div>
+  );
+}

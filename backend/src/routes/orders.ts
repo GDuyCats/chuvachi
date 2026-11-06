@@ -146,6 +146,7 @@ ordersRouter.get("/order-settings", async (req, res) => {
     largeOrderThreshold: settings.largeOrderThreshold,
     smallOrderLeadHours: settings.smallOrderLeadHours,
     largeOrderLeadHours: settings.largeOrderLeadHours,
+    unpaidCancelMinutes: settings.unpaidCancelMinutes,
     deliveryZones: zones.map((zone) => ({
       id: zone.id,
       name: pickText(locale, zone.nameVi, zone.nameEn),

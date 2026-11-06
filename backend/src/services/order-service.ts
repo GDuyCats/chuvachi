@@ -221,6 +221,7 @@ export async function createOrder(input: CreateOrderInput) {
         deliverySlot: order.deliverySlot,
         totalPortions: order.totalPortions,
         total: order.total,
+        unpaidCancelMinutes: settings.unpaidCancelMinutes,
         bankTransfer: {
           bankName: settings.bankName,
           accountNumber: settings.bankAccountNumber,

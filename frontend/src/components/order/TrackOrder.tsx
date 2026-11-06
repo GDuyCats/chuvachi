@@ -7,6 +7,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { formatLongDate, formatSlot } from "@/lib/delivery-time";
 import { formatPrice } from "@/lib/format";
 import { ApiError, fetchOrder, type OrderLookup, type OrderStatus } from "@/lib/public-api";
+import { Skeleton, SkeletonGroup } from "../Skeleton";
 
 type Props = {
   lang: Locale;
@@ -109,14 +110,27 @@ export function TrackOrder({ lang, labels }: Props) {
         </p>
       )}
 
-      {result?.kind === "found" && <OrderDetails lang={lang} labels={labels} order={result.order} />}
+      {loading ? (
+        <SkeletonGroup label={labels.checking} className="flex flex-col gap-5 border-t-[1.5px] border-black pt-6">
+          <Skeleton className="h-10 w-48" />
+          <div className="grid grid-cols-5 gap-2">
+            {[0, 1, 2, 3, 4].map((step) => (
+              <Skeleton key={step} className="h-2" />
+            ))}
+          </div>
+          <Skeleton className="h-24 w-full" />
+        </SkeletonGroup>
+      ) : (
+        result?.kind === "found" && <OrderDetails lang={lang} labels={labels} order={result.order} />
+      )}
     </div>
   );
 }
 
 function OrderDetails({ lang, labels, order }: { lang: Locale; labels: Dictionary["track"]; order: OrderLookup }) {
-  const cancelled = order.status === "CANCELLED";
-  const doneCount = cancelled ? 0 : STEPS.indexOf(order.status) + 1;
+  const status = order.status;
+  const cancelled = status === "CANCELLED";
+  const doneCount = status === "CANCELLED" ? 0 : STEPS.indexOf(status) + 1;
   const deliveryText =
     order.deliveryType === "ASAP"
       ? labels.deliveryAsap

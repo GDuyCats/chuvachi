@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { FormSkeleton } from "@/components/Skeleton";
 import { TrackOrder } from "@/components/order/TrackOrder";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
@@ -23,7 +24,7 @@ export default async function TrackPage({ params }: PageProps<"/[lang]/track">) 
         <p className="text-[#333333]">{dict.track.intro}</p>
       </div>
       {/* The form reads ?code=... from the URL, so it renders inside a Suspense boundary. */}
-      <Suspense>
+      <Suspense fallback={<FormSkeleton fields={2} label={dict.loading.form} />}>
         <TrackOrder lang={lang} labels={dict.track} />
       </Suspense>
     </section>

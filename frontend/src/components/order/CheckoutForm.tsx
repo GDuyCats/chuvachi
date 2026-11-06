@@ -28,6 +28,7 @@ import {
   type OrderSettings,
 } from "@/lib/public-api";
 import { PhotoBox } from "../PhotoBox";
+import { CheckoutSkeleton, Skeleton } from "../Skeleton";
 
 export type CatalogOption = { id: number; type: "FLAVOR" | "PACKAGE"; name: string; priceDelta: number; portions: number };
 export type CatalogProduct = {
@@ -195,7 +196,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
 
   // Wait for the browser so the cart (stored in the browser) is known.
   if (!isClient) {
-    return <div className="min-h-96" />;
+    return <CheckoutSkeleton label={labels.loadingSettings} />;
   }
 
   if (lines.length === 0) {
@@ -257,7 +258,16 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
           <legend className="mb-4 font-display text-[26px] uppercase tracking-wide">{labels.deliveryTitle}</legend>
 
           {settingsFailed && <p role="alert" className="border-[1.5px] border-black p-4 text-sm font-semibold">{labels.settingsError}</p>}
-          {!settings && !settingsFailed && <p className="text-sm text-muted">{labels.loadingSettings}</p>}
+          {!settings && !settingsFailed && (
+            <div role="status" aria-label={labels.loadingSettings} className="flex flex-col gap-4">
+              <Skeleton className="h-12 w-full" />
+              <div className="grid grid-cols-2 gap-2.5">
+                <Skeleton className="h-16" />
+                <Skeleton className="h-16" />
+              </div>
+              <Skeleton className="h-12 w-full" />
+            </div>
+          )}
 
           {settings && (
             <>

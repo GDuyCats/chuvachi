@@ -11,6 +11,9 @@ import { adminAuthRouter } from "./routes/admin-auth";
 import { adminOrdersRouter } from "./routes/admin-orders";
 import { adminSettingsRouter } from "./routes/admin-settings";
 import { adminProductsRouter } from "./routes/admin-products";
+import { adminUploadsRouter } from "./routes/admin-uploads";
+import { adminHomeRouter } from "./routes/admin-home";
+import { homeRouter } from "./routes/home";
 import { shopInfoRouter } from "./routes/shop-info";
 import { startBackgroundJobs } from "./jobs/background-jobs";
 
@@ -39,9 +42,12 @@ app.use("/health", healthRouter);
 app.use("/api", catalogRouter);
 app.use("/api", ordersRouter);
 app.use("/api", shopInfoRouter);
+app.use("/api", homeRouter);
 app.use("/api/admin", adminAuthRouter);
 app.use("/api/admin/orders", adminOrdersRouter);
 app.use("/api/admin", adminProductsRouter);
+app.use("/api/admin/uploads", adminUploadsRouter);
+app.use("/api/admin", adminHomeRouter);
 app.use("/api/admin", adminSettingsRouter);
 
 // Unknown routes

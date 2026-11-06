@@ -3,6 +3,7 @@ import { OptionType, Prisma } from "@prisma/client";
 import { z } from "zod";
 import { requireAdmin } from "../lib/auth";
 import { prisma } from "../lib/prisma";
+import { deleteImageByUrl, isOwnImageUrl } from "../lib/storage";
 
 export const adminProductsRouter = Router();
 adminProductsRouter.use(requireAdmin);
@@ -47,6 +48,14 @@ const productSchema = z.object({
   ingredientsEn: optionalText(1000),
   allergensVi: optionalText(300),
   allergensEn: optionalText(300),
+  // Only pictures uploaded to our own storage are accepted.
+  imageUrl: z
+    .string()
+    .trim()
+    .max(500)
+    .refine(isOwnImageUrl, "Upload the photo with the upload button")
+    .nullable()
+    .optional(),
   basePrice: z.number().int().min(0).max(100_000_000),
   isActive: z.boolean(),
   isNew: z.boolean(),
@@ -159,12 +168,17 @@ adminProductsRouter.put("/products/:id", async (req, res) => {
   if (!id.success) return badRequest(res);
   if (!parsed.success) return badRequest(res, parsed.error);
   try {
+    const previous = await prisma.product.findUnique({ where: { id: id.data }, select: { imageUrl: true } });
     const product = await prisma.$transaction(async (tx) => {
       await tx.product.update({ where: { id: id.data }, data: productData(parsed.data) });
       await syncOptions(tx, id.data, parsed.data.options);
       return tx.product.findUniqueOrThrow({ where: { id: id.data }, include: productInclude });
     });
     console.log(`Product ${product.slug} updated by admin ${req.admin!.email}`);
+    // The photo was replaced or removed: delete the old file from storage.
+    if (previous?.imageUrl && previous.imageUrl !== product.imageUrl) {
+      void deleteImageByUrl(previous.imageUrl);
+    }
     res.json(product);
   } catch (error) {
     if (isDuplicateSlug(error)) {

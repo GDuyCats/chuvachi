@@ -73,6 +73,9 @@ model Product {
   options       ProductOption[]
   comboItems    ComboItem[]
   orderItems    OrderItem[]
+  seasonItems   SeasonProduct[]
+  heroFor       HomeContent[]   @relation("HeroProduct")
+  announcedIn   HomeContent[]   @relation("AnnouncementProduct")
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 }
@@ -113,6 +116,78 @@ model ComboItem {
   productId Int
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int     // number of portions of this product in the combo
+}
+
+// ---------- Homepage ----------
+
+// Single-row table (id = 1) with the homepage texts edited in the admin page.
+model HomeContent {
+  id                      Int      @id @default(1)
+  // Thin black bar at the very top of every page
+  announcementLeftVi      String?
+  announcementLeftEn      String?
+  announcementCenterVi    String?
+  announcementCenterEn    String?
+  announcementRightVi     String?
+  announcementRightEn     String?
+  announcementProductId   Int?     // the "See it" link opens this cake; empty = the menu
+  announcementProduct     Product? @relation("AnnouncementProduct", fields: [announcementProductId], references: [id], onDelete: SetNull)
+  // Large dark banner for the newest cake
+  heroIsActive            Boolean  @default(true)
+  heroEyebrowVi           String?
+  heroEyebrowEn           String?
+  heroTitleVi             String?
+  heroTitleEn             String?
+  heroSubtitleVi          String?
+  heroSubtitleEn          String?
+  heroCtaVi               String?
+  heroCtaEn               String?
+  heroImageUrl            String?
+  heroProductId           Int?     // the button opens this cake; empty = the menu
+  heroProduct             Product? @relation("HeroProduct", fields: [heroProductId], references: [id], onDelete: SetNull)
+  updatedAt               DateTime @updatedAt
+}
+
+// A season: a set of cakes sold during a time window.
+// Phase 3 builds the "buy every cake of the season" reward on top of this.
+model Season {
+  id            Int             @id @default(autoincrement())
+  nameVi        String
+  nameEn        String
+  eyebrowVi     String?         // small text above the name, e.g. "This month"
+  eyebrowEn     String?
+  descriptionVi String?
+  descriptionEn String?
+  startDate     DateTime        @db.Date
+  endDate       DateTime        @db.Date // last day of the season (included)
+  isActive      Boolean         @default(true)
+  products      SeasonProduct[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([startDate, endDate])
+}
+
+model SeasonProduct {
+  seasonId  Int
+  season    Season  @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sortOrder Int     @default(0)
+
+  @@id([seasonId, productId])
+}
+
+// "Coming soon" cards at the bottom of the homepage.
+model ComingSoonItem {
+  id        Int     @id @default(autoincrement())
+  dateLabel String  // free text, e.g. "15/12" or "December"
+  nameVi    String
+  nameEn    String
+  noteVi    String?
+  noteEn    String?
+  isActive  Boolean @default(true)
+  sortOrder Int     @default(0)
 }
 
 // ---------- Orders ----------

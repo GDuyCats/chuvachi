@@ -4,10 +4,7 @@
     "description": "Fresh desserts made every day in Ho Chi Minh City. Order online for delivery."
   },
   "announcement": {
-    "left": "Delivery across Ho Chi Minh City",
-    "center": "New: Passion fruit mousse is on the menu.",
-    "centerLink": "See it",
-    "right": "Order 3 hours ahead"
+    "link": "See it"
   },
   "nav": {
     "label": "Main menu",
@@ -34,50 +31,17 @@
     "rights": "All rights reserved."
   },
   "home": {
-    "hero": {
-      "eyebrow": "Just launched",
-      "title": "Passion fruit season is here",
-      "subtitle": "Passion fruit mousse — lightly tart, chilled, and melts in your mouth.",
-      "cta": "See it now"
-    },
     "menuTitle": "Menu",
-    "categories": {
-      "new": "New",
-      "panna-cotta": "Panna cotta",
-      "tiramisu": "Tiramisu",
-      "mousse": "Mousse",
-      "brownie": "Brownie"
-    },
+    "newTile": "New",
+    "heroCta": "See it now",
     "seasonal": {
       "title": "Seasonal specials",
       "viewAll": "View all",
-      "eyebrow": "This month",
-      "name": "Fresh this month",
-      "description": "Our picks for the month — made fresh every day.",
       "cta": "See the season",
       "orderNow": "Order now",
       "scrollHint": "Swipe to see more"
     },
-    "comingSoon": {
-      "title": "Coming soon",
-      "items": [
-        {
-          "date": "Dec 15",
-          "name": "Strawberry mousse",
-          "note": "Made with Da Lat strawberries"
-        },
-        {
-          "date": "Dec 20",
-          "name": "Christmas brownie",
-          "note": "Cinnamon and orange"
-        },
-        {
-          "date": "Jan 01",
-          "name": "Lunar New Year panna cotta",
-          "note": "A box of 6 to share"
-        }
-      ]
-    }
+    "comingSoonTitle": "Coming soon"
   },
   "product": {
     "new": "New",
@@ -213,7 +177,8 @@
     "backToMenu": "Back to menu",
     "missingTitle": "We can't show this order here",
     "missingText": "If you placed an order, use your order code and phone number to look it up.",
-    "qrAlt": "Payment QR code — scan with your banking app"
+    "qrAlt": "Payment QR code — scan with your banking app",
+    "loading": "Loading your order..."
   },
   "track": {
     "title": "Track your order",
@@ -261,5 +226,11 @@
       "INVALID_LOOKUP": "Please enter both the order code and the phone number.",
       "UNKNOWN": "Something went wrong. Please try again."
     }
+  },
+  "loading": {
+    "page": "Loading...",
+    "menu": "Loading the menu...",
+    "product": "Loading this cake...",
+    "form": "Loading..."
   }
 }

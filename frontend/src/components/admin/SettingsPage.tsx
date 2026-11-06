@@ -14,6 +14,8 @@ import {
   type ShopSettings,
 } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
+import { useToast } from "./Toast";
+import { AdminFormSkeleton } from "./AdminSkeletons";
 
 type Draft = Omit<ShopSettings, "deliverySlots"> & { slotsText: string };
 
@@ -53,12 +55,17 @@ export function SettingsPage() {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
+  const toast = useToast();
   const [badFields, setBadFields] = useState<string[]>([]);
 
   function applyBundle(next: SettingsBundle) {
     setBundle(next);
     setDraft(toDraft(next.settings));
+  }
+
+  function applySavedSection(next: SettingsBundle) {
+    applyBundle(next);
+    toast.success(s.saved);
   }
 
   function handleError(error: unknown) {
@@ -68,10 +75,10 @@ export function SettingsPage() {
     }
     if (error instanceof AdminValidationError) {
       setBadFields(error.fields);
-      setMessage({ kind: "error", text: s.invalid });
+      toast.error(s.invalid);
       return;
     }
-    setMessage({ kind: "error", text: s.unknownError });
+    toast.error(s.unknownError);
   }
 
   useEffect(() => {
@@ -91,7 +98,7 @@ export function SettingsPage() {
     return <p className="border-[1.5px] border-black bg-white p-4 font-semibold">{s.loadError}</p>;
   }
   if (!bundle || !draft) {
-    return <div className="min-h-96" />;
+    return <AdminFormSkeleton label={s.loading} />;
   }
 
   const fieldClass = (field: string) =>
@@ -99,7 +106,6 @@ export function SettingsPage() {
 
   function update<K extends keyof Draft>(key: K, value: Draft[K]) {
     setDraft((current) => (current ? { ...current, [key]: value } : current));
-    setMessage(null);
   }
 
   async function save(event: FormEvent<HTMLFormElement>) {
@@ -107,10 +113,9 @@ export function SettingsPage() {
     if (!draft) return;
     setSaving(true);
     setBadFields([]);
-    setMessage(null);
     try {
       applyBundle(await adminApi.saveSettings(fromDraft(draft)));
-      setMessage({ kind: "ok", text: s.saved });
+      toast.success(s.saved);
     } catch (error) {
       handleError(error);
     } finally {
@@ -159,7 +164,7 @@ export function SettingsPage() {
   return (
     <div className="flex flex-col gap-6">
       <form onSubmit={save} className="flex flex-col gap-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="sticky top-0 z-20 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-[#e0e0e0] bg-[#fafafa]/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8">
           <h1 className="font-display text-3xl uppercase md:text-[40px]">{s.title}</h1>
           <button
             type="submit"
@@ -169,11 +174,6 @@ export function SettingsPage() {
             {saving ? s.saving : s.save}
           </button>
         </div>
-        {message && (
-          <p role={message.kind === "error" ? "alert" : "status"} className="border-[1.5px] border-black bg-white p-3.5 font-semibold">
-            {message.text}
-          </p>
-        )}
 
         <Section title={s.bank.title} hint={s.bank.hint}>
           <div className="flex flex-col gap-5 md:flex-row">
@@ -274,8 +274,8 @@ export function SettingsPage() {
         </Section>
       </form>
 
-      <ZonesSection zones={bundle.zones} onSaved={applyBundle} onError={handleError} />
-      <CapacitySection days={bundle.capacity} lang={lang} onSaved={applyBundle} onError={handleError} />
+      <ZonesSection zones={bundle.zones} onSaved={applySavedSection} onError={handleError} />
+      <CapacitySection days={bundle.capacity} lang={lang} onSaved={applySavedSection} onError={handleError} />
     </div>
   );
 }
@@ -449,3 +449,4 @@ function CapacitySection({ days, lang, onSaved, onError }: SectionProps & { days
     </Section>
   );
 }
+

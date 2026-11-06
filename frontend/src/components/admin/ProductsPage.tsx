@@ -6,6 +6,8 @@ import { useCallback, useEffect, useState } from "react";
 import { formatPrice } from "@/lib/format";
 import { adminApi, AdminApiError, type AdminCategory, type AdminProduct } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
+import { AdminCardsSkeleton } from "./AdminSkeletons";
+import { useToast } from "./Toast";
 
 export function ProductsPage() {
   const router = useRouter();
@@ -37,7 +39,7 @@ export function ProductsPage() {
     return <p className="border-[1.5px] border-black bg-white p-4 font-semibold">{p.loadError}</p>;
   }
   if (!products) {
-    return <div className="min-h-96" />;
+    return <AdminCardsSkeleton label={p.loading} />;
   }
 
   return (
@@ -107,23 +109,23 @@ function CategoriesSection({ categories, onChanged }: { categories: AdminCategor
   const [rows, setRows] = useState(categories);
   const [draft, setDraft] = useState({ slug: "", nameVi: "", nameEn: "" });
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
   useEffect(() => setRows(categories), [categories]);
 
   async function run(action: () => Promise<unknown>) {
     setBusy(true);
-    setError(null);
     try {
       await action();
       await onChanged();
+      toast.success(c.saved);
     } catch (err) {
       if (err instanceof AdminApiError && err.status === 401) {
         router.replace("/admin/login");
         return;
       }
       const code = err instanceof AdminApiError ? err.code : "UNKNOWN";
-      setError(
+      toast.error(
         code === "SLUG_TAKEN"
           ? t.products.editor.slugTaken
           : code === "VALIDATION_ERROR"
@@ -143,11 +145,6 @@ function CategoriesSection({ categories, onChanged }: { categories: AdminCategor
         <h2 className="font-display text-2xl uppercase tracking-wide">{c.title}</h2>
         <p className="text-sm text-muted">{c.hint}</p>
       </div>
-      {error && (
-        <p role="alert" className="border-[1.5px] border-black p-3 text-sm font-semibold">
-          {error}
-        </p>
-      )}
       {rows.map((row) => (
         <div key={row.id} className="grid grid-cols-2 items-end gap-2 border-b border-[#eeeeee] pb-3 md:grid-cols-[1fr_1fr_1fr_80px_auto]">
           <label className="flex flex-col gap-1 text-xs font-semibold">

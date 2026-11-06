@@ -4,10 +4,7 @@
     "description": "Bánh ngọt làm mới mỗi ngày tại TP.HCM. Đặt online, giao tận nơi."
   },
   "announcement": {
-    "left": "Giao hàng khu vực TP.HCM",
-    "center": "Mới: Mousse chanh dây đã có trong menu.",
-    "centerLink": "Xem ngay",
-    "right": "Đặt trước 3 giờ"
+    "link": "Xem ngay"
   },
   "nav": {
     "label": "Menu chính",
@@ -34,50 +31,17 @@
     "rights": "Bảo lưu mọi quyền."
   },
   "home": {
-    "hero": {
-      "eyebrow": "Bánh mới",
-      "title": "Mùa chanh dây đã đến",
-      "subtitle": "Mousse chanh dây — chua nhẹ, mát lạnh, tan ngay trong miệng.",
-      "cta": "Xem ngay"
-    },
     "menuTitle": "Menu",
-    "categories": {
-      "new": "Bánh mới",
-      "panna-cotta": "Panna cotta",
-      "tiramisu": "Tiramisu",
-      "mousse": "Mousse",
-      "brownie": "Brownie"
-    },
+    "newTile": "Bánh mới",
+    "heroCta": "Xem ngay",
     "seasonal": {
       "title": "Bánh theo mùa",
       "viewAll": "Xem tất cả",
-      "eyebrow": "Tháng này",
-      "name": "Tươi mới tháng này",
-      "description": "Những món tiệm chọn cho tháng này — làm mới mỗi ngày.",
       "cta": "Xem cả mùa",
       "orderNow": "Đặt ngay",
       "scrollHint": "Vuốt để xem thêm"
     },
-    "comingSoon": {
-      "title": "Sắp ra mắt",
-      "items": [
-        {
-          "date": "15/12",
-          "name": "Mousse dâu tây",
-          "note": "Dâu Đà Lạt theo mùa"
-        },
-        {
-          "date": "20/12",
-          "name": "Brownie Giáng Sinh",
-          "note": "Vị quế và cam"
-        },
-        {
-          "date": "01/01",
-          "name": "Panna cotta Tết",
-          "note": "Hộp 6 phần để chia sẻ"
-        }
-      ]
-    }
+    "comingSoonTitle": "Sắp ra mắt"
   },
   "product": {
     "new": "Mới",
@@ -213,7 +177,8 @@
     "backToMenu": "Về menu",
     "missingTitle": "Không hiển thị được đơn ở đây",
     "missingText": "Nếu bạn đã đặt hàng, hãy dùng mã đơn và số điện thoại để tra cứu.",
-    "qrAlt": "Mã QR thanh toán — quét bằng app ngân hàng"
+    "qrAlt": "Mã QR thanh toán — quét bằng app ngân hàng",
+    "loading": "Đang tải đơn hàng..."
   },
   "track": {
     "title": "Tra cứu đơn hàng",
@@ -261,5 +226,11 @@
       "INVALID_LOOKUP": "Bạn nhập cả mã đơn và số điện thoại nhé.",
       "UNKNOWN": "Có lỗi xảy ra. Bạn thử lại giúp tiệm nhé."
     }
+  },
+  "loading": {
+    "page": "Đang tải...",
+    "menu": "Đang tải menu...",
+    "product": "Đang tải bánh...",
+    "form": "Đang tải..."
   }
 }

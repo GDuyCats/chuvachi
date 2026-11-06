@@ -13,6 +13,8 @@ import {
   type AdminStatus,
 } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
+import { AdminRowsSkeleton } from "./AdminSkeletons";
+import { useToast } from "./Toast";
 
 const REFRESH_MS = 30_000;
 const STATUS_ORDER: AdminStatus[] = ["PENDING", "CONFIRMED", "PREPARING", "READY", "COMPLETED", "CANCELLED"];
@@ -45,7 +47,7 @@ export function OrdersBoard() {
   const [data, setData] = useState<AdminOrderList | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+  const toast = useToast();
 
   const load = useCallback(async () => {
     try {
@@ -81,9 +83,9 @@ export function OrdersBoard() {
   }
 
   async function runAction(action: () => Promise<AdminOrder>) {
-    setNotice(null);
     try {
       replaceOrder(await action());
+      toast.success(t.orders.updated);
       await load();
     } catch (error) {
       const code = error instanceof AdminApiError ? error.code : "UNKNOWN";
@@ -91,7 +93,7 @@ export function OrdersBoard() {
         router.replace("/admin/login");
         return;
       }
-      setNotice(t.orders.errors[code as keyof typeof t.orders.errors] ?? t.orders.errors.UNKNOWN);
+      toast.error(t.orders.errors[code as keyof typeof t.orders.errors] ?? t.orders.errors.UNKNOWN);
       await load();
     }
   }
@@ -186,11 +188,6 @@ export function OrdersBoard() {
         })}
       </div>
 
-      {notice && (
-        <p role="alert" className="border-[1.5px] border-black bg-white p-3.5 text-sm font-semibold">
-          {notice}
-        </p>
-      )}
       {loadFailed && (
         <p role="alert" className="border-[1.5px] border-black bg-white p-3.5 text-sm font-semibold">
           {t.orders.loadError}
@@ -199,7 +196,7 @@ export function OrdersBoard() {
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         <div className="flex min-w-0 flex-col gap-2.5 lg:flex-[2]">
-          {!data && !loadFailed && <p className="text-muted">{t.orders.loading}</p>}
+          {!data && !loadFailed && <AdminRowsSkeleton label={t.orders.loading} />}
           {data && orders.length === 0 && (
             <p className="border border-dashed border-[#a8a8a8] bg-white p-7 text-center text-muted">{t.orders.empty}</p>
           )}

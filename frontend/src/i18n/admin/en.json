@@ -6,7 +6,8 @@
   "nav": {
     "orders": "Orders",
     "settings": "Settings",
-    "products": "Products"
+    "products": "Products",
+    "home": "Homepage"
   },
   "login": {
     "title": "Staff sign in",
@@ -103,7 +104,8 @@
       "CANNOT_CANCEL": "This order can't be cancelled.",
       "CANNOT_REFUND": "Only cancelled, paid orders can be marked as refunded.",
       "UNKNOWN": "Something went wrong. Please try again."
-    }
+    },
+    "updated": "Order updated."
   },
   "settings": {
     "title": "Shop settings",
@@ -173,7 +175,8 @@
       "max": "Maximum",
       "custom": "custom",
       "saveRow": "Save"
-    }
+    },
+    "loading": "Loading settings..."
   },
   "products": {
     "title": "Products",
@@ -194,7 +197,8 @@
       "order": "Order",
       "products": "products",
       "save": "Save",
-      "add": "Add category"
+      "add": "Add category",
+      "saved": "Categories saved."
     },
     "editor": {
       "createTitle": "New product",
@@ -240,7 +244,104 @@
       "addSize": "Add size",
       "removeHint": "Removed options are switched off, not deleted, so old orders stay correct.",
       "pricePreview": "Price preview",
-      "photoNote": "Photos can be uploaded in the next step."
+      "loading": "Loading product..."
+    },
+    "loading": "Loading products..."
+  },
+  "close": "Close",
+  "images": {
+    "productTitle": "Photo",
+    "bannerTitle": "Banner photo",
+    "none": "No photo yet",
+    "upload": "Upload photo",
+    "change": "Change photo",
+    "remove": "Remove photo",
+    "uploading": "Uploading...",
+    "productHint": "JPG, PNG or WebP, up to 8 MB. Square photos look best. Location data is removed automatically.",
+    "bannerHint": "JPG, PNG or WebP, up to 8 MB. Wide photos (about 16:9) look best. Location data is removed automatically.",
+    "uploaded": "Photo uploaded.",
+    "unsaved": "Press \"{button}\" to put it on the shop.",
+    "tooLarge": "This photo is larger than 8 MB.",
+    "badType": "Please choose a JPG, PNG or WebP photo.",
+    "notConfigured": "Photo storage is not set up yet (R2 settings in the backend .env).",
+    "tooMany": "Too many uploads. Please wait a little and try again.",
+    "failed": "Upload failed. Please try again."
+  },
+  "home": {
+    "title": "Homepage",
+    "save": "Save homepage",
+    "saving": "Saving...",
+    "saved": "Saved. The shop updates within about a minute.",
+    "loading": "Loading homepage...",
+    "loadError": "Could not load the homepage settings. Please reload the page.",
+    "invalid": "Some fields need fixing (highlighted).",
+    "unknownError": "Something went wrong. Please try again.",
+    "linkToMenu": "— The whole menu —",
+    "hiddenProduct": "hidden",
+    "announcement": {
+      "title": "Top bar",
+      "hint": "The thin black bar above every page. Leave a text empty to hide it.",
+      "center": "Middle text",
+      "link": "\"See it\" link opens",
+      "left": "Left text (computer only)",
+      "right": "Right text (computer only)"
+    },
+    "hero": {
+      "title": "Big banner",
+      "hint": "The dark banner at the top of the homepage, usually for the newest cake.",
+      "show": "Show the banner",
+      "eyebrow": "Small text above the title",
+      "heading": "Title",
+      "subtitle": "Description",
+      "button": "Button text",
+      "link": "Button opens"
+    },
+    "seasons": {
+      "title": "Seasons",
+      "hint": "The homepage shows the season that is running today. Later, customers who buy every cake of a season will get a reward.",
+      "empty": "No seasons yet.",
+      "add": "New season",
+      "edit": "Edit",
+      "cakes": "{count} cakes",
+      "status": {
+        "running": "Running",
+        "upcoming": "Upcoming",
+        "ended": "Ended",
+        "off": "Off"
+      },
+      "nameVi": "Name (VI)",
+      "nameEn": "Name (EN)",
+      "eyebrowVi": "Small text (VI)",
+      "eyebrowEn": "Small text (EN)",
+      "descriptionVi": "Description (VI)",
+      "descriptionEn": "Description (EN)",
+      "start": "First day",
+      "end": "Last day",
+      "products": "Cakes in this season",
+      "active": "Season is on",
+      "save": "Save season",
+      "cancel": "Cancel",
+      "delete": "Delete season",
+      "confirmDelete": "Delete this season?",
+      "yesDelete": "Yes, delete",
+      "no": "No",
+      "deleted": "Season deleted."
+    },
+    "comingSoon": {
+      "title": "Coming soon",
+      "hint": "Cards at the bottom of the homepage about cakes that are on the way.",
+      "date": "Date",
+      "nameVi": "Name (VI)",
+      "nameEn": "Name (EN)",
+      "noteVi": "Note (VI)",
+      "noteEn": "Note (EN)",
+      "order": "Order",
+      "show": "Show",
+      "save": "Save",
+      "delete": "Delete",
+      "add": "Add",
+      "added": "Added.",
+      "deleted": "Deleted."
     }
   }
 }

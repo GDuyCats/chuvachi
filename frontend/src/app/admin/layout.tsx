@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Anton, Be_Vietnam_Pro } from "next/font/google";
 import type { ReactNode } from "react";
 import { AdminI18nProvider } from "@/components/admin/AdminI18n";
+import { ToastProvider } from "@/components/admin/Toast";
 import "../globals.css";
 
 const anton = Anton({ weight: "400", subsets: ["latin", "vietnamese"], variable: "--font-anton" });
@@ -22,7 +23,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="vi" className={`${anton.variable} ${beVietnamPro.variable} h-full antialiased`}>
       <body className="min-h-full">
-        <AdminI18nProvider>{children}</AdminI18nProvider>
+        <AdminI18nProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </AdminI18nProvider>
       </body>
     </html>
   );

@@ -8,6 +8,7 @@ import { formatLongDate, formatSlot } from "@/lib/delivery-time";
 import { vietQrImageUrl } from "@/lib/banks";
 import { formatPrice } from "@/lib/format";
 import { loadLastOrder, type LastOrder } from "@/lib/last-order";
+import { Skeleton, SkeletonGroup } from "../Skeleton";
 
 type Props = {
   lang: Locale;
@@ -24,7 +25,16 @@ export function ConfirmationView({ lang, labels }: Props) {
   }, []);
 
   if (order === undefined) {
-    return <div className="min-h-96" />;
+    return (
+      <SkeletonGroup label={labels.loading} className="flex flex-col gap-8 lg:flex-row lg:gap-14">
+        <div className="flex flex-col gap-4 lg:flex-1">
+          <Skeleton className="h-14 w-3/4" />
+          <Skeleton className="h-5 w-1/2" />
+          <Skeleton className="h-40 w-full" />
+        </div>
+        <Skeleton className="aspect-square w-full max-w-xs" />
+      </SkeletonGroup>
+    );
   }
 
   if (order === null) {

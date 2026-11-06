@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { adminApi, AdminApiError, type AdminMe } from "@/lib/admin-api";
 import { AdminLanguageSwitch, useAdminI18n } from "./AdminI18n";
+import { AdminShellSkeleton } from "./AdminSkeletons";
 
 const AdminMeContext = createContext<AdminMe | null>(null);
 
@@ -39,12 +40,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
   }
 
   if (!me) {
-    return <div className="min-h-screen bg-[#fafafa]" />;
+    return <AdminShellSkeleton />;
   }
 
   const tabs = [
     { href: "/admin/orders", label: t.nav.orders },
     { href: "/admin/products", label: t.nav.products },
+    { href: "/admin/home", label: t.nav.home },
     { href: "/admin/settings", label: t.nav.settings },
   ];
 

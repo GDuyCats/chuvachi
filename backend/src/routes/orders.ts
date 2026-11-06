@@ -97,7 +97,7 @@ ordersRouter.post("/orders", placeOrderLimiter, async (req, res) => {
 // GET /api/orders/:code?phone=0912345678&locale=vi - customer looks up their order
 ordersRouter.get("/orders/:code", lookupLimiter, async (req, res) => {
   const phone = typeof req.query.phone === "string" ? req.query.phone : "";
-  const code = req.params.code;
+  const code = String(req.params.code);
   if (!phone || !/^[A-Za-z0-9]{4,12}$/.test(code)) {
     res.status(400).json({ error: "INVALID_LOOKUP", message: "Order code and phone number are required" });
     return;

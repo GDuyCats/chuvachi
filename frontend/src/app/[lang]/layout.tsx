@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { isLocale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
+import { getHomeContent } from "@/lib/api";
 import "../globals.css";
 
 // Both fonts include the "vietnamese" subset so accented letters render correctly.
@@ -43,12 +44,12 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   if (!isLocale(lang)) {
     notFound();
   }
-  const dict = await getDictionary(lang);
+  const [dict, home] = await Promise.all([getDictionary(lang), getHomeContent(lang)]);
 
   return (
     <html lang={lang} className={`${anton.variable} ${beVietnamPro.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
-        <AnnouncementBar lang={lang} dict={dict.announcement} />
+        <AnnouncementBar lang={lang} content={home.announcement} linkLabel={dict.announcement.link} />
         <SiteHeader lang={lang} dict={dict.nav} />
         <main className="flex-1">{children}</main>
         <SiteFooter lang={lang} dict={dict.footer} />

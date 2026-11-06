@@ -12,7 +12,14 @@ const securityHeaders = [
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
 ];
 
+// Product photos are served from our Cloudflare R2 bucket (see backend/.env.example).
+// next/image only loads pictures from addresses listed here.
+const imageBaseUrl = process.env.NEXT_PUBLIC_IMAGE_BASE_URL?.replace(/\/+$/, "");
+
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: imageBaseUrl ? [new URL(`${imageBaseUrl}/**`)] : [],
+  },
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,

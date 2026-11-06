@@ -6,7 +6,8 @@
   "nav": {
     "orders": "Đơn hàng",
     "settings": "Cài đặt",
-    "products": "Sản phẩm"
+    "products": "Sản phẩm",
+    "home": "Trang chủ"
   },
   "login": {
     "title": "Đăng nhập nhân viên",
@@ -103,7 +104,8 @@
       "CANNOT_CANCEL": "Đơn này không hủy được.",
       "CANNOT_REFUND": "Chỉ đơn đã hủy và đã thanh toán mới đánh dấu hoàn tiền được.",
       "UNKNOWN": "Có lỗi xảy ra. Vui lòng thử lại."
-    }
+    },
+    "updated": "Đã cập nhật đơn."
   },
   "settings": {
     "title": "Cài đặt tiệm",
@@ -173,7 +175,8 @@
       "max": "Tối đa",
       "custom": "đã chỉnh",
       "saveRow": "Lưu"
-    }
+    },
+    "loading": "Đang tải cài đặt..."
   },
   "products": {
     "title": "Sản phẩm",
@@ -194,7 +197,8 @@
       "order": "Thứ tự",
       "products": "sản phẩm",
       "save": "Lưu",
-      "add": "Thêm loại bánh"
+      "add": "Thêm loại bánh",
+      "saved": "Đã lưu loại bánh."
     },
     "editor": {
       "createTitle": "Thêm bánh mới",
@@ -240,7 +244,104 @@
       "addSize": "Thêm quy cách",
       "removeHint": "Vị/quy cách bị bỏ chỉ được tắt đi chứ không xóa, để đơn cũ vẫn đúng.",
       "pricePreview": "Xem trước giá",
-      "photoNote": "Ảnh sẽ tải lên được ở bước tiếp theo."
+      "loading": "Đang tải bánh..."
+    },
+    "loading": "Đang tải danh sách bánh..."
+  },
+  "close": "Đóng",
+  "images": {
+    "productTitle": "Ảnh",
+    "bannerTitle": "Ảnh banner",
+    "none": "Chưa có ảnh",
+    "upload": "Tải ảnh lên",
+    "change": "Đổi ảnh",
+    "remove": "Xóa ảnh",
+    "uploading": "Đang tải lên...",
+    "productHint": "JPG, PNG hoặc WebP, tối đa 8 MB. Ảnh vuông sẽ đẹp nhất. Thông tin vị trí trong ảnh được tự động xóa.",
+    "bannerHint": "JPG, PNG hoặc WebP, tối đa 8 MB. Ảnh ngang (khoảng 16:9) sẽ đẹp nhất. Thông tin vị trí trong ảnh được tự động xóa.",
+    "uploaded": "Đã tải ảnh lên.",
+    "unsaved": "Bấm \"{button}\" để đưa ảnh lên trang.",
+    "tooLarge": "Ảnh lớn hơn 8 MB.",
+    "badType": "Vui lòng chọn ảnh JPG, PNG hoặc WebP.",
+    "notConfigured": "Chưa cài đặt nơi lưu ảnh (phần R2 trong file .env của backend).",
+    "tooMany": "Tải lên quá nhiều lần. Vui lòng đợi một chút rồi thử lại.",
+    "failed": "Tải lên không được. Vui lòng thử lại."
+  },
+  "home": {
+    "title": "Trang chủ",
+    "save": "Lưu trang chủ",
+    "saving": "Đang lưu...",
+    "saved": "Đã lưu. Trang web sẽ cập nhật trong khoảng 1 phút.",
+    "loading": "Đang tải trang chủ...",
+    "loadError": "Không tải được nội dung trang chủ. Vui lòng tải lại trang.",
+    "invalid": "Có ô cần sửa (đã tô đậm).",
+    "unknownError": "Có lỗi xảy ra. Vui lòng thử lại.",
+    "linkToMenu": "— Cả menu —",
+    "hiddenProduct": "đang ẩn",
+    "announcement": {
+      "title": "Thanh thông báo",
+      "hint": "Thanh đen mỏng trên cùng mọi trang. Để trống ô nào thì ô đó không hiện.",
+      "center": "Chữ ở giữa",
+      "link": "Link \"Xem ngay\" mở tới",
+      "left": "Chữ bên trái (chỉ hiện trên máy tính)",
+      "right": "Chữ bên phải (chỉ hiện trên máy tính)"
+    },
+    "hero": {
+      "title": "Banner lớn",
+      "hint": "Banner tối màu đầu trang chủ, thường dành cho bánh mới nhất.",
+      "show": "Hiện banner",
+      "eyebrow": "Chữ nhỏ trên tiêu đề",
+      "heading": "Tiêu đề",
+      "subtitle": "Mô tả",
+      "button": "Chữ trên nút",
+      "link": "Nút mở tới"
+    },
+    "seasons": {
+      "title": "Mùa bánh",
+      "hint": "Trang chủ hiện mùa đang diễn ra hôm nay. Sau này khách mua đủ bánh của một mùa sẽ được tặng quà.",
+      "empty": "Chưa có mùa nào.",
+      "add": "Thêm mùa",
+      "edit": "Sửa",
+      "cakes": "{count} bánh",
+      "status": {
+        "running": "Đang chạy",
+        "upcoming": "Sắp tới",
+        "ended": "Đã kết thúc",
+        "off": "Đang tắt"
+      },
+      "nameVi": "Tên (VI)",
+      "nameEn": "Tên (EN)",
+      "eyebrowVi": "Chữ nhỏ (VI)",
+      "eyebrowEn": "Chữ nhỏ (EN)",
+      "descriptionVi": "Mô tả (VI)",
+      "descriptionEn": "Mô tả (EN)",
+      "start": "Ngày bắt đầu",
+      "end": "Ngày cuối",
+      "products": "Bánh trong mùa này",
+      "active": "Bật mùa này",
+      "save": "Lưu mùa",
+      "cancel": "Hủy",
+      "delete": "Xóa mùa",
+      "confirmDelete": "Xóa mùa này?",
+      "yesDelete": "Xóa",
+      "no": "Không",
+      "deleted": "Đã xóa mùa."
+    },
+    "comingSoon": {
+      "title": "Sắp ra mắt",
+      "hint": "Các thẻ cuối trang chủ giới thiệu bánh sắp có.",
+      "date": "Ngày",
+      "nameVi": "Tên (VI)",
+      "nameEn": "Tên (EN)",
+      "noteVi": "Ghi chú (VI)",
+      "noteEn": "Ghi chú (EN)",
+      "order": "Thứ tự",
+      "show": "Hiện",
+      "save": "Lưu",
+      "delete": "Xóa",
+      "add": "Thêm",
+      "added": "Đã thêm.",
+      "deleted": "Đã xóa."
     }
   }
 }

@@ -5,20 +5,27 @@ import { HomeHero } from "@/components/home/HomeHero";
 import { SeasonalBlock } from "@/components/home/SeasonalBlock";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
+import { getHomeContent } from "@/lib/api";
 
 export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!isLocale(lang)) {
     notFound();
   }
-  const dict = await getDictionary(lang);
+  const [dict, home] = await Promise.all([getDictionary(lang), getHomeContent(lang)]);
 
   return (
     <>
-      <HomeHero lang={lang} dict={dict.home.hero} />
-      <CategoryTiles lang={lang} title={dict.home.menuTitle} labels={dict.home.categories} />
-      <SeasonalBlock lang={lang} dict={dict.home.seasonal} productDict={dict.product} />
-      <ComingSoon dict={dict.home.comingSoon} />
+      {home.hero && <HomeHero lang={lang} hero={home.hero} fallbackCta={dict.home.heroCta} />}
+      <CategoryTiles
+        lang={lang}
+        title={dict.home.menuTitle}
+        newLabel={dict.home.newTile}
+        hasNew={home.hasNew}
+        categories={home.categories}
+      />
+      {home.season && <SeasonalBlock lang={lang} season={home.season} labels={dict.home.seasonal} productLabels={dict.product} />}
+      <ComingSoon title={dict.home.comingSoonTitle} items={home.comingSoon} />
     </>
   );
 }

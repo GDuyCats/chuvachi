@@ -15,6 +15,9 @@ import {
   type AdminProductInput,
 } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
+import { AdminFormSkeleton } from "./AdminSkeletons";
+import { ImageUploadField } from "./ImageUploadField";
+import { useToast } from "./Toast";
 
 const EMPTY_PRODUCT: AdminProductInput = {
   slug: "",
@@ -27,6 +30,7 @@ const EMPTY_PRODUCT: AdminProductInput = {
   ingredientsEn: null,
   allergensVi: null,
   allergensEn: null,
+  imageUrl: null,
   basePrice: 0,
   isActive: true,
   isNew: false,
@@ -46,6 +50,7 @@ function toInput(product: AdminProduct): AdminProductInput {
     ingredientsEn: product.ingredientsEn,
     allergensVi: product.allergensVi,
     allergensEn: product.allergensEn,
+    imageUrl: product.imageUrl,
     basePrice: product.basePrice,
     isActive: product.isActive,
     isNew: product.isNew,
@@ -63,7 +68,8 @@ function toInput(product: AdminProduct): AdminProductInput {
   };
 }
 
-// "Mousse Chanh Dây" -> "mousse-chanh-day" (removes Vietnamese accents)
+// Turns a product name into a URL-safe slug, e.g. "Passion Fruit Mousse" -> "passion-fruit-mousse".
+// Accented letters are reduced to plain ASCII letters.
 function slugify(text: string): string {
   return text
     .normalize("NFD")
@@ -99,7 +105,8 @@ export function ProductEditor() {
   const [slugTouched, setSlugTouched] = useState(Boolean(productId));
   const [saving, setSaving] = useState(false);
   const [badFields, setBadFields] = useState<string[]>([]);
-  const [message, setMessage] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
     const loads: Promise<unknown>[] = [adminApi.listCategories().then(setCategories)];
@@ -111,17 +118,22 @@ export function ProductEditor() {
         router.replace("/admin/login");
         return;
       }
-      setMessage({ kind: "error", text: e.unknownError });
+      setLoadFailed(true);
     });
-  }, [productId, router, e.unknownError]);
+  }, [productId, router]);
 
   if (!form) {
-    return message ? <p className="border-[1.5px] border-black bg-white p-4 font-semibold">{message.text}</p> : <div className="min-h-96" />;
+    return loadFailed ? (
+      <p role="alert" className="border-[1.5px] border-black bg-white p-4 font-semibold">
+        {e.unknownError}
+      </p>
+    ) : (
+      <AdminFormSkeleton label={e.loading} />
+    );
   }
 
   function update<K extends keyof AdminProductInput>(key: K, value: AdminProductInput[K]) {
     setForm((current) => (current ? { ...current, [key]: value } : current));
-    setMessage(null);
   }
 
   function updateOption(index: number, change: Partial<AdminOption>) {
@@ -153,11 +165,10 @@ export function ProductEditor() {
     if (!form) return;
     setSaving(true);
     setBadFields([]);
-    setMessage(null);
     try {
       const saved = productId ? await adminApi.updateProduct(productId, form) : await adminApi.createProduct(form);
       setForm(toInput(saved));
-      setMessage({ kind: "ok", text: e.saved });
+      toast.success(e.saved);
       if (!productId) {
         router.replace(`/admin/products/edit?id=${saved.id}`);
       }
@@ -168,12 +179,12 @@ export function ProductEditor() {
       }
       if (error instanceof AdminValidationError) {
         setBadFields(error.fields);
-        setMessage({ kind: "error", text: e.invalid });
+        toast.error(e.invalid);
       } else if (error instanceof AdminApiError && error.code === "SLUG_TAKEN") {
         setBadFields(["slug"]);
-        setMessage({ kind: "error", text: e.slugTaken });
+        toast.error(e.slugTaken);
       } else {
-        setMessage({ kind: "error", text: e.unknownError });
+        toast.error(e.unknownError);
       }
     } finally {
       setSaving(false);
@@ -238,7 +249,7 @@ export function ProductEditor() {
 
   return (
     <form onSubmit={save} className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="sticky top-0 z-20 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-[#e0e0e0] bg-[#fafafa]/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8">
         <div className="flex flex-col gap-1">
           <Link href="/admin/products" className="self-start py-1 text-sm font-semibold">
             {e.back}
@@ -249,11 +260,6 @@ export function ProductEditor() {
           {saving ? e.saving : e.save}
         </button>
       </div>
-      {message && (
-        <p role={message.kind === "error" ? "alert" : "status"} className="border-[1.5px] border-black bg-white p-3.5 font-semibold">
-          {message.text}
-        </p>
-      )}
 
       <Section title={e.basics}>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -342,7 +348,13 @@ export function ProductEditor() {
             {e.isNew}
           </label>
         </div>
-        <p className="text-sm text-muted">{e.photoNote}</p>
+        <ImageUploadField
+          kind="product"
+          value={form.imageUrl}
+          onChange={(url) => update("imageUrl", url)}
+          invalid={isBad("imageUrl")}
+          saveLabel={e.save}
+        />
       </Section>
 
       <Section title={e.texts}>

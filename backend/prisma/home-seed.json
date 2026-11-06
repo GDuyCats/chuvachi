@@ -1,0 +1,33 @@
+{
+  "content": {
+    "announcementLeftVi": "Giao hàng khu vực TP.HCM",
+    "announcementLeftEn": "Delivery across Ho Chi Minh City",
+    "announcementCenterVi": "Mới: Mousse chanh dây đã có trong menu.",
+    "announcementCenterEn": "New: Passion fruit mousse is on the menu.",
+    "announcementRightVi": "Đặt trước 3 giờ",
+    "announcementRightEn": "Order 3 hours ahead",
+    "heroIsActive": true,
+    "heroEyebrowVi": "Bánh mới",
+    "heroEyebrowEn": "Just launched",
+    "heroTitleVi": "Mùa chanh dây đã đến",
+    "heroTitleEn": "Passion fruit season is here",
+    "heroSubtitleVi": "Mousse chanh dây — chua nhẹ, mát lạnh, tan ngay trong miệng.",
+    "heroSubtitleEn": "Passion fruit mousse — lightly tart, chilled, and melts in your mouth.",
+    "heroCtaVi": "Xem ngay",
+    "heroCtaEn": "See it now"
+  },
+  "featuredProductSlug": "mousse",
+  "season": {
+    "nameVi": "Tươi mới tháng này",
+    "nameEn": "Fresh this month",
+    "eyebrowVi": "Tháng này",
+    "eyebrowEn": "This month",
+    "descriptionVi": "Những món tiệm chọn cho tháng này — làm mới mỗi ngày.",
+    "descriptionEn": "Our picks for the month — made fresh every day."
+  },
+  "comingSoon": [
+    { "dateLabel": "15/12", "nameVi": "Mousse dâu tây", "nameEn": "Strawberry mousse", "noteVi": "Dâu Đà Lạt theo mùa", "noteEn": "Made with Da Lat strawberries" },
+    { "dateLabel": "20/12", "nameVi": "Brownie Giáng Sinh", "nameEn": "Christmas brownie", "noteVi": "Vị quế và cam", "noteEn": "Cinnamon and orange" },
+    { "dateLabel": "01/01", "nameVi": "Panna cotta Tết", "nameEn": "Lunar New Year panna cotta", "noteVi": "Hộp 6 phần để chia sẻ", "noteEn": "A box of 6 to share" }
+  ]
+}

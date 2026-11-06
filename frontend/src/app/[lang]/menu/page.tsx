@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { MenuGrid, type MenuItem } from "@/components/menu/MenuGrid";
+import { ProductGridSkeleton } from "@/components/Skeleton";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { getProducts, type Product } from "@/lib/api";
@@ -45,7 +46,7 @@ export default async function MenuPage({ params }: PageProps<"/[lang]/menu">) {
       </section>
 
       {/* The filter reads the URL (?category=...), so it renders inside a Suspense boundary. */}
-      <Suspense>
+      <Suspense fallback={<ProductGridSkeleton label={dict.loading.menu} />}>
         <MenuGrid lang={lang} items={items} labels={dict.menu} cardLabels={dict.product} />
       </Suspense>
     </>

@@ -13,12 +13,14 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "seed": "prisma db seed",
-    "create-admin": "tsx scripts/create-admin.ts"
+    "create-admin": "tsx scripts/create-admin.ts",
+    "seed:home": "tsx scripts/seed-home.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1163.0",
     "@node-rs/argon2": "^2.0.2",
     "@prisma/client": "^6.16.0",
     "cookie-parser": "^1.4.7",
@@ -27,12 +29,15 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.0.1",
     "helmet": "^8.1.0",
+    "multer": "^2.5.0",
+    "sharp": "^0.35.5",
     "zod": "^3.25.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
+    "@types/multer": "^2.3.0",
     "@types/node": "^22.15.0",
     "prisma": "^6.16.0",
     "tsx": "^4.20.3",

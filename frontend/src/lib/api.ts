@@ -96,3 +96,48 @@ export async function getShopInfo(): Promise<ShopInfo> {
     return EMPTY_SHOP_INFO;
   }
 }
+
+export type HomeProduct = {
+  slug: string;
+  name: string;
+  price: number; // starting price in VND
+  isNew: boolean;
+  imageUrl: string | null;
+};
+
+export type HomeContent = {
+  announcement: { left: string | null; center: string | null; right: string | null; productSlug: string | null } | null;
+  hero: {
+    eyebrow: string | null;
+    title: string;
+    subtitle: string | null;
+    cta: string | null;
+    imageUrl: string | null;
+    productSlug: string | null;
+  } | null;
+  hasNew: boolean;
+  categories: { slug: string; name: string }[];
+  season: { name: string; eyebrow: string | null; description: string | null; endDate: string; products: HomeProduct[] } | null;
+  comingSoon: { id: number; dateLabel: string; name: string; note: string | null }[];
+};
+
+const EMPTY_HOME: HomeContent = {
+  announcement: null,
+  hero: null,
+  hasNew: false,
+  categories: [],
+  season: null,
+  comingSoon: [],
+};
+
+// Homepage texts, banner, season and "coming soon", edited by staff in the admin page.
+// If the API is unreachable, the blocks are simply hidden instead of breaking every page.
+export async function getHomeContent(locale: Locale): Promise<HomeContent> {
+  "use cache";
+  cacheLife("minutes");
+  try {
+    return await getJson<HomeContent>(`/api/home?locale=${locale}`);
+  } catch {
+    return EMPTY_HOME;
+  }
+}

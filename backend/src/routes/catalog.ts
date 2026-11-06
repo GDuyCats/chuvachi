@@ -24,6 +24,7 @@ function toProductResponse(product: ProductWithRelations, locale: Locale) {
     description: pickText(locale, product.descriptionVi, product.descriptionEn),
     imageUrl: product.imageUrl,
     basePrice: product.basePrice,
+    isNew: product.isNew,
     category: {
       slug: product.category.slug,
       name: pickText(locale, product.category.nameVi, product.category.nameEn),

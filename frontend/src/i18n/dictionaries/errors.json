@@ -1,0 +1,12 @@
+{
+  "vi": {
+    "menuTitle": "Chưa tải được menu",
+    "menuBody": "Bạn vui lòng thử lại sau giây lát.",
+    "retry": "Thử lại"
+  },
+  "en": {
+    "menuTitle": "We couldn't load the menu",
+    "menuBody": "Please try again in a moment.",
+    "retry": "Try again"
+  }
+}

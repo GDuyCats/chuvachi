@@ -25,6 +25,7 @@ type SeedProduct = {
   descriptionVi: string;
   descriptionEn: string;
   basePrice: number;
+  isNew?: boolean;
   options: SeedOption[];
 };
 
@@ -74,6 +75,7 @@ const products: SeedProduct[] = [
   {
     slug: "mousse",
     categorySlug: "mousse",
+    isNew: true,
     nameVi: "Mousse",
     nameEn: "Mousse",
     descriptionVi: "Mousse nhẹ, mát, tan ngay trong miệng.",
@@ -122,6 +124,7 @@ async function main(): Promise<void> {
       descriptionVi: item.descriptionVi,
       descriptionEn: item.descriptionEn,
       basePrice: item.basePrice,
+      isNew: item.isNew ?? false,
       sortOrder: index + 1,
       categoryId: category.id,
     };

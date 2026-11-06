@@ -29,7 +29,7 @@ export function SeasonalBlock({ lang, dict, productDict }: Props) {
             <p className="max-w-sm text-base text-[#d4d4d4]">{dict.description}</p>
           </div>
           <Link
-            href={`/${lang}/menu?category=tiramisu`}
+            href={`/${lang}/menu`}
             className="self-start bg-white px-7 py-3.5 text-[15px] font-bold text-black hover:bg-[#e5e5e5]"
           >
             {dict.cta}
@@ -47,8 +47,12 @@ export function SeasonalBlock({ lang, dict, productDict }: Props) {
               <ProductCard
                 key={product.slug}
                 lang={lang}
-                product={product}
-                dict={productDict}
+                slug={product.slug}
+                name={productDict.names[product.slug]}
+                price={product.price}
+                isNew={product.isNew}
+                imageUrl={product.imageUrl}
+                labels={productDict}
                 actionLabel={dict.orderNow}
                 className="w-[75%] shrink-0 snap-start sm:w-[45%] xl:w-[calc((100%-48px)/3)]"
               />

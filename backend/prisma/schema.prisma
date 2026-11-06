@@ -39,6 +39,7 @@ model Product {
   imageUrl      String?
   basePrice     Int             // price of one portion in VND
   isActive      Boolean         @default(true)
+  isNew         Boolean         @default(false) // shows a "NEW" badge and appears under the "New" filter
   sortOrder     Int             @default(0)
   categoryId    Int
   category      Category        @relation(fields: [categoryId], references: [id])

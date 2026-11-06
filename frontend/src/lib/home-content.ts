@@ -1,9 +1,10 @@
 // Temporary homepage data. Later this comes from the backend
 // (banners, seasons and products managed in the admin page).
 // Display texts live in the dictionaries; this file only holds language-neutral data.
+// Slugs match the products in the database seed.
 
 export const heroBanner = {
-  ctaPath: "/menu/passion-fruit-mousse",
+  ctaPath: "/menu/mousse",
   imageUrl: null as string | null,
 };
 
@@ -20,17 +21,16 @@ export const categoryTiles: CategoryTile[] = [
   { key: "brownie", style: "white" },
 ];
 
-export type ProductSummary = {
-  slug: "panna-cotta" | "classic-tiramisu" | "matcha-tiramisu" | "passion-fruit-mousse" | "brownie";
+export type FeaturedProduct = {
+  slug: "panna-cotta" | "tiramisu" | "mousse" | "brownie";
   price: number; // starting price in VND
   isNew: boolean;
   imageUrl: string | null;
 };
 
-export const seasonalItems: ProductSummary[] = [
-  { slug: "classic-tiramisu", price: 55000, isNew: false, imageUrl: null },
-  { slug: "matcha-tiramisu", price: 60000, isNew: true, imageUrl: null },
-  { slug: "passion-fruit-mousse", price: 45000, isNew: true, imageUrl: null },
+export const seasonalItems: FeaturedProduct[] = [
+  { slug: "mousse", price: 45000, isNew: true, imageUrl: null },
+  { slug: "tiramisu", price: 55000, isNew: false, imageUrl: null },
   { slug: "panna-cotta", price: 35000, isNew: false, imageUrl: null },
   { slug: "brownie", price: 30000, isNew: false, imageUrl: null },
 ];

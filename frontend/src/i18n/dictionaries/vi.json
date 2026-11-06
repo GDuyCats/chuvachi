@@ -52,8 +52,8 @@
       "title": "Bánh theo mùa",
       "viewAll": "Xem tất cả",
       "eyebrow": "Tháng này",
-      "name": "Mùa tiramisu",
-      "description": "Các vị tiramisu của tháng — làm mới mỗi ngày.",
+      "name": "Tươi mới tháng này",
+      "description": "Những món tiệm chọn cho tháng này — làm mới mỗi ngày.",
       "cta": "Xem cả mùa",
       "orderNow": "Đặt ngay",
       "scrollHint": "Vuốt để xem thêm"
@@ -85,10 +85,21 @@
     "photoComingSoon": "Ảnh đang cập nhật",
     "names": {
       "panna-cotta": "Panna cotta",
-      "classic-tiramisu": "Tiramisu cổ điển",
-      "matcha-tiramisu": "Tiramisu matcha",
-      "passion-fruit-mousse": "Mousse chanh dây",
+      "tiramisu": "Tiramisu",
+      "mousse": "Mousse",
       "brownie": "Brownie"
     }
+  },
+  "menu": {
+    "title": "Menu của tiệm",
+    "subtitle": "Làm mới mỗi ngày, từng mẻ nhỏ. Đặt trước ít nhất 3 giờ, đơn từ 10 phần đặt trước 1 ngày.",
+    "breadcrumbHome": "Trang chủ",
+    "filterLabel": "Lọc theo loại bánh",
+    "all": "Tất cả",
+    "new": "Bánh mới",
+    "countOne": "1 loại bánh",
+    "countOther": "{count} loại bánh",
+    "view": "Xem",
+    "empty": "Chưa có bánh trong mục này."
   }
 }

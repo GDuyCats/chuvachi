@@ -52,8 +52,8 @@
       "title": "Seasonal specials",
       "viewAll": "View all",
       "eyebrow": "This month",
-      "name": "Tiramisu season",
-      "description": "Our tiramisu flavors for the month — made fresh every day.",
+      "name": "Fresh this month",
+      "description": "Our picks for the month — made fresh every day.",
       "cta": "See the season",
       "orderNow": "Order now",
       "scrollHint": "Swipe to see more"
@@ -85,10 +85,21 @@
     "photoComingSoon": "Photo coming soon",
     "names": {
       "panna-cotta": "Panna cotta",
-      "classic-tiramisu": "Classic tiramisu",
-      "matcha-tiramisu": "Matcha tiramisu",
-      "passion-fruit-mousse": "Passion fruit mousse",
-      "brownie": "Fudgy brownie"
+      "tiramisu": "Tiramisu",
+      "mousse": "Mousse",
+      "brownie": "Brownie"
     }
+  },
+  "menu": {
+    "title": "Our menu",
+    "subtitle": "Made fresh every day in small batches. Order at least 3 hours ahead, or 1 day ahead for 10+ portions.",
+    "breadcrumbHome": "Home",
+    "filterLabel": "Filter by category",
+    "all": "All",
+    "new": "New",
+    "countOne": "1 cake",
+    "countOther": "{count} cakes",
+    "view": "View",
+    "empty": "No cakes in this category yet."
   }
 }

@@ -96,16 +96,26 @@
       "ADVANCE": "Status changed",
       "CANCEL": "Cancelled",
       "AUTO_CANCEL": "Auto-cancelled (unpaid)",
-      "REFUND": "Marked as refunded"
+      "REFUND": "Marked as refunded",
+      "AUTO_ERASE": "Customer details erased (retention period over)",
+      "ERASE_ON_REQUEST": "Customer details erased on request"
     },
     "errors": {
       "ORDER_CHANGED": "Someone else just updated this order. The list has been refreshed.",
       "CANNOT_ADVANCE": "This order can't move forward.",
       "CANNOT_CANCEL": "This order can't be cancelled.",
       "CANNOT_REFUND": "Only cancelled, paid orders can be marked as refunded.",
-      "UNKNOWN": "Something went wrong. Please try again."
+      "UNKNOWN": "Something went wrong. Please try again.",
+      "ACTIVE_ORDERS": "This customer still has an order in progress. Erase after it is delivered or cancelled.",
+      "ALREADY_ERASED": "This order's customer details were already erased."
     },
-    "updated": "Order updated."
+    "updated": "Order updated.",
+    "privacy": {
+      "erase": "Erase customer data (on request)",
+      "eraseExplain": "Use this when the customer asks you to delete their data. Their name, phone and address are erased from all of their finished orders. This cannot be undone.",
+      "eraseConfirm": "Erase",
+      "erased": "Customer details were erased for privacy."
+    }
   },
   "settings": {
     "title": "Shop settings",
@@ -176,7 +186,17 @@
       "custom": "custom",
       "saveRow": "Save"
     },
-    "loading": "Loading settings..."
+    "loading": "Loading settings...",
+    "business": {
+      "title": "Business details",
+      "hint": "Shown at the bottom of every page and in the policy pages. Online shops in Vietnam must show who runs them.",
+      "legalName": "Registered business name",
+      "registrationNumber": "Business registration / tax number",
+      "legalAddress": "Business address",
+      "email": "Contact email",
+      "retention": "Keep customer details for (months)",
+      "retentionHint": "After this many months from delivery, the customer's name, phone and address are erased automatically. Amounts and items stay for your accounts."
+    }
   },
   "products": {
     "title": "Products",

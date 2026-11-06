@@ -68,6 +68,17 @@ const settingsSchema = z
     facebookUrl: optionalHttpsUrl,
     instagramUrl: optionalHttpsUrl,
     tiktokUrl: optionalHttpsUrl,
+    legalName: optionalText(150),
+    legalAddress: optionalText(300),
+    registrationNumber: optionalText(50),
+    contactEmail: z
+      .string()
+      .trim()
+      .max(200)
+      .refine((value) => value === "" || z.string().email().safeParse(value).success, "Invalid email")
+      .transform((value) => (value === "" ? null : value.toLowerCase()))
+      .nullable(),
+    dataRetentionMonths: z.number().int().min(1).max(120),
   })
   .refine((data) => clockToMinutes(data.openTime) < clockToMinutes(data.closeTime), {
     message: "Closing time must be after opening time",

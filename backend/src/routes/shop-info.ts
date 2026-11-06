@@ -16,5 +16,15 @@ shopInfoRouter.get("/shop-info", async (_req, res) => {
     openTime: settings?.openTime ?? null,
     closeTime: settings?.closeTime ?? null,
     closedWeekdays: settings?.closedWeekdays ?? [],
+    // Business details and order rules, for the footer and the policy pages
+    legalName: settings?.legalName ?? null,
+    legalAddress: settings?.legalAddress ?? null,
+    registrationNumber: settings?.registrationNumber ?? null,
+    contactEmail: settings?.contactEmail ?? null,
+    dataRetentionMonths: settings?.dataRetentionMonths ?? 12,
+    unpaidCancelMinutes: settings?.unpaidCancelMinutes ?? 30,
+    smallOrderLeadHours: settings?.smallOrderLeadHours ?? 3,
+    largeOrderLeadHours: settings?.largeOrderLeadHours ?? 24,
+    largeOrderThreshold: settings?.largeOrderThreshold ?? 10,
   });
 });

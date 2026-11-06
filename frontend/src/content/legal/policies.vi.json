@@ -1,0 +1,98 @@
+{
+  "title": "Chính sách đặt hàng, giao hàng và đổi trả",
+  "intro": "Chính sách này áp dụng cho mọi đơn đặt trên website của {shopName}. Bạn vui lòng đọc trước khi đặt bánh.",
+  "sections": [
+    {
+      "id": "ordering",
+      "title": "Đặt hàng",
+      "blocks": [
+        { "p": "Bạn đặt bánh trực tiếp trên website, không cần tạo tài khoản. Bánh được làm theo từng đơn, nên tiệm cần thời gian chuẩn bị:" },
+        { "list": [
+          "Đơn dưới {largeThreshold} phần: đặt trước ít nhất {smallLead} giờ.",
+          "Đơn từ {largeThreshold} phần trở lên: đặt trước ít nhất {largeLead} giờ.",
+          "Mỗi ngày tiệm nhận một số phần có hạn. Ngày đã đủ đơn sẽ không chọn được."
+        ] },
+        { "p": "Sau khi đặt, bạn nhận được mã đơn. Bạn dùng mã đơn và số điện thoại để xem tình trạng đơn ở trang Tra cứu đơn hàng." }
+      ]
+    },
+    {
+      "id": "payment",
+      "title": "Giá và thanh toán",
+      "blocks": [
+        { "list": [
+          "Giá trên website tính bằng đồng Việt Nam và chưa bao gồm phí giao hàng.",
+          "Tiệm nhận thanh toán bằng chuyển khoản ngân hàng (quét mã VietQR). Tiệm chưa nhận thanh toán khi nhận hàng (COD).",
+          "Bạn vui lòng chuyển đúng số tiền và ghi đúng nội dung chuyển khoản hiện ra sau khi đặt.",
+          "Đơn chưa thanh toán sẽ tự động hủy sau {unpaidMinutes} phút.",
+          "Đơn chỉ được xác nhận sau khi tiệm nhận được tiền."
+        ] }
+      ]
+    },
+    {
+      "id": "delivery",
+      "title": "Giao hàng",
+      "blocks": [
+        { "list": [
+          "Tiệm giao trong các khu vực hiện ra lúc đặt hàng.",
+          "Bánh được giao qua đơn vị vận chuyển bên thứ ba (như Grab, Ahamove). Phí giao hàng bạn trả trực tiếp cho tài xế khi nhận bánh.",
+          "Bạn chọn giao sớm nhất trong ngày hoặc hẹn ngày giờ. Giờ giao có thể lệch một chút do thời tiết hoặc giao thông.",
+          "Bạn vui lòng để ý điện thoại để tài xế liên lạc. Nếu không liên lạc được và bánh phải quay về, tiệm sẽ liên hệ để sắp xếp lại; phí giao phát sinh do bạn chịu."
+        ] }
+      ]
+    },
+    {
+      "id": "returns",
+      "title": "Đổi trả và hoàn tiền",
+      "blocks": [
+        { "p": "Bánh là thực phẩm tươi làm riêng cho từng đơn, nên tiệm không nhận trả hàng hay hoàn tiền vì lý do đổi ý." },
+        { "p": "Nếu bánh có vấn đề, tiệm sẽ làm lại bánh mới hoặc tặng mã giảm giá cho lần sau, trong các trường hợp:" },
+        { "list": [
+          "Giao sai món, sai vị hoặc thiếu món.",
+          "Bánh bị hư hỏng hoặc móp méo nặng khi bạn nhận.",
+          "Bánh có dấu hiệu không bảo đảm chất lượng."
+        ] },
+        { "p": "Cách báo: liên hệ tiệm trong vòng 2 giờ kể từ khi nhận bánh, kèm mã đơn và ảnh chụp bánh. Bạn vui lòng giữ lại bánh cho tới khi tiệm phản hồi." },
+        { "p": "Nếu tiệm hủy đơn bạn đã thanh toán (ví dụ hết nguyên liệu hoặc không giao được), tiệm hoàn lại toàn bộ số tiền vào tài khoản bạn đã chuyển trong vòng 3 ngày làm việc." }
+      ]
+    },
+    {
+      "id": "cancel",
+      "title": "Hủy hoặc đổi đơn",
+      "blocks": [
+        { "list": [
+          "Trước khi thanh toán: bạn chỉ cần không chuyển khoản, đơn sẽ tự hủy.",
+          "Sau khi thanh toán: tiệm đã chuẩn bị nguyên liệu cho đơn của bạn, nên không hoàn tiền khi hủy vì đổi ý. Bạn có thể liên hệ để đổi ngày giao nếu ngày mới còn chỗ."
+        ] }
+      ]
+    },
+    {
+      "id": "food",
+      "title": "Bảo quản và dị ứng",
+      "blocks": [
+        { "list": [
+          "Bạn bảo quản và dùng bánh theo hướng dẫn trên trang của từng loại bánh.",
+          "Thành phần và chất gây dị ứng được ghi trên trang từng bánh. Bếp của tiệm có dùng sữa, trứng, bột mì và các loại hạt, nên không thể loại trừ hoàn toàn khả năng lẫn chéo. Nếu bạn bị dị ứng nặng, vui lòng hỏi tiệm trước khi đặt."
+        ] }
+      ]
+    },
+    {
+      "id": "complaints",
+      "title": "Góp ý và khiếu nại",
+      "blocks": [
+        { "p": "Bạn gửi góp ý hoặc khiếu nại qua: {contactLine}. Tiệm phản hồi trong vòng 24 giờ (trong giờ mở cửa)." }
+      ]
+    },
+    {
+      "id": "seller",
+      "title": "Thông tin người bán",
+      "blocks": [
+        { "list": [
+          "Tên: {legalName}",
+          "Số đăng ký kinh doanh / mã số thuế: {registration}",
+          "Địa chỉ: {address}",
+          "Liên hệ: {contactLine}"
+        ] }
+      ]
+    }
+  ]
+}

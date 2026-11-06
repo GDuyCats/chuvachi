@@ -28,7 +28,9 @@
     "comingSoon": "Coming soon",
     "policies": "Policies",
     "trackOrder": "Track your order",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "privacy": "Privacy",
+    "registration": "Business reg. no."
   },
   "home": {
     "menuTitle": "Menu",
@@ -156,7 +158,12 @@
       "TOO_MANY_REQUESTS": "Too many attempts. Please wait a while and try again.",
       "NETWORK": "We couldn't reach the shop. Check your connection and try again.",
       "UNKNOWN": "Something went wrong. Please try again."
-    }
+    },
+    "consentBefore": "I agree that the shop may use my details to deliver this order, as described in the",
+    "consentPrivacy": "Privacy policy",
+    "consentAnd": "and the",
+    "consentPolicies": "Ordering policy",
+    "consentAfter": "."
   },
   "thanks": {
     "title": "Thank you! Your order is in.",
@@ -235,5 +242,16 @@
     "menu": "Loading the menu...",
     "product": "Loading this cake...",
     "form": "Loading..."
+  },
+  "legal": {
+    "policiesTitle": "Ordering policy",
+    "privacyTitle": "Privacy policy",
+    "updated": "Last updated: {date}",
+    "onThisPage": "On this page",
+    "missing": "(coming soon)",
+    "phone": "phone",
+    "email": "email",
+    "messenger": "our Messenger (at the bottom of the page)",
+    "seeAlso": "See also:"
   }
 }

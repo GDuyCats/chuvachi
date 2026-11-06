@@ -28,7 +28,9 @@
     "comingSoon": "Đang cập nhật",
     "policies": "Chính sách",
     "trackOrder": "Tra cứu đơn hàng",
-    "rights": "Bảo lưu mọi quyền."
+    "rights": "Bảo lưu mọi quyền.",
+    "privacy": "Quyền riêng tư",
+    "registration": "Số ĐKKD/MST"
   },
   "home": {
     "menuTitle": "Menu",
@@ -156,7 +158,12 @@
       "TOO_MANY_REQUESTS": "Bạn thử quá nhiều lần. Đợi một lát rồi thử lại nhé.",
       "NETWORK": "Không kết nối được với tiệm. Bạn kiểm tra mạng rồi thử lại nhé.",
       "UNKNOWN": "Có lỗi xảy ra. Bạn thử lại giúp tiệm nhé."
-    }
+    },
+    "consentBefore": "Tôi đồng ý cho tiệm dùng thông tin của tôi để giao đơn, theo",
+    "consentPrivacy": "Chính sách quyền riêng tư",
+    "consentAnd": "và",
+    "consentPolicies": "Chính sách đặt hàng",
+    "consentAfter": "."
   },
   "thanks": {
     "title": "Cảm ơn bạn! Tiệm đã nhận đơn.",
@@ -235,5 +242,16 @@
     "menu": "Đang tải menu...",
     "product": "Đang tải bánh...",
     "form": "Đang tải..."
+  },
+  "legal": {
+    "policiesTitle": "Chính sách đặt hàng",
+    "privacyTitle": "Chính sách quyền riêng tư",
+    "updated": "Cập nhật lần cuối: {date}",
+    "onThisPage": "Nội dung",
+    "missing": "(đang cập nhật)",
+    "phone": "điện thoại",
+    "email": "email",
+    "messenger": "Messenger của tiệm (ở cuối trang)",
+    "seeAlso": "Xem thêm:"
   }
 }

@@ -290,6 +290,7 @@ function OrderDetail({ order, onClose, onAction, formatTime }: DetailProps) {
   const { t, lang } = useAdminI18n();
   const [busy, setBusy] = useState(false);
   const [confirmingCancel, setConfirmingCancel] = useState(false);
+  const [confirmingErase, setConfirmingErase] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [copied, setCopied] = useState(false);
 
@@ -303,6 +304,7 @@ function OrderDetail({ order, onClose, onAction, formatTime }: DetailProps) {
     await onAction(action);
     setBusy(false);
     setConfirmingCancel(false);
+    setConfirmingErase(false);
   }
 
   async function copyAddress() {
@@ -420,6 +422,38 @@ function OrderDetail({ order, onClose, onAction, formatTime }: DetailProps) {
             {t.orders.actions.refund}
           </button>
         )}
+        {!canCancel && !order.erased && !confirmingErase && (
+          <button
+            type="button"
+            onClick={() => setConfirmingErase(true)}
+            className="min-h-11 text-sm font-semibold text-[#333333] underline"
+          >
+            {t.orders.privacy.erase}
+          </button>
+        )}
+        {confirmingErase && (
+          <div className="flex flex-col gap-2.5 border-[1.5px] border-black p-3.5">
+            <p className="text-sm">{t.orders.privacy.eraseExplain}</p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => run(() => adminApi.eraseCustomer(order.code))}
+                className="min-h-11 flex-1 bg-black px-3 text-sm font-bold text-white disabled:opacity-60"
+              >
+                {t.orders.privacy.eraseConfirm}
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmingErase(false)}
+                className="min-h-11 flex-1 border-[1.5px] border-black px-3 text-sm font-bold"
+              >
+                {t.orders.actions.cancelKeep}
+              </button>
+            </div>
+          </div>
+        )}
+        {order.erased && <p className="text-sm text-muted">{t.orders.privacy.erased}</p>}
         {canCancel && !confirmingCancel && (
           <button
             type="button"

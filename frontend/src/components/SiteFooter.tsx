@@ -60,15 +60,32 @@ export async function SiteFooter({ lang, dict }: Props) {
       </div>
 
       <div className="flex flex-wrap justify-between gap-3 border-t border-[#3a3a3a] pt-5 text-[13px] text-[#a3a3a3]">
-        <span>
-          © Chuvachi. {dict.rights}
-        </span>
+        <div className="flex flex-col gap-1">
+          <span>
+            © {shop.legalName ?? "Chuvachi"}. {dict.rights}
+          </span>
+          {(shop.registrationNumber || shop.legalAddress) && (
+            <span>
+              {[shop.registrationNumber ? `${dict.registration}: ${shop.registrationNumber}` : null, shop.legalAddress]
+                .filter(Boolean)
+                .join(" · ")}
+            </span>
+          )}
+          {shop.contactEmail && (
+            <a href={`mailto:${shop.contactEmail}`} className="self-start hover:text-white">
+              {shop.contactEmail}
+            </a>
+          )}
+        </div>
         <div className="flex flex-wrap gap-5">
           <Link href={`/${lang}/track`} className="text-[#c7c7c7] hover:text-white">
             {dict.trackOrder}
           </Link>
           <Link href={`/${lang}/policies`} className="text-[#c7c7c7] hover:text-white">
             {dict.policies}
+          </Link>
+          <Link href={`/${lang}/privacy`} className="text-[#c7c7c7] hover:text-white">
+            {dict.privacy}
           </Link>
         </div>
       </div>

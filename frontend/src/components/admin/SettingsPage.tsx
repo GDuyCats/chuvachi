@@ -224,6 +224,17 @@ export function SettingsPage() {
           </div>
         </Section>
 
+        <Section title={s.business.title} hint={s.business.hint}>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {textField("legalName", s.business.legalName)}
+            {textField("registrationNumber", s.business.registrationNumber)}
+            {textField("legalAddress", s.business.legalAddress)}
+            {textField("contactEmail", s.business.email, "email", "hello@...")}
+            {numberField("dataRetentionMonths", s.business.retention)}
+          </div>
+          <p className="text-xs text-muted">{s.business.retentionHint}</p>
+        </Section>
+
         <Section title={s.rules.title}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {textField("openTime", s.rules.openTime, "time")}

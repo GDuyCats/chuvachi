@@ -4,6 +4,7 @@ import { type Locale, pickText } from "../lib/locale";
 import { generateOrderCode } from "../lib/order-code";
 import { normalizePhone } from "../lib/phone";
 import { daysBetween, formatDateOnly, parseDateOnly, slotStartTime, vietnamTimeOn, vietnamToday } from "../lib/time";
+import { PRIVACY_POLICY_VERSION } from "../lib/privacy";
 
 // An error the customer can fix (bad date, day fully booked, ...).
 // "code" is stable so the frontend can show a translated message.
@@ -27,6 +28,7 @@ export type CreateOrderInput = {
   deliveryDate?: string; // required for SCHEDULED
   deliverySlot?: string; // required for SCHEDULED
   locale: "vi" | "en";
+  privacyConsent: true;
   items: {
     productSlug: string;
     flavorOptionId?: number | null;
@@ -208,6 +210,8 @@ export async function createOrder(input: CreateOrderInput) {
             totalPortions,
             total,
             paymentMethod: PaymentMethod.BANK_TRANSFER,
+            privacyConsentAt: new Date(),
+            privacyPolicyVersion: PRIVACY_POLICY_VERSION,
             items: { create: itemsData },
           },
         });

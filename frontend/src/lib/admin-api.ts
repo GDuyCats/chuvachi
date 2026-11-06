@@ -33,6 +33,7 @@ export type AdminOrder = {
   }[];
   createdAt: string;
   updatedAt: string;
+  erased: boolean; // customer details were erased (privacy)
 };
 
 export type AdminOrderList = {
@@ -111,6 +112,11 @@ export type ShopSettings = {
   facebookUrl: string | null;
   instagramUrl: string | null;
   tiktokUrl: string | null;
+  legalName: string | null;
+  legalAddress: string | null;
+  registrationNumber: string | null;
+  contactEmail: string | null;
+  dataRetentionMonths: number;
 };
 
 export type DeliveryZoneRow = { id: number; nameVi: string; nameEn: string; isActive: boolean; sortOrder: number };
@@ -243,6 +249,8 @@ export const adminApi = {
       method: "POST",
       body: JSON.stringify({ expectedStatus, note: note || undefined }),
     }),
+  eraseCustomer: (code: string) =>
+    request<AdminOrder>(`/orders/${code}/erase-customer`, { method: "POST", body: "{}" }),
   refund: (code: string) => request<AdminOrder>(`/orders/${code}/refund`, { method: "POST", body: "{}" }),
   getSettings: () => request<SettingsBundle>("/settings"),
   saveSettings: (settings: ShopSettings) =>

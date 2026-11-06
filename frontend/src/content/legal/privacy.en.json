@@ -1,0 +1,120 @@
+{
+  "title": "Privacy policy",
+  "intro": "{shopName} respects and protects your personal data. This page explains what we collect, why, how long we keep it and what your rights are, under Vietnam's Personal Data Protection Law and its guiding regulations.",
+  "sections": [
+    {
+      "id": "who",
+      "title": "Who is responsible",
+      "blocks": [
+        { "p": "Your personal data is controlled and processed by {legalName} (registration: {registration}), {address}. Contact for personal data questions: {contactLine}." }
+      ]
+    },
+    {
+      "id": "collect",
+      "title": "What we collect",
+      "blocks": [
+        { "list": [
+          "When you order: your name, phone number, delivery area and address, and any note you write.",
+          "Order details: items, quantities, amounts, delivery time and payment status.",
+          "Technical data: your device's IP address, used only briefly to prevent fraud and attacks (for example, limiting how often orders can be placed).",
+          "Your cart and chosen language are stored in your own browser and are not sent to us until you place an order."
+        ] },
+        { "p": "We don't collect sensitive personal data, we don't need your bank account number (you pay with your own banking app), and we don't use advertising or behavior-tracking tools." }
+      ]
+    },
+    {
+      "id": "purpose",
+      "title": "Why we use it",
+      "blocks": [
+        { "list": [
+          "To make and deliver the right order to the right address at the right time.",
+          "To contact you about your order: confirmation, delivery and any problems.",
+          "To let you look up your order with your order code and phone number.",
+          "To handle complaints, remake cakes or give refunds.",
+          "To protect the website from fraud and attacks."
+        ] },
+        { "p": "We don't use your details for advertising unless you separately agree to it in the future." }
+      ]
+    },
+    {
+      "id": "consent",
+      "title": "Your consent",
+      "blocks": [
+        { "p": "When you order, you tick the box to agree to this policy yourself; it is never ticked in advance. We record when you agreed and which version of the policy you agreed to." },
+        { "p": "You can withdraw your consent at any time by contacting us. This doesn't affect what was processed before, but we may be unable to deliver an order that is still in progress." }
+      ]
+    },
+    {
+      "id": "share",
+      "title": "Who we share it with",
+      "blocks": [
+        { "list": [
+          "Delivery drivers (Grab, Ahamove or similar): your name, phone number and delivery address, only to deliver your order.",
+          "Infrastructure providers: servers from Amazon Web Services (located in Singapore), and Cloudflare for security and photo storage. They only store and process data for us and may not use it for their own purposes.",
+          "Government authorities, when the law requires it."
+        ] },
+        { "p": "Because our servers are in Singapore, your data is stored outside Vietnam. We carry out the procedures required for transferring data abroad." },
+        { "p": "We never sell or rent your personal data." }
+      ]
+    },
+    {
+      "id": "retention",
+      "title": "How long we keep it",
+      "blocks": [
+        { "p": "Your name, phone number and address are kept for {retentionMonths} months after delivery, so we can help if you have a complaint. After that they are erased automatically. Item and amount details are kept, no longer linked to you, for our accounting records as required by law." }
+      ]
+    },
+    {
+      "id": "security",
+      "title": "How we protect it",
+      "blocks": [
+        { "list": [
+          "Connections to the website are encrypted (HTTPS).",
+          "Only staff with an account can see order details. Passwords are stored as one-way hashes, and accounts lock after too many wrong attempts.",
+          "The order lookup page shows only part of the address and needs both the order code and the phone number.",
+          "The database is not reachable from the Internet."
+        ] },
+        { "p": "If a data breach happens, we will notify you and the authorities within the time required by law." }
+      ]
+    },
+    {
+      "id": "rights",
+      "title": "Your rights",
+      "blocks": [
+        { "list": [
+          "To know how your data is processed (this page).",
+          "To see your data, get a copy, and ask us to correct it.",
+          "To ask us to delete your data or limit how we process it.",
+          "To withdraw your consent or object to processing.",
+          "To complain, report or take legal action as provided by law."
+        ] },
+        { "p": "Send your request via {contactLine}, with your order code and the phone number you used, so we can confirm it's you. We handle requests within the time limits set by law. For an order that is still being delivered, we need to keep your details until it is finished." }
+      ]
+    },
+    {
+      "id": "storage",
+      "title": "Cookies and browser storage",
+      "blocks": [
+        { "list": [
+          "Language cookie: remembers the language you chose.",
+          "Browser storage: your cart and your latest order (to show the confirmation page).",
+          "We don't use advertising cookies or third-party tracking cookies."
+        ] }
+      ]
+    },
+    {
+      "id": "children",
+      "title": "Children",
+      "blocks": [
+        { "p": "This website is for people aged 18 and over. If you are under 18, please ask a parent or guardian to order for you." }
+      ]
+    },
+    {
+      "id": "changes",
+      "title": "Changes to this policy",
+      "blocks": [
+        { "p": "When this policy changes, we update the date at the top of the page. If a change is important, new orders will ask you to agree again." }
+      ]
+    }
+  ]
+}

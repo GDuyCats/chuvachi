@@ -127,6 +127,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
   const [chosenDate, setChosenDate] = useState<string | null>(null);
   const [chosenSlot, setChosenSlot] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [agreed, setAgreed] = useState(false); // never ticked in advance (privacy law)
   const [errorCode, setErrorCode] = useState<string | null>(null);
 
   const isLargeOrder = settings ? totalPortions >= settings.largeOrderThreshold : false;
@@ -165,6 +166,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
         deliveryDate: deliveryType === "SCHEDULED" ? (date ?? undefined) : undefined,
         deliverySlot: deliveryType === "SCHEDULED" ? (slot ?? undefined) : undefined,
         locale: lang,
+        privacyConsent: true,
         items: lines.map(({ line }) => ({
           productSlug: line.productSlug,
           flavorOptionId: line.flavorOptionId,
@@ -492,6 +494,26 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
           </p>
         )}
 
+        <label className="flex items-start gap-3 text-[14px] leading-relaxed">
+          <input
+            type="checkbox"
+            required
+            checked={agreed}
+            onChange={(e) => setAgreed(e.target.checked)}
+            className="mt-0.5 h-5 w-5 shrink-0 accent-black"
+          />
+          <span>
+            {labels.consentBefore}{" "}
+            <Link href={`/${lang}/privacy`} target="_blank" rel="noopener" className="font-semibold underline">
+              {labels.consentPrivacy}
+            </Link>{" "}
+            {labels.consentAnd}{" "}
+            <Link href={`/${lang}/policies`} target="_blank" rel="noopener" className="font-semibold underline">
+              {labels.consentPolicies}
+            </Link>
+            {labels.consentAfter}
+          </span>
+        </label>
         <button
           type="submit"
           disabled={!settings || submitting}
@@ -499,12 +521,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
         >
           {submitting ? labels.placing : `${labels.placeOrder} · ${formatPrice(total, lang)}`}
         </button>
-        <p className="text-[13px] leading-relaxed text-muted">
-          {labels.policyNote}{" "}
-          <Link href={`/${lang}/policies`} className="underline">
-            {labels.readPolicies}
-          </Link>
-        </p>
+        <p className="text-[13px] leading-relaxed text-muted">{labels.policyNote}</p>
       </aside>
     </form>
   );

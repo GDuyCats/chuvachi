@@ -1,0 +1,98 @@
+{
+  "title": "Ordering, delivery and returns",
+  "intro": "This policy applies to every order placed on the {shopName} website. Please read it before you order.",
+  "sections": [
+    {
+      "id": "ordering",
+      "title": "Ordering",
+      "blocks": [
+        { "p": "You order directly on the website; no account is needed. Every cake is made for your order, so we need some time to prepare:" },
+        { "list": [
+          "Orders under {largeThreshold} portions: at least {smallLead} hours ahead.",
+          "Orders of {largeThreshold} portions or more: at least {largeLead} hours ahead.",
+          "We can only make a limited number of portions each day. Fully booked days can't be chosen."
+        ] },
+        { "p": "After ordering you get an order code. Use it with your phone number on the Track your order page to see how your order is doing." }
+      ]
+    },
+    {
+      "id": "payment",
+      "title": "Prices and payment",
+      "blocks": [
+        { "list": [
+          "Prices are in Vietnamese dong and do not include the delivery fee.",
+          "We accept bank transfers (scan the VietQR code). Cash on delivery is not available yet.",
+          "Please transfer the exact amount and use the transfer message shown after you order.",
+          "Unpaid orders are cancelled automatically after {unpaidMinutes} minutes.",
+          "Your order is confirmed once we receive the payment."
+        ] }
+      ]
+    },
+    {
+      "id": "delivery",
+      "title": "Delivery",
+      "blocks": [
+        { "list": [
+          "We deliver to the areas listed when you order.",
+          "Cakes are delivered by third-party couriers (such as Grab or Ahamove). You pay the delivery fee directly to the driver.",
+          "Choose the earliest delivery today or a scheduled day and time. Delivery times may shift a little because of weather or traffic.",
+          "Please keep your phone nearby so the driver can reach you. If the driver can't reach you and the cake comes back, we will contact you to arrange another delivery; the extra delivery fee is yours."
+        ] }
+      ]
+    },
+    {
+      "id": "returns",
+      "title": "Returns and refunds",
+      "blocks": [
+        { "p": "Our cakes are fresh food made for each order, so we can't accept returns or give refunds for a change of mind." },
+        { "p": "If something is wrong with your cake, we will make you a fresh one or give you a discount code for next time, when:" },
+        { "list": [
+          "You received the wrong cake, the wrong flavor, or something is missing.",
+          "The cake was damaged or badly squashed when you received it.",
+          "The cake shows signs of a quality problem."
+        ] },
+        { "p": "How to tell us: contact us within 2 hours of receiving the cake, with your order code and a photo. Please keep the cake until we reply." },
+        { "p": "If we cancel an order you have paid for (for example, an ingredient ran out or we can't deliver), we refund the full amount to the account you paid from within 3 working days." }
+      ]
+    },
+    {
+      "id": "cancel",
+      "title": "Cancelling or changing an order",
+      "blocks": [
+        { "list": [
+          "Before paying: simply don't transfer the money and the order cancels itself.",
+          "After paying: we have already prepared ingredients for your order, so we can't refund a cancellation for a change of mind. Contact us to move the delivery day if the new day has room."
+        ] }
+      ]
+    },
+    {
+      "id": "food",
+      "title": "Storage and allergies",
+      "blocks": [
+        { "list": [
+          "Store and enjoy each cake as described on its page.",
+          "Ingredients and allergens are listed on each cake's page. Our kitchen uses milk, eggs, wheat flour and nuts, so we can't fully rule out cross-contact. If you have a serious allergy, please ask us before ordering."
+        ] }
+      ]
+    },
+    {
+      "id": "complaints",
+      "title": "Feedback and complaints",
+      "blocks": [
+        { "p": "Send feedback or complaints via: {contactLine}. We reply within 24 hours (during opening hours)." }
+      ]
+    },
+    {
+      "id": "seller",
+      "title": "About the seller",
+      "blocks": [
+        { "list": [
+          "Name: {legalName}",
+          "Business registration / tax number: {registration}",
+          "Address: {address}",
+          "Contact: {contactLine}"
+        ] }
+      ]
+    }
+  ]
+}

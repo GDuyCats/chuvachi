@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireAdmin } from "../lib/auth";
 import { prisma } from "../lib/prisma";
 import { formatDateOnly, parseDateOnly, vietnamToday } from "../lib/time";
+import { eraseCustomerOnRequest, EraseError } from "../lib/privacy";
 import { advanceOrder, cancelOrder, markRefunded, OrderActionError } from "../services/order-admin-service";
 
 export const adminOrdersRouter = Router();
@@ -63,6 +64,7 @@ function toAdminOrder(order: FullOrder) {
     })),
     createdAt: order.createdAt.toISOString(),
     updatedAt: order.updatedAt.toISOString(),
+    erased: order.anonymizedAt !== null,
   };
 }
 
@@ -196,6 +198,28 @@ adminOrdersRouter.post("/:code/refund", async (req, res) => {
   } catch (error) {
     handleActionError(res, error);
     return;
+  }
+  await sendOrder(res, code.data);
+});
+
+// POST /api/admin/orders/:code/erase-customer
+// The customer asked us to delete their data: erases name, phone and address from all of their
+// finished orders. Refused while one of their orders is still running.
+adminOrdersRouter.post("/:code/erase-customer", async (req, res) => {
+  const code = codeSchema.safeParse(String(req.params.code).toUpperCase());
+  if (!code.success) {
+    res.status(400).json({ error: "VALIDATION_ERROR" });
+    return;
+  }
+  try {
+    const count = await eraseCustomerOnRequest(code.data, req.admin!.id);
+    console.log(`Customer data erased from ${count} order(s) on request, by admin ${req.admin!.email}`);
+  } catch (error) {
+    if (error instanceof EraseError) {
+      res.status(error.code === "ORDER_NOT_FOUND" ? 404 : 409).json({ error: error.code });
+      return;
+    }
+    throw error;
   }
   await sendOrder(res, code.data);
 });

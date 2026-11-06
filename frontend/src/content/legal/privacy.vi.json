@@ -1,0 +1,120 @@
+{
+  "title": "Chính sách quyền riêng tư",
+  "intro": "{shopName} tôn trọng và bảo vệ thông tin cá nhân của bạn. Trang này giải thích tiệm thu thập thông tin gì, dùng để làm gì, giữ trong bao lâu và bạn có những quyền gì, theo Luật Bảo vệ dữ liệu cá nhân và các văn bản hướng dẫn.",
+  "sections": [
+    {
+      "id": "who",
+      "title": "Ai chịu trách nhiệm",
+      "blocks": [
+        { "p": "Bên kiểm soát và xử lý dữ liệu cá nhân của bạn là {legalName} (số đăng ký: {registration}), địa chỉ {address}. Liên hệ về dữ liệu cá nhân: {contactLine}." }
+      ]
+    },
+    {
+      "id": "collect",
+      "title": "Tiệm thu thập thông tin gì",
+      "blocks": [
+        { "list": [
+          "Khi đặt hàng: họ tên, số điện thoại, khu vực và địa chỉ giao hàng, ghi chú bạn tự nhập.",
+          "Thông tin đơn hàng: món, số lượng, số tiền, thời gian giao và trạng thái thanh toán.",
+          "Thông tin kỹ thuật: địa chỉ IP của thiết bị, chỉ dùng tạm thời để chống gian lận và tấn công (ví dụ giới hạn số lần đặt hàng).",
+          "Giỏ hàng và ngôn ngữ bạn chọn được lưu ngay trên trình duyệt của bạn và không gửi về tiệm cho tới khi bạn đặt hàng."
+        ] },
+        { "p": "Tiệm không thu thập dữ liệu cá nhân nhạy cảm, không cần số tài khoản ngân hàng của bạn (bạn tự chuyển khoản bằng ứng dụng ngân hàng) và không dùng công cụ quảng cáo hay theo dõi hành vi." }
+      ]
+    },
+    {
+      "id": "purpose",
+      "title": "Thông tin được dùng để làm gì",
+      "blocks": [
+        { "list": [
+          "Làm bánh và giao đúng đơn, đúng địa chỉ, đúng giờ.",
+          "Liên hệ với bạn về đơn hàng: xác nhận, giao hàng, xử lý sự cố.",
+          "Cho bạn tra cứu đơn bằng mã đơn và số điện thoại.",
+          "Giải quyết khiếu nại, làm lại bánh hoặc hoàn tiền.",
+          "Bảo vệ website khỏi gian lận và tấn công."
+        ] },
+        { "p": "Tiệm không dùng thông tin của bạn để gửi quảng cáo, trừ khi sau này bạn đồng ý riêng cho việc đó." }
+      ]
+    },
+    {
+      "id": "consent",
+      "title": "Sự đồng ý của bạn",
+      "blocks": [
+        { "p": "Khi đặt hàng, bạn tự đánh dấu vào ô đồng ý với chính sách này; ô này không được đánh dấu sẵn. Tiệm lưu lại thời điểm và phiên bản chính sách bạn đã đồng ý." },
+        { "p": "Bạn có thể rút lại sự đồng ý bất cứ lúc nào bằng cách liên hệ tiệm. Việc rút lại không ảnh hưởng tới những gì đã xử lý trước đó, nhưng tiệm có thể không giao được đơn đang thực hiện." }
+      ]
+    },
+    {
+      "id": "share",
+      "title": "Thông tin được chia sẻ với ai",
+      "blocks": [
+        { "list": [
+          "Tài xế giao hàng (Grab, Ahamove hoặc đơn vị tương tự): họ tên, số điện thoại và địa chỉ giao, chỉ để giao đơn của bạn.",
+          "Nhà cung cấp hạ tầng: máy chủ của Amazon Web Services (đặt tại Singapore) và dịch vụ bảo mật, lưu trữ ảnh của Cloudflare. Các bên này chỉ lưu trữ và xử lý kỹ thuật cho tiệm, không được dùng dữ liệu cho mục đích riêng.",
+          "Cơ quan nhà nước có thẩm quyền khi pháp luật yêu cầu."
+        ] },
+        { "p": "Vì máy chủ đặt tại Singapore, thông tin của bạn được lưu trữ ở nước ngoài. Tiệm thực hiện các thủ tục chuyển dữ liệu ra nước ngoài theo quy định." },
+        { "p": "Tiệm không bán hay cho thuê thông tin cá nhân của bạn." }
+      ]
+    },
+    {
+      "id": "retention",
+      "title": "Thông tin được giữ bao lâu",
+      "blocks": [
+        { "p": "Họ tên, số điện thoại và địa chỉ được giữ {retentionMonths} tháng kể từ ngày giao, để hỗ trợ bạn khi có khiếu nại. Sau đó hệ thống tự động xóa. Thông tin về món và số tiền được giữ lại, không còn gắn với bạn, để phục vụ sổ sách kế toán theo quy định." }
+      ]
+    },
+    {
+      "id": "security",
+      "title": "Tiệm bảo vệ thông tin thế nào",
+      "blocks": [
+        { "list": [
+          "Kết nối tới website được mã hóa (HTTPS).",
+          "Chỉ nhân viên có tài khoản mới xem được thông tin đơn. Mật khẩu được mã hóa một chiều, và tài khoản tự khóa khi nhập sai nhiều lần.",
+          "Trang tra cứu đơn chỉ hiện một phần địa chỉ và yêu cầu đúng cả mã đơn lẫn số điện thoại.",
+          "Cơ sở dữ liệu không mở ra Internet."
+        ] },
+        { "p": "Nếu xảy ra sự cố lộ lọt dữ liệu, tiệm sẽ thông báo cho bạn và cơ quan có thẩm quyền theo thời hạn pháp luật quy định." }
+      ]
+    },
+    {
+      "id": "rights",
+      "title": "Quyền của bạn",
+      "blocks": [
+        { "list": [
+          "Được biết về việc xử lý dữ liệu của mình (chính là trang này).",
+          "Xem, nhận bản sao và yêu cầu sửa thông tin của bạn.",
+          "Yêu cầu xóa thông tin hoặc hạn chế việc xử lý.",
+          "Rút lại sự đồng ý, hoặc phản đối việc xử lý.",
+          "Khiếu nại, tố cáo hoặc khởi kiện theo quy định của pháp luật."
+        ] },
+        { "p": "Bạn gửi yêu cầu qua {contactLine}, kèm mã đơn và số điện thoại đã dùng để tiệm xác minh đúng là bạn. Tiệm xử lý trong thời hạn pháp luật quy định. Với đơn đang giao, tiệm cần giữ thông tin tới khi đơn hoàn tất." }
+      ]
+    },
+    {
+      "id": "storage",
+      "title": "Cookie và bộ nhớ trình duyệt",
+      "blocks": [
+        { "list": [
+          "Cookie ngôn ngữ: nhớ ngôn ngữ bạn chọn.",
+          "Bộ nhớ trình duyệt: giỏ hàng và đơn vừa đặt (để hiện trang xác nhận).",
+          "Tiệm không dùng cookie quảng cáo hay cookie theo dõi của bên thứ ba."
+        ] }
+      ]
+    },
+    {
+      "id": "children",
+      "title": "Trẻ em",
+      "blocks": [
+        { "p": "Website dành cho người từ 18 tuổi trở lên. Nếu bạn chưa đủ 18 tuổi, vui lòng nhờ cha mẹ hoặc người giám hộ đặt hàng giúp." }
+      ]
+    },
+    {
+      "id": "changes",
+      "title": "Thay đổi chính sách",
+      "blocks": [
+        { "p": "Khi chính sách thay đổi, tiệm cập nhật ngày ở đầu trang. Nếu thay đổi quan trọng, các đơn mới sẽ đề nghị bạn đồng ý lại." }
+      ]
+    }
+  ]
+}

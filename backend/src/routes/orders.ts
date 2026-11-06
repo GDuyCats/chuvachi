@@ -59,6 +59,8 @@ const createOrderSchema = z
     deliverySlot: z.string().min(1).max(20).optional(),
     locale: z.enum(["vi", "en"]).default("vi"),
     items: z.array(orderItemSchema).min(1).max(30),
+    // The customer must tick the box themselves; the law doesn't accept silence or pre-ticked boxes.
+    privacyConsent: z.literal(true, { errorMap: () => ({ message: "Please agree to the privacy policy" }) }),
   })
   .refine(
     (order) => order.deliveryType === DeliveryType.ASAP || (order.deliveryDate && order.deliverySlot),

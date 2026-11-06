@@ -96,16 +96,26 @@
       "ADVANCE": "Đổi trạng thái",
       "CANCEL": "Hủy đơn",
       "AUTO_CANCEL": "Tự hủy (chưa thanh toán)",
-      "REFUND": "Đã hoàn tiền"
+      "REFUND": "Đã hoàn tiền",
+      "AUTO_ERASE": "Đã xóa thông tin khách (hết thời hạn lưu)",
+      "ERASE_ON_REQUEST": "Đã xóa thông tin khách theo yêu cầu"
     },
     "errors": {
       "ORDER_CHANGED": "Người khác vừa cập nhật đơn này. Danh sách đã được tải lại.",
       "CANNOT_ADVANCE": "Đơn này không chuyển tiếp được.",
       "CANNOT_CANCEL": "Đơn này không hủy được.",
       "CANNOT_REFUND": "Chỉ đơn đã hủy và đã thanh toán mới đánh dấu hoàn tiền được.",
-      "UNKNOWN": "Có lỗi xảy ra. Vui lòng thử lại."
+      "UNKNOWN": "Có lỗi xảy ra. Vui lòng thử lại.",
+      "ACTIVE_ORDERS": "Khách này còn đơn đang xử lý. Hãy xóa sau khi đơn đã giao hoặc đã hủy.",
+      "ALREADY_ERASED": "Thông tin khách của đơn này đã được xóa rồi."
     },
-    "updated": "Đã cập nhật đơn."
+    "updated": "Đã cập nhật đơn.",
+    "privacy": {
+      "erase": "Xóa thông tin khách (theo yêu cầu)",
+      "eraseExplain": "Dùng khi khách yêu cầu xóa dữ liệu. Tên, số điện thoại và địa chỉ của khách sẽ bị xóa khỏi mọi đơn đã xong của họ. Không hoàn tác được.",
+      "eraseConfirm": "Xóa",
+      "erased": "Thông tin khách đã được xóa để bảo vệ quyền riêng tư."
+    }
   },
   "settings": {
     "title": "Cài đặt tiệm",
@@ -176,7 +186,17 @@
       "custom": "đã chỉnh",
       "saveRow": "Lưu"
     },
-    "loading": "Đang tải cài đặt..."
+    "loading": "Đang tải cài đặt...",
+    "business": {
+      "title": "Thông tin kinh doanh",
+      "hint": "Hiện ở cuối mọi trang và trong trang chính sách. Web bán hàng ở Việt Nam phải ghi rõ ai là người bán.",
+      "legalName": "Tên đăng ký kinh doanh",
+      "registrationNumber": "Số đăng ký kinh doanh / mã số thuế",
+      "legalAddress": "Địa chỉ kinh doanh",
+      "email": "Email liên hệ",
+      "retention": "Giữ thông tin khách trong (tháng)",
+      "retentionHint": "Sau số tháng này kể từ ngày giao, tên, số điện thoại và địa chỉ của khách được tự động xóa. Số tiền và món hàng vẫn giữ để làm sổ sách."
+    }
   },
   "products": {
     "title": "Sản phẩm",

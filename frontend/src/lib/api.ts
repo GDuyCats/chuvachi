@@ -73,6 +73,15 @@ export type ShopInfo = {
   openTime: string | null;
   closeTime: string | null;
   closedWeekdays: number[];
+  legalName: string | null;
+  legalAddress: string | null;
+  registrationNumber: string | null;
+  contactEmail: string | null;
+  dataRetentionMonths: number;
+  unpaidCancelMinutes: number;
+  smallOrderLeadHours: number;
+  largeOrderLeadHours: number;
+  largeOrderThreshold: number;
 };
 
 const EMPTY_SHOP_INFO: ShopInfo = {
@@ -84,6 +93,15 @@ const EMPTY_SHOP_INFO: ShopInfo = {
   openTime: null,
   closeTime: null,
   closedWeekdays: [],
+  legalName: null,
+  legalAddress: null,
+  registrationNumber: null,
+  contactEmail: null,
+  dataRetentionMonths: 12,
+  unpaidCancelMinutes: 30,
+  smallOrderLeadHours: 3,
+  largeOrderLeadHours: 24,
+  largeOrderThreshold: 10,
 };
 
 // Contact details and opening hours, edited by staff in the admin page.

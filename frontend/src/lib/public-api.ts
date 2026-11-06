@@ -33,6 +33,7 @@ export type PlaceOrderRequest = {
   deliveryDate?: string;
   deliverySlot?: string;
   locale: Locale;
+  privacyConsent: true; // the customer ticked the box themselves
   items: {
     productSlug: string;
     flavorOptionId: number | null;

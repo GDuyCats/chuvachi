@@ -211,6 +211,9 @@ model Order {
   paymentMethod  PaymentMethod
   paymentStatus  PaymentStatus @default(UNPAID)
   status         OrderStatus   @default(PENDING)
+  privacyConsentAt     DateTime? // when the customer ticked "I agree to the privacy policy"
+  privacyPolicyVersion String?   // which version of the policy they agreed to
+  anonymizedAt         DateTime? // name, phone and address were erased (retention period over, or on request)
   items          OrderItem[]
   events         OrderEvent[]
   createdAt      DateTime      @default(now())
@@ -278,6 +281,12 @@ model ShopSetting {
   facebookUrl          String?
   instagramUrl         String?
   tiktokUrl            String?
+  // Business details shown in the footer and the policy pages
+  legalName            String?  // registered business name, e.g. the household business name
+  legalAddress         String?
+  registrationNumber   String?  // business registration or tax number
+  contactEmail         String?
+  dataRetentionMonths  Int      @default(12) // customer details are erased this long after delivery
   updatedAt            DateTime @updatedAt
 }
 

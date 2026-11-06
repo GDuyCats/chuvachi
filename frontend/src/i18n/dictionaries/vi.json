@@ -120,7 +120,9 @@
     "promiseText": "Bánh được làm theo từng đơn nên tiệm không hoàn tiền khi bạn đổi ý. Nếu đơn có vấn đề, bạn gửi ảnh cho tiệm trong vòng 2 giờ sau khi nhận, tiệm sẽ làm lại bánh mới hoặc tặng coupon cho đơn sau.",
     "readPolicies": "Xem chính sách",
     "alsoLike": "Có thể bạn sẽ thích",
-    "view": "Xem"
+    "view": "Xem",
+    "ingredientsTitle": "Thành phần",
+    "allergensTitle": "Chất gây dị ứng"
   },
   "order": {
     "title": "Đơn hàng của bạn",

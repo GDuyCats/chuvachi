@@ -16,6 +16,8 @@ export type Product = {
   slug: string;
   name: string;
   description: string | null;
+  ingredients: string | null;
+  allergens: string | null;
   imageUrl: string | null;
   basePrice: number;
   isNew: boolean;

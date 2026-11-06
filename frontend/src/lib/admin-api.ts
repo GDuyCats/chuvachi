@@ -123,6 +123,51 @@ export class AdminValidationError extends AdminApiError {
   }
 }
 
+export type AdminOption = {
+  id?: number;
+  type: "FLAVOR" | "PACKAGE";
+  nameVi: string;
+  nameEn: string;
+  priceDelta: number;
+  portions: number;
+  isActive: boolean;
+  sortOrder: number;
+};
+
+export type AdminCategory = {
+  id: number;
+  slug: string;
+  nameVi: string;
+  nameEn: string;
+  sortOrder: number;
+  _count?: { products: number };
+};
+
+export type AdminProductInput = {
+  slug: string;
+  categoryId: number;
+  nameVi: string;
+  nameEn: string;
+  descriptionVi: string | null;
+  descriptionEn: string | null;
+  ingredientsVi: string | null;
+  ingredientsEn: string | null;
+  allergensVi: string | null;
+  allergensEn: string | null;
+  basePrice: number;
+  isActive: boolean;
+  isNew: boolean;
+  sortOrder: number;
+  options: AdminOption[];
+};
+
+export type AdminProduct = AdminProductInput & {
+  id: number;
+  imageUrl: string | null;
+  category: AdminCategory;
+  options: (AdminOption & { id: number })[];
+};
+
 export const adminApi = {
   login: (email: string, password: string) =>
     request<AdminMe>("/login", { method: "POST", body: JSON.stringify({ email, password }) }),
@@ -149,4 +194,15 @@ export const adminApi = {
   },
   setCapacity: (date: string, maxPortions: number) =>
     request<SettingsBundle>(`/capacity/${date}`, { method: "PUT", body: JSON.stringify({ maxPortions }) }),
+  listProducts: () => request<AdminProduct[]>("/products"),
+  getProduct: (id: number) => request<AdminProduct>(`/products/${id}`),
+  createProduct: (input: AdminProductInput) =>
+    request<AdminProduct>("/products", { method: "POST", body: JSON.stringify(input) }),
+  updateProduct: (id: number, input: AdminProductInput) =>
+    request<AdminProduct>(`/products/${id}`, { method: "PUT", body: JSON.stringify(input) }),
+  listCategories: () => request<AdminCategory[]>("/categories"),
+  createCategory: (input: Omit<AdminCategory, "id">) =>
+    request<AdminCategory>("/categories", { method: "POST", body: JSON.stringify(input) }),
+  updateCategory: ({ id, _count: _ignored, ...input }: AdminCategory) =>
+    request<AdminCategory>(`/categories/${id}`, { method: "PUT", body: JSON.stringify(input) }),
 };

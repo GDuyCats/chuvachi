@@ -10,6 +10,7 @@ import { ordersRouter } from "./routes/orders";
 import { adminAuthRouter } from "./routes/admin-auth";
 import { adminOrdersRouter } from "./routes/admin-orders";
 import { adminSettingsRouter } from "./routes/admin-settings";
+import { adminProductsRouter } from "./routes/admin-products";
 import { shopInfoRouter } from "./routes/shop-info";
 import { startBackgroundJobs } from "./jobs/background-jobs";
 
@@ -40,6 +41,7 @@ app.use("/api", ordersRouter);
 app.use("/api", shopInfoRouter);
 app.use("/api/admin", adminAuthRouter);
 app.use("/api/admin/orders", adminOrdersRouter);
+app.use("/api/admin", adminProductsRouter);
 app.use("/api/admin", adminSettingsRouter);
 
 // Unknown routes

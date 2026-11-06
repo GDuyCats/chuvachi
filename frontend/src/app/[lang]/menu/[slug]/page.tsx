@@ -108,6 +108,18 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[s
           )}
 
           <div className="flex flex-col border-t border-ink">
+            {product.ingredients && (
+              <div className="flex flex-col gap-1.5 border-b border-[#e0e0e0] py-4">
+                <h2 className="text-sm font-bold uppercase tracking-wider">{labels.ingredientsTitle}</h2>
+                <p className="whitespace-pre-line text-[15px] text-[#333333]">{product.ingredients}</p>
+              </div>
+            )}
+            {product.allergens && (
+              <div className="flex flex-col gap-1.5 border-b border-[#e0e0e0] py-4">
+                <h2 className="text-sm font-bold uppercase tracking-wider">{labels.allergensTitle}</h2>
+                <p className="text-[15px] font-semibold text-[#333333]">{product.allergens}</p>
+              </div>
+            )}
             <div className="flex flex-col gap-1.5 border-b border-[#e0e0e0] py-4">
               <h2 className="text-sm font-bold uppercase tracking-wider">{labels.storageTitle}</h2>
               <p className="text-[15px] text-[#333333]">{labels.storageText}</p>

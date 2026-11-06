@@ -59,6 +59,10 @@ model Product {
   nameEn        String
   descriptionVi String?
   descriptionEn String?
+  ingredientsVi String?         // shown on the product page
+  ingredientsEn String?
+  allergensVi   String?         // e.g. "Milk, eggs"; important for customers with allergies
+  allergensEn   String?
   imageUrl      String?
   basePrice     Int             // price of one portion in VND
   isActive      Boolean         @default(true)

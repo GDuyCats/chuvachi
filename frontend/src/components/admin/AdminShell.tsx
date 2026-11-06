@@ -44,6 +44,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   const tabs = [
     { href: "/admin/orders", label: t.nav.orders },
+    { href: "/admin/products", label: t.nav.products },
     { href: "/admin/settings", label: t.nav.settings },
   ];
 

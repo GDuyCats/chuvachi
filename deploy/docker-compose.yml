@@ -1,0 +1,30 @@
+# Services that run on the EC2 server.
+# For now only the PostgreSQL database; the API and Caddy will be added later.
+#
+# Usage on EC2 (folder ~/chuvachi):
+#   docker compose up -d     start everything in the background
+#   docker compose ps        show status
+#   docker compose logs db   show database logs
+
+services:
+  db:
+    image: postgres:17
+    container_name: chuvachi-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: chuvachi_admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # read from the .env file next to this file
+      POSTGRES_DB: chuvachi_prod
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      # Only reachable from inside the server (and through the SSH tunnel), never from the internet.
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chuvachi_admin -d chuvachi_prod"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data:

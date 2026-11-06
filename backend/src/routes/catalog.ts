@@ -87,20 +87,3 @@ catalogRouter.get("/products/:slug", async (req, res) => {
 
   res.json(toProductResponse(product, locale));
 });
-
-// GET /api/delivery-zones?locale=vi|en
-catalogRouter.get("/delivery-zones", async (req, res) => {
-  const locale = parseLocale(req.query.locale);
-  const zones = await prisma.deliveryZone.findMany({
-    where: { isActive: true },
-    orderBy: { sortOrder: "asc" },
-  });
-
-  res.json(
-    zones.map((zone) => ({
-      id: zone.id,
-      name: pickText(locale, zone.nameVi, zone.nameEn),
-      fee: zone.fee,
-    })),
-  );
-});

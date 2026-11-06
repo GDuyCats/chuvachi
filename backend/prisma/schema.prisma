@@ -1,5 +1,6 @@
-// Prisma schema for the Chuvachi dessert shop.
+// Prisma schema for the Chuvachi dessert shop (product showcase).
 // All money values are stored in VND as whole numbers (Int).
+// The online ordering models were removed for now; see the Git tag "ordering-backup".
 
 generator client {
   provider = "prisma-client-js"
@@ -15,26 +16,6 @@ datasource db {
 enum OptionType {
   FLAVOR  // e.g. passion fruit mousse, mango panna cotta
   PACKAGE // e.g. single cup, box of 4, box of 6
-}
-
-enum PaymentMethod {
-  COD
-  BANK_TRANSFER
-}
-
-enum PaymentStatus {
-  UNPAID
-  PAID
-  REFUNDED
-}
-
-enum OrderStatus {
-  PENDING    // just placed, waiting for the shop to confirm
-  CONFIRMED  // shop accepted the order
-  PREPARING  // being made
-  DELIVERING // handed to the courier
-  COMPLETED  // delivered
-  CANCELLED
 }
 
 // ---------- Catalog ----------
@@ -63,7 +44,6 @@ model Product {
   category      Category        @relation(fields: [categoryId], references: [id])
   options       ProductOption[]
   comboItems    ComboItem[]
-  orderItems    OrderItem[]
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 }
@@ -92,7 +72,6 @@ model Combo {
   price         Int         // fixed combo price in VND
   isActive      Boolean     @default(true)
   items         ComboItem[]
-  orderItems    OrderItem[]
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 }
@@ -104,86 +83,6 @@ model ComboItem {
   productId Int
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int     // number of portions of this product in the combo
-}
-
-// ---------- Orders ----------
-
-model Order {
-  id             Int           @id @default(autoincrement())
-  code           String        @unique // short code the customer uses to look up the order
-  customerName   String
-  customerPhone  String
-  address        String
-  note           String?
-  locale         String        @default("vi") // language the customer ordered in
-  deliveryZoneId Int
-  deliveryZone   DeliveryZone  @relation(fields: [deliveryZoneId], references: [id])
-  deliveryDate   DateTime      @db.Date
-  deliverySlot   String        // e.g. "14:00-16:00"
-  totalPortions  Int           // used to check the daily capacity and lead time
-  subtotal       Int
-  shippingFee    Int
-  total          Int
-  paymentMethod  PaymentMethod
-  paymentStatus  PaymentStatus @default(UNPAID)
-  status         OrderStatus   @default(PENDING)
-  items          OrderItem[]
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-
-  @@index([deliveryDate])
-  @@index([status])
-}
-
-model OrderItem {
-  id        Int      @id @default(autoincrement())
-  orderId   Int
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId Int?
-  product   Product? @relation(fields: [productId], references: [id])
-  comboId   Int?
-  combo     Combo?   @relation(fields: [comboId], references: [id])
-  // Snapshots keep the order correct even if the product is renamed or repriced later.
-  nameSnapshot    String
-  optionsSnapshot Json?
-  unitPrice       Int
-  quantity        Int
-  portions        Int    // total portions for this line
-  note            String?
-}
-
-// ---------- Delivery and capacity ----------
-
-model DeliveryZone {
-  id        Int     @id @default(autoincrement())
-  nameVi    String
-  nameEn    String
-  fee       Int     // shipping fee in VND
-  isActive  Boolean @default(true)
-  sortOrder Int     @default(0)
-  orders    Order[]
-}
-
-model DailyCapacity {
-  date           DateTime @id @db.Date
-  maxPortions    Int
-  bookedPortions Int      @default(0)
-}
-
-// Single-row table (id = 1) holding shop-wide settings editable in the admin panel.
-model ShopSetting {
-  id                   Int     @id @default(1)
-  largeOrderThreshold  Int     @default(10) // orders with this many portions or more are "large"
-  smallOrderLeadHours  Int     @default(3)  // minimum hours in advance for small orders
-  largeOrderLeadHours  Int     @default(24) // minimum hours in advance for large orders
-  defaultDailyCapacity Int     @default(20) // portions per day when no DailyCapacity row exists
-  maxDaysAhead         Int     @default(7)  // how many days ahead customers may order
-  deliverySlots        String[] @default(["09:00-11:00", "11:00-13:00", "14:00-16:00", "16:00-18:00", "18:00-20:00"])
-  closedWeekdays       Int[]   @default([]) // 0 = Sunday ... 6 = Saturday
-  bankName             String?
-  bankAccountNumber    String?
-  bankAccountName      String?
-  updatedAt            DateTime @updatedAt
 }
 
 // ---------- Admin ----------

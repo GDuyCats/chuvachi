@@ -1,11 +1,15 @@
 import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
 import { prisma } from "./lib/prisma";
 import { healthRouter } from "./routes/health";
 import { catalogRouter } from "./routes/catalog";
 import { ordersRouter } from "./routes/orders";
+import { adminAuthRouter } from "./routes/admin-auth";
+import { adminOrdersRouter } from "./routes/admin-orders";
+import { startBackgroundJobs } from "./jobs/background-jobs";
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
@@ -23,12 +27,16 @@ if (process.env.TRUST_PROXY === "1") {
 
 app.disable("x-powered-by");
 app.use(helmet()); // standard security headers
-app.use(cors({ origin: allowedOrigins }));
+// credentials: true lets the admin pages send their sign-in cookie; only our own sites are allowed.
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json({ limit: "20kb" })); // orders are small; reject huge bodies
+app.use(cookieParser());
 
 app.use("/health", healthRouter);
 app.use("/api", catalogRouter);
 app.use("/api", ordersRouter);
+app.use("/api/admin", adminAuthRouter);
+app.use("/api/admin/orders", adminOrdersRouter);
 
 // Unknown routes
 app.use((_req: Request, res: Response) => {
@@ -45,9 +53,11 @@ app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
 const server = app.listen(port, () => {
   console.log(`API listening on http://localhost:${port}`);
 });
+const stopBackgroundJobs = startBackgroundJobs();
 
 // Close the server and database connections cleanly on shutdown.
 async function shutdown(): Promise<void> {
+  stopBackgroundJobs();
   server.close();
   await prisma.$disconnect();
   process.exit(0);

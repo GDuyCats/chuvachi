@@ -1,0 +1,106 @@
+{
+  "brand": "Staff",
+  "signedInAs": "Signed in as",
+  "signOut": "Sign out",
+  "language": "Language",
+  "nav": {
+    "orders": "Orders"
+  },
+  "login": {
+    "title": "Staff sign in",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in...",
+    "errors": {
+      "INVALID_CREDENTIALS": "Wrong email or password.",
+      "ACCOUNT_LOCKED": "Too many wrong attempts. This account is locked for 15 minutes.",
+      "TOO_MANY_REQUESTS": "Too many attempts from this device. Please wait and try again.",
+      "NETWORK": "Can't reach the server. Check the connection.",
+      "UNKNOWN": "Something went wrong. Please try again."
+    }
+  },
+  "orders": {
+    "title": "Orders",
+    "days": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "upcoming": "All upcoming"
+    },
+    "refresh": "Refresh",
+    "autoRefresh": "Updates every 30 seconds",
+    "stats": {
+      "active": "Orders",
+      "activeNote": "not counting cancelled",
+      "portions": "Portions booked",
+      "portionsNote": "of the daily limit",
+      "waiting": "Waiting for payment",
+      "waitingNote": "auto-cancelled after {minutes} min",
+      "toDo": "To prepare",
+      "toDoNote": "confirmed + preparing"
+    },
+    "filterLabel": "Filter by status",
+    "all": "All",
+    "empty": "No orders here.",
+    "loading": "Loading orders...",
+    "loadError": "Couldn't load the orders. Check the connection and press Refresh.",
+    "asap": "ASAP",
+    "portionsShort": "{count} portions",
+    "status": {
+      "PENDING": "Waiting for payment",
+      "CONFIRMED": "Confirmed",
+      "PREPARING": "Preparing",
+      "READY": "Ready for driver",
+      "COMPLETED": "Delivered",
+      "CANCELLED": "Cancelled"
+    },
+    "payment": {
+      "UNPAID": "Unpaid",
+      "PAID": "Paid",
+      "REFUNDED": "Refunded"
+    },
+    "detail": {
+      "placed": "Placed",
+      "customer": "Customer",
+      "call": "Call",
+      "copyAddress": "Copy address for driver",
+      "copied": "Copied",
+      "delivery": "Delivery",
+      "items": "Items",
+      "total": "Total",
+      "shippingNote": "Customer pays the driver for delivery.",
+      "note": "Customer note",
+      "payment": "Payment",
+      "history": "History",
+      "system": "System",
+      "selectHint": "Select an order to see the details.",
+      "close": "Close"
+    },
+    "actions": {
+      "PENDING": "Payment received \u2014 confirm order",
+      "CONFIRMED": "Start preparing",
+      "PREPARING": "Mark as ready for driver",
+      "READY": "Mark as delivered",
+      "cancel": "Cancel order",
+      "cancelConfirm": "Yes, cancel this order",
+      "cancelKeep": "Keep the order",
+      "cancelReason": "Reason (optional)",
+      "paidWarning": "This order was paid. After cancelling, send the money back and mark it as refunded.",
+      "refund": "Mark as refunded",
+      "working": "Saving..."
+    },
+    "events": {
+      "ADVANCE": "Status changed",
+      "CANCEL": "Cancelled",
+      "AUTO_CANCEL": "Auto-cancelled (unpaid)",
+      "REFUND": "Marked as refunded"
+    },
+    "errors": {
+      "ORDER_CHANGED": "Someone else just updated this order. The list has been refreshed.",
+      "CANNOT_ADVANCE": "This order can't move forward.",
+      "CANNOT_CANCEL": "This order can't be cancelled.",
+      "CANNOT_REFUND": "Only cancelled, paid orders can be marked as refunded.",
+      "UNKNOWN": "Something went wrong. Please try again."
+    }
+  }
+}

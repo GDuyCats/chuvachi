@@ -1,0 +1,106 @@
+{
+  "brand": "Nhân viên",
+  "signedInAs": "Đang đăng nhập:",
+  "signOut": "Đăng xuất",
+  "language": "Ngôn ngữ",
+  "nav": {
+    "orders": "Đơn hàng"
+  },
+  "login": {
+    "title": "Đăng nhập nhân viên",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "submit": "Đăng nhập",
+    "submitting": "Đang đăng nhập...",
+    "errors": {
+      "INVALID_CREDENTIALS": "Sai email hoặc mật khẩu.",
+      "ACCOUNT_LOCKED": "Nhập sai quá nhiều lần. Tài khoản bị khóa 15 phút.",
+      "TOO_MANY_REQUESTS": "Thiết bị này thử quá nhiều lần. Vui lòng đợi rồi thử lại.",
+      "NETWORK": "Không kết nối được với server. Kiểm tra lại mạng.",
+      "UNKNOWN": "Có lỗi xảy ra. Vui lòng thử lại."
+    }
+  },
+  "orders": {
+    "title": "Đơn hàng",
+    "days": {
+      "today": "Hôm nay",
+      "tomorrow": "Ngày mai",
+      "upcoming": "Tất cả sắp tới"
+    },
+    "refresh": "Tải lại",
+    "autoRefresh": "Tự cập nhật mỗi 30 giây",
+    "stats": {
+      "active": "Số đơn",
+      "activeNote": "không tính đơn hủy",
+      "portions": "Số phần đã nhận",
+      "portionsNote": "trên giới hạn mỗi ngày",
+      "waiting": "Chờ thanh toán",
+      "waitingNote": "tự hủy sau {minutes} phút",
+      "toDo": "Cần làm",
+      "toDoNote": "đã nhận + đang làm"
+    },
+    "filterLabel": "Lọc theo trạng thái",
+    "all": "Tất cả",
+    "empty": "Không có đơn nào.",
+    "loading": "Đang tải đơn...",
+    "loadError": "Không tải được đơn. Kiểm tra mạng rồi bấm Tải lại.",
+    "asap": "Giao sớm",
+    "portionsShort": "{count} phần",
+    "status": {
+      "PENDING": "Chờ thanh toán",
+      "CONFIRMED": "Đã nhận đơn",
+      "PREPARING": "Đang làm",
+      "READY": "Xong, chờ giao",
+      "COMPLETED": "Đã giao",
+      "CANCELLED": "Đã hủy"
+    },
+    "payment": {
+      "UNPAID": "Chưa thanh toán",
+      "PAID": "Đã thanh toán",
+      "REFUNDED": "Đã hoàn tiền"
+    },
+    "detail": {
+      "placed": "Đặt lúc",
+      "customer": "Khách hàng",
+      "call": "Gọi",
+      "copyAddress": "Sao chép địa chỉ cho tài xế",
+      "copied": "Đã sao chép",
+      "delivery": "Giao hàng",
+      "items": "Các món",
+      "total": "Tổng cộng",
+      "shippingNote": "Khách tự trả phí ship cho tài xế.",
+      "note": "Ghi chú của khách",
+      "payment": "Thanh toán",
+      "history": "Lịch sử",
+      "system": "Hệ thống",
+      "selectHint": "Chọn một đơn để xem chi tiết.",
+      "close": "Đóng"
+    },
+    "actions": {
+      "PENDING": "Đã nhận tiền — xác nhận đơn",
+      "CONFIRMED": "Bắt đầu làm",
+      "PREPARING": "Đã xong, chờ giao",
+      "READY": "Đã giao xong",
+      "cancel": "Hủy đơn",
+      "cancelConfirm": "Đồng ý hủy đơn này",
+      "cancelKeep": "Giữ lại đơn",
+      "cancelReason": "Lý do (không bắt buộc)",
+      "paidWarning": "Đơn này đã thanh toán. Sau khi hủy, hãy chuyển trả tiền cho khách rồi bấm \"Đã hoàn tiền\".",
+      "refund": "Đã hoàn tiền",
+      "working": "Đang lưu..."
+    },
+    "events": {
+      "ADVANCE": "Đổi trạng thái",
+      "CANCEL": "Hủy đơn",
+      "AUTO_CANCEL": "Tự hủy (chưa thanh toán)",
+      "REFUND": "Đã hoàn tiền"
+    },
+    "errors": {
+      "ORDER_CHANGED": "Người khác vừa cập nhật đơn này. Danh sách đã được tải lại.",
+      "CANNOT_ADVANCE": "Đơn này không chuyển tiếp được.",
+      "CANNOT_CANCEL": "Đơn này không hủy được.",
+      "CANNOT_REFUND": "Chỉ đơn đã hủy và đã thanh toán mới đánh dấu hoàn tiền được.",
+      "UNKNOWN": "Có lỗi xảy ra. Vui lòng thử lại."
+    }
+  }
+}

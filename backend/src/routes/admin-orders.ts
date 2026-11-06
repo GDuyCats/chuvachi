@@ -1,0 +1,201 @@
+import { Router } from "express";
+import { OrderStatus, PaymentStatus, Prisma } from "@prisma/client";
+import { z } from "zod";
+import { requireAdmin } from "../lib/auth";
+import { prisma } from "../lib/prisma";
+import { formatDateOnly, parseDateOnly, vietnamToday } from "../lib/time";
+import { advanceOrder, cancelOrder, markRefunded, OrderActionError } from "../services/order-admin-service";
+
+export const adminOrdersRouter = Router();
+adminOrdersRouter.use(requireAdmin);
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+type ItemSnapshot = { product?: { nameVi: string; nameEn: string }; flavor?: { nameVi: string; nameEn: string } | null; package?: { nameVi: string; nameEn: string } | null };
+
+function itemNames(snapshot: Prisma.JsonValue, fallback: string) {
+  const data = (typeof snapshot === "object" && snapshot !== null && !Array.isArray(snapshot) ? snapshot : {}) as ItemSnapshot;
+  const parts = [data.product, data.flavor, data.package].filter((p): p is { nameVi: string; nameEn: string } => Boolean(p));
+  return {
+    vi: parts.length ? parts.map((p) => p.nameVi).join(" · ") : fallback,
+    en: parts.length ? parts.map((p) => p.nameEn).join(" · ") : fallback,
+  };
+}
+
+const orderInclude = {
+  items: true,
+  deliveryZone: true,
+  events: { orderBy: { createdAt: "asc" }, include: { adminUser: { select: { name: true } } } },
+} satisfies Prisma.OrderInclude;
+
+type FullOrder = Prisma.OrderGetPayload<{ include: typeof orderInclude }>;
+
+// Full order details for staff (unlike the customer view, nothing is hidden here).
+function toAdminOrder(order: FullOrder) {
+  return {
+    code: order.code,
+    status: order.status,
+    paymentStatus: order.paymentStatus,
+    customerName: order.customerName,
+    customerPhone: order.customerPhone,
+    address: order.address,
+    note: order.note,
+    locale: order.locale,
+    deliveryZone: { vi: order.deliveryZone.nameVi, en: order.deliveryZone.nameEn },
+    deliveryType: order.deliveryType,
+    deliveryDate: formatDateOnly(order.deliveryDate),
+    deliverySlot: order.deliverySlot,
+    totalPortions: order.totalPortions,
+    total: order.total,
+    items: order.items.map((item) => ({
+      name: itemNames(item.optionsSnapshot, item.nameSnapshot),
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      portions: item.portions,
+    })),
+    events: order.events.map((event) => ({
+      action: event.action,
+      fromStatus: event.fromStatus,
+      toStatus: event.toStatus,
+      note: event.note,
+      by: event.adminUser?.name ?? null,
+      at: event.createdAt.toISOString(),
+    })),
+    createdAt: order.createdAt.toISOString(),
+    updatedAt: order.updatedAt.toISOString(),
+  };
+}
+
+const listQuery = z.object({
+  day: z.enum(["today", "tomorrow", "upcoming"]).default("today"),
+  status: z.nativeEnum(OrderStatus).optional(),
+});
+
+// GET /api/admin/orders?day=today|tomorrow|upcoming&status=PENDING
+adminOrdersRouter.get("/", async (req, res) => {
+  const parsed = listQuery.safeParse(req.query);
+  if (!parsed.success) {
+    res.status(400).json({ error: "VALIDATION_ERROR" });
+    return;
+  }
+  const { day, status } = parsed.data;
+  const today = vietnamToday();
+  const singleDay = day === "today" ? today : day === "tomorrow" ? new Date(today.getTime() + DAY_MS) : null;
+  const dateFilter: Prisma.OrderWhereInput = singleDay ? { deliveryDate: singleDay } : { deliveryDate: { gte: today } };
+
+  const [orders, settings, capacity, statusCounts] = await Promise.all([
+    prisma.order.findMany({
+      where: { ...dateFilter, ...(status ? { status } : {}) },
+      include: orderInclude,
+      orderBy: [{ deliveryDate: "asc" }, { deliverySlot: "asc" }, { createdAt: "asc" }],
+      take: 300,
+    }),
+    prisma.shopSetting.findUnique({ where: { id: 1 } }),
+    singleDay ? prisma.dailyCapacity.findUnique({ where: { date: singleDay } }) : null,
+    prisma.order.groupBy({ by: ["status"], where: dateFilter, _count: { _all: true } }),
+  ]);
+
+  const counts = Object.fromEntries(statusCounts.map((row) => [row.status, row._count._all]));
+  const unpaidPending = await prisma.order.count({
+    where: { ...dateFilter, status: OrderStatus.PENDING, paymentStatus: PaymentStatus.UNPAID },
+  });
+
+  res.json({
+    day,
+    date: singleDay ? formatDateOnly(singleDay) : null,
+    summary: {
+      counts,
+      activeOrders: Object.entries(counts)
+        .filter(([key]) => key !== OrderStatus.CANCELLED)
+        .reduce((sum, [, value]) => sum + value, 0),
+      bookedPortions: capacity?.bookedPortions ?? 0,
+      maxPortions: capacity?.maxPortions ?? settings?.defaultDailyCapacity ?? 0,
+      waitingForPayment: unpaidPending,
+      unpaidCancelMinutes: settings?.unpaidCancelMinutes ?? 0,
+    },
+    orders: orders.map(toAdminOrder),
+  });
+});
+
+const codeSchema = z.string().regex(/^[A-Z0-9]{4,12}$/);
+const actionBody = z.object({
+  expectedStatus: z.nativeEnum(OrderStatus),
+  note: z.string().trim().max(300).optional(),
+});
+
+async function sendOrder(res: import("express").Response, code: string) {
+  const order = await prisma.order.findUnique({ where: { code }, include: orderInclude });
+  if (!order) {
+    res.status(404).json({ error: "ORDER_NOT_FOUND" });
+    return;
+  }
+  res.json(toAdminOrder(order));
+}
+
+function handleActionError(res: import("express").Response, error: unknown): void {
+  if (error instanceof OrderActionError) {
+    res.status(error.status).json({ error: error.code });
+    return;
+  }
+  throw error;
+}
+
+// GET /api/admin/orders/:code
+adminOrdersRouter.get("/:code", async (req, res) => {
+  const code = codeSchema.safeParse(req.params.code.toUpperCase());
+  if (!code.success) {
+    res.status(400).json({ error: "VALIDATION_ERROR" });
+    return;
+  }
+  await sendOrder(res, code.data);
+});
+
+// POST /api/admin/orders/:code/advance  { expectedStatus }
+adminOrdersRouter.post("/:code/advance", async (req, res) => {
+  const code = codeSchema.safeParse(req.params.code.toUpperCase());
+  const body = actionBody.safeParse(req.body);
+  if (!code.success || !body.success) {
+    res.status(400).json({ error: "VALIDATION_ERROR" });
+    return;
+  }
+  try {
+    await advanceOrder(code.data, body.data.expectedStatus, req.admin!.id);
+  } catch (error) {
+    handleActionError(res, error);
+    return;
+  }
+  await sendOrder(res, code.data);
+});
+
+// POST /api/admin/orders/:code/cancel  { expectedStatus, note? }
+adminOrdersRouter.post("/:code/cancel", async (req, res) => {
+  const code = codeSchema.safeParse(req.params.code.toUpperCase());
+  const body = actionBody.safeParse(req.body);
+  if (!code.success || !body.success) {
+    res.status(400).json({ error: "VALIDATION_ERROR" });
+    return;
+  }
+  try {
+    await cancelOrder(code.data, body.data.expectedStatus, req.admin!.id, body.data.note);
+  } catch (error) {
+    handleActionError(res, error);
+    return;
+  }
+  await sendOrder(res, code.data);
+});
+
+// POST /api/admin/orders/:code/refund
+adminOrdersRouter.post("/:code/refund", async (req, res) => {
+  const code = codeSchema.safeParse(req.params.code.toUpperCase());
+  if (!code.success) {
+    res.status(400).json({ error: "VALIDATION_ERROR" });
+    return;
+  }
+  try {
+    await markRefunded(code.data, req.admin!.id);
+  } catch (error) {
+    handleActionError(res, error);
+    return;
+  }
+  await sendOrder(res, code.data);
+});

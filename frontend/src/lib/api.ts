@@ -39,6 +39,20 @@ async function getJson<T>(path: string): Promise<T> {
   return (await response.json()) as T;
 }
 
+// One product, or null when it doesn't exist (or is hidden).
+export async function getProduct(locale: Locale, slug: string): Promise<Product | null> {
+  "use cache";
+  cacheLife("minutes");
+  const response = await fetch(apiUrl(`/api/products/${encodeURIComponent(slug)}?locale=${locale}`));
+  if (response.status === 404) {
+    return null;
+  }
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.status} /api/products/${slug}`);
+  }
+  return (await response.json()) as Product;
+}
+
 // Product list for the menu. Cached for a few minutes so the site stays fast
 // and the backend is not called on every visit.
 export async function getProducts(locale: Locale): Promise<Product[]> {

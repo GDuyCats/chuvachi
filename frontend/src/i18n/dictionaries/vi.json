@@ -101,5 +101,25 @@
     "countOther": "{count} loại bánh",
     "view": "Xem",
     "empty": "Chưa có bánh trong mục này."
+  },
+  "productDetail": {
+    "flavor": "Vị",
+    "size": "Quy cách",
+    "quantity": "Số lượng",
+    "decrease": "Giảm số lượng",
+    "increase": "Tăng số lượng",
+    "addToOrder": "Thêm vào đơn",
+    "added": "Đã thêm vào đơn ({count} món).",
+    "viewOrder": "Xem đơn và đặt hàng",
+    "messengerQuestion": "Cần hỏi thêm hoặc đặt đơn lớn? Nhắn tiệm qua Messenger",
+    "onePortion": "1 phần",
+    "portionsEach": "{count} phần · {price} mỗi phần",
+    "storageTitle": "Bảo quản",
+    "storageText": "Bảo quản lạnh. Ngon nhất trong vòng 24 giờ.",
+    "promiseTitle": "Cam kết của tiệm",
+    "promiseText": "Bánh được làm theo từng đơn nên tiệm không hoàn tiền khi bạn đổi ý. Nếu đơn có vấn đề, bạn gửi ảnh cho tiệm trong vòng 2 giờ sau khi nhận, tiệm sẽ làm lại bánh mới hoặc tặng coupon cho đơn sau.",
+    "readPolicies": "Xem chính sách",
+    "alsoLike": "Có thể bạn sẽ thích",
+    "view": "Xem"
   }
 }

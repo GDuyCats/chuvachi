@@ -101,5 +101,25 @@
     "countOther": "{count} cakes",
     "view": "View",
     "empty": "No cakes in this category yet."
+  },
+  "productDetail": {
+    "flavor": "Flavor",
+    "size": "Size",
+    "quantity": "Quantity",
+    "decrease": "Decrease quantity",
+    "increase": "Increase quantity",
+    "addToOrder": "Add to order",
+    "added": "Added to your order ({count} items).",
+    "viewOrder": "View order and check out",
+    "messengerQuestion": "Questions or a large order? Message us on Messenger",
+    "onePortion": "1 portion",
+    "portionsEach": "{count} portions · {price} each",
+    "storageTitle": "Storage",
+    "storageText": "Keep refrigerated. Best enjoyed within 24 hours.",
+    "promiseTitle": "Our promise",
+    "promiseText": "Cakes are made fresh to order, so we can't refund a change of mind. If something is wrong with your order, send us a photo within 2 hours of delivery and we'll make it right with a fresh cake or a coupon.",
+    "readPolicies": "Read our policies",
+    "alsoLike": "You may also like",
+    "view": "View"
   }
 }

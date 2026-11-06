@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
+import { CartBadge } from "./CartBadge";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
 type Props = {
@@ -40,12 +41,13 @@ export function SiteHeader({ lang, dict }: Props) {
         <Link
           href={`/${lang}/order`}
           aria-label={dict.cart}
-          className="flex h-11 w-11 items-center justify-center text-ink"
+          className="relative flex h-11 w-11 items-center justify-center text-ink"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M5 8h14l-1 12H6z" stroke="currentColor" strokeWidth="2" fill="none" strokeLinejoin="round" />
             <path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" strokeWidth="2" fill="none" />
           </svg>
+          <CartBadge />
         </Link>
       </div>
     </header>

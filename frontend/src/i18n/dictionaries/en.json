@@ -34,7 +34,61 @@
     "rights": "All rights reserved."
   },
   "home": {
-    "placeholderTitle": "Fresh desserts, made every day",
-    "placeholderText": "The homepage is being built. Check back soon!"
+    "hero": {
+      "eyebrow": "Just launched",
+      "title": "Passion fruit season is here",
+      "subtitle": "Passion fruit mousse — lightly tart, chilled, and melts in your mouth.",
+      "cta": "See it now"
+    },
+    "menuTitle": "Menu",
+    "categories": {
+      "new": "New",
+      "panna-cotta": "Panna cotta",
+      "tiramisu": "Tiramisu",
+      "mousse": "Mousse",
+      "brownie": "Brownie"
+    },
+    "seasonal": {
+      "title": "Seasonal specials",
+      "viewAll": "View all",
+      "eyebrow": "This month",
+      "name": "Tiramisu season",
+      "description": "Our tiramisu flavors for the month — made fresh every day.",
+      "cta": "See the season",
+      "orderNow": "Order now",
+      "scrollHint": "Swipe to see more"
+    },
+    "comingSoon": {
+      "title": "Coming soon",
+      "items": [
+        {
+          "date": "Dec 15",
+          "name": "Strawberry mousse",
+          "note": "Made with Da Lat strawberries"
+        },
+        {
+          "date": "Dec 20",
+          "name": "Christmas brownie",
+          "note": "Cinnamon and orange"
+        },
+        {
+          "date": "Jan 01",
+          "name": "Lunar New Year panna cotta",
+          "note": "A box of 6 to share"
+        }
+      ]
+    }
+  },
+  "product": {
+    "new": "New",
+    "from": "From",
+    "photoComingSoon": "Photo coming soon",
+    "names": {
+      "panna-cotta": "Panna cotta",
+      "classic-tiramisu": "Classic tiramisu",
+      "matcha-tiramisu": "Matcha tiramisu",
+      "passion-fruit-mousse": "Passion fruit mousse",
+      "brownie": "Fudgy brownie"
+    }
   }
 }

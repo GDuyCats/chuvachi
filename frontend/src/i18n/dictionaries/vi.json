@@ -34,7 +34,61 @@
     "rights": "Bảo lưu mọi quyền."
   },
   "home": {
-    "placeholderTitle": "Bánh ngọt làm mới mỗi ngày",
-    "placeholderText": "Trang chủ đang được xây dựng. Hẹn bạn sớm quay lại!"
+    "hero": {
+      "eyebrow": "Bánh mới",
+      "title": "Mùa chanh dây đã đến",
+      "subtitle": "Mousse chanh dây — chua nhẹ, mát lạnh, tan ngay trong miệng.",
+      "cta": "Xem ngay"
+    },
+    "menuTitle": "Menu",
+    "categories": {
+      "new": "Bánh mới",
+      "panna-cotta": "Panna cotta",
+      "tiramisu": "Tiramisu",
+      "mousse": "Mousse",
+      "brownie": "Brownie"
+    },
+    "seasonal": {
+      "title": "Bánh theo mùa",
+      "viewAll": "Xem tất cả",
+      "eyebrow": "Tháng này",
+      "name": "Mùa tiramisu",
+      "description": "Các vị tiramisu của tháng — làm mới mỗi ngày.",
+      "cta": "Xem cả mùa",
+      "orderNow": "Đặt ngay",
+      "scrollHint": "Vuốt để xem thêm"
+    },
+    "comingSoon": {
+      "title": "Sắp ra mắt",
+      "items": [
+        {
+          "date": "15/12",
+          "name": "Mousse dâu tây",
+          "note": "Dâu Đà Lạt theo mùa"
+        },
+        {
+          "date": "20/12",
+          "name": "Brownie Giáng Sinh",
+          "note": "Vị quế và cam"
+        },
+        {
+          "date": "01/01",
+          "name": "Panna cotta Tết",
+          "note": "Hộp 6 phần để chia sẻ"
+        }
+      ]
+    }
+  },
+  "product": {
+    "new": "Mới",
+    "from": "Từ",
+    "photoComingSoon": "Ảnh đang cập nhật",
+    "names": {
+      "panna-cotta": "Panna cotta",
+      "classic-tiramisu": "Tiramisu cổ điển",
+      "matcha-tiramisu": "Tiramisu matcha",
+      "passion-fruit-mousse": "Mousse chanh dây",
+      "brownie": "Brownie"
+    }
   }
 }

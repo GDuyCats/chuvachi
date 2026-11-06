@@ -130,7 +130,10 @@ export function ConfirmationView({ lang, labels }: Props) {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <Link href={`/${lang}/track`} className="flex min-h-13 items-center bg-black px-7 font-bold text-white">
+        <Link
+          href={`/${lang}/track?code=${encodeURIComponent(order.code)}`}
+          className="flex min-h-13 items-center bg-black px-7 font-bold text-white"
+        >
           {labels.track}
         </Link>
         <Link href={`/${lang}/menu`} className="flex min-h-13 items-center border-[1.5px] border-black px-7 font-bold">

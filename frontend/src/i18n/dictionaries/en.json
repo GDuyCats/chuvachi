@@ -211,5 +211,52 @@
     "backToMenu": "Back to menu",
     "missingTitle": "We can't show this order here",
     "missingText": "If you placed an order, use your order code and phone number to look it up."
+  },
+  "track": {
+    "title": "Track your order",
+    "intro": "Enter the order code from your confirmation page and the phone number you ordered with.",
+    "code": "Order code",
+    "codePlaceholder": "CV7K2QXM",
+    "phone": "Phone number",
+    "phonePlaceholder": "0912 345 678",
+    "submit": "Check order",
+    "checking": "Checking...",
+    "notFoundTitle": "We couldn't find that order.",
+    "notFoundText": "Check the code and the phone number. If it still doesn't work, message us and we'll help.",
+    "orderLabel": "Order",
+    "progressLabel": "Order progress",
+    "updated": "Last updated",
+    "deliveryTitle": "Delivery",
+    "deliveryAsap": "As soon as possible",
+    "paymentTitle": "Payment",
+    "paid": "Paid",
+    "unpaid": "Waiting for transfer",
+    "refunded": "Refunded",
+    "itemsTitle": "Items",
+    "total": "Total",
+    "shippingNote": "Delivery fee is paid to the driver.",
+    "help": "Need to change something? Message us as soon as possible.",
+    "steps": {
+      "PENDING": "Waiting for payment",
+      "CONFIRMED": "Order received",
+      "PREPARING": "Preparing",
+      "READY": "Ready, waiting for driver",
+      "COMPLETED": "Delivered"
+    },
+    "headlines": {
+      "PENDING": "We have your order — waiting for your transfer",
+      "CONFIRMED": "Payment received — your order is confirmed",
+      "PREPARING": "Your cakes are being made",
+      "READY": "All done — waiting for the driver",
+      "COMPLETED": "Delivered. Enjoy!",
+      "CANCELLED": "This order was cancelled"
+    },
+    "cancelledText": "If you think this is a mistake, please message us.",
+    "errors": {
+      "TOO_MANY_REQUESTS": "Too many lookups. Please wait a while and try again.",
+      "NETWORK": "We couldn't reach the shop. Check your connection and try again.",
+      "INVALID_LOOKUP": "Please enter both the order code and the phone number.",
+      "UNKNOWN": "Something went wrong. Please try again."
+    }
   }
 }

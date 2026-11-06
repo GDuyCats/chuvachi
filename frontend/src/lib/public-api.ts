@@ -97,3 +97,27 @@ export function fetchOrderSettings(locale: Locale): Promise<OrderSettings> {
 export function placeOrder(body: PlaceOrderRequest): Promise<PlaceOrderResult> {
   return request<PlaceOrderResult>("/api/orders", { method: "POST", body: JSON.stringify(body) });
 }
+
+export type OrderStatus = "PENDING" | "CONFIRMED" | "PREPARING" | "READY" | "COMPLETED" | "CANCELLED";
+
+export type OrderLookup = {
+  code: string;
+  status: OrderStatus;
+  paymentStatus: "UNPAID" | "PAID" | "REFUNDED";
+  customerName: string;
+  address: string; // partly hidden by the server
+  deliveryZone: string;
+  deliveryType: DeliveryType;
+  deliveryDate: string;
+  deliverySlot: string | null;
+  totalPortions: number;
+  total: number;
+  items: { name: string; unitPrice: number; quantity: number; portions: number }[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export function fetchOrder(code: string, phone: string, locale: Locale): Promise<OrderLookup> {
+  const query = new URLSearchParams({ phone, locale });
+  return request<OrderLookup>(`/api/orders/${encodeURIComponent(code)}?${query.toString()}`, { cache: "no-store" });
+}

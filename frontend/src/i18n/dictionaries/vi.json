@@ -211,5 +211,52 @@
     "backToMenu": "Về menu",
     "missingTitle": "Không hiển thị được đơn ở đây",
     "missingText": "Nếu bạn đã đặt hàng, hãy dùng mã đơn và số điện thoại để tra cứu."
+  },
+  "track": {
+    "title": "Tra cứu đơn hàng",
+    "intro": "Nhập mã đơn trên trang đặt thành công và số điện thoại bạn dùng khi đặt.",
+    "code": "Mã đơn",
+    "codePlaceholder": "CV7K2QXM",
+    "phone": "Số điện thoại",
+    "phonePlaceholder": "0912 345 678",
+    "submit": "Tra cứu",
+    "checking": "Đang tra cứu...",
+    "notFoundTitle": "Không tìm thấy đơn này.",
+    "notFoundText": "Bạn kiểm tra lại mã đơn và số điện thoại nhé. Nếu vẫn không được, nhắn tiệm để được hỗ trợ.",
+    "orderLabel": "Đơn",
+    "progressLabel": "Tiến độ đơn hàng",
+    "updated": "Cập nhật lúc",
+    "deliveryTitle": "Giao hàng",
+    "deliveryAsap": "Giao sớm nhất",
+    "paymentTitle": "Thanh toán",
+    "paid": "Đã thanh toán",
+    "unpaid": "Chờ chuyển khoản",
+    "refunded": "Đã hoàn tiền",
+    "itemsTitle": "Các món",
+    "total": "Tổng cộng",
+    "shippingNote": "Phí ship bạn trả cho tài xế.",
+    "help": "Cần thay đổi gì? Bạn nhắn tiệm càng sớm càng tốt nhé.",
+    "steps": {
+      "PENDING": "Chờ thanh toán",
+      "CONFIRMED": "Đã nhận đơn",
+      "PREPARING": "Đang làm",
+      "READY": "Xong, chờ giao",
+      "COMPLETED": "Đã giao"
+    },
+    "headlines": {
+      "PENDING": "Tiệm đã nhận đơn — đang chờ bạn chuyển khoản",
+      "CONFIRMED": "Đã nhận tiền — đơn của bạn đã được xác nhận",
+      "PREPARING": "Bánh của bạn đang được làm",
+      "READY": "Bánh đã xong — đang chờ tài xế",
+      "COMPLETED": "Đã giao. Chúc bạn ngon miệng!",
+      "CANCELLED": "Đơn này đã bị hủy"
+    },
+    "cancelledText": "Nếu bạn nghĩ có nhầm lẫn, hãy nhắn cho tiệm nhé.",
+    "errors": {
+      "TOO_MANY_REQUESTS": "Bạn tra cứu quá nhiều lần. Đợi một lát rồi thử lại nhé.",
+      "NETWORK": "Không kết nối được với tiệm. Bạn kiểm tra mạng rồi thử lại nhé.",
+      "INVALID_LOOKUP": "Bạn nhập cả mã đơn và số điện thoại nhé.",
+      "UNKNOWN": "Có lỗi xảy ra. Bạn thử lại giúp tiệm nhé."
+    }
   }
 }

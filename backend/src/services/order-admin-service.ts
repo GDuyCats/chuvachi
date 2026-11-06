@@ -1,6 +1,7 @@
 import { OrderStatus, PaymentStatus, Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { formatDateOnly } from "../lib/time";
+import { notifyAutoCancelled } from "./notifications";
 
 // The normal path an order follows. Cancelling is possible from any step before "completed".
 const NEXT_STATUS: Partial<Record<OrderStatus, OrderStatus>> = {
@@ -113,17 +114,18 @@ export async function cancelUnpaidOrders(): Promise<number> {
     take: 100,
   });
 
-  let cancelled = 0;
+  const cancelled: string[] = [];
   for (const { code } of overdue) {
     try {
       await prisma.$transaction((tx) =>
         cancelInTransaction(tx, code, OrderStatus.PENDING, "AUTO_CANCEL", null, "Unpaid after time limit"),
       );
-      cancelled += 1;
+      cancelled.push(code);
     } catch (error) {
       // Staff confirmed it at the same moment: that's fine, skip it.
       if (!(error instanceof OrderActionError)) throw error;
     }
   }
-  return cancelled;
+  await notifyAutoCancelled(cancelled);
+  return cancelled.length;
 }

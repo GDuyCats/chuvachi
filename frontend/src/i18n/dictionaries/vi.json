@@ -14,7 +14,9 @@
     "comingSoon": "Sắp ra mắt",
     "contact": "Liên hệ",
     "language": "Ngôn ngữ",
-    "cart": "Đơn hàng của bạn"
+    "cart": "Đơn hàng của bạn",
+    "signIn": "Đăng nhập",
+    "account": "Tài khoản của bạn"
   },
   "footer": {
     "tagline": "Panna cotta, tiramisu, mousse và brownie — làm mới mỗi ngày.",
@@ -163,7 +165,10 @@
     "consentPrivacy": "Chính sách quyền riêng tư",
     "consentAnd": "và",
     "consentPolicies": "Chính sách đặt hàng",
-    "consentAfter": "."
+    "consentAfter": ".",
+    "signedInAs": "Đang đăng nhập bằng {email}. Đơn sẽ được lưu vào tài khoản của bạn.",
+    "signInHint": "Có tài khoản? Đơn sẽ được lưu lại và thông tin tự điền.",
+    "signInLink": "Đăng nhập"
   },
   "thanks": {
     "title": "Cảm ơn bạn! Tiệm đã nhận đơn.",
@@ -253,5 +258,62 @@
     "email": "email",
     "messenger": "Messenger của tiệm (ở cuối trang)",
     "seeAlso": "Xem thêm:"
+  },
+  "account": {
+    "signinTitle": "Đăng nhập",
+    "signupTitle": "Tạo tài khoản",
+    "signinIntro": "Đăng nhập để xem lại đơn và đặt bánh nhanh hơn.",
+    "signupIntro": "Tạo tài khoản miễn phí chỉ với một lần bấm.",
+    "benefits": [
+      "Xem lại mọi đơn đã đặt ở một chỗ",
+      "Tự điền tên, số điện thoại và địa chỉ khi đặt bánh",
+      "Sắp có: quà tặng khi bạn thử đủ bánh của một mùa"
+    ],
+    "googleNote": "Lần đầu bấm sẽ tự tạo tài khoản. Tiệm chỉ nhận tên, email và ảnh đại diện từ Google, không bao giờ thấy mật khẩu của bạn.",
+    "privacyLink": "Chính sách quyền riêng tư",
+    "noAccount": "Chưa có tài khoản?",
+    "haveAccount": "Đã có tài khoản?",
+    "signupLink": "Tạo tài khoản",
+    "signinLink": "Đăng nhập",
+    "guestLink": "Hoặc đặt bánh không cần tài khoản",
+    "signingIn": "Đang đăng nhập...",
+    "notConfigured": "Đăng nhập bằng Google chưa được cài đặt.",
+    "loading": "Đang tải tài khoản...",
+    "hello": "Chào {name}",
+    "ordersTitle": "Đơn của bạn",
+    "noOrders": "Bạn chưa có đơn nào trong tài khoản.",
+    "toMenu": "Xem menu",
+    "asap": "Giao sớm nhất",
+    "cancelled": "Đã hủy",
+    "claimTitle": "Thêm đơn đã đặt trước đây",
+    "claimHint": "Đơn đặt khi chưa đăng nhập? Nhập mã đơn và số điện thoại đã dùng để đưa đơn vào tài khoản.",
+    "code": "Mã đơn",
+    "phone": "Số điện thoại",
+    "claim": "Thêm đơn",
+    "claimDone": "Đã thêm đơn vào tài khoản.",
+    "detailsTitle": "Thông tin giao hàng",
+    "detailsHint": "Dùng để điền sẵn khi bạn đặt bánh.",
+    "name": "Họ tên",
+    "area": "Khu vực",
+    "areaNone": "Chưa chọn",
+    "address": "Địa chỉ",
+    "save": "Lưu thông tin",
+    "saved": "Đã lưu thông tin.",
+    "working": "Đang xử lý...",
+    "signOut": "Đăng xuất",
+    "deleteAccount": "Xóa tài khoản",
+    "deleteExplain": "Tài khoản và thông tin giao hàng đã lưu sẽ bị xóa vĩnh viễn. Các đơn cũ vẫn được tiệm giữ để làm sổ sách, nhưng không còn gắn với bạn.",
+    "deleteConfirm": "Xóa tài khoản",
+    "keep": "Giữ lại",
+    "errors": {
+      "INVALID_GOOGLE_TOKEN": "Google không xác nhận được tài khoản. Bạn thử lại nhé.",
+      "SIGN_IN_NOT_CONFIGURED": "Đăng nhập bằng Google chưa được cài đặt.",
+      "ORDER_NOT_FOUND": "Không tìm thấy đơn với mã và số điện thoại này.",
+      "ORDER_IN_OTHER_ACCOUNT": "Đơn này đã thuộc một tài khoản khác.",
+      "VALIDATION_ERROR": "Bạn kiểm tra lại thông tin giúp tiệm nhé.",
+      "TOO_MANY_REQUESTS": "Bạn thử quá nhiều lần. Đợi một lát rồi thử lại nhé.",
+      "NETWORK": "Không kết nối được với tiệm. Bạn kiểm tra mạng rồi thử lại nhé.",
+      "UNKNOWN": "Có lỗi xảy ra. Bạn thử lại giúp tiệm nhé."
+    }
   }
 }

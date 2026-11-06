@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
+import { AccountLink } from "./account/AccountLink";
 import { CartBadge } from "./CartBadge";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
@@ -36,8 +37,9 @@ export function SiteHeader({ lang, dict }: Props) {
         ))}
       </nav>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5 md:gap-3">
         <LanguageSwitcher current={lang} label={dict.language} />
+        <AccountLink lang={lang} signInLabel={dict.signIn} accountLabel={dict.account} />
         <Link
           href={`/${lang}/order`}
           aria-label={dict.cart}

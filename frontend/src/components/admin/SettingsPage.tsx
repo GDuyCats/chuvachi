@@ -285,6 +285,7 @@ export function SettingsPage() {
         </Section>
       </form>
 
+      <TelegramSection />
       <ZonesSection zones={bundle.zones} onSaved={applySavedSection} onError={handleError} />
       <CapacitySection days={bundle.capacity} lang={lang} onSaved={applySavedSection} onError={handleError} />
     </div>
@@ -461,3 +462,42 @@ function CapacitySection({ days, lang, onSaved, onError }: SectionProps & { days
   );
 }
 
+
+// Sends a test Telegram message so staff can check the setup.
+function TelegramSection() {
+  const router = useRouter();
+  const toast = useToast();
+  const { t } = useAdminI18n();
+  const m = t.settings.telegram;
+  const [busy, setBusy] = useState(false);
+
+  async function test() {
+    setBusy(true);
+    try {
+      await adminApi.testTelegram();
+      toast.success(m.sent);
+    } catch (error) {
+      if (error instanceof AdminApiError && error.status === 401) {
+        router.replace("/admin/login");
+        return;
+      }
+      const code = error instanceof AdminApiError ? error.code : "UNKNOWN";
+      toast.error(code === "TELEGRAM_NOT_CONFIGURED" ? m.notConfigured : code === "TELEGRAM_FAILED" ? m.failed : t.settings.unknownError);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Section title={m.title} hint={m.hint}>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={test}
+        className="min-h-11 self-start border-[1.5px] border-black px-5 text-sm font-bold disabled:opacity-60"
+      >
+        {busy ? m.sending : m.test}
+      </button>
+    </Section>
+  );
+}

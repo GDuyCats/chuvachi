@@ -196,6 +196,15 @@
       "email": "Email liên hệ",
       "retention": "Giữ thông tin khách trong (tháng)",
       "retentionHint": "Sau số tháng này kể từ ngày giao, tên, số điện thoại và địa chỉ của khách được tự động xóa. Số tiền và món hàng vẫn giữ để làm sổ sách."
+    },
+    "telegram": {
+      "title": "Thông báo Telegram",
+      "hint": "Nhân viên nhận tin Telegram khi có đơn mới và khi đơn bị tự hủy. Tin nhắn không chứa tên, số điện thoại hay địa chỉ của khách.",
+      "test": "Gửi tin nhắn thử",
+      "sending": "Đang gửi...",
+      "sent": "Đã gửi tin thử. Bạn mở nhóm Telegram xem nhé.",
+      "notConfigured": "Chưa cài Telegram (TELEGRAM_BOT_TOKEN và TELEGRAM_CHAT_ID trong file .env của backend).",
+      "failed": "Telegram không nhận tin. Kiểm tra lại token của bot, chat id, và bot đã được thêm vào nhóm chưa."
     }
   },
   "products": {

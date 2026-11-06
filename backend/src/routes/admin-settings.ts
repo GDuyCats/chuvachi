@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { requireAdmin } from "../lib/auth";
 import { prisma } from "../lib/prisma";
+import { isTelegramConfigured, sendTelegram } from "../lib/telegram";
 import { clockToMinutes, formatDateOnly, parseDateOnly, vietnamToday } from "../lib/time";
 
 export const adminSettingsRouter = Router();
@@ -200,4 +201,20 @@ adminSettingsRouter.put("/capacity/:date", async (req, res) => {
     create: { date, maxPortions: parsed.data.maxPortions },
   });
   res.json(await loadEverything());
+});
+
+// ---------- Telegram ----------
+
+// POST /api/admin/telegram/test - sends a test message so staff can check the setup.
+adminSettingsRouter.post("/telegram/test", async (req, res) => {
+  if (!isTelegramConfigured()) {
+    res.status(503).json({ error: "TELEGRAM_NOT_CONFIGURED" });
+    return;
+  }
+  const ok = await sendTelegram(`✅ Chuvachi test message, sent by ${req.admin!.name}. Notifications are working.`);
+  if (!ok) {
+    res.status(502).json({ error: "TELEGRAM_FAILED" });
+    return;
+  }
+  res.json({ ok: true });
 });

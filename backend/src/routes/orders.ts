@@ -7,6 +7,8 @@ import { formatDateOnly, vietnamTimeOn, vietnamToday } from "../lib/time";
 import { normalizePhone, PHONE_PATTERN } from "../lib/phone";
 import { prisma } from "../lib/prisma";
 import { createOrder, findOrderForCustomer, OrderError } from "../services/order-service";
+import { currentCustomerId } from "../lib/customer-auth";
+import { notifyNewOrder } from "../services/notifications";
 
 export const ordersRouter = Router();
 
@@ -85,8 +87,11 @@ ordersRouter.post("/orders", placeOrderLimiter, async (req, res) => {
   }
 
   try {
-    const order = await createOrder(parsed.data);
+    const customerId = await currentCustomerId(req); // null for guests
+    const order = await createOrder({ ...parsed.data, customerId });
     res.status(201).json(order);
+    // Tell staff on Telegram (after answering the customer, so a slow Telegram never delays them).
+    void notifyNewOrder(order.code).catch((error: unknown) => console.error("New order notification failed:", error));
   } catch (error) {
     if (error instanceof OrderError) {
       res.status(error.status).json({ error: error.code, message: error.message });

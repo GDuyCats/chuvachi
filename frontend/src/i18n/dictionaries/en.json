@@ -14,7 +14,9 @@
     "comingSoon": "Coming Soon",
     "contact": "Contact",
     "language": "Language",
-    "cart": "Your order"
+    "cart": "Your order",
+    "signIn": "Sign in",
+    "account": "Your account"
   },
   "footer": {
     "tagline": "Panna cotta, tiramisu, mousse and brownies — made fresh every day.",
@@ -163,7 +165,10 @@
     "consentPrivacy": "Privacy policy",
     "consentAnd": "and the",
     "consentPolicies": "Ordering policy",
-    "consentAfter": "."
+    "consentAfter": ".",
+    "signedInAs": "Signed in as {email}. This order will be saved to your account.",
+    "signInHint": "Have an account? Your order is saved and your details filled in.",
+    "signInLink": "Sign in"
   },
   "thanks": {
     "title": "Thank you! Your order is in.",
@@ -253,5 +258,62 @@
     "email": "email",
     "messenger": "our Messenger (at the bottom of the page)",
     "seeAlso": "See also:"
+  },
+  "account": {
+    "signinTitle": "Sign in",
+    "signupTitle": "Create an account",
+    "signinIntro": "Sign in to see your orders and check out faster.",
+    "signupIntro": "Create a free account with one tap.",
+    "benefits": [
+      "All your orders in one place",
+      "Your name, phone and address filled in at checkout",
+      "Coming soon: a treat when you try every cake of a season"
+    ],
+    "googleNote": "Your first sign-in creates the account. We only receive your name, email and profile photo from Google, never your password.",
+    "privacyLink": "Privacy policy",
+    "noAccount": "New here?",
+    "haveAccount": "Already have an account?",
+    "signupLink": "Create an account",
+    "signinLink": "Sign in",
+    "guestLink": "Or order without an account",
+    "signingIn": "Signing in...",
+    "notConfigured": "Sign in with Google is not set up yet.",
+    "loading": "Loading your account...",
+    "hello": "Hi {name}",
+    "ordersTitle": "Your orders",
+    "noOrders": "No orders in your account yet.",
+    "toMenu": "See the menu",
+    "asap": "Earliest delivery",
+    "cancelled": "Cancelled",
+    "claimTitle": "Add an earlier order",
+    "claimHint": "Ordered before signing in? Enter the order code and the phone number you used to add it to your account.",
+    "code": "Order code",
+    "phone": "Phone number",
+    "claim": "Add order",
+    "claimDone": "Order added to your account.",
+    "detailsTitle": "Delivery details",
+    "detailsHint": "Used to fill in checkout for you.",
+    "name": "Full name",
+    "area": "Area",
+    "areaNone": "Not chosen",
+    "address": "Address",
+    "save": "Save details",
+    "saved": "Details saved.",
+    "working": "Working...",
+    "signOut": "Sign out",
+    "deleteAccount": "Delete account",
+    "deleteExplain": "Your account and saved delivery details will be deleted for good. We keep past orders for our accounts, but they will no longer be linked to you.",
+    "deleteConfirm": "Delete account",
+    "keep": "Keep it",
+    "errors": {
+      "INVALID_GOOGLE_TOKEN": "Google couldn't confirm your account. Please try again.",
+      "SIGN_IN_NOT_CONFIGURED": "Sign in with Google is not set up yet.",
+      "ORDER_NOT_FOUND": "No order found with this code and phone number.",
+      "ORDER_IN_OTHER_ACCOUNT": "This order already belongs to another account.",
+      "VALIDATION_ERROR": "Please check your details.",
+      "TOO_MANY_REQUESTS": "Too many tries. Please wait a moment and try again.",
+      "NETWORK": "Can't reach the shop. Please check your connection and try again.",
+      "UNKNOWN": "Something went wrong. Please try again."
+    }
   }
 }

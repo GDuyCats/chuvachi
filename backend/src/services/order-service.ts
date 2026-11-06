@@ -29,6 +29,7 @@ export type CreateOrderInput = {
   deliverySlot?: string; // required for SCHEDULED
   locale: "vi" | "en";
   privacyConsent: true;
+  customerId: number | null; // signed-in customer, or null for a guest
   items: {
     productSlug: string;
     flavorOptionId?: number | null;
@@ -212,6 +213,7 @@ export async function createOrder(input: CreateOrderInput) {
             paymentMethod: PaymentMethod.BANK_TRANSFER,
             privacyConsentAt: new Date(),
             privacyPolicyVersion: PRIVACY_POLICY_VERSION,
+            customerId: input.customerId,
             items: { create: itemsData },
           },
         });
@@ -295,7 +297,7 @@ function isNamePair(value: unknown): value is NamePair {
 }
 
 // Builds "Panna cotta · Mango · Box of 4" in the customer's language from the saved snapshot.
-function describeItem(fallbackName: string, snapshot: Prisma.JsonValue, locale: Locale): string {
+export function describeItem(fallbackName: string, snapshot: Prisma.JsonValue, locale: Locale): string {
   const data = (
     typeof snapshot === "object" && snapshot !== null && !Array.isArray(snapshot) ? snapshot : {}
   ) as Record<string, unknown>;

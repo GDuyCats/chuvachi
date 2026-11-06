@@ -196,6 +196,15 @@
       "email": "Contact email",
       "retention": "Keep customer details for (months)",
       "retentionHint": "After this many months from delivery, the customer's name, phone and address are erased automatically. Amounts and items stay for your accounts."
+    },
+    "telegram": {
+      "title": "Telegram notifications",
+      "hint": "Staff get a Telegram message for every new order and every auto-cancelled order. Messages contain no customer name, phone or address.",
+      "test": "Send a test message",
+      "sending": "Sending...",
+      "sent": "Test message sent. Check your Telegram group.",
+      "notConfigured": "Telegram is not set up yet (TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in the backend .env).",
+      "failed": "Telegram refused the message. Check the bot token, the chat id, and that the bot is in the group."
     }
   },
   "products": {

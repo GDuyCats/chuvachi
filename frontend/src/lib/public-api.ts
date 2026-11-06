@@ -68,11 +68,13 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+export async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response;
   try {
     response = await fetch(`${API_BASE}${path}`, {
       ...init,
+      // Sends the sign-in cookie (if any), so orders are saved to the customer's account.
+      credentials: "include",
       headers: { "Content-Type": "application/json", ...init?.headers },
     });
   } catch {

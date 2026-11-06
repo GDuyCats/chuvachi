@@ -14,6 +14,7 @@ import { adminProductsRouter } from "./routes/admin-products";
 import { adminUploadsRouter } from "./routes/admin-uploads";
 import { adminHomeRouter } from "./routes/admin-home";
 import { homeRouter } from "./routes/home";
+import { accountRouter } from "./routes/account";
 import { shopInfoRouter } from "./routes/shop-info";
 import { startBackgroundJobs } from "./jobs/background-jobs";
 
@@ -43,6 +44,7 @@ app.use("/api", catalogRouter);
 app.use("/api", ordersRouter);
 app.use("/api", shopInfoRouter);
 app.use("/api", homeRouter);
+app.use("/api", accountRouter);
 app.use("/api/admin", adminAuthRouter);
 app.use("/api/admin/orders", adminOrdersRouter);
 app.use("/api/admin", adminProductsRouter);

@@ -27,6 +27,7 @@ import {
   type DeliveryType,
   type OrderSettings,
 } from "@/lib/public-api";
+import { accountApi, type CustomerProfile } from "@/lib/account-api";
 import { PhotoBox } from "../PhotoBox";
 import { CheckoutSkeleton, Skeleton } from "../Skeleton";
 
@@ -128,6 +129,22 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
   const [chosenSlot, setChosenSlot] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [agreed, setAgreed] = useState(false); // never ticked in advance (privacy law)
+
+  // Signed-in customers get their saved details filled in (only into empty fields).
+  const [account, setAccount] = useState<CustomerProfile | null>(null);
+  useEffect(() => {
+    accountApi
+      .current()
+      .then((profile) => {
+        if (!profile) return;
+        setAccount(profile);
+        setName((current) => current || profile.name);
+        setPhone((current) => current || profile.phone || "");
+        setAddress((current) => current || profile.defaultAddress || "");
+        setZoneId((current) => current || (profile.defaultZoneId ? String(profile.defaultZoneId) : ""));
+      })
+      .catch(() => setAccount(null));
+  }, []);
   const [errorCode, setErrorCode] = useState<string | null>(null);
 
   const isLargeOrder = settings ? totalPortions >= settings.largeOrderThreshold : false;
@@ -226,6 +243,16 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
 
         <fieldset className="flex flex-col gap-4">
           <legend className="mb-4 font-display text-[26px] uppercase tracking-wide">{labels.detailsTitle}</legend>
+          {account ? (
+            <p className="bg-surface px-4 py-3 text-sm">{labels.signedInAs.replace("{email}", account.email)}</p>
+          ) : (
+            <p className="bg-surface px-4 py-3 text-sm">
+              {labels.signInHint}{" "}
+              <Link href={`/${lang}/login?next=${encodeURIComponent(`/${lang}/order`)}`} className="font-semibold underline">
+                {labels.signInLink}
+              </Link>
+            </p>
+          )}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1.5 text-sm font-semibold">
               {labels.name}

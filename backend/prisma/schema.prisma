@@ -214,6 +214,8 @@ model Order {
   privacyConsentAt     DateTime? // when the customer ticked "I agree to the privacy policy"
   privacyPolicyVersion String?   // which version of the policy they agreed to
   anonymizedAt         DateTime? // name, phone and address were erased (retention period over, or on request)
+  customerId           Int?      // set when the customer was signed in, or claimed the order later
+  customer             Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
   items          OrderItem[]
   events         OrderEvent[]
   createdAt      DateTime      @default(now())
@@ -222,6 +224,7 @@ model Order {
   @@index([deliveryDate])
   @@index([status])
   @@index([status, paymentStatus, createdAt])
+  @@index([customerId])
 }
 
 model OrderItem {
@@ -331,4 +334,34 @@ model OrderEvent {
   createdAt   DateTime     @default(now())
 
   @@index([orderId])
+}
+
+// ---------- Customer accounts ----------
+
+// A customer who signed in with Google. We never see or store their Google password.
+model Customer {
+  id               Int               @id @default(autoincrement())
+  googleSub        String            @unique // Google's permanent id for this person
+  email            String
+  name             String
+  avatarUrl        String?
+  phone            String?           // filled in by the customer, used to prefill checkout
+  defaultAddress   String?
+  defaultZoneId    Int?
+  createdAt        DateTime          @default(now())
+  lastLoginAt      DateTime          @default(now())
+  sessions         CustomerSession[]
+  orders           Order[]
+}
+
+// A signed-in browser. The cookie holds a random token; only its SHA-256 hash is stored here.
+model CustomerSession {
+  id         Int      @id @default(autoincrement())
+  tokenHash  String   @unique
+  customerId Int
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([expiresAt])
 }

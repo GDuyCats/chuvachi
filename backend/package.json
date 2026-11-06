@@ -14,7 +14,8 @@
     "prisma:studio": "prisma studio",
     "seed": "prisma db seed",
     "create-admin": "tsx scripts/create-admin.ts",
-    "seed:home": "tsx scripts/seed-home.ts"
+    "seed:home": "tsx scripts/seed-home.ts",
+    "images:move": "tsx scripts/move-image-domain.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -28,6 +29,7 @@
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "express-rate-limit": "^8.0.1",
+    "google-auth-library": "^11.3.3",
     "helmet": "^8.1.0",
     "multer": "^2.5.0",
     "sharp": "^0.35.5",

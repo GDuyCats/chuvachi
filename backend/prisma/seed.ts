@@ -104,6 +104,13 @@ const products: SeedProduct[] = [
   },
 ];
 
+const deliveryZones = [
+  { nameVi: "Quận 1", nameEn: "District 1", sortOrder: 1 },
+  { nameVi: "Quận 3", nameEn: "District 3", sortOrder: 2 },
+  { nameVi: "Quận Bình Thạnh", nameEn: "Binh Thanh District", sortOrder: 3 },
+  { nameVi: "Quận Phú Nhuận", nameEn: "Phu Nhuan District", sortOrder: 4 },
+];
+
 async function main(): Promise<void> {
   for (const category of categories) {
     await prisma.category.upsert({
@@ -149,6 +156,19 @@ async function main(): Promise<void> {
       })),
     });
   }
+
+  // Only add sample zones when the table is empty, so admin edits are never overwritten.
+  const zoneCount = await prisma.deliveryZone.count();
+  if (zoneCount === 0) {
+    await prisma.deliveryZone.createMany({ data: deliveryZones });
+  }
+
+  // Shop settings row with default rules (lead times, slots, capacity).
+  await prisma.shopSetting.upsert({
+    where: { id: 1 },
+    update: {},
+    create: { id: 1 },
+  });
 
   console.log("Seed data created.");
 }

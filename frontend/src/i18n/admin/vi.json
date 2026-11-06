@@ -383,5 +383,11 @@
       "added": "Đã thêm.",
       "deleted": "Đã xóa."
     }
+  },
+  "alerts": {
+    "newOrder": "Có đơn mới {code}",
+    "on": "Đang bật báo đơn",
+    "off": "Bật báo đơn",
+    "resume": "Bấm để bật âm thanh"
   }
 }

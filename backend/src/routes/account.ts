@@ -15,6 +15,7 @@ import { normalizePhone, PHONE_PATTERN } from "../lib/phone";
 import { prisma } from "../lib/prisma";
 import { formatDateOnly } from "../lib/time";
 import { describeItem } from "../services/order-service";
+import { rateLimitKey } from "../lib/client-ip";
 
 export const accountRouter = Router();
 
@@ -25,6 +26,7 @@ const signInLimiter = rateLimit({
   limit: 20,
   standardHeaders: "draft-8",
   legacyHeaders: false,
+  keyGenerator: rateLimitKey, // real visitor IP behind Cloudflare
   message: { error: "TOO_MANY_REQUESTS" },
 });
 
@@ -34,6 +36,7 @@ const claimLimiter = rateLimit({
   limit: 10,
   standardHeaders: "draft-8",
   legacyHeaders: false,
+  keyGenerator: rateLimitKey, // real visitor IP behind Cloudflare
   message: { error: "TOO_MANY_REQUESTS" },
 });
 

@@ -9,6 +9,7 @@ import { prisma } from "../lib/prisma";
 import { createOrder, findOrderForCustomer, OrderError } from "../services/order-service";
 import { currentCustomerId } from "../lib/customer-auth";
 import { notifyNewOrder } from "../services/notifications";
+import { rateLimitKey } from "../lib/client-ip";
 
 export const ordersRouter = Router();
 
@@ -20,6 +21,7 @@ const placeOrderLimiter = rateLimit({
   limit: 10,
   standardHeaders: "draft-8",
   legacyHeaders: false,
+  keyGenerator: rateLimitKey, // real visitor IP behind Cloudflare
   message: { error: "TOO_MANY_REQUESTS", message: "Too many orders from this device. Please try again later." },
 });
 
@@ -29,6 +31,7 @@ const lookupLimiter = rateLimit({
   limit: 20,
   standardHeaders: "draft-8",
   legacyHeaders: false,
+  keyGenerator: rateLimitKey, // real visitor IP behind Cloudflare
   message: { error: "TOO_MANY_REQUESTS", message: "Too many lookups. Please try again later." },
 });
 

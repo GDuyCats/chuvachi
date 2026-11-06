@@ -5,6 +5,7 @@ import multer from "multer";
 import sharp from "sharp";
 import { requireAdmin } from "../lib/auth";
 import { isStorageConfigured, putImage } from "../lib/storage";
+import { rateLimitKey } from "../lib/client-ip";
 
 export const adminUploadsRouter = Router();
 adminUploadsRouter.use(requireAdmin);
@@ -33,6 +34,7 @@ const uploadLimiter = rateLimit({
   limit: 60,
   standardHeaders: "draft-8",
   legacyHeaders: false,
+  keyGenerator: rateLimitKey, // real visitor IP behind Cloudflare
   message: { error: "TOO_MANY_REQUESTS" },
 });
 

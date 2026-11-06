@@ -14,6 +14,7 @@ import {
   verifyPassword,
 } from "../lib/auth";
 import { prisma } from "../lib/prisma";
+import { rateLimitKey } from "../lib/client-ip";
 
 export const adminAuthRouter = Router();
 
@@ -23,6 +24,7 @@ const loginLimiter = rateLimit({
   limit: 10,
   standardHeaders: "draft-8",
   legacyHeaders: false,
+  keyGenerator: rateLimitKey, // real visitor IP behind Cloudflare
   message: { error: "TOO_MANY_REQUESTS" },
 });
 

@@ -383,5 +383,11 @@
       "added": "Added.",
       "deleted": "Deleted."
     }
+  },
+  "alerts": {
+    "newOrder": "New order {code}",
+    "on": "Alerts on",
+    "off": "Turn on alerts",
+    "resume": "Tap to enable sound"
   }
 }

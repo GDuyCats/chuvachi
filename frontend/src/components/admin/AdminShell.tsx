@@ -6,6 +6,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { adminApi, AdminApiError, type AdminMe } from "@/lib/admin-api";
 import { AdminLanguageSwitch, useAdminI18n } from "./AdminI18n";
 import { AdminShellSkeleton } from "./AdminSkeletons";
+import { NewOrderAlerts } from "./NewOrderAlerts";
 
 const AdminMeContext = createContext<AdminMe | null>(null);
 
@@ -62,6 +63,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
             <span className="hidden text-[#c7c7c7] sm:inline">
               {t.signedInAs} {me.name}
             </span>
+            <NewOrderAlerts />
             <AdminLanguageSwitch />
             <button type="button" onClick={signOut} className="py-2 font-semibold underline">
               {t.signOut}

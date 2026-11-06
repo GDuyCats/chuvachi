@@ -142,6 +142,16 @@ function handleActionError(res: import("express").Response, error: unknown): voi
   throw error;
 }
 
+// GET /api/admin/orders/latest - tiny answer polled by every admin page, so staff hear
+// about new orders even while they are on another tab.
+adminOrdersRouter.get("/latest", async (_req, res) => {
+  const [latest, waiting] = await Promise.all([
+    prisma.order.findFirst({ orderBy: { id: "desc" }, select: { id: true, code: true } }),
+    prisma.order.count({ where: { status: OrderStatus.PENDING } }),
+  ]);
+  res.json({ latestId: latest?.id ?? 0, latestCode: latest?.code ?? null, waiting });
+});
+
 // GET /api/admin/orders/:code
 adminOrdersRouter.get("/:code", async (req, res) => {
   const code = codeSchema.safeParse(req.params.code.toUpperCase());

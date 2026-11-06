@@ -45,7 +45,7 @@
       "title": "Returns and refunds",
       "blocks": [
         { "p": "Our cakes are fresh food made for each order, so we can't accept returns or give refunds for a change of mind." },
-        { "p": "If something is wrong with your cake, we will make you a fresh one or give you a discount code for next time, when:" },
+        { "p": "If something is wrong with your cake, we will make you a fresh one or take money off your next order, when:" },
         { "list": [
           "You received the wrong cake, the wrong flavor, or something is missing.",
           "The cake was damaged or badly squashed when you received it.",

@@ -253,6 +253,7 @@ export const adminApi = {
     request<AdminOrder>(`/orders/${code}/erase-customer`, { method: "POST", body: "{}" }),
   refund: (code: string) => request<AdminOrder>(`/orders/${code}/refund`, { method: "POST", body: "{}" }),
   testTelegram: () => request<{ ok: true }>("/telegram/test", { method: "POST", body: "{}" }),
+  latestOrder: () => request<{ latestId: number; latestCode: string | null; waiting: number }>("/orders/latest"),
   getSettings: () => request<SettingsBundle>("/settings"),
   saveSettings: (settings: ShopSettings) =>
     request<SettingsBundle>("/settings", { method: "PUT", body: JSON.stringify(settings) }),

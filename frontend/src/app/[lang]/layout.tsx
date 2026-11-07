@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { isLocale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { getHomeContent } from "@/lib/api";
+import { SITE_URL } from "@/lib/site-url";
 import "../globals.css";
 
 // Both fonts include the "vietnamese" subset so accented letters render correctly.
@@ -34,8 +35,21 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
   }
   const dict = await getDictionary(lang);
   return {
+    metadataBase: new URL(SITE_URL), // makes link-preview images absolute addresses
     title: dict.meta.title,
     description: dict.meta.description,
+    openGraph: {
+      type: "website",
+      siteName: "Chuvachi",
+      locale: lang === "vi" ? "vi_VN" : "en_US",
+      title: dict.meta.title,
+      description: dict.meta.description,
+      // Default picture for shared links; a cake's own page uses the cake's photo instead.
+      images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "Chuvachi" }],
+    },
+    alternates: {
+      languages: { vi: "/vi", en: "/en" },
+    },
   };
 }
 

@@ -2,11 +2,23 @@
   "vi": {
     "menuTitle": "Chưa tải được menu",
     "menuBody": "Bạn vui lòng thử lại sau giây lát.",
-    "retry": "Thử lại"
+    "retry": "Thử lại",
+    "notFoundTitle": "Không tìm thấy trang",
+    "notFoundBody": "Trang bạn tìm không có hoặc đã được dời đi. Bánh vẫn ở trong menu nhé.",
+    "toMenu": "Xem menu",
+    "toHome": "Về trang chủ",
+    "errorTitle": "Có lỗi xảy ra",
+    "errorBody": "Trang gặp sự cố ngoài ý muốn. Bạn thử lại, hoặc quay lại sau giây lát nhé."
   },
   "en": {
     "menuTitle": "We couldn't load the menu",
     "menuBody": "Please try again in a moment.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "The page you're looking for doesn't exist or has moved. The cakes are still on the menu.",
+    "toMenu": "See the menu",
+    "toHome": "Back to home",
+    "errorTitle": "Something went wrong",
+    "errorBody": "This page ran into an unexpected problem. Please try again, or come back in a moment."
   }
 }

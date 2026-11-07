@@ -30,6 +30,18 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/menu/[slug
   return {
     title: `${product.name} — Chuvachi`,
     description: product.description ?? undefined,
+    alternates: {
+      canonical: `/${lang}/menu/${slug}`,
+      languages: { vi: `/vi/menu/${slug}`, en: `/en/menu/${slug}` },
+    },
+    // The cake's cover photo when the link is shared on Facebook or Messenger.
+    openGraph: {
+      title: `${product.name} — Chuvachi`,
+      description: product.description ?? undefined,
+      images: product.imageUrl
+        ? [{ url: product.imageUrl, alt: product.name }]
+        : [{ url: "/og-default.png", width: 1200, height: 630, alt: "Chuvachi" }],
+    },
   };
 }
 

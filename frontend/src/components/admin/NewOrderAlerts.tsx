@@ -127,11 +127,24 @@ export function NewOrderAlerts() {
     <button
       type="button"
       onClick={enabled && !needsClick ? turnOff : turnOn}
-      className="flex min-h-9 items-center gap-1.5 border-[1.5px] border-white px-2.5 text-[13px] font-bold"
+      className={`flex min-h-9 items-center gap-1.5 border-[1.5px] border-white px-2.5 text-[13px] font-bold ${
+        enabled && !needsClick ? "bg-white text-black" : "text-white"
+      }`}
       aria-pressed={enabled && !needsClick}
     >
-      <span aria-hidden="true">{enabled && !needsClick ? "🔔" : "🔕"}</span>
+      <BellIcon off={!enabled || needsClick} />
       <span className="hidden sm:inline">{needsClick ? t.alerts.resume : enabled ? t.alerts.on : t.alerts.off}</span>
     </button>
+  );
+}
+
+// Thin line bell in the page's black-and-white style (uses the text color, no emoji).
+function BellIcon({ off }: { off: boolean }) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15L6 16Z" strokeLinejoin="round" />
+      <path d="M10 21h4" strokeLinecap="round" />
+      {off && <path d="M4 4l16 16" strokeLinecap="round" />}
+    </svg>
   );
 }

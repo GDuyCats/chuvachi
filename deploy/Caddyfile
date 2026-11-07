@@ -1,0 +1,39 @@
+# Caddy receives visitors (through Cloudflare) on HTTPS port 443 and passes them on
+# to the website or the API inside the server.
+#
+# HTTPS uses a Cloudflare "origin certificate" (in ~/chuvachi/certs on the server),
+# so Cloudflare can check it is really talking to our server.
+
+{
+	# The certificate comes from Cloudflare; Caddy must not request its own.
+	auto_https off
+}
+
+(common) {
+	tls /certs/origin.pem /certs/origin-key.pem
+	encode zstd gzip
+	header {
+		# Remember to always use HTTPS for a year
+		Strict-Transport-Security "max-age=31536000"
+		# Don't advertise the server software
+		-Server
+	}
+}
+
+www.chuvachi.com {
+	import common
+	redir https://chuvachi.com{uri} permanent
+}
+
+chuvachi.com {
+	import common
+	reverse_proxy web:3000
+}
+
+api.chuvachi.com {
+	import common
+	request_body {
+		max_size 10MB
+	}
+	reverse_proxy api:4000
+}

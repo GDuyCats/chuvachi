@@ -44,6 +44,8 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: imageBaseUrl ? [new URL(`${imageBaseUrl}/**`)] : [],
   },
+  // Builds a small self-contained server for the Docker image (see Dockerfile).
+  output: "standalone",
   cacheComponents: true,
   partialPrefetching: true,
   experimental: {

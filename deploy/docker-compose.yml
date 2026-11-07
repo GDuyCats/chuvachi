@@ -1,10 +1,13 @@
-# Services that run on the EC2 server.
-# For now only the PostgreSQL database; the API and Caddy will be added later.
+# Everything that runs on the EC2 server.
 #
-# Usage on EC2 (folder ~/chuvachi):
-#   docker compose up -d     start everything in the background
-#   docker compose ps        show status
-#   docker compose logs db   show database logs
+# Don't run this file by hand; use deploy/deploy.sh, which passes the settings file.
+# Secrets live OUTSIDE the code, in the ~/chuvachi folder on the server:
+#   ~/chuvachi/.env       POSTGRES_PASSWORD and the public website settings (NEXT_PUBLIC_...)
+#   ~/chuvachi/api.env    the backend's settings and secrets
+#   ~/chuvachi/certs/     the Cloudflare origin certificate for HTTPS
+
+# Same project name as before, so the existing database volume (chuvachi_db-data) is kept.
+name: chuvachi
 
 services:
   db:
@@ -13,7 +16,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: chuvachi_admin
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # read from the .env file next to this file
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: chuvachi_prod
     volumes:
       - db-data:/var/lib/postgresql/data
@@ -26,5 +29,50 @@ services:
       timeout: 5s
       retries: 5
 
+  api:
+    build: ../backend
+    container_name: chuvachi-api
+    restart: unless-stopped
+    env_file: ../../api.env
+    depends_on:
+      db:
+        condition: service_healthy
+    mem_limit: 512m
+
+  web:
+    build:
+      context: ../frontend
+      args:
+        NEXT_PUBLIC_API_URL: https://api.chuvachi.com
+        NEXT_PUBLIC_IMAGE_BASE_URL: https://img.chuvachi.com
+        NEXT_PUBLIC_SITE_URL: https://chuvachi.com
+        NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${NEXT_PUBLIC_GOOGLE_CLIENT_ID}
+        API_URL: https://api.chuvachi.com
+    container_name: chuvachi-web
+    restart: unless-stopped
+    environment:
+      # Server-side requests go straight to the API inside the server.
+      API_URL: http://api:4000
+    depends_on:
+      - api
+    mem_limit: 768m
+
+  caddy:
+    image: caddy:2
+    container_name: chuvachi-caddy
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../../certs:/certs:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - web
+      - api
+
 volumes:
   db-data:
+  caddy-data:
+  caddy-config:

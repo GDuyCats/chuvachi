@@ -517,5 +517,20 @@
     "dismissed": "Bạn chưa cho phép thông báo.",
     "notConfigured": "Tiệm chưa bật thông báo. Vui lòng thử lại sau.",
     "failed": "Không bật được thông báo. Vui lòng thử lại."
+  },
+  "bell": {
+    "label": "Thông báo",
+    "labelUnread": "Thông báo, {count} tin chưa đọc",
+    "title": "Thông báo",
+    "empty": "Chưa có thông báo nào. Khi đơn đổi trạng thái hoặc có người trả lời đánh giá của bạn, tin sẽ hiện ở đây.",
+    "loading": "Đang tải...",
+    "error": "Không tải được thông báo. Vui lòng thử lại.",
+    "signInText": "Đăng nhập Google để xem thông báo về đơn hàng và trả lời đánh giá của bạn.",
+    "signIn": "Đăng nhập",
+    "guestHint": "Đặt hàng không cần tài khoản? Bật thông báo cho đơn ở trang",
+    "trackLink": "Tra cứu đơn",
+    "settings": "Cài đặt thông báo",
+    "close": "Đóng",
+    "justNow": "vừa xong"
   }
 }

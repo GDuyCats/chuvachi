@@ -80,7 +80,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
             {pauseMessage ? <span> · {pauseMessage}</span> : null}
           </div>
         )}
-        <SiteHeader lang={lang} dict={dict.nav} searchIndex={searchIndex} searchLabels={dict.search} />
+        <SiteHeader lang={lang} dict={dict.nav} searchIndex={searchIndex} searchLabels={dict.search} bellLabels={dict.bell} />
         <main className="flex-1">{children}</main>
         <SiteFooter lang={lang} dict={dict.footer} />
       </body>

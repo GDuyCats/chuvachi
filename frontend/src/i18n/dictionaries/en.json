@@ -517,5 +517,20 @@
     "dismissed": "Notifications weren't allowed.",
     "notConfigured": "Notifications aren't set up yet. Please try again later.",
     "failed": "Couldn't turn on notifications. Please try again."
+  },
+  "bell": {
+    "label": "Notifications",
+    "labelUnread": "Notifications, {count} unread",
+    "title": "Notifications",
+    "empty": "No notifications yet. When your order changes or someone answers your review, it shows up here.",
+    "loading": "Loading...",
+    "error": "Couldn't load notifications. Please try again.",
+    "signInText": "Sign in with Google to see news about your orders and answers to your reviews.",
+    "signIn": "Sign in",
+    "guestHint": "Ordered without an account? Turn on notifications for your order on the",
+    "trackLink": "Track order page",
+    "settings": "Notification settings",
+    "close": "Close",
+    "justNow": "just now"
   }
 }

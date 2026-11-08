@@ -2,12 +2,12 @@ import { Router } from "express";
 import { rateLimit } from "express-rate-limit";
 import { z } from "zod";
 import { rateLimitKey } from "../lib/client-ip";
-import { currentCustomerId } from "../lib/customer-auth";
+import { currentCustomerId, requireCustomer } from "../lib/customer-auth";
 import { parseLocale } from "../lib/locale";
 import { normalizePhone } from "../lib/phone";
 import { prisma } from "../lib/prisma";
 import { isAllowedPushEndpoint, pushPublicKey } from "../lib/push";
-import { sendWelcome } from "../services/customer-push";
+import { renderNotice, sendWelcome } from "../services/customer-push";
 
 // Customers switch push notifications on for the browser they use. Signed in: news about all
 // their orders and replies to their reviews. Guests: they follow one order (code + phone).
@@ -124,4 +124,51 @@ customerPushRouter.post("/push/status", limiter, async (req, res) => {
     }
   }
   res.json({ subscribed: subscription !== null, account: subscription?.customerId != null, watching });
+});
+
+// ---------- Bell list (signed-in customers) ----------
+
+const BELL_LIST_SIZE = 30;
+
+// GET /api/account/notifications?locale=vi - newest notifications and how many are unread
+customerPushRouter.get("/account/notifications", requireCustomer, async (req, res) => {
+  const locale = parseLocale(req.query.locale);
+  const customerId = req.customerId!;
+  const [rows, unread] = await Promise.all([
+    prisma.customerNotification.findMany({
+      where: { customerId },
+      orderBy: { createdAt: "desc" },
+      take: BELL_LIST_SIZE,
+    }),
+    prisma.customerNotification.count({ where: { customerId, readAt: null } }),
+  ]);
+  res.json({
+    unread,
+    items: rows.map((row) => {
+      const values = (typeof row.values === "object" && row.values !== null && !Array.isArray(row.values)
+        ? row.values
+        : {}) as Record<string, string | null>;
+      return {
+        id: row.id,
+        ...renderNotice(locale, row.kind, values),
+        url: `/${locale}${row.path}`,
+        read: row.readAt !== null,
+        createdAt: row.createdAt.toISOString(),
+      };
+    }),
+  });
+});
+
+// GET /api/account/notifications/unread - just the number, for the dot on the bell
+customerPushRouter.get("/account/notifications/unread", requireCustomer, async (req, res) => {
+  res.json({ unread: await prisma.customerNotification.count({ where: { customerId: req.customerId!, readAt: null } }) });
+});
+
+// POST /api/account/notifications/read - mark everything as read (the list was opened)
+customerPushRouter.post("/account/notifications/read", requireCustomer, async (req, res) => {
+  await prisma.customerNotification.updateMany({
+    where: { customerId: req.customerId!, readAt: null },
+    data: { readAt: new Date() },
+  });
+  res.json({ ok: true });
 });

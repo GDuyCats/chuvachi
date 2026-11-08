@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { AccountLink } from "./account/AccountLink";
+import { NotificationBell } from "./account/NotificationBell";
 import { CartBadge } from "./CartBadge";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { SiteSearch } from "./SiteSearch";
@@ -12,9 +13,10 @@ type Props = {
   dict: Dictionary["nav"];
   searchIndex: SearchIndex;
   searchLabels: Dictionary["search"];
+  bellLabels: Dictionary["bell"];
 };
 
-export function SiteHeader({ lang, dict, searchIndex, searchLabels }: Props) {
+export function SiteHeader({ lang, dict, searchIndex, searchLabels, bellLabels }: Props) {
   const links = [
     { href: `/${lang}/menu`, label: dict.menu },
     { href: `/${lang}#new`, label: dict.new },
@@ -44,6 +46,7 @@ export function SiteHeader({ lang, dict, searchIndex, searchLabels }: Props) {
       <div className="flex items-center gap-1.5 md:gap-3">
         <SiteSearch lang={lang} index={searchIndex} labels={searchLabels} />
         <LanguageSwitcher current={lang} label={dict.language} />
+        <NotificationBell lang={lang} labels={bellLabels} />
         <AccountLink lang={lang} signInLabel={dict.signIn} accountLabel={dict.account} />
         <Link
           href={`/${lang}/order`}

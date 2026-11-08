@@ -11,6 +11,13 @@
   --color-surface: #f2f2f2;
 }
 
+/* Vietnamese accents sit above (and sometimes below) the letters, so tall display headings
+   need more space between lines or the accents of one line touch the line above.
+   Plain CSS (outside Tailwind's layers) wins over the leading-* classes on purpose. */
+:lang(vi) .font-display {
+  line-height: 1.22;
+}
+
 /* Hide scrollbars on horizontal swipe rows while keeping them scrollable. */
 @utility no-scrollbar {
   scrollbar-width: none;

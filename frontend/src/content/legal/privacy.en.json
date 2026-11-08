@@ -126,7 +126,7 @@
           "p": "Reviews, comments and photos are kept until you or we delete them. When an order's delivery details are erased automatically, its review stays with the short name; to delete it then, contact us."
         },
         {
-          "p": "Notifications: when you tap Turn off, we delete that device's notification address right away; if you block notifications in your browser, it is deleted the next time we try to send one. For guests without an account, following an order stops 45 days after it is finished."
+          "p": "Notifications: when you tap Turn off, we delete that device's notification address right away; if you block notifications in your browser, it is deleted the next time we try to send one. For guests without an account, following an order stops 45 days after it is finished. The notification list in your account (the bell) is kept for 90 days, then deleted automatically."
         }
       ]
     },

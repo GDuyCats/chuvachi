@@ -41,6 +41,7 @@ function Bell() {
 
 // Shared look: a bordered box with a bell, a title, a short text and the button or status.
 function Box({
+  id,
   title,
   text,
   state,
@@ -51,6 +52,7 @@ function Box({
   onTurnOn,
   onTurnOff,
 }: {
+  id?: string;
   title: string;
   text: string;
   state: State;
@@ -68,7 +70,7 @@ function Box({
     blocked: labels.blocked,
   };
   return (
-    <section className="flex flex-col gap-3 border-[1.5px] border-black p-5">
+    <section id={id} className="flex scroll-mt-6 flex-col gap-3 border-[1.5px] border-black p-5">
       <div className="flex items-start gap-3">
         <Bell />
         <div className="flex flex-col gap-1">
@@ -164,6 +166,7 @@ export function AccountPushSetting({ lang, labels }: { lang: Locale; labels: Lab
 
   return (
     <Box
+      id="notifications"
       title={labels.accountTitle}
       text={labels.accountText}
       state={state}

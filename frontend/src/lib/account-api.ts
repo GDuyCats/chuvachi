@@ -36,6 +36,15 @@ export type AccountOrder = {
 };
 
 // Lets the header and other parts of the page know that the visitor signed in or out.
+export type CustomerNotice = {
+  id: number;
+  title: string;
+  body: string;
+  url: string;
+  read: boolean;
+  createdAt: string;
+};
+
 export const ACCOUNT_CHANGED_EVENT = "chuvachi:account-changed";
 
 function announceChange() {
@@ -66,6 +75,11 @@ export const accountApi = {
     announceChange();
   },
   orders: (locale: Locale) => request<AccountOrder[]>(`/api/account/orders?locale=${locale}`, { cache: "no-store" }),
+  // Bell list on the website (newest first) and the number of unread ones.
+  notifications: (locale: Locale) =>
+    request<{ unread: number; items: CustomerNotice[] }>(`/api/account/notifications?locale=${locale}`, { cache: "no-store" }),
+  unreadCount: () => request<{ unread: number }>("/api/account/notifications/unread", { cache: "no-store" }),
+  markNotificationsRead: () => request<{ ok: true }>("/api/account/notifications/read", { method: "POST", body: "{}" }),
   claimOrder: (code: string, phone: string) =>
     request<{ ok: true }>("/api/account/orders/claim", { method: "POST", body: JSON.stringify({ code, phone }) }),
 };

@@ -126,7 +126,7 @@
           "p": "Đánh giá, bình luận và ảnh được giữ cho tới khi bạn hoặc tiệm xóa. Khi thông tin giao hàng của đơn được tự động xóa, đánh giá vẫn ở lại với tên rút gọn; lúc đó muốn xóa, bạn liên hệ tiệm."
         },
         {
-          "p": "Thông báo: khi bạn bấm Tắt, tiệm xóa ngay địa chỉ nhận thông báo của máy đó; nếu bạn chặn thông báo trong trình duyệt, địa chỉ đó bị xóa ở lần gửi kế tiếp. Với khách không có tài khoản, việc theo dõi một đơn tự dừng sau 45 ngày kể từ khi đơn xong."
+          "p": "Thông báo: khi bạn bấm Tắt, tiệm xóa ngay địa chỉ nhận thông báo của máy đó; nếu bạn chặn thông báo trong trình duyệt, địa chỉ đó bị xóa ở lần gửi kế tiếp. Với khách không có tài khoản, việc theo dõi một đơn tự dừng sau 45 ngày kể từ khi đơn xong. Danh sách thông báo trong tài khoản (biểu tượng chuông) được giữ 90 ngày rồi tự xóa."
         }
       ]
     },

@@ -441,6 +441,7 @@ model Customer {
   reviewVotes      ReviewVote[]
   reviewReports    ReviewReport[]
   pushSubscriptions CustomerPushSubscription[]
+  notifications     CustomerNotification[]
 }
 
 // A signed-in browser. The cookie holds a random token; only its SHA-256 hash is stored here.
@@ -571,4 +572,19 @@ model OrderPushWatch {
 
   @@unique([subscriptionId, orderId])
   @@index([orderId])
+}
+
+// The bell list on the website for signed-in customers. The text is built when it is read,
+// in the reader's language, from "kind" and "values" (see content/customer-alerts.json).
+model CustomerNotification {
+  id         Int       @id @default(autoincrement())
+  customerId Int
+  customer   Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  kind       String    // e.g. "status.CONFIRMED", "reviewReply", "commentReply"
+  values     Json      // e.g. { "code": "AB12CD" } or { "name": "Anh N.", "productVi": "...", ... }
+  path       String    // page to open, without the language, e.g. "/track?code=AB12CD"
+  readAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([customerId, createdAt])
 }

@@ -57,7 +57,8 @@
       "mousse": "Mousse",
       "brownie": "Brownie"
     },
-    "soldOut": "Tạm hết"
+    "soldOut": "Tạm hết",
+    "sold": "Đã bán {count}"
   },
   "menu": {
     "title": "Menu của tiệm",

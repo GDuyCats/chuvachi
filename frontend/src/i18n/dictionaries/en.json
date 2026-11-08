@@ -57,7 +57,8 @@
       "mousse": "Mousse",
       "brownie": "Brownie"
     },
-    "soldOut": "Sold out"
+    "soldOut": "Sold out",
+    "sold": "{count} sold"
   },
   "menu": {
     "title": "Our menu",

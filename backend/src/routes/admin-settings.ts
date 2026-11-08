@@ -84,6 +84,8 @@ const settingsSchema = z
     orderingPaused: z.boolean(),
     pauseMessageVi: optionalText(200),
     pauseMessageEn: optionalText(200),
+    showSoldCount: z.boolean(),
+    soldCountMinimum: z.number().int().min(0).max(100000),
   })
   .refine((data) => clockToMinutes(data.openTime) < clockToMinutes(data.closeTime), {
     message: "Closing time must be after opening time",

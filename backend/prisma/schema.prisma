@@ -317,6 +317,8 @@ model ShopSetting {
   orderingPaused       Boolean  @default(false) // "pause orders" switch for the whole shop
   pauseMessageVi       String?  // shown to customers while orders are paused
   pauseMessageEn       String?
+  showSoldCount        Boolean  @default(false) // show "Sold 120" on the menu and product pages
+  soldCountMinimum     Int      @default(10) // hide the number while a cake has sold fewer portions than this
   updatedAt            DateTime @updatedAt
 }
 

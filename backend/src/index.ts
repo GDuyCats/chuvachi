@@ -15,6 +15,7 @@ import { adminUploadsRouter } from "./routes/admin-uploads";
 import { adminHomeRouter } from "./routes/admin-home";
 import { adminAccountsRouter } from "./routes/admin-accounts";
 import { adminPasswordResetRouter } from "./routes/admin-password-reset";
+import { adminStatsRouter } from "./routes/admin-stats";
 import { homeRouter } from "./routes/home";
 import { accountRouter } from "./routes/account";
 import { shopInfoRouter } from "./routes/shop-info";
@@ -53,6 +54,7 @@ app.use("/api/admin/orders", adminOrdersRouter);
 app.use("/api/admin", adminProductsRouter);
 app.use("/api/admin/uploads", adminUploadsRouter);
 app.use("/api/admin/accounts", adminAccountsRouter);
+app.use("/api/admin/stats", adminStatsRouter);
 app.use("/api/admin", adminHomeRouter);
 app.use("/api/admin", adminSettingsRouter);
 

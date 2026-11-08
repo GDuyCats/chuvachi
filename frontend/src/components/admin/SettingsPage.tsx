@@ -245,6 +245,24 @@ export function SettingsPage() {
           <p className="text-xs text-muted">{s.pause.saveHint}</p>
         </Section>
 
+        <Section title={s.sold.title} hint={s.sold.hint}>
+          <label
+            className={`flex min-h-12 items-center gap-3 border-[1.5px] px-4 font-bold ${
+              draft.showSoldCount ? "border-black bg-black text-white" : "border-black"
+            }`}
+          >
+            <input
+              type="checkbox"
+              checked={draft.showSoldCount}
+              onChange={(e) => update("showSoldCount", e.target.checked)}
+              className="h-5 w-5 accent-white"
+            />
+            {draft.showSoldCount ? s.sold.on : s.sold.off}
+          </label>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{numberField("soldCountMinimum", s.sold.minimum)}</div>
+          <p className="text-xs text-muted">{s.sold.minimumHint}</p>
+        </Section>
+
         <Section title={s.business.title} hint={s.business.hint}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {textField("legalName", s.business.legalName)}

@@ -10,6 +10,7 @@ export type ProductCardLabels = {
   soldOut: string;
   from: string;
   photoComingSoon: string;
+  sold?: string; // "Sold {count}"
 };
 
 type Props = {
@@ -19,6 +20,7 @@ type Props = {
   price: number; // starting price in VND
   isNew: boolean;
   soldOutUntil?: string | null;
+  soldCount?: number | null; // shown only when the shop turned it on
   imageUrl: string | null;
   labels: ProductCardLabels;
   actionLabel: string;
@@ -26,6 +28,10 @@ type Props = {
   className?: string;
   style?: CSSProperties;
 };
+
+export function soldText(template: string, count: number, lang: Locale): string {
+  return template.replace("{count}", count.toLocaleString(lang === "vi" ? "vi-VN" : "en-US"));
+}
 
 // Grey card with photo, thin divider, name, price and an underlined action link.
 export function ProductCard({
@@ -35,6 +41,7 @@ export function ProductCard({
   price,
   isNew,
   soldOutUntil = null,
+  soldCount = null,
   imageUrl,
   labels,
   actionLabel,
@@ -61,6 +68,9 @@ export function ProductCard({
       <div className="flex min-h-12 flex-col gap-1">
         {eyebrow && <span className="text-xs font-bold uppercase tracking-widest text-muted">{eyebrow}</span>}
         <span className="text-[15px] leading-snug md:text-[17px]">{name}</span>
+        {soldCount != null && labels.sold && (
+          <span className="text-xs text-muted md:text-[13px]">{soldText(labels.sold, soldCount, lang)}</span>
+        )}
       </div>
       <div className="mt-auto flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
         <span className="text-sm font-bold md:text-[17px]">

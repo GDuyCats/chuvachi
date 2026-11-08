@@ -55,6 +55,7 @@ export function AdminShell({ children, adminOnly = false }: ShellProps) {
   const tabs = [
     { href: "/admin/orders", label: t.nav.orders, show: true },
     { href: "/admin/products", label: t.nav.products, show: true },
+    { href: "/admin/stats", label: t.nav.stats, show: isAdmin },
     { href: "/admin/home", label: t.nav.home, show: isAdmin },
     { href: "/admin/settings", label: t.nav.settings, show: isAdmin },
     { href: "/admin/accounts", label: t.nav.accounts, show: isAdmin },

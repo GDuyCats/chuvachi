@@ -177,6 +177,26 @@ export type ShopSettings = {
   orderingPaused: boolean;
   pauseMessageVi: string | null;
   pauseMessageEn: string | null;
+  showSoldCount: boolean;
+  soldCountMinimum: number;
+};
+
+export type SalesReport = {
+  from: string | null;
+  to: string | null;
+  unit: "day" | "month";
+  totals: { orders: number; portions: number; revenue: number };
+  products: {
+    productId: number | null;
+    slug: string | null;
+    nameVi: string;
+    nameEn: string;
+    imageUrl: string | null;
+    portions: number;
+    orders: number;
+    revenue: number;
+  }[];
+  periods: { start: string; orders: number; portions: number; revenue: number }[];
 };
 
 export type DeliveryZoneRow = { id: number; nameVi: string; nameEn: string; isActive: boolean; sortOrder: number };
@@ -308,6 +328,13 @@ export const adminApi = {
     request<{ ok: true }>("/password-reset/request", { method: "POST", body: JSON.stringify({ email }) }),
   confirmPasswordReset: (token: string, newPassword: string) =>
     request<{ ok: true }>("/password-reset/confirm", { method: "POST", body: JSON.stringify({ token, newPassword }) }),
+  getStats: (from: string | null, to: string | null) => {
+    const query = new URLSearchParams();
+    if (from) query.set("from", from);
+    if (to) query.set("to", to);
+    const text = query.toString();
+    return request<SalesReport>(`/stats${text ? `?${text}` : ""}`);
+  },
   listAccounts: () => request<AdminAccount[]>("/accounts"),
   createAccount: (input: { email: string; name: string; role: AdminRole }) =>
     request<TemporaryPasswordResult>("/accounts", { method: "POST", body: JSON.stringify(input) }),

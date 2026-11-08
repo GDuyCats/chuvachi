@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { Locale, parseLocale, pickText } from "../lib/locale";
 import { formatDateOnly } from "../lib/time";
+import { soldPortionsByProduct } from "../lib/sales";
 
 export const catalogRouter = Router();
 
@@ -17,7 +18,7 @@ const productInclude = {
 type ProductWithRelations = Prisma.ProductGetPayload<{ include: typeof productInclude }>;
 
 // Turns a database product into the shape the frontend needs, in one language.
-function toProductResponse(product: ProductWithRelations, locale: Locale) {
+function toProductResponse(product: ProductWithRelations, locale: Locale, soldCount: number | null = null) {
   return {
     id: product.id,
     slug: product.slug,
@@ -32,6 +33,8 @@ function toProductResponse(product: ProductWithRelations, locale: Locale) {
     isNew: product.isNew,
     // Last day the cake can't be delivered ("temporarily sold out"), or null
     soldOutUntil: product.soldOutUntil ? formatDateOnly(product.soldOutUntil) : null,
+    // Portions sold so far; null when the shop hides it or the number is still below the minimum
+    soldCount,
     category: {
       slug: product.category.slug,
       name: pickText(locale, product.category.nameVi, product.category.nameEn),
@@ -44,6 +47,14 @@ function toProductResponse(product: ProductWithRelations, locale: Locale) {
       portions: option.portions,
     })),
   };
+}
+
+// Sold counts to show for these products, following the "show sold count" setting.
+async function visibleSoldCounts(productIds: number[]): Promise<Map<number, number>> {
+  const settings = await prisma.shopSetting.findUnique({ where: { id: 1 } });
+  if (!settings?.showSoldCount) return new Map();
+  const counts = await soldPortionsByProduct(productIds);
+  return new Map([...counts].filter(([, count]) => count > 0 && count >= settings.soldCountMinimum));
 }
 
 // GET /api/categories?locale=vi|en
@@ -76,7 +87,8 @@ catalogRouter.get("/products", async (req, res) => {
     orderBy: { sortOrder: "asc" },
   });
 
-  res.json(products.map((product) => toProductResponse(product, locale)));
+  const sold = await visibleSoldCounts(products.map((product) => product.id));
+  res.json(products.map((product) => toProductResponse(product, locale, sold.get(product.id) ?? null)));
 });
 
 // GET /api/products/:slug?locale=vi|en
@@ -93,5 +105,6 @@ catalogRouter.get("/products/:slug", async (req, res) => {
     return;
   }
 
-  res.json(toProductResponse(product, locale));
+  const sold = await visibleSoldCounts([product.id]);
+  res.json(toProductResponse(product, locale, sold.get(product.id) ?? null));
 });

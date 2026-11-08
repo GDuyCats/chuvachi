@@ -16,3 +16,10 @@ export function nextDayText(date: string): string {
 export function isSoldOutToday(soldOutUntil: string | null | undefined): boolean {
   return Boolean(soldOutUntil) && vietnamTodayText() <= (soldOutUntil as string);
 }
+
+// "2026-11-20", 3 -> "2026-11-23" (negative numbers go back)
+export function addDaysText(date: string, days: number): string {
+  const day = new Date(`${date}T00:00:00Z`);
+  day.setUTCDate(day.getUTCDate() + days);
+  return day.toISOString().slice(0, 10);
+}

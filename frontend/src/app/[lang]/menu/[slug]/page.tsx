@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PhotoBox } from "@/components/PhotoBox";
-import { ProductCard } from "@/components/ProductCard";
+import { ProductCard, soldText } from "@/components/ProductCard";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductOptions, type OptionChoice } from "@/components/product/ProductOptions";
 import { isLocale, type Locale } from "@/i18n/config";
@@ -97,6 +97,9 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[s
                 <span className="bg-black px-2 py-1 text-[11px] font-bold uppercase tracking-widest text-white">
                   {dict.product.new}
                 </span>
+              )}
+              {product.soldCount != null && (
+                <span className="text-[13px] text-muted">{soldText(dict.product.sold, product.soldCount, locale)}</span>
               )}
             </div>
             <h1 className="font-display text-5xl uppercase leading-[1.05] md:text-[64px]">{product.name}</h1>

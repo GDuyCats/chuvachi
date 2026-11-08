@@ -8,7 +8,8 @@
     "settings": "Settings",
     "products": "Products",
     "home": "Homepage",
-    "accounts": "Accounts"
+    "accounts": "Accounts",
+    "stats": "Sales"
   },
   "login": {
     "title": "Staff sign in",
@@ -246,6 +247,14 @@
       "messageVi": "Message for customers (VI)",
       "messageEn": "Message for customers (EN)",
       "saveHint": "Press \"Save\" above to apply. The site updates within about a minute."
+    },
+    "sold": {
+      "title": "Show sold count",
+      "hint": "Shows “120 sold” under the cake name on the menu and product pages. It counts portions of paid orders, not cancelled ones.",
+      "on": "Sold count is shown to customers",
+      "off": "Sold count is hidden",
+      "minimum": "Only show from this many portions",
+      "minimumHint": "Cakes that have sold only a few portions don't show it yet, so they don't look unpopular. Press Save at the bottom; the shop updates within a few minutes."
     }
   },
   "products": {
@@ -548,5 +557,35 @@
       "NETWORK": "Can't reach the server. Check the connection.",
       "UNKNOWN": "Something went wrong. Please try again."
     }
+  },
+  "stats": {
+    "title": "Sales",
+    "hint": "Only orders marked “Payment received” and not cancelled, by delivery day. Revenue is for cakes only; customers pay shipping to the driver.",
+    "loading": "Counting...",
+    "loadError": "Couldn't load the figures. Please reload the page.",
+    "presets": {
+      "last7": "Last 7 days",
+      "last30": "Last 30 days",
+      "thisMonth": "This month",
+      "lastMonth": "Last month",
+      "all": "All time",
+      "custom": "Pick dates"
+    },
+    "from": "From",
+    "to": "To",
+    "show": "Show",
+    "rangeLabel": "Delivery days {from} to {to}",
+    "totals": {
+      "revenue": "Revenue",
+      "revenueNote": "Cakes only, no shipping",
+      "portions": "Portions sold",
+      "orders": "Paid orders"
+    },
+    "empty": "No paid orders in this period.",
+    "byProduct": "By cake",
+    "byDay": "By day",
+    "byMonth": "By month",
+    "portionsCount": "{count} portions",
+    "ordersCount": "{count} orders"
   }
 }

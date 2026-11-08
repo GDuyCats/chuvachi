@@ -8,7 +8,8 @@
     "settings": "Cài đặt",
     "products": "Sản phẩm",
     "home": "Trang chủ",
-    "accounts": "Tài khoản"
+    "accounts": "Tài khoản",
+    "stats": "Thống kê"
   },
   "login": {
     "title": "Đăng nhập nhân viên",
@@ -246,6 +247,14 @@
       "messageVi": "Lời nhắn cho khách (VI)",
       "messageEn": "Lời nhắn cho khách (EN)",
       "saveHint": "Bấm \"Lưu\" ở trên để áp dụng. Trang web cập nhật sau khoảng 1 phút."
+    },
+    "sold": {
+      "title": "Hiện số đã bán",
+      "hint": "Hiện dòng “Đã bán 120” dưới tên bánh ở menu và trang bánh. Số này đếm phần bánh của các đơn đã nhận tiền, không tính đơn bị hủy.",
+      "on": "Đang hiện số đã bán cho khách",
+      "off": "Đang ẩn số đã bán",
+      "minimum": "Chỉ hiện khi bánh bán được từ (phần)",
+      "minimumHint": "Bánh mới bán được ít phần thì chưa hiện, để không trông vắng khách. Bấm Lưu thay đổi ở cuối trang; trang khách cập nhật sau vài phút."
     }
   },
   "products": {
@@ -548,5 +557,35 @@
       "NETWORK": "Không kết nối được với server. Kiểm tra lại mạng.",
       "UNKNOWN": "Có lỗi xảy ra. Vui lòng thử lại."
     }
+  },
+  "stats": {
+    "title": "Thống kê bán hàng",
+    "hint": "Chỉ tính đơn đã bấm “Đã nhận tiền” và không bị hủy, theo ngày giao. Doanh thu là tiền bánh, chưa gồm phí ship khách trả tài xế.",
+    "loading": "Đang tính...",
+    "loadError": "Không tải được thống kê. Vui lòng tải lại trang.",
+    "presets": {
+      "last7": "7 ngày qua",
+      "last30": "30 ngày qua",
+      "thisMonth": "Tháng này",
+      "lastMonth": "Tháng trước",
+      "all": "Từ trước tới nay",
+      "custom": "Chọn ngày"
+    },
+    "from": "Từ ngày",
+    "to": "Đến ngày",
+    "show": "Xem",
+    "rangeLabel": "Ngày giao từ {from} đến {to}",
+    "totals": {
+      "revenue": "Doanh thu",
+      "revenueNote": "Tiền bánh, chưa gồm ship",
+      "portions": "Phần bánh đã bán",
+      "orders": "Đơn đã thanh toán"
+    },
+    "empty": "Chưa có đơn nào đã thanh toán trong khoảng này.",
+    "byProduct": "Theo từng bánh",
+    "byDay": "Theo ngày",
+    "byMonth": "Theo tháng",
+    "portionsCount": "{count} phần",
+    "ordersCount": "{count} đơn"
   }
 }

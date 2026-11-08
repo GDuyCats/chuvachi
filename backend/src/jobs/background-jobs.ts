@@ -2,6 +2,7 @@ import { purgeExpiredSessions } from "../lib/auth";
 import { purgeExpiredCustomerSessions } from "../lib/customer-auth";
 import { eraseExpiredCustomerData } from "../lib/privacy";
 import { cancelUnpaidOrders } from "../services/order-admin-service";
+import { purgeOldPasswordResets } from "../routes/admin-password-reset";
 
 const EVERY_MINUTE = 60 * 1000;
 const EVERY_HOUR = 60 * EVERY_MINUTE;
@@ -21,6 +22,7 @@ export function startBackgroundJobs(): () => void {
         console.log(`Auto-cancelled ${cancelled} unpaid order(s).`);
       }
       await purgeExpiredSessions();
+      await purgeOldPasswordResets();
       await purgeExpiredCustomerSessions();
       // Privacy: once an hour, erase customer details that are past the retention period.
       if (Date.now() - lastRetentionRun >= EVERY_HOUR) {

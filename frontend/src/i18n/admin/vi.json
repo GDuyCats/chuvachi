@@ -524,5 +524,29 @@
     }
   },
   "showPassword": "Hiện mật khẩu",
-  "hidePassword": "Ẩn mật khẩu"
+  "hidePassword": "Ẩn mật khẩu",
+  "forgot": {
+    "link": "Quên mật khẩu?",
+    "title": "Quên mật khẩu",
+    "hint": "Nhập email của tài khoản. Web sẽ gửi một link để bạn đặt mật khẩu mới.",
+    "email": "Email",
+    "submit": "Gửi link đặt lại",
+    "sending": "Đang gửi...",
+    "sentTitle": "Kiểm tra email của bạn",
+    "sent": "Nếu email này có tài khoản, thư sẽ tới trong vài phút. Nhớ xem cả thư mục Spam hoặc Quảng cáo. Link dùng được 1 lần, trong 30 phút.",
+    "noEmail": "Không nhận được thư? Nhờ một admin khác bấm Đặt lại mật khẩu trong tab Tài khoản.",
+    "back": "Quay lại đăng nhập",
+    "resetTitle": "Đặt mật khẩu mới",
+    "resetSave": "Lưu mật khẩu mới",
+    "resetSaving": "Đang lưu...",
+    "resetDone": "Đã đổi mật khẩu. Bạn đăng nhập lại bằng mật khẩu mới nhé.",
+    "goLogin": "Đến trang đăng nhập",
+    "errors": {
+      "LINK_INVALID": "Link này đã hết hạn hoặc đã được dùng. Bấm Quên mật khẩu để lấy link mới.",
+      "NO_TOKEN": "Link không đầy đủ. Hãy mở đúng link trong email, hoặc lấy link mới.",
+      "TOO_MANY_REQUESTS": "Thử quá nhiều lần. Vui lòng đợi 15 phút.",
+      "NETWORK": "Không kết nối được với server. Kiểm tra lại mạng.",
+      "UNKNOWN": "Có lỗi xảy ra. Vui lòng thử lại."
+    }
+  }
 }

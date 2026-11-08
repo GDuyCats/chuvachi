@@ -1,0 +1,17 @@
+{
+  "passwordReset": {
+    "subject": "Chuvachi: đặt lại mật khẩu trang quản lý / Reset your staff password",
+    "vi": {
+      "greeting": "Chào {name},",
+      "body": "Có người vừa yêu cầu đặt lại mật khẩu cho tài khoản quản lý Chuvachi của bạn. Bấm link dưới đây để đặt mật khẩu mới. Link chỉ dùng được 1 lần, trong {minutes} phút.",
+      "button": "Đặt mật khẩu mới",
+      "ignore": "Nếu không phải bạn yêu cầu, cứ bỏ qua thư này; mật khẩu hiện tại vẫn giữ nguyên. Đừng chuyển tiếp thư này cho ai."
+    },
+    "en": {
+      "greeting": "Hi {name},",
+      "body": "Someone asked to reset the password of your Chuvachi staff account. Use the link below to choose a new password. It works once, for {minutes} minutes.",
+      "button": "Choose a new password",
+      "ignore": "If this wasn't you, ignore this email; your current password stays the same. Don't forward this email."
+    }
+  }
+}

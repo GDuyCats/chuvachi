@@ -304,6 +304,10 @@ export const adminApi = {
   me: () => request<AdminMe>("/me"),
   changePassword: (currentPassword: string, newPassword: string) =>
     request<AdminMe>("/me/password", { method: "POST", body: JSON.stringify({ currentPassword, newPassword }) }),
+  requestPasswordReset: (email: string) =>
+    request<{ ok: true }>("/password-reset/request", { method: "POST", body: JSON.stringify({ email }) }),
+  confirmPasswordReset: (token: string, newPassword: string) =>
+    request<{ ok: true }>("/password-reset/confirm", { method: "POST", body: JSON.stringify({ token, newPassword }) }),
   listAccounts: () => request<AdminAccount[]>("/accounts"),
   createAccount: (input: { email: string; name: string; role: AdminRole }) =>
     request<TemporaryPasswordResult>("/accounts", { method: "POST", body: JSON.stringify(input) }),

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { adminApi, AdminApiError } from "@/lib/admin-api";
@@ -75,6 +76,9 @@ export function LoginForm() {
           >
             {submitting ? t.login.submitting : t.login.submit}
           </button>
+          <Link href="/admin/forgot-password" className="self-center py-1 text-sm font-semibold underline">
+            {t.forgot.link}
+          </Link>
         </form>
       </div>
     </div>

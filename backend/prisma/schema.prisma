@@ -341,7 +341,23 @@ model AdminUser {
   lastLoginAt        DateTime?
   createdAt          DateTime       @default(now())
   sessions           AdminSession[]
+  passwordResets     AdminPasswordReset[]
   orderEvents        OrderEvent[]
+}
+
+// A "forgot password" link sent by email. Only the SHA-256 hash of the token is stored;
+// each link works once and expires after a short time.
+model AdminPasswordReset {
+  id          Int       @id @default(autoincrement())
+  tokenHash   String    @unique
+  adminUserId Int
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([adminUserId, createdAt])
+  @@index([expiresAt])
 }
 
 // A signed-in browser. The cookie holds a random token; only its SHA-256 hash is stored here.

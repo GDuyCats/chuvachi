@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { formatPrice } from "@/lib/format";
@@ -21,7 +21,23 @@ const MAX_PRODUCTS = 8;
 
 // Magnifier button in the header that opens a search over cakes, flavors, categories, the
 // season, coming-soon items and the main pages. Works without accents ("dau" finds "dâu").
-export function SiteSearch({ lang, index, labels }: Props) {
+// It reads the current address (usePathname), so it sits inside <Suspense>: pages can then be
+// built ahead of time, with a plain magnifier shown until the search is ready.
+export function SiteSearch(props: Props) {
+  return (
+    <Suspense
+      fallback={
+        <span aria-hidden="true" className="flex h-11 w-11 items-center justify-center text-ink">
+          <SearchIcon />
+        </span>
+      }
+    >
+      <SearchBox {...props} />
+    </Suspense>
+  );
+}
+
+function SearchBox({ lang, index, labels }: Props) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const input = useRef<HTMLInputElement>(null);

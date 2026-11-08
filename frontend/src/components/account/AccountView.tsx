@@ -15,6 +15,7 @@ type Props = {
   lang: Locale;
   labels: Dictionary["account"];
   statusLabels: Dictionary["track"]["steps"];
+  cancelReasons: Dictionary["cancelReasons"];
 };
 
 type Notice = { kind: "ok" | "error"; text: string } | null;
@@ -22,7 +23,7 @@ type Notice = { kind: "ok" | "error"; text: string } | null;
 const inputClass = "h-12 w-full border-[1.5px] border-black px-3.5 text-base font-normal";
 
 // The signed-in customer's page: their details, their orders, and account actions.
-export function AccountView({ lang, labels, statusLabels }: Props) {
+export function AccountView({ lang, labels, statusLabels, cancelReasons }: Props) {
   const router = useRouter();
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
   const [orders, setOrders] = useState<AccountOrder[]>([]);
@@ -92,7 +93,7 @@ export function AccountView({ lang, labels, statusLabels }: Props) {
         </div>
       </header>
 
-      <OrdersSection lang={lang} labels={labels} statusLabels={statusLabels} orders={orders} />
+      <OrdersSection lang={lang} labels={labels} statusLabels={statusLabels} cancelReasons={cancelReasons} orders={orders} />
       <ClaimSection labels={labels} onClaimed={loadOrders} />
       <ProfileSection labels={labels} profile={profile} zones={zones} onSaved={setProfile} />
       <DangerSection lang={lang} labels={labels} />
@@ -104,11 +105,13 @@ function OrdersSection({
   lang,
   labels,
   statusLabels,
+  cancelReasons,
   orders,
 }: {
   lang: Locale;
   labels: Dictionary["account"];
   statusLabels: Dictionary["track"]["steps"];
+  cancelReasons: Dictionary["cancelReasons"];
   orders: AccountOrder[];
 }) {
   return (
@@ -148,6 +151,12 @@ function OrdersSection({
                   <span className="text-sm text-[#333333]">
                     {order.items.map((item) => `${item.quantity} × ${item.name}`).join(", ")}
                   </span>
+                  {order.status === "CANCELLED" && order.cancelReason && (
+                    <span className="text-sm text-muted">
+                      {cancelReasons[order.cancelReason]}
+                      {order.cancelNote ? ` — ${order.cancelNote}` : ""}
+                    </span>
+                  )}
                   <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
                     <span className="text-muted">{when}</span>
                     <span className="font-bold">{formatPrice(order.total, lang)}</span>

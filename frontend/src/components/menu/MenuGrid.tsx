@@ -10,6 +10,7 @@ export type MenuItem = {
   name: string;
   price: number;
   isNew: boolean;
+  soldOutUntil: string | null;
   imageUrl: string | null;
   categorySlug: string;
   categoryName: string;
@@ -107,6 +108,7 @@ export function MenuGrid({ lang, items, labels, cardLabels }: Props) {
                 name={item.name}
                 price={item.price}
                 isNew={item.isNew}
+                soldOutUntil={item.soldOutUntil}
                 imageUrl={item.imageUrl}
                 labels={cardLabels}
                 actionLabel={labels.view}

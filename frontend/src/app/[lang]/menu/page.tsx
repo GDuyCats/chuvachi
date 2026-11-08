@@ -26,6 +26,7 @@ export default async function MenuPage({ params }: PageProps<"/[lang]/menu">) {
     name: product.name,
     price: startingPrice(product),
     isNew: product.isNew,
+    soldOutUntil: product.soldOutUntil,
     imageUrl: product.imageUrl,
     categorySlug: product.category.slug,
     categoryName: product.category.name,

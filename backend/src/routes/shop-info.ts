@@ -26,5 +26,9 @@ shopInfoRouter.get("/shop-info", async (_req, res) => {
     smallOrderLeadHours: settings?.smallOrderLeadHours ?? 3,
     largeOrderLeadHours: settings?.largeOrderLeadHours ?? 24,
     largeOrderThreshold: settings?.largeOrderThreshold ?? 10,
+    // "Pause orders" switch, and the message customers see meanwhile
+    orderingPaused: settings?.orderingPaused ?? false,
+    pauseMessageVi: settings?.pauseMessageVi ?? null,
+    pauseMessageEn: settings?.pauseMessageEn ?? null,
   });
 });

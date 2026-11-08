@@ -77,7 +77,8 @@
       "history": "History",
       "system": "System",
       "selectHint": "Select an order to see the details.",
-      "close": "Close"
+      "close": "Close",
+      "cancelledBecause": "Cancelled because:"
     },
     "actions": {
       "PENDING": "Payment received — confirm order",
@@ -87,10 +88,13 @@
       "cancel": "Cancel order",
       "cancelConfirm": "Yes, cancel this order",
       "cancelKeep": "Keep the order",
-      "cancelReason": "Reason (optional)",
+      "cancelReason": "Reason",
       "paidWarning": "This order was paid. After cancelling, send the money back and mark it as refunded.",
       "refund": "Mark as refunded",
-      "working": "Saving..."
+      "working": "Saving...",
+      "chooseReason": "— Choose a reason —",
+      "cancelNote": "Note for the customer (optional)",
+      "customerSees": "The customer sees this reason and note on the order lookup page. Please also call or message them."
     },
     "events": {
       "ADVANCE": "Status changed",
@@ -98,7 +102,8 @@
       "AUTO_CANCEL": "Auto-cancelled (unpaid)",
       "REFUND": "Marked as refunded",
       "AUTO_ERASE": "Customer details erased (retention period over)",
-      "ERASE_ON_REQUEST": "Customer details erased on request"
+      "ERASE_ON_REQUEST": "Customer details erased on request",
+      "BULK_CANCEL": "Cancelled in bulk"
     },
     "errors": {
       "ORDER_CHANGED": "Someone else just updated this order. The list has been refreshed.",
@@ -115,6 +120,32 @@
       "eraseExplain": "Use this when the customer asks you to delete their data. Their name, phone and address are erased from all of their finished orders. This cannot be undone.",
       "eraseConfirm": "Erase",
       "erased": "Customer details were erased for privacy."
+    },
+    "cancelReasons": {
+      "OUT_OF_INGREDIENTS": "Out of ingredients",
+      "CANNOT_DELIVER": "Can't deliver",
+      "CUSTOMER_REQUEST": "Customer asked to cancel",
+      "SHOP_CLOSED": "Shop unexpectedly closed",
+      "UNPAID_TIMEOUT": "Not paid in time",
+      "OTHER": "Other reason"
+    },
+    "bulk": {
+      "open": "Cancel many",
+      "title": "Cancel many orders",
+      "hint": "Cancel every open order for one delivery day, or only those with one cake. Use it when an ingredient runs out or the shop must close.",
+      "date": "Delivery day",
+      "product": "Cake",
+      "allProducts": "— All cakes —",
+      "preview": "Preview the orders",
+      "none": "No open orders for this choice.",
+      "willCancel": "{count} order(s) will be cancelled.",
+      "paidCount": "{count} of them are paid and need a refund.",
+      "paid": "paid",
+      "confirm": "Cancel {count} order(s)",
+      "done": "{count} order(s) cancelled.",
+      "refundHint": "These orders were paid. Send each customer their money back, then press \"Refunded\".",
+      "refunded": "Refunded",
+      "noRefund": "No orders need a refund."
     }
   },
   "settings": {
@@ -205,6 +236,15 @@
       "sent": "Test message sent. Check your Telegram group.",
       "notConfigured": "Telegram is not set up yet (TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in the backend .env).",
       "failed": "Telegram refused the message. Check the bot token, the chat id, and that the bot is in the group."
+    },
+    "pause": {
+      "title": "Pause orders",
+      "hint": "Turn on when something goes wrong (illness, power cut, broken oven). Customers can still see the menu but can't order.",
+      "on": "Orders are PAUSED",
+      "off": "Taking orders as usual",
+      "messageVi": "Message for customers (VI)",
+      "messageEn": "Message for customers (EN)",
+      "saveHint": "Press \"Save\" above to apply. The site updates within about a minute."
     }
   },
   "products": {
@@ -273,9 +313,16 @@
       "addSize": "Add size",
       "removeHint": "Removed options are switched off, not deleted, so old orders stay correct.",
       "pricePreview": "Price preview",
-      "loading": "Loading product..."
+      "loading": "Loading product...",
+      "soldOutUntil": "Sold out up to and including",
+      "clear": "Clear",
+      "soldOutHint": "Customers can't order this cake for delivery on those days; it opens again the day after. Empty = selling normally.",
+      "dailyLimit": "Most per day (portions)",
+      "dailyLimitHint": "The most portions of this cake taken for one delivery day. Empty = no limit of its own."
     },
-    "loading": "Loading products..."
+    "loading": "Loading products...",
+    "soldOutUntil": "Sold out to {date}",
+    "limit": "Max {count}/day"
   },
   "close": "Close",
   "images": {

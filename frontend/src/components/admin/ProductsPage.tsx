@@ -84,6 +84,16 @@ export function ProductsPage() {
                       {product.isNew && (
                         <span className="bg-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">{p.new}</span>
                       )}
+                      {product.soldOutUntil && (
+                        <span className="border border-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                          {p.soldOutUntil.replace("{date}", product.soldOutUntil)}
+                        </span>
+                      )}
+                      {product.dailyLimit && (
+                        <span className="border border-[#a8a8a8] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted">
+                          {p.limit.replace("{count}", String(product.dailyLimit))}
+                        </span>
+                      )}
                       {!product.isActive && (
                         <span className="border border-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">{p.hidden}</span>
                       )}

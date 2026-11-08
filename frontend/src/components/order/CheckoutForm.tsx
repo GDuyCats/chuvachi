@@ -149,6 +149,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
       .catch(() => setAccount(null));
   }, []);
   const [errorCode, setErrorCode] = useState<string | null>(null);
+  const [errorProduct, setErrorProduct] = useState("");
 
   const isLargeOrder = settings ? totalPortions >= settings.largeOrderThreshold : false;
   const leadHours = settings ? (isLargeOrder ? settings.largeOrderLeadHours : settings.smallOrderLeadHours) : 0;
@@ -213,13 +214,14 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
       router.push(`/${lang}/order/confirmation`);
     } catch (error) {
       setErrorCode(error instanceof ApiError ? error.code : "UNKNOWN");
+      setErrorProduct(error instanceof ApiError ? (error.product ?? "") : "");
       setSubmitting(false);
       setBotReset((n) => n + 1); // each check token works once; get a new one for the next try
     }
   }
 
   const errorText = errorCode
-    ? (labels.errors[errorCode as keyof typeof labels.errors] ?? labels.errors.UNKNOWN)
+    ? (labels.errors[errorCode as keyof typeof labels.errors] ?? labels.errors.UNKNOWN).replace("{product}", errorProduct)
     : null;
 
   // Wait for the browser so the cart (stored in the browser) is known.
@@ -550,10 +552,16 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
             {labels.consentAfter}
           </span>
         </label>
+        {settings?.orderingPaused && (
+          <div role="alert" className="flex flex-col gap-1 bg-black p-4 text-white">
+            <span className="font-bold">{labels.pausedTitle}</span>
+            {settings.pauseMessage && <span className="text-sm">{settings.pauseMessage}</span>}
+          </div>
+        )}
         <TurnstileWidget lang={lang} onToken={setBotToken} resetSignal={botReset} />
         <button
           type="submit"
-          disabled={!settings || submitting}
+          disabled={!settings || submitting || settings.orderingPaused}
           className="min-h-14 bg-black text-[17px] font-bold text-white hover:bg-[#333333] disabled:opacity-60"
         >
           {submitting ? labels.placing : `${labels.placeOrder} · ${formatPrice(total, lang)}`}

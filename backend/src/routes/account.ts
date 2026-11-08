@@ -183,6 +183,8 @@ accountRouter.get("/account/orders", requireCustomer, async (req, res) => {
       deliverySlot: order.deliverySlot,
       deliveryZone: pickText(locale, order.deliveryZone.nameVi, order.deliveryZone.nameEn),
       total: order.total,
+      cancelReason: order.cancelReason,
+      cancelNote: order.cancelNote,
       items: order.items.map((item) => ({
         name: describeItem(item.nameSnapshot, item.optionsSnapshot, locale),
         quantity: item.quantity,

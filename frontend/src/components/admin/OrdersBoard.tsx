@@ -11,9 +11,12 @@ import {
   type AdminOrder,
   type AdminOrderList,
   type AdminStatus,
+  STAFF_CANCEL_REASONS,
+  type StaffCancelReason,
 } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
 import { AdminRowsSkeleton } from "./AdminSkeletons";
+import { BulkCancelPanel } from "./BulkCancelPanel";
 import { useToast } from "./Toast";
 
 const REFRESH_MS = 30_000;
@@ -43,6 +46,7 @@ export function OrdersBoard() {
   const router = useRouter();
   const { t, lang } = useAdminI18n();
   const [day, setDay] = useState<AdminDay>("today");
+  const [showBulk, setShowBulk] = useState(false);
   const [statusFilter, setStatusFilter] = useState<AdminStatus | "ALL">("ALL");
   const [data, setData] = useState<AdminOrderList | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -134,6 +138,14 @@ export function OrdersBoard() {
           <span className="text-[13px] text-muted">{t.orders.autoRefresh}</span>
         </div>
         <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setShowBulk((open) => !open)}
+            aria-expanded={showBulk}
+            className="min-h-11 border-[1.5px] border-black px-4 text-sm font-bold"
+          >
+            {t.orders.bulk.open}
+          </button>
           <div role="group" className="flex border-[1.5px] border-black text-sm font-bold">
             {(["today", "tomorrow", "upcoming"] as const).map((option) => (
               <button
@@ -156,6 +168,14 @@ export function OrdersBoard() {
         </div>
       </div>
 
+      {showBulk && (
+        <BulkCancelPanel
+          onClose={() => setShowBulk(false)}
+          onDone={() => {
+            void load();
+          }}
+        />
+      )}
       {stats.length > 0 && (
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {stats.map((stat) => (
@@ -291,7 +311,8 @@ function OrderDetail({ order, onClose, onAction, formatTime }: DetailProps) {
   const [busy, setBusy] = useState(false);
   const [confirmingCancel, setConfirmingCancel] = useState(false);
   const [confirmingErase, setConfirmingErase] = useState(false);
-  const [cancelReason, setCancelReason] = useState("");
+  const [cancelReason, setCancelReason] = useState<StaffCancelReason | "">("");
+  const [cancelNote, setCancelNote] = useState("");
   const [copied, setCopied] = useState(false);
 
   const canAdvance = ["PENDING", "CONFIRMED", "PREPARING", "READY"].includes(order.status);
@@ -454,6 +475,12 @@ function OrderDetail({ order, onClose, onAction, formatTime }: DetailProps) {
           </div>
         )}
         {order.erased && <p className="text-sm text-muted">{t.orders.privacy.erased}</p>}
+        {order.status === "CANCELLED" && order.cancelReason && (
+          <p className="bg-surface p-3 text-sm">
+            <span className="font-bold">{t.orders.detail.cancelledBecause}</span> {t.orders.cancelReasons[order.cancelReason]}
+            {order.cancelNote ? ` — ${order.cancelNote}` : ""}
+          </p>
+        )}
         {canCancel && !confirmingCancel && (
           <button
             type="button"
@@ -468,18 +495,38 @@ function OrderDetail({ order, onClose, onAction, formatTime }: DetailProps) {
             {order.paymentStatus === "PAID" && <p className="text-sm font-semibold">{t.orders.actions.paidWarning}</p>}
             <label className="flex flex-col gap-1.5 text-sm font-semibold">
               {t.orders.actions.cancelReason}
-              <input
+              <select
                 value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value as StaffCancelReason)}
+                className="h-11 border-[1.5px] border-black bg-white px-3 font-normal"
+              >
+                <option value="" disabled>
+                  {t.orders.actions.chooseReason}
+                </option>
+                {STAFF_CANCEL_REASONS.map((reason) => (
+                  <option key={reason} value={reason}>
+                    {t.orders.cancelReasons[reason]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex flex-col gap-1.5 text-sm font-semibold">
+              {t.orders.actions.cancelNote}
+              <input
+                value={cancelNote}
                 maxLength={300}
-                onChange={(e) => setCancelReason(e.target.value)}
+                onChange={(e) => setCancelNote(e.target.value)}
                 className="h-11 border-[1.5px] border-black px-3 font-normal"
               />
             </label>
+            <p className="text-xs text-muted">{t.orders.actions.customerSees}</p>
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
-                disabled={busy}
-                onClick={() => run(() => adminApi.cancel(order.code, order.status, cancelReason.trim()))}
+                disabled={busy || !cancelReason}
+                onClick={() =>
+                  cancelReason && run(() => adminApi.cancel(order.code, order.status, cancelReason, cancelNote.trim()))
+                }
                 className="min-h-11 flex-1 bg-black px-3 text-sm font-bold text-white disabled:opacity-60"
               >
                 {t.orders.actions.cancelConfirm}

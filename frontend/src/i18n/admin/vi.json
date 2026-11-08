@@ -77,7 +77,8 @@
       "history": "Lịch sử",
       "system": "Hệ thống",
       "selectHint": "Chọn một đơn để xem chi tiết.",
-      "close": "Đóng"
+      "close": "Đóng",
+      "cancelledBecause": "Lý do hủy:"
     },
     "actions": {
       "PENDING": "Đã nhận tiền — xác nhận đơn",
@@ -87,10 +88,13 @@
       "cancel": "Hủy đơn",
       "cancelConfirm": "Đồng ý hủy đơn này",
       "cancelKeep": "Giữ lại đơn",
-      "cancelReason": "Lý do (không bắt buộc)",
+      "cancelReason": "Lý do hủy",
       "paidWarning": "Đơn này đã thanh toán. Sau khi hủy, hãy chuyển trả tiền cho khách rồi bấm \"Đã hoàn tiền\".",
       "refund": "Đã hoàn tiền",
-      "working": "Đang lưu..."
+      "working": "Đang lưu...",
+      "chooseReason": "— Chọn lý do —",
+      "cancelNote": "Ghi chú cho khách (không bắt buộc)",
+      "customerSees": "Khách sẽ thấy lý do và ghi chú này ở trang tra cứu đơn. Nhớ gọi hoặc nhắn khách nữa nhé."
     },
     "events": {
       "ADVANCE": "Đổi trạng thái",
@@ -98,7 +102,8 @@
       "AUTO_CANCEL": "Tự hủy (chưa thanh toán)",
       "REFUND": "Đã hoàn tiền",
       "AUTO_ERASE": "Đã xóa thông tin khách (hết thời hạn lưu)",
-      "ERASE_ON_REQUEST": "Đã xóa thông tin khách theo yêu cầu"
+      "ERASE_ON_REQUEST": "Đã xóa thông tin khách theo yêu cầu",
+      "BULK_CANCEL": "Hủy hàng loạt"
     },
     "errors": {
       "ORDER_CHANGED": "Người khác vừa cập nhật đơn này. Danh sách đã được tải lại.",
@@ -115,6 +120,32 @@
       "eraseExplain": "Dùng khi khách yêu cầu xóa dữ liệu. Tên, số điện thoại và địa chỉ của khách sẽ bị xóa khỏi mọi đơn đã xong của họ. Không hoàn tác được.",
       "eraseConfirm": "Xóa",
       "erased": "Thông tin khách đã được xóa để bảo vệ quyền riêng tư."
+    },
+    "cancelReasons": {
+      "OUT_OF_INGREDIENTS": "Hết nguyên liệu",
+      "CANNOT_DELIVER": "Không giao được",
+      "CUSTOMER_REQUEST": "Khách yêu cầu hủy",
+      "SHOP_CLOSED": "Tiệm nghỉ đột xuất",
+      "UNPAID_TIMEOUT": "Không thanh toán kịp",
+      "OTHER": "Lý do khác"
+    },
+    "bulk": {
+      "open": "Hủy hàng loạt",
+      "title": "Hủy hàng loạt",
+      "hint": "Hủy mọi đơn chưa giao của một ngày, hoặc chỉ những đơn có một loại bánh. Dùng khi hết nguyên liệu hay tiệm phải nghỉ đột xuất.",
+      "date": "Ngày giao",
+      "product": "Bánh",
+      "allProducts": "— Tất cả bánh —",
+      "preview": "Xem trước các đơn sẽ hủy",
+      "none": "Không có đơn nào đang mở cho lựa chọn này.",
+      "willCancel": "Sẽ hủy {count} đơn.",
+      "paidCount": "Trong đó {count} đơn đã thanh toán, cần hoàn tiền.",
+      "paid": "đã trả",
+      "confirm": "Hủy {count} đơn",
+      "done": "Đã hủy {count} đơn.",
+      "refundHint": "Các đơn dưới đây đã thanh toán. Chuyển trả tiền cho từng khách rồi bấm \"Đã hoàn tiền\".",
+      "refunded": "Đã hoàn tiền",
+      "noRefund": "Không có đơn nào cần hoàn tiền."
     }
   },
   "settings": {
@@ -205,6 +236,15 @@
       "sent": "Đã gửi tin thử. Bạn mở nhóm Telegram xem nhé.",
       "notConfigured": "Chưa cài Telegram (TELEGRAM_BOT_TOKEN và TELEGRAM_CHAT_ID trong file .env của backend).",
       "failed": "Telegram không nhận tin. Kiểm tra lại token của bot, chat id, và bot đã được thêm vào nhóm chưa."
+    },
+    "pause": {
+      "title": "Tạm ngưng nhận đơn",
+      "hint": "Bật khi tiệm có sự cố (ốm, mất điện, hỏng máy). Khách vẫn xem được menu nhưng không đặt được.",
+      "on": "Đang TẠM NGƯNG nhận đơn",
+      "off": "Đang nhận đơn bình thường",
+      "messageVi": "Lời nhắn cho khách (VI)",
+      "messageEn": "Lời nhắn cho khách (EN)",
+      "saveHint": "Bấm \"Lưu\" ở trên để áp dụng. Trang web cập nhật sau khoảng 1 phút."
     }
   },
   "products": {
@@ -273,9 +313,16 @@
       "addSize": "Thêm quy cách",
       "removeHint": "Vị/quy cách bị bỏ chỉ được tắt đi chứ không xóa, để đơn cũ vẫn đúng.",
       "pricePreview": "Xem trước giá",
-      "loading": "Đang tải bánh..."
+      "loading": "Đang tải bánh...",
+      "soldOutUntil": "Tạm hết đến hết ngày",
+      "clear": "Bỏ",
+      "soldOutHint": "Khách không đặt được bánh này để giao trong những ngày đó; từ ngày hôm sau tự mở lại. Để trống = bán bình thường.",
+      "dailyLimit": "Tối đa mỗi ngày (phần)",
+      "dailyLimitHint": "Số phần bánh này nhận tối đa cho một ngày giao. Để trống = không giới hạn riêng."
     },
-    "loading": "Đang tải danh sách bánh..."
+    "loading": "Đang tải danh sách bánh...",
+    "soldOutUntil": "Tạm hết đến {date}",
+    "limit": "Tối đa {count}/ngày"
   },
   "close": "Đóng",
   "images": {

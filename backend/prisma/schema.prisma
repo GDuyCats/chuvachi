@@ -32,6 +32,15 @@ enum PaymentStatus {
   REFUNDED
 }
 
+enum CancelReason {
+  OUT_OF_INGREDIENTS
+  CANNOT_DELIVER
+  CUSTOMER_REQUEST
+  SHOP_CLOSED
+  UNPAID_TIMEOUT // cancelled automatically: not confirmed in time
+  OTHER
+}
+
 enum OrderStatus {
   PENDING   // placed, waiting for the bank transfer and the shop's confirmation
   CONFIRMED // payment received, the shop accepted the order
@@ -68,6 +77,8 @@ model Product {
   basePrice     Int             // price of one portion in VND
   isActive      Boolean         @default(true)
   isNew         Boolean         @default(false) // shows a "NEW" badge and appears under the "New" filter
+  soldOutUntil  DateTime?       @db.Date // "temporarily sold out": no deliveries on or before this day
+  dailyLimit    Int?            // most portions of this cake per delivery day; empty = no own limit
   sortOrder     Int             @default(0)
   categoryId    Int
   category      Category        @relation(fields: [categoryId], references: [id])
@@ -75,6 +86,7 @@ model Product {
   comboItems    ComboItem[]
   orderItems    OrderItem[]
   seasonItems   SeasonProduct[]
+  dayBookings   ProductDayBooking[]
   heroFor       HomeContent[]   @relation("HeroProduct")
   announcedIn   HomeContent[]   @relation("AnnouncementProduct")
   createdAt     DateTime        @default(now())
@@ -214,6 +226,8 @@ model Order {
   privacyConsentAt     DateTime? // when the customer ticked "I agree to the privacy policy"
   privacyPolicyVersion String?   // which version of the policy they agreed to
   anonymizedAt         DateTime? // name, phone and address were erased (retention period over, or on request)
+  cancelReason         CancelReason? // shown to the customer when the order is cancelled
+  cancelNote           String?   // optional extra words for the customer
   customerId           Int?      // set when the customer was signed in, or claimed the order later
   customer             Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
   items          OrderItem[]
@@ -256,6 +270,16 @@ model DeliveryZone {
   orders    Order[]
 }
 
+// Portions of one cake booked for one delivery day (only used when the cake has a daily limit).
+model ProductDayBooking {
+  productId      Int
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  date           DateTime @db.Date
+  bookedPortions Int      @default(0)
+
+  @@id([productId, date])
+}
+
 model DailyCapacity {
   date           DateTime @id @db.Date
   maxPortions    Int
@@ -290,6 +314,9 @@ model ShopSetting {
   registrationNumber   String?  // business registration or tax number
   contactEmail         String?
   dataRetentionMonths  Int      @default(12) // customer details are erased this long after delivery
+  orderingPaused       Boolean  @default(false) // "pause orders" switch for the whole shop
+  pauseMessageVi       String?  // shown to customers while orders are paused
+  pauseMessageEn       String?
   updatedAt            DateTime @updatedAt
 }
 

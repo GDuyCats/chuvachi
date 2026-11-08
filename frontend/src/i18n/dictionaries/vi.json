@@ -56,7 +56,8 @@
       "tiramisu": "Tiramisu",
       "mousse": "Mousse",
       "brownie": "Brownie"
-    }
+    },
+    "soldOut": "Tạm hết"
   },
   "menu": {
     "title": "Menu của tiệm",
@@ -93,7 +94,8 @@
     "allergensTitle": "Chất gây dị ứng",
     "photoOf": "Ảnh {number}/{total}",
     "previousPhoto": "Ảnh trước",
-    "nextPhoto": "Ảnh sau"
+    "nextPhoto": "Ảnh sau",
+    "soldOutNote": "Tạm hết đến hết ngày {date}. Bạn vẫn đặt được để giao từ ngày {next}."
   },
   "order": {
     "title": "Đơn hàng của bạn",
@@ -161,7 +163,10 @@
       "NETWORK": "Không kết nối được với tiệm. Bạn kiểm tra mạng rồi thử lại nhé.",
       "UNKNOWN": "Có lỗi xảy ra. Bạn thử lại giúp tiệm nhé.",
       "BOT_CHECK_PENDING": "Đang kiểm tra bảo mật, bạn đợi vài giây rồi bấm lại nhé.",
-      "BOT_CHECK_FAILED": "Không qua được bước kiểm tra bảo mật. Bạn tải lại trang rồi thử lại nhé."
+      "BOT_CHECK_FAILED": "Không qua được bước kiểm tra bảo mật. Bạn tải lại trang rồi thử lại nhé.",
+      "ORDERING_PAUSED": "Tiệm đang tạm ngưng nhận đơn. Bạn quay lại sau nhé.",
+      "PRODUCT_SOLD_OUT": "{product} đang tạm hết vào ngày bạn chọn. Bạn chọn ngày khác hoặc bỏ bánh này khỏi đơn nhé.",
+      "PRODUCT_LIMIT_REACHED": "{product} đã đủ đơn cho ngày bạn chọn. Bạn chọn ngày khác hoặc giảm số lượng nhé."
     },
     "consentBefore": "Tôi đồng ý cho tiệm dùng thông tin của tôi để giao đơn, theo",
     "consentPrivacy": "Chính sách quyền riêng tư",
@@ -170,7 +175,8 @@
     "consentAfter": ".",
     "signedInAs": "Đang đăng nhập bằng {email}. Đơn sẽ được lưu vào tài khoản của bạn.",
     "signInHint": "Có tài khoản? Đơn sẽ được lưu lại và thông tin tự điền.",
-    "signInLink": "Đăng nhập"
+    "signInLink": "Đăng nhập",
+    "pausedTitle": "Tiệm đang tạm ngưng nhận đơn"
   },
   "thanks": {
     "title": "Cảm ơn bạn! Tiệm đã nhận đơn.",
@@ -244,7 +250,9 @@
       "UNKNOWN": "Có lỗi xảy ra. Bạn thử lại giúp tiệm nhé.",
       "BOT_CHECK_PENDING": "Đang kiểm tra bảo mật, bạn đợi vài giây rồi bấm lại nhé.",
       "BOT_CHECK_FAILED": "Không qua được bước kiểm tra bảo mật. Bạn tải lại trang rồi thử lại nhé."
-    }
+    },
+    "cancelledBecause": "Lý do:",
+    "refundNote": "Bạn đã thanh toán đơn này. Tiệm sẽ hoàn tiền trong 3 ngày làm việc."
   },
   "loading": {
     "page": "Đang tải...",
@@ -319,5 +327,16 @@
       "NETWORK": "Không kết nối được với tiệm. Bạn kiểm tra mạng rồi thử lại nhé.",
       "UNKNOWN": "Có lỗi xảy ra. Bạn thử lại giúp tiệm nhé."
     }
+  },
+  "cancelReasons": {
+    "OUT_OF_INGREDIENTS": "Tiệm hết nguyên liệu",
+    "CANNOT_DELIVER": "Tiệm không giao được đơn này",
+    "CUSTOMER_REQUEST": "Hủy theo yêu cầu của bạn",
+    "SHOP_CLOSED": "Tiệm nghỉ đột xuất",
+    "UNPAID_TIMEOUT": "Đơn chưa được thanh toán kịp",
+    "OTHER": "Lý do khác"
+  },
+  "pause": {
+    "title": "Tiệm đang tạm ngưng nhận đơn"
   }
 }

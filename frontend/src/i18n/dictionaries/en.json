@@ -56,7 +56,8 @@
       "tiramisu": "Tiramisu",
       "mousse": "Mousse",
       "brownie": "Brownie"
-    }
+    },
+    "soldOut": "Sold out"
   },
   "menu": {
     "title": "Our menu",
@@ -93,7 +94,8 @@
     "allergensTitle": "Allergens",
     "photoOf": "Photo {number} of {total}",
     "previousPhoto": "Previous photo",
-    "nextPhoto": "Next photo"
+    "nextPhoto": "Next photo",
+    "soldOutNote": "Sold out up to {date}. You can still order it for delivery from {next}."
   },
   "order": {
     "title": "Your order",
@@ -161,7 +163,10 @@
       "NETWORK": "We couldn't reach the shop. Check your connection and try again.",
       "UNKNOWN": "Something went wrong. Please try again.",
       "BOT_CHECK_PENDING": "Running a quick security check. Please wait a few seconds and try again.",
-      "BOT_CHECK_FAILED": "The security check didn't pass. Please reload the page and try again."
+      "BOT_CHECK_FAILED": "The security check didn't pass. Please reload the page and try again.",
+      "ORDERING_PAUSED": "We're not taking orders right now. Please come back later.",
+      "PRODUCT_SOLD_OUT": "{product} is sold out on the day you chose. Please pick another day or remove it from your order.",
+      "PRODUCT_LIMIT_REACHED": "{product} is fully booked on the day you chose. Please pick another day or order fewer."
     },
     "consentBefore": "I agree that the shop may use my details to deliver this order, as described in the",
     "consentPrivacy": "Privacy policy",
@@ -170,7 +175,8 @@
     "consentAfter": ".",
     "signedInAs": "Signed in as {email}. This order will be saved to your account.",
     "signInHint": "Have an account? Your order is saved and your details filled in.",
-    "signInLink": "Sign in"
+    "signInLink": "Sign in",
+    "pausedTitle": "We're not taking orders right now"
   },
   "thanks": {
     "title": "Thank you! Your order is in.",
@@ -244,7 +250,9 @@
       "UNKNOWN": "Something went wrong. Please try again.",
       "BOT_CHECK_PENDING": "Running a quick security check. Please wait a few seconds and try again.",
       "BOT_CHECK_FAILED": "The security check didn't pass. Please reload the page and try again."
-    }
+    },
+    "cancelledBecause": "Reason:",
+    "refundNote": "You paid for this order. We'll refund you within 3 working days."
   },
   "loading": {
     "page": "Loading...",
@@ -319,5 +327,16 @@
       "NETWORK": "Can't reach the shop. Please check your connection and try again.",
       "UNKNOWN": "Something went wrong. Please try again."
     }
+  },
+  "cancelReasons": {
+    "OUT_OF_INGREDIENTS": "We ran out of ingredients",
+    "CANNOT_DELIVER": "We can't deliver this order",
+    "CUSTOMER_REQUEST": "Cancelled at your request",
+    "SHOP_CLOSED": "The shop had to close",
+    "UNPAID_TIMEOUT": "The order wasn't paid in time",
+    "OTHER": "Other reason"
+  },
+  "pause": {
+    "title": "We're not taking orders right now"
   }
 }

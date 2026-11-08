@@ -20,8 +20,18 @@ export type OrderSettings = {
   smallOrderLeadHours: number;
   largeOrderLeadHours: number;
   unpaidCancelMinutes: number;
+  orderingPaused: boolean; // the shop switched off ordering for now
+  pauseMessage: string | null;
   deliveryZones: { id: number; name: string }[];
 };
+
+export type CancelReason =
+  | "OUT_OF_INGREDIENTS"
+  | "CANNOT_DELIVER"
+  | "CUSTOMER_REQUEST"
+  | "SHOP_CLOSED"
+  | "UNPAID_TIMEOUT"
+  | "OTHER";
 
 export type PlaceOrderRequest = {
   customerName: string;
@@ -63,7 +73,10 @@ export type PlaceOrderResult = {
 
 // Error with a stable code (e.g. "DAY_FULLY_BOOKED") that the page translates for the visitor.
 export class ApiError extends Error {
-  constructor(public readonly code: string) {
+  constructor(
+    public readonly code: string,
+    public readonly product?: string, // the cake an order error is about, when there is one
+  ) {
     super(code);
   }
 }
@@ -83,13 +96,15 @@ export async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     let code = "UNKNOWN";
+    let product: string | undefined;
     try {
-      const body = (await response.json()) as { error?: unknown };
+      const body = (await response.json()) as { error?: unknown; product?: unknown };
       if (typeof body.error === "string") code = body.error;
+      if (typeof body.product === "string") product = body.product;
     } catch {
       // Keep "UNKNOWN" when the body is not JSON.
     }
-    throw new ApiError(code);
+    throw new ApiError(code, product);
   }
   return (await response.json()) as T;
 }
@@ -114,6 +129,8 @@ export function placeOrder(body: PlaceOrderRequest, turnstileToken: string | nul
 export type OrderStatus = "PENDING" | "CONFIRMED" | "PREPARING" | "READY" | "COMPLETED" | "CANCELLED";
 
 export type OrderLookup = {
+  cancelReason: CancelReason | null; // why the shop cancelled, shown to the customer
+  cancelNote: string | null;
   code: string;
   status: OrderStatus;
   paymentStatus: "UNPAID" | "PAID" | "REFUNDED";

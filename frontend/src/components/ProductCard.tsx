@@ -3,9 +3,11 @@ import type { CSSProperties } from "react";
 import type { Locale } from "@/i18n/config";
 import { formatPrice } from "@/lib/format";
 import { PhotoBox } from "./PhotoBox";
+import { SoldOutBadge } from "./SoldOutBadge";
 
 export type ProductCardLabels = {
   new: string;
+  soldOut: string;
   from: string;
   photoComingSoon: string;
 };
@@ -16,6 +18,7 @@ type Props = {
   name: string;
   price: number; // starting price in VND
   isNew: boolean;
+  soldOutUntil?: string | null;
   imageUrl: string | null;
   labels: ProductCardLabels;
   actionLabel: string;
@@ -31,6 +34,7 @@ export function ProductCard({
   name,
   price,
   isNew,
+  soldOutUntil = null,
   imageUrl,
   labels,
   actionLabel,
@@ -46,11 +50,12 @@ export function ProductCard({
     >
       <div className="relative">
         <PhotoBox src={imageUrl} alt={name} fallbackText={labels.photoComingSoon} className="aspect-square" />
-        {isNew && (
-          <span className="absolute left-2 top-2 bg-black px-2 py-1 text-[11px] font-bold uppercase tracking-widest text-white md:left-3 md:top-3">
-            {labels.new}
-          </span>
-        )}
+        <div className="absolute left-2 top-2 flex gap-1.5 md:left-3 md:top-3">
+          {isNew && (
+            <span className="bg-black px-2 py-1 text-[11px] font-bold uppercase tracking-widest text-white">{labels.new}</span>
+          )}
+          <SoldOutBadge soldOutUntil={soldOutUntil} label={labels.soldOut} />
+        </div>
       </div>
       <div className="border-t border-ink" />
       <div className="flex min-h-12 flex-col gap-1">

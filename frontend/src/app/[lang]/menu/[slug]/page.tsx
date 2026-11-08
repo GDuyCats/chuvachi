@@ -109,6 +109,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[s
             basePrice={product.basePrice}
             flavors={toChoices(product, "FLAVOR")}
             packages={toChoices(product, "PACKAGE")}
+            soldOutUntil={product.soldOutUntil}
             labels={labels}
           />
 

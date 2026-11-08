@@ -2,6 +2,7 @@ import { Router } from "express";
 import { Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { Locale, parseLocale, pickText } from "../lib/locale";
+import { formatDateOnly } from "../lib/time";
 
 export const catalogRouter = Router();
 
@@ -29,6 +30,8 @@ function toProductResponse(product: ProductWithRelations, locale: Locale) {
     images: product.images.length > 0 ? product.images : product.imageUrl ? [product.imageUrl] : [],
     basePrice: product.basePrice,
     isNew: product.isNew,
+    // Last day the cake can't be delivered ("temporarily sold out"), or null
+    soldOutUntil: product.soldOutUntil ? formatDateOnly(product.soldOutUntil) : null,
     category: {
       slug: product.category.slug,
       name: pickText(locale, product.category.nameVi, product.category.nameEn),

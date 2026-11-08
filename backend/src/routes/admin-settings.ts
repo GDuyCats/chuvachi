@@ -80,6 +80,9 @@ const settingsSchema = z
       .transform((value) => (value === "" ? null : value.toLowerCase()))
       .nullable(),
     dataRetentionMonths: z.number().int().min(1).max(120),
+    orderingPaused: z.boolean(),
+    pauseMessageVi: optionalText(200),
+    pauseMessageEn: optionalText(200),
   })
   .refine((data) => clockToMinutes(data.openTime) < clockToMinutes(data.closeTime), {
     message: "Closing time must be after opening time",

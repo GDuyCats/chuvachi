@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import { addToCart, cartItemCount, MAX_LINE_QUANTITY } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { portionsPerUnit, unitPrice } from "@/lib/pricing";
+import { isSoldOutToday, nextDayText } from "@/lib/shop-date";
 
 export type OptionChoice = {
   id: number;
@@ -25,6 +26,7 @@ export type ProductOptionsLabels = {
   viewOrder: string;
   onePortion: string;
   portionsEach: string;
+  soldOutNote: string;
 };
 
 type Props = {
@@ -33,11 +35,18 @@ type Props = {
   basePrice: number;
   flavors: OptionChoice[];
   packages: OptionChoice[];
+  soldOutUntil: string | null; // YYYY-MM-DD, or null
   labels: ProductOptionsLabels;
 };
 
 // Flavor and size pickers, live price, quantity and the "Add to order" button.
-export function ProductOptions({ lang, slug, basePrice, flavors, packages, labels }: Props) {
+export function ProductOptions({ lang, slug, basePrice, flavors, packages, soldOutUntil, labels }: Props) {
+  // Checked in the browser so a cached page stays right once the sold-out period ends.
+  const [soldOut, setSoldOut] = useState(false);
+  useEffect(() => {
+    setSoldOut(isSoldOutToday(soldOutUntil));
+  }, [soldOutUntil]);
+
   const [flavorId, setFlavorId] = useState<number | null>(flavors[0]?.id ?? null);
   const [packageId, setPackageId] = useState<number | null>(packages[0]?.id ?? null);
   const [quantity, setQuantity] = useState(1);
@@ -59,6 +68,13 @@ export function ProductOptions({ lang, slug, basePrice, flavors, packages, label
 
   return (
     <div className="flex flex-col gap-6">
+      {soldOut && soldOutUntil && (
+        <p role="status" className="border-[1.5px] border-black px-4 py-3 text-[15px] font-semibold">
+          {labels.soldOutNote
+            .replace("{date}", soldOutUntil.split("-").reverse().join("/"))
+            .replace("{next}", nextDayText(soldOutUntil).split("-").reverse().join("/"))}
+        </p>
+      )}
       <div className="flex flex-col gap-1">
         <span className="text-[22px] font-bold md:text-[26px]" aria-live="polite">
           {formatPrice(price, lang)}

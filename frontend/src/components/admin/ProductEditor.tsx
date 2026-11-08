@@ -32,6 +32,8 @@ const EMPTY_PRODUCT: AdminProductInput = {
   allergensEn: null,
   images: [],
   basePrice: 0,
+  soldOutUntil: null,
+  dailyLimit: null,
   isActive: true,
   isNew: false,
   sortOrder: 0,
@@ -52,6 +54,8 @@ function toInput(product: AdminProduct): AdminProductInput {
     allergensEn: product.allergensEn,
     images: product.images,
     basePrice: product.basePrice,
+    soldOutUntil: product.soldOutUntil,
+    dailyLimit: product.dailyLimit,
     isActive: product.isActive,
     isNew: product.isNew,
     sortOrder: product.sortOrder,
@@ -346,6 +350,37 @@ export function ProductEditor() {
           <label className="flex items-center gap-2.5 font-semibold">
             <input type="checkbox" checked={form.isNew} onChange={(ev) => update("isNew", ev.target.checked)} className="h-5 w-5 accent-black" />
             {e.isNew}
+          </label>
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="flex flex-col gap-1.5 text-sm font-semibold">
+            <label htmlFor="sold-out-until">{e.soldOutUntil}</label>
+            <div className="flex gap-2">
+              <input
+                id="sold-out-until"
+                type="date"
+                value={form.soldOutUntil ?? ""}
+                onChange={(ev) => update("soldOutUntil", ev.target.value || null)}
+                className={inputClass("soldOutUntil")}
+              />
+              {form.soldOutUntil && (
+                <button type="button" onClick={() => update("soldOutUntil", null)} className="shrink-0 px-2 text-sm font-semibold underline">
+                  {e.clear}
+                </button>
+              )}
+            </div>
+            <span className="text-xs font-normal text-muted">{e.soldOutHint}</span>
+          </div>
+          <label className="flex flex-col gap-1.5 text-sm font-semibold">
+            {e.dailyLimit}
+            <input
+              type="number"
+              min={1}
+              value={form.dailyLimit ?? ""}
+              onChange={(ev) => update("dailyLimit", ev.target.value === "" ? null : Number(ev.target.value))}
+              className={inputClass("dailyLimit")}
+            />
+            <span className="text-xs font-normal text-muted">{e.dailyLimitHint}</span>
           </label>
         </div>
         <ImageGalleryField

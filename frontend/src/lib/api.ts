@@ -22,6 +22,7 @@ export type Product = {
   images: string[]; // all photos in display order
   basePrice: number;
   isNew: boolean;
+  soldOutUntil: string | null; // YYYY-MM-DD: can't be delivered on or before this day
   category: { slug: string; name: string };
   options: ProductOption[];
 };
@@ -82,6 +83,9 @@ export type ShopInfo = {
   smallOrderLeadHours: number;
   largeOrderLeadHours: number;
   largeOrderThreshold: number;
+  orderingPaused: boolean;
+  pauseMessageVi: string | null;
+  pauseMessageEn: string | null;
 };
 
 const EMPTY_SHOP_INFO: ShopInfo = {
@@ -102,6 +106,9 @@ const EMPTY_SHOP_INFO: ShopInfo = {
   smallOrderLeadHours: 3,
   largeOrderLeadHours: 24,
   largeOrderThreshold: 10,
+  orderingPaused: false,
+  pauseMessageVi: null,
+  pauseMessageEn: null,
 };
 
 // Contact details and opening hours, edited by staff in the admin page.

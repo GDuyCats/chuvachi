@@ -2,7 +2,7 @@
 // never sees it; the browser simply sends it with each request.
 
 import type { Locale } from "@/i18n/config";
-import { request } from "./public-api";
+import { request, type CancelReason } from "./public-api";
 
 export type CustomerProfile = {
   name: string;
@@ -29,6 +29,8 @@ export type AccountOrder = {
   deliverySlot: string | null;
   deliveryZone: string;
   total: number;
+  cancelReason: CancelReason | null;
+  cancelNote: string | null;
   items: { name: string; quantity: number }[];
   createdAt: string;
 };

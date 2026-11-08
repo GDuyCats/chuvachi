@@ -5,7 +5,7 @@ import { requireAdmin } from "../lib/auth";
 import { prisma } from "../lib/prisma";
 import { formatDateOnly, parseDateOnly, vietnamToday } from "../lib/time";
 import { eraseCustomerOnRequest, EraseError } from "../lib/privacy";
-import { advanceOrder, cancelOrder, markRefunded, OrderActionError } from "../services/order-admin-service";
+import { advanceOrder, bulkCancel, cancelOrder, findOrdersToCancel, markRefunded, OrderActionError } from "../services/order-admin-service";
 
 export const adminOrdersRouter = Router();
 adminOrdersRouter.use(requireAdmin);
@@ -65,6 +65,8 @@ function toAdminOrder(order: FullOrder) {
     createdAt: order.createdAt.toISOString(),
     updatedAt: order.updatedAt.toISOString(),
     erased: order.anonymizedAt !== null,
+    cancelReason: order.cancelReason,
+    cancelNote: order.cancelNote,
   };
 }
 
@@ -125,6 +127,32 @@ const actionBody = z.object({
   note: z.string().trim().max(300).optional(),
 });
 
+// Reasons staff can pick (UNPAID_TIMEOUT is only set by the automatic cancel).
+const staffCancelReason = z.enum(["OUT_OF_INGREDIENTS", "CANNOT_DELIVER", "CUSTOMER_REQUEST", "SHOP_CLOSED", "OTHER"]);
+const cancelBody = z.object({
+  expectedStatus: z.nativeEnum(OrderStatus),
+  reason: staffCancelReason,
+  note: z
+    .string()
+    .trim()
+    .max(300)
+    .optional()
+    .transform((value) => value || null),
+});
+const bulkFilterBody = z.object({
+  date: z.string().refine((value) => parseDateOnly(value) !== null, "Use the format YYYY-MM-DD"),
+  productId: z.number().int().positive().nullable(),
+});
+const bulkCancelBody = bulkFilterBody.extend({
+  reason: staffCancelReason,
+  note: z
+    .string()
+    .trim()
+    .max(300)
+    .optional()
+    .transform((value) => value || null),
+});
+
 async function sendOrder(res: import("express").Response, code: string) {
   const order = await prisma.order.findUnique({ where: { code }, include: orderInclude });
   if (!order) {
@@ -179,16 +207,20 @@ adminOrdersRouter.post("/:code/advance", async (req, res) => {
   await sendOrder(res, code.data);
 });
 
-// POST /api/admin/orders/:code/cancel  { expectedStatus, note? }
+// POST /api/admin/orders/:code/cancel  { expectedStatus, reason, note? }
+// The reason and note are shown to the customer on the order lookup page.
 adminOrdersRouter.post("/:code/cancel", async (req, res) => {
-  const code = codeSchema.safeParse(req.params.code.toUpperCase());
-  const body = actionBody.safeParse(req.body);
+  const code = codeSchema.safeParse(String(req.params.code).toUpperCase());
+  const body = cancelBody.safeParse(req.body);
   if (!code.success || !body.success) {
     res.status(400).json({ error: "VALIDATION_ERROR" });
     return;
   }
   try {
-    await cancelOrder(code.data, body.data.expectedStatus, req.admin!.id, body.data.note);
+    await cancelOrder(code.data, body.data.expectedStatus, req.admin!.id, {
+      reason: body.data.reason,
+      note: body.data.note,
+    });
   } catch (error) {
     handleActionError(res, error);
     return;
@@ -232,4 +264,43 @@ adminOrdersRouter.post("/:code/erase-customer", async (req, res) => {
     throw error;
   }
   await sendOrder(res, code.data);
+});
+
+// ---------- Cancel many orders at once ----------
+
+const toRefundRow = (order: Awaited<ReturnType<typeof findOrdersToCancel>>[number]) => ({
+  code: order.code,
+  status: order.status,
+  paid: order.paymentStatus === "PAID",
+  total: order.total,
+  customerName: order.customerName,
+  customerPhone: order.customerPhone,
+});
+
+// POST /api/admin/orders/bulk-cancel/preview  { date, productId }
+// Lists the open orders that would be cancelled, without changing anything.
+adminOrdersRouter.post("/bulk-cancel/preview", async (req, res) => {
+  const body = bulkFilterBody.safeParse(req.body);
+  if (!body.success) {
+    res.status(400).json({ error: "VALIDATION_ERROR" });
+    return;
+  }
+  const orders = await findOrdersToCancel({ date: parseDateOnly(body.data.date)!, productId: body.data.productId });
+  res.json({ orders: orders.map(toRefundRow) });
+});
+
+// POST /api/admin/orders/bulk-cancel  { date, productId, reason, note? }
+adminOrdersRouter.post("/bulk-cancel", async (req, res) => {
+  const body = bulkCancelBody.safeParse(req.body);
+  if (!body.success) {
+    res.status(400).json({ error: "VALIDATION_ERROR" });
+    return;
+  }
+  const cancelled = await bulkCancel(
+    { date: parseDateOnly(body.data.date)!, productId: body.data.productId },
+    req.admin!.id,
+    { reason: body.data.reason, note: body.data.note },
+  );
+  console.log(`Bulk cancel of ${cancelled.length} order(s) for ${body.data.date} by admin ${req.admin!.email}`);
+  res.json({ cancelled: cancelled.map(toRefundRow) });
 });

@@ -13,6 +13,7 @@ export class OrderError extends Error {
     public readonly code: string,
     message: string,
     public readonly status = 400,
+    public readonly product?: string, // the cake the problem is about, in the customer's language
   ) {
     super(message);
   }
@@ -119,6 +120,9 @@ export async function createOrder(input: CreateOrderInput) {
   if (!settings) {
     throw new OrderError("SHOP_NOT_CONFIGURED", "Shop settings are missing", 500);
   }
+  if (settings.orderingPaused) {
+    throw new OrderError("ORDERING_PAUSED", "The shop is not taking orders right now", 409);
+  }
 
   // 1. Delivery area (no fee: customers pay the driver directly)
   const zone = await prisma.deliveryZone.findFirst({
@@ -176,6 +180,21 @@ export async function createOrder(input: CreateOrderInput) {
   const isLargeOrder = totalPortions >= settings.largeOrderThreshold;
   const { deliveryDate, deliverySlot } = resolveDelivery(input, settings, isLargeOrder);
 
+  // 3b. Cakes marked "temporarily sold out" up to and including some day
+  const productName = (product: { nameVi: string; nameEn: string }) => pickText(input.locale, product.nameVi, product.nameEn);
+  for (const product of products) {
+    if (product.soldOutUntil && deliveryDate.getTime() <= product.soldOutUntil.getTime()) {
+      throw new OrderError("PRODUCT_SOLD_OUT", `${product.slug} is sold out for this day`, 409, productName(product));
+    }
+  }
+
+  // Portions per cake, for cakes with their own daily limit
+  const portionsByProduct = new Map<number, number>();
+  for (const item of itemsData) {
+    portionsByProduct.set(item.productId, (portionsByProduct.get(item.productId) ?? 0) + item.portions);
+  }
+  const limitedProducts = products.filter((product) => product.dailyLimit !== null);
+
   // 4. Reserve capacity and save the order in one transaction,
   // so two customers ordering at the same time cannot overbook a day.
   for (let attempt = 1; attempt <= MAX_CODE_ATTEMPTS; attempt += 1) {
@@ -194,6 +213,25 @@ export async function createOrder(input: CreateOrderInput) {
         `;
         if (reserved === 0) {
           throw new OrderError("DAY_FULLY_BOOKED", "This day is fully booked, please choose another day", 409);
+        }
+
+        // Same idea per cake: the update only succeeds while the cake's own limit has room.
+        for (const product of limitedProducts) {
+          const portions = portionsByProduct.get(product.id) ?? 0;
+          await tx.productDayBooking.createMany({
+            data: [{ productId: product.id, date: deliveryDate }],
+            skipDuplicates: true,
+          });
+          const booked = await tx.$executeRaw`
+            UPDATE "ProductDayBooking"
+            SET "bookedPortions" = "bookedPortions" + ${portions}
+            WHERE "productId" = ${product.id}
+              AND "date" = ${formatDateOnly(deliveryDate)}::date
+              AND "bookedPortions" + ${portions} <= ${product.dailyLimit}
+          `;
+          if (booked === 0) {
+            throw new OrderError("PRODUCT_LIMIT_REACHED", `${product.slug} is fully booked for this day`, 409, productName(product));
+          }
         }
 
         return tx.order.create({
@@ -274,6 +312,8 @@ export async function findOrderForCustomer(code: string, phone: string, locale: 
     deliverySlot: order.deliverySlot,
     totalPortions: order.totalPortions,
     total: order.total,
+    cancelReason: order.cancelReason,
+    cancelNote: order.cancelNote,
     items: order.items.map((item) => ({
       name: describeItem(item.nameSnapshot, item.optionsSnapshot, locale),
       unitPrice: item.unitPrice,

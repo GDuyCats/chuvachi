@@ -98,7 +98,7 @@ ordersRouter.post("/orders", placeOrderLimiter, requireHuman, async (req, res) =
     void notifyNewOrder(order.code).catch((error: unknown) => console.error("New order notification failed:", error));
   } catch (error) {
     if (error instanceof OrderError) {
-      res.status(error.status).json({ error: error.code, message: error.message });
+      res.status(error.status).json({ error: error.code, message: error.message, product: error.product });
       return;
     }
     throw error;
@@ -158,6 +158,8 @@ ordersRouter.get("/order-settings", async (req, res) => {
     smallOrderLeadHours: settings.smallOrderLeadHours,
     largeOrderLeadHours: settings.largeOrderLeadHours,
     unpaidCancelMinutes: settings.unpaidCancelMinutes,
+    orderingPaused: settings.orderingPaused,
+    pauseMessage: pickText(locale, settings.pauseMessageVi, settings.pauseMessageEn),
     deliveryZones: zones.map((zone) => ({
       id: zone.id,
       name: pickText(locale, zone.nameVi, zone.nameEn),

@@ -7,6 +7,33 @@ export type AdminStatus = "PENDING" | "CONFIRMED" | "PREPARING" | "READY" | "COM
 export type AdminPaymentStatus = "UNPAID" | "PAID" | "REFUNDED";
 export type AdminDay = "today" | "tomorrow" | "upcoming";
 
+// Why an order was cancelled; shown to the customer too.
+export type CancelReason =
+  | "OUT_OF_INGREDIENTS"
+  | "CANNOT_DELIVER"
+  | "CUSTOMER_REQUEST"
+  | "SHOP_CLOSED"
+  | "UNPAID_TIMEOUT" // set by the automatic cancel only
+  | "OTHER";
+export type StaffCancelReason = Exclude<CancelReason, "UNPAID_TIMEOUT">;
+export const STAFF_CANCEL_REASONS: StaffCancelReason[] = [
+  "OUT_OF_INGREDIENTS",
+  "CANNOT_DELIVER",
+  "CUSTOMER_REQUEST",
+  "SHOP_CLOSED",
+  "OTHER",
+];
+
+// One row of a bulk-cancel preview or result (paid rows need a refund).
+export type BulkCancelRow = {
+  code: string;
+  status: AdminStatus;
+  paid: boolean;
+  total: number;
+  customerName: string;
+  customerPhone: string;
+};
+
 export type AdminOrder = {
   code: string;
   status: AdminStatus;
@@ -34,6 +61,8 @@ export type AdminOrder = {
   createdAt: string;
   updatedAt: string;
   erased: boolean; // customer details were erased (privacy)
+  cancelReason: CancelReason | null;
+  cancelNote: string | null;
 };
 
 export type AdminOrderList = {
@@ -117,6 +146,9 @@ export type ShopSettings = {
   registrationNumber: string | null;
   contactEmail: string | null;
   dataRetentionMonths: number;
+  orderingPaused: boolean;
+  pauseMessageVi: string | null;
+  pauseMessageEn: string | null;
 };
 
 export type DeliveryZoneRow = { id: number; nameVi: string; nameEn: string; isActive: boolean; sortOrder: number };
@@ -163,6 +195,8 @@ export type AdminProductInput = {
   allergensEn: string | null;
   images: string[]; // photos in display order; the first one is the cover
   basePrice: number;
+  soldOutUntil: string | null; // YYYY-MM-DD: no deliveries on or before this day
+  dailyLimit: number | null; // most portions of this cake per day
   isActive: boolean;
   isNew: boolean;
   sortOrder: number;
@@ -244,10 +278,20 @@ export const adminApi = {
     request<AdminOrderList>(`/orders?day=${day}${status ? `&status=${status}` : ""}`),
   advance: (code: string, expectedStatus: AdminStatus) =>
     request<AdminOrder>(`/orders/${code}/advance`, { method: "POST", body: JSON.stringify({ expectedStatus }) }),
-  cancel: (code: string, expectedStatus: AdminStatus, note?: string) =>
+  cancel: (code: string, expectedStatus: AdminStatus, reason: StaffCancelReason, note?: string) =>
     request<AdminOrder>(`/orders/${code}/cancel`, {
       method: "POST",
-      body: JSON.stringify({ expectedStatus, note: note || undefined }),
+      body: JSON.stringify({ expectedStatus, reason, note: note || undefined }),
+    }),
+  bulkCancelPreview: (date: string, productId: number | null) =>
+    request<{ orders: BulkCancelRow[] }>("/orders/bulk-cancel/preview", {
+      method: "POST",
+      body: JSON.stringify({ date, productId }),
+    }),
+  bulkCancel: (date: string, productId: number | null, reason: StaffCancelReason, note?: string) =>
+    request<{ cancelled: BulkCancelRow[] }>("/orders/bulk-cancel", {
+      method: "POST",
+      body: JSON.stringify({ date, productId, reason, note: note || undefined }),
     }),
   eraseCustomer: (code: string) =>
     request<AdminOrder>(`/orders/${code}/erase-customer`, { method: "POST", body: "{}" }),

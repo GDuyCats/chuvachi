@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireAdmin } from "../lib/auth";
 import { prisma } from "../lib/prisma";
 import { deleteImageByUrl, isOwnImageUrl } from "../lib/storage";
+import { formatDateOnly, parseDateOnly } from "../lib/time";
 
 export const adminProductsRouter = Router();
 adminProductsRouter.use(requireAdmin);
@@ -55,6 +56,12 @@ const productSchema = z.object({
     .array(z.string().trim().max(500).refine(isOwnImageUrl, "Upload the photo with the upload button"))
     .max(MAX_PRODUCT_IMAGES),
   basePrice: z.number().int().min(0).max(100_000_000),
+  // "Temporarily sold out" up to and including this day (YYYY-MM-DD), or null
+  soldOutUntil: z
+    .string()
+    .refine((value) => parseDateOnly(value) !== null, "Use the format YYYY-MM-DD")
+    .nullable(),
+  dailyLimit: z.number().int().min(1).max(10_000).nullable(),
   isActive: z.boolean(),
   isNew: z.boolean(),
   sortOrder: z.number().int().min(0).max(1000),
@@ -88,9 +95,15 @@ const productInclude = {
 } satisfies Prisma.ProductInclude;
 
 function productData(input: z.infer<typeof productSchema>) {
-  const { options: _options, categoryId, images, ...fields } = input;
+  const { options: _options, categoryId, images, soldOutUntil, ...fields } = input;
   const unique = [...new Set(images)];
-  return { ...fields, images: unique, imageUrl: unique[0] ?? null, category: { connect: { id: categoryId } } };
+  return {
+    ...fields,
+    soldOutUntil: soldOutUntil ? parseDateOnly(soldOutUntil) : null,
+    images: unique,
+    imageUrl: unique[0] ?? null,
+    category: { connect: { id: categoryId } },
+  };
 }
 
 // Products saved before the photo list existed only have "imageUrl".
@@ -99,8 +112,12 @@ function photosOf(product: { images: string[]; imageUrl: string | null }): strin
   return product.imageUrl ? [product.imageUrl] : [];
 }
 
-function toAdminProduct<T extends { images: string[]; imageUrl: string | null }>(product: T): T {
-  return { ...product, images: photosOf(product) };
+function toAdminProduct<T extends { images: string[]; imageUrl: string | null; soldOutUntil: Date | null }>(product: T) {
+  return {
+    ...product,
+    images: photosOf(product),
+    soldOutUntil: product.soldOutUntil ? formatDateOnly(product.soldOutUntil) : null,
+  };
 }
 
 // Updates options in place (so carts and old orders keep working), creates new ones,

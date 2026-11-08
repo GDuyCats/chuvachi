@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentStatus, Prisma } from "@prisma/client";
+import { CancelReason, OrderStatus, PaymentStatus, Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { formatDateOnly } from "../lib/time";
 import { notifyAutoCancelled } from "./notifications";
@@ -23,13 +23,32 @@ export class OrderActionError extends Error {
 type Tx = Prisma.TransactionClient;
 
 // Gives back the order's portions to its delivery day, so other customers can book them.
-async function releaseCapacity(tx: Tx, deliveryDate: Date, portions: number): Promise<void> {
+async function releaseCapacity(tx: Tx, orderId: number, deliveryDate: Date, portions: number): Promise<void> {
+  const day = formatDateOnly(deliveryDate);
   await tx.$executeRaw`
     UPDATE "DailyCapacity"
     SET "bookedPortions" = GREATEST("bookedPortions" - ${portions}, 0)
-    WHERE "date" = ${formatDateOnly(deliveryDate)}::date
+    WHERE "date" = ${day}::date
   `;
+  // Also give back each cake's own daily limit (only cakes that have one keep a booking row).
+  const items = await tx.orderItem.groupBy({
+    by: ["productId"],
+    where: { orderId, productId: { not: null } },
+    _sum: { portions: true },
+  });
+  for (const item of items) {
+    await tx.$executeRaw`
+      UPDATE "ProductDayBooking"
+      SET "bookedPortions" = GREATEST("bookedPortions" - ${item._sum.portions ?? 0}, 0)
+      WHERE "productId" = ${item.productId} AND "date" = ${day}::date
+    `;
+  }
 }
+
+export type CancelDetails = {
+  reason: CancelReason;
+  note?: string | null; // shown to the customer
+};
 
 // Moves an order one step forward. "expectedStatus" is what the staff member saw on screen:
 // if someone else already changed the order, nothing happens and they are asked to refresh.
@@ -61,28 +80,67 @@ async function cancelInTransaction(
   expectedStatus: OrderStatus,
   action: string,
   adminUserId: number | null,
-  note?: string,
+  details: CancelDetails,
 ) {
   if (expectedStatus === OrderStatus.COMPLETED || expectedStatus === OrderStatus.CANCELLED) {
     throw new OrderActionError("CANNOT_CANCEL");
   }
   const updated = await tx.order.updateMany({
     where: { code, status: expectedStatus },
-    data: { status: OrderStatus.CANCELLED },
+    data: { status: OrderStatus.CANCELLED, cancelReason: details.reason, cancelNote: details.note ?? null },
   });
   if (updated.count === 0) {
     throw new OrderActionError("ORDER_CHANGED");
   }
   const order = await tx.order.findUniqueOrThrow({ where: { code } });
-  await releaseCapacity(tx, order.deliveryDate, order.totalPortions);
+  await releaseCapacity(tx, order.id, order.deliveryDate, order.totalPortions);
+  const note = [details.reason, details.note].filter(Boolean).join(": ");
   await tx.orderEvent.create({
     data: { orderId: order.id, fromStatus: expectedStatus, toStatus: OrderStatus.CANCELLED, action, note, adminUserId },
   });
   return order;
 }
 
-export function cancelOrder(code: string, expectedStatus: OrderStatus, adminUserId: number, note?: string) {
-  return prisma.$transaction((tx) => cancelInTransaction(tx, code, expectedStatus, "CANCEL", adminUserId, note));
+export function cancelOrder(code: string, expectedStatus: OrderStatus, adminUserId: number, details: CancelDetails) {
+  return prisma.$transaction((tx) => cancelInTransaction(tx, code, expectedStatus, "CANCEL", adminUserId, details));
+}
+
+// ---------- Cancel many orders at once ----------
+
+const OPEN_STATUSES: OrderStatus[] = [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.PREPARING, OrderStatus.READY];
+
+export type BulkFilter = { date: Date; productId: number | null };
+
+// Orders still open for a delivery day, optionally only those containing one cake.
+export function findOrdersToCancel(filter: BulkFilter) {
+  return prisma.order.findMany({
+    where: {
+      deliveryDate: filter.date,
+      status: { in: OPEN_STATUSES },
+      ...(filter.productId ? { items: { some: { productId: filter.productId } } } : {}),
+    },
+    orderBy: { createdAt: "asc" },
+    select: { code: true, status: true, paymentStatus: true, total: true, customerName: true, customerPhone: true },
+  });
+}
+
+// Cancels every matching order with the same reason. Each order is cancelled on its own,
+// so one order changing at the same moment never blocks the others.
+// Returns the cancelled orders; the paid ones need a refund.
+export async function bulkCancel(filter: BulkFilter, adminUserId: number, details: CancelDetails) {
+  const orders = await findOrdersToCancel(filter);
+  const cancelled: typeof orders = [];
+  for (const order of orders) {
+    try {
+      await prisma.$transaction((tx) =>
+        cancelInTransaction(tx, order.code, order.status, "BULK_CANCEL", adminUserId, details),
+      );
+      cancelled.push(order);
+    } catch (error) {
+      if (!(error instanceof OrderActionError)) throw error;
+    }
+  }
+  return cancelled;
 }
 
 // Records that money for a cancelled, paid order was sent back to the customer.
@@ -118,7 +176,7 @@ export async function cancelUnpaidOrders(): Promise<number> {
   for (const { code } of overdue) {
     try {
       await prisma.$transaction((tx) =>
-        cancelInTransaction(tx, code, OrderStatus.PENDING, "AUTO_CANCEL", null, "Unpaid after time limit"),
+        cancelInTransaction(tx, code, OrderStatus.PENDING, "AUTO_CANCEL", null, { reason: CancelReason.UNPAID_TIMEOUT }),
       );
       cancelled.push(code);
     } catch (error) {

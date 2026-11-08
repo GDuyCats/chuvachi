@@ -13,6 +13,7 @@ import { TURNSTILE_ENABLED, TurnstileWidget } from "./TurnstileWidget";
 type Props = {
   lang: Locale;
   labels: Dictionary["track"];
+  cancelReasons: Dictionary["cancelReasons"];
 };
 
 const STEPS: Exclude<OrderStatus, "CANCELLED">[] = ["PENDING", "CONFIRMED", "PREPARING", "READY", "COMPLETED"];
@@ -29,7 +30,7 @@ function formatTime(iso: string, locale: Locale): string {
   }).format(new Date(iso));
 }
 
-export function TrackOrder({ lang, labels }: Props) {
+export function TrackOrder({ lang, labels, cancelReasons }: Props) {
   const searchParams = useSearchParams();
   // The confirmation page links here with ?code=... ; the phone number is never put in the URL.
   const [code, setCode] = useState(() => (searchParams.get("code") ?? "").toUpperCase());
@@ -130,13 +131,23 @@ export function TrackOrder({ lang, labels }: Props) {
           <Skeleton className="h-24 w-full" />
         </SkeletonGroup>
       ) : (
-        result?.kind === "found" && <OrderDetails lang={lang} labels={labels} order={result.order} />
+        result?.kind === "found" && <OrderDetails lang={lang} labels={labels} cancelReasons={cancelReasons} order={result.order} />
       )}
     </div>
   );
 }
 
-function OrderDetails({ lang, labels, order }: { lang: Locale; labels: Dictionary["track"]; order: OrderLookup }) {
+function OrderDetails({
+  lang,
+  labels,
+  cancelReasons,
+  order,
+}: {
+  lang: Locale;
+  labels: Dictionary["track"];
+  cancelReasons: Dictionary["cancelReasons"];
+  order: OrderLookup;
+}) {
   const status = order.status;
   const cancelled = status === "CANCELLED";
   const doneCount = status === "CANCELLED" ? 0 : STEPS.indexOf(status) + 1;
@@ -156,6 +167,15 @@ function OrderDetails({ lang, labels, order }: { lang: Locale; labels: Dictionar
           </span>
           <h2 className="font-display text-3xl uppercase md:text-[40px]">{labels.headlines[order.status]}</h2>
           {cancelled && <p className="text-[15px] text-[#333333]">{labels.cancelledText}</p>}
+          {cancelled && order.cancelReason && (
+            <p className="text-[15px]">
+              <span className="font-bold">{labels.cancelledBecause}</span> {cancelReasons[order.cancelReason]}
+              {order.cancelNote ? ` — ${order.cancelNote}` : ""}
+            </p>
+          )}
+          {cancelled && order.paymentStatus === "PAID" && (
+            <p className="bg-surface px-3 py-2 text-sm font-semibold">{labels.refundNote}</p>
+          )}
         </div>
         <span className="text-sm text-[#333333]">
           {labels.updated} {formatTime(order.updatedAt, lang)}

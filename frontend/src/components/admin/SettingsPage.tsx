@@ -224,6 +224,27 @@ export function SettingsPage() {
           </div>
         </Section>
 
+        <Section title={s.pause.title} hint={s.pause.hint}>
+          <label
+            className={`flex min-h-12 items-center gap-3 border-[1.5px] px-4 font-bold ${
+              draft.orderingPaused ? "border-black bg-black text-white" : "border-black"
+            }`}
+          >
+            <input
+              type="checkbox"
+              checked={draft.orderingPaused}
+              onChange={(e) => update("orderingPaused", e.target.checked)}
+              className="h-5 w-5 accent-white"
+            />
+            {draft.orderingPaused ? s.pause.on : s.pause.off}
+          </label>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {textField("pauseMessageVi", s.pause.messageVi)}
+            {textField("pauseMessageEn", s.pause.messageEn)}
+          </div>
+          <p className="text-xs text-muted">{s.pause.saveHint}</p>
+        </Section>
+
         <Section title={s.business.title} hint={s.business.hint}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {textField("legalName", s.business.legalName)}

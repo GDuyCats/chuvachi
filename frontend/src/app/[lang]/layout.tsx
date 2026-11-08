@@ -6,7 +6,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { isLocale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { getHomeContent } from "@/lib/api";
+import { getHomeContent, getShopInfo } from "@/lib/api";
 import { SITE_URL } from "@/lib/site-url";
 import "../globals.css";
 
@@ -58,12 +58,20 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   if (!isLocale(lang)) {
     notFound();
   }
-  const [dict, home] = await Promise.all([getDictionary(lang), getHomeContent(lang)]);
+  const [dict, home, shop] = await Promise.all([getDictionary(lang), getHomeContent(lang), getShopInfo()]);
+  const pauseMessage = lang === "vi" ? shop.pauseMessageVi : shop.pauseMessageEn;
 
   return (
     <html lang={lang} className={`${anton.variable} ${beVietnamPro.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <AnnouncementBar lang={lang} content={home.announcement} linkLabel={dict.announcement.link} />
+        {shop.orderingPaused && (
+          // Shown on every page while staff have paused orders (admin, Settings).
+          <div role="status" className="border-b-[1.5px] border-black bg-white px-4 py-3 text-center text-sm md:px-6">
+            <span className="font-bold">{dict.pause.title}</span>
+            {pauseMessage ? <span> · {pauseMessage}</span> : null}
+          </div>
+        )}
         <SiteHeader lang={lang} dict={dict.nav} />
         <main className="flex-1">{children}</main>
         <SiteFooter lang={lang} dict={dict.footer} />

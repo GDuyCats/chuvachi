@@ -10,12 +10,14 @@ import { formatLongDate, formatSlot } from "@/lib/delivery-time";
 import { formatPrice } from "@/lib/format";
 import { ApiError, fetchOrderSettings } from "@/lib/public-api";
 import { Skeleton, SkeletonGroup } from "../Skeleton";
+import { AccountReviews } from "../reviews/ReviewableOrders";
 
 type Props = {
   lang: Locale;
   labels: Dictionary["account"];
   statusLabels: Dictionary["track"]["steps"];
   cancelReasons: Dictionary["cancelReasons"];
+  reviewLabels: Dictionary["reviews"];
 };
 
 type Notice = { kind: "ok" | "error"; text: string } | null;
@@ -23,7 +25,7 @@ type Notice = { kind: "ok" | "error"; text: string } | null;
 const inputClass = "h-12 w-full border-[1.5px] border-black px-3.5 text-base font-normal";
 
 // The signed-in customer's page: their details, their orders, and account actions.
-export function AccountView({ lang, labels, statusLabels, cancelReasons }: Props) {
+export function AccountView({ lang, labels, statusLabels, cancelReasons, reviewLabels }: Props) {
   const router = useRouter();
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
   const [orders, setOrders] = useState<AccountOrder[]>([]);
@@ -94,6 +96,7 @@ export function AccountView({ lang, labels, statusLabels, cancelReasons }: Props
       </header>
 
       <OrdersSection lang={lang} labels={labels} statusLabels={statusLabels} cancelReasons={cancelReasons} orders={orders} />
+      <AccountReviews lang={lang} labels={reviewLabels} />
       <ClaimSection labels={labels} onClaimed={loadOrders} />
       <ProfileSection labels={labels} profile={profile} zones={zones} onSaved={setProfile} />
       <DangerSection lang={lang} labels={labels} />

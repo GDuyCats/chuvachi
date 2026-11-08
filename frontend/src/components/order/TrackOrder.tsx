@@ -1,19 +1,22 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { formatLongDate, formatSlot } from "@/lib/delivery-time";
 import { formatPrice } from "@/lib/format";
 import { ApiError, fetchOrder, type OrderLookup, type OrderStatus } from "@/lib/public-api";
 import { Skeleton, SkeletonGroup } from "../Skeleton";
+import { ReviewableOrderBox } from "../reviews/ReviewableOrders";
+import { reviewsApi, type ReviewableOrder } from "@/lib/reviews-api";
 import { TURNSTILE_ENABLED, TurnstileWidget } from "./TurnstileWidget";
 
 type Props = {
   lang: Locale;
   labels: Dictionary["track"];
   cancelReasons: Dictionary["cancelReasons"];
+  reviewLabels: Dictionary["reviews"];
 };
 
 const STEPS: Exclude<OrderStatus, "CANCELLED">[] = ["PENDING", "CONFIRMED", "PREPARING", "READY", "COMPLETED"];
@@ -30,7 +33,7 @@ function formatTime(iso: string, locale: Locale): string {
   }).format(new Date(iso));
 }
 
-export function TrackOrder({ lang, labels, cancelReasons }: Props) {
+export function TrackOrder({ lang, labels, cancelReasons, reviewLabels }: Props) {
   const searchParams = useSearchParams();
   // The confirmation page links here with ?code=... ; the phone number is never put in the URL.
   const [code, setCode] = useState(() => (searchParams.get("code") ?? "").toUpperCase());
@@ -39,6 +42,7 @@ export function TrackOrder({ lang, labels, cancelReasons }: Props) {
   const [result, setResult] = useState<Result | null>(null);
   const [botToken, setBotToken] = useState<string | null>(null);
   const [botReset, setBotReset] = useState(0);
+  const [lookupPhone, setLookupPhone] = useState(""); // the phone that found the order, for reviews
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -56,6 +60,7 @@ export function TrackOrder({ lang, labels, cancelReasons }: Props) {
     try {
       const order = await fetchOrder(cleanCode, cleanPhone, lang, botToken);
       setResult({ kind: "found", order });
+      setLookupPhone(cleanPhone);
     } catch (error) {
       const errorCode = error instanceof ApiError ? error.code : "UNKNOWN";
       setResult(errorCode === "ORDER_NOT_FOUND" ? { kind: "notFound" } : { kind: "error", code: errorCode });
@@ -131,7 +136,14 @@ export function TrackOrder({ lang, labels, cancelReasons }: Props) {
           <Skeleton className="h-24 w-full" />
         </SkeletonGroup>
       ) : (
-        result?.kind === "found" && <OrderDetails lang={lang} labels={labels} cancelReasons={cancelReasons} order={result.order} />
+        result?.kind === "found" && (
+          <>
+            <OrderDetails lang={lang} labels={labels} cancelReasons={cancelReasons} order={result.order} />
+            {result.order.status === "COMPLETED" && (
+              <TrackReviews lang={lang} code={result.order.code} phone={lookupPhone} labels={reviewLabels} />
+            )}
+          </>
+        )
       )}
     </div>
   );
@@ -239,4 +251,26 @@ function OrderDetails({
       <p className="text-sm text-muted">{labels.help}</p>
     </div>
   );
+}
+
+// For a delivered order: the cakes the customer can now review (only buyers can review).
+function TrackReviews({ lang, code, phone, labels }: { lang: Locale; code: string; phone: string; labels: Dictionary["reviews"] }) {
+  const [order, setOrder] = useState<ReviewableOrder | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    reviewsApi
+      .eligible(code, phone, lang)
+      .then((result) => {
+        if (active) setOrder(result);
+      })
+      .catch(() => {
+        if (active) setOrder(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [code, phone, lang]);
+
+  return order ? <ReviewableOrderBox order={order} phone={phone} labels={labels} /> : null;
 }

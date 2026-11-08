@@ -130,3 +130,45 @@ export async function notifyAutoCancelled(codes: string[]): Promise<void> {
       ),
   ]);
 }
+
+// A new review with 1 or 2 stars: worth reading and answering quickly.
+export async function notifyLowReview(product: string, rating: number, body: string | null): Promise<void> {
+  const values = { product, rating, text: body ? body.slice(0, 120) : "" };
+  await allChannels([
+    () =>
+      sendPush({
+        title: fill(text.lowReview.pushTitle, values),
+        body: fill(text.lowReview.pushBody, values),
+        url: "/admin/reviews",
+        tag: "low-review",
+      }),
+    () =>
+      emailStaff({
+        subject: fill(text.lowReview.subject, values),
+        heading: fill(text.lowReview.heading, values),
+        lines: [...(body ? [body, ""] : []), text.lowReview.body],
+      }),
+  ]);
+}
+
+// Something was reported by several customers.
+export async function notifyReported(): Promise<void> {
+  await allChannels([
+    () => sendPush({ title: text.reported.pushTitle, body: text.reported.pushBody, url: "/admin/reviews", tag: "reported" }),
+    () => emailStaff({ subject: text.reported.subject, heading: text.reported.heading, lines: [text.reported.body] }),
+  ]);
+}
+
+// New customer photos (review or comment): staff glance at them in case one is not appropriate.
+export async function notifyNewPhotos(product: string | null, count: number): Promise<void> {
+  const values = { product: product ?? text.newPhotos.comment, count };
+  await allChannels([
+    () =>
+      sendPush({
+        title: text.newPhotos.pushTitle,
+        body: fill(text.newPhotos.pushBody, values),
+        url: "/admin/reviews",
+        tag: "new-photos",
+      }),
+  ]);
+}

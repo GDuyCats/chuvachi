@@ -45,6 +45,12 @@ export function isOwnImageUrl(url: string): boolean {
   return config !== null && url.startsWith(`${config.publicBaseUrl}/`) && !url.includes("..");
 }
 
+// True for a file of ours inside one folder, e.g. customers' review photos ("reviews").
+export function isOwnImageInFolder(url: string, folder: string): boolean {
+  const config = getConfig();
+  return config !== null && isOwnImageUrl(url) && url.startsWith(`${config.publicBaseUrl}/${folder}/`);
+}
+
 // Uploads a finished image and returns its public URL.
 export async function putImage(key: string, body: Buffer, contentType: string): Promise<string> {
   const config = getConfig();

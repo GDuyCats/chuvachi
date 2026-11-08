@@ -25,7 +25,7 @@ export default async function TrackPage({ params }: PageProps<"/[lang]/track">) 
       </div>
       {/* The form reads ?code=... from the URL, so it renders inside a Suspense boundary. */}
       <Suspense fallback={<FormSkeleton fields={2} label={dict.loading.form} />}>
-        <TrackOrder lang={lang} labels={dict.track} cancelReasons={dict.cancelReasons} />
+        <TrackOrder lang={lang} labels={dict.track} cancelReasons={dict.cancelReasons} reviewLabels={dict.reviews} />
       </Suspense>
     </section>
   );

@@ -213,7 +213,7 @@ function SearchBox({ lang, index, labels }: Props) {
                 placeholder={labels.placeholder}
                 aria-label={labels.placeholder}
                 enterKeyHint="search"
-                className="h-14 min-w-0 flex-1 bg-transparent text-base outline-none"
+                className="h-14 min-w-0 flex-1 appearance-none bg-transparent text-base outline-none focus-visible:outline-none"
               />
               <button type="button" onClick={() => setOpen(false)} className="py-2 text-sm font-semibold underline">
                 {labels.close}

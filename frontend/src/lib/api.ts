@@ -29,6 +29,7 @@ export type Product = {
   availability?: Availability;
   soldOutUntil: string | null; // YYYY-MM-DD: can't be delivered on or before this day
   soldCount?: number | null; // portions sold, only when the shop shows it
+  rating?: { average: number; count: number } | null; // from customers' reviews
   category: { slug: string; name: string };
   options: ProductOption[];
 };

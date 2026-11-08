@@ -4,6 +4,7 @@ import { prisma } from "../lib/prisma";
 import { Locale, parseLocale, pickText } from "../lib/locale";
 import { formatDateOnly } from "../lib/time";
 import { soldPortionsByProduct } from "../lib/sales";
+import { ratingsByProduct } from "../services/review-service";
 
 export const catalogRouter = Router();
 
@@ -18,7 +19,9 @@ const productInclude = {
 type ProductWithRelations = Prisma.ProductGetPayload<{ include: typeof productInclude }>;
 
 // Turns a database product into the shape the frontend needs, in one language.
-function toProductResponse(product: ProductWithRelations, locale: Locale, soldCount: number | null = null) {
+type Rating = { average: number; count: number } | null;
+
+function toProductResponse(product: ProductWithRelations, locale: Locale, soldCount: number | null = null, rating: Rating = null) {
   return {
     id: product.id,
     slug: product.slug,
@@ -37,6 +40,8 @@ function toProductResponse(product: ProductWithRelations, locale: Locale, soldCo
     soldOutUntil: product.soldOutUntil ? formatDateOnly(product.soldOutUntil) : null,
     // Portions sold so far; null when the shop hides it or the number is still below the minimum
     soldCount,
+    // Average stars and number of reviews, or null when nobody reviewed it yet
+    rating,
     category: {
       slug: product.category.slug,
       name: pickText(locale, product.category.nameVi, product.category.nameEn),
@@ -90,8 +95,13 @@ catalogRouter.get("/products", async (req, res) => {
     orderBy: { sortOrder: "asc" },
   });
 
-  const sold = await visibleSoldCounts(products.map((product) => product.id));
-  res.json(products.map((product) => toProductResponse(product, locale, sold.get(product.id) ?? null)));
+  const ids = products.map((product) => product.id);
+  const [sold, ratings] = await Promise.all([visibleSoldCounts(ids), ratingsByProduct(ids)]);
+  res.json(
+    products.map((product) =>
+      toProductResponse(product, locale, sold.get(product.id) ?? null, ratings.get(product.id) ?? null),
+    ),
+  );
 });
 
 // GET /api/products/:slug?locale=vi|en
@@ -108,6 +118,6 @@ catalogRouter.get("/products/:slug", async (req, res) => {
     return;
   }
 
-  const sold = await visibleSoldCounts([product.id]);
-  res.json(toProductResponse(product, locale, sold.get(product.id) ?? null));
+  const [sold, ratings] = await Promise.all([visibleSoldCounts([product.id]), ratingsByProduct([product.id])]);
+  res.json(toProductResponse(product, locale, sold.get(product.id) ?? null, ratings.get(product.id) ?? null));
 });

@@ -10,7 +10,8 @@
     "home": "Trang chủ",
     "accounts": "Tài khoản",
     "stats": "Thống kê",
-    "notifications": "Thông báo"
+    "notifications": "Thông báo",
+    "reviews": "Đánh giá"
   },
   "login": {
     "title": "Đăng nhập nhân viên",
@@ -808,7 +809,48 @@
         "label": "Xóa thông tin khách theo yêu cầu",
         "keywords": "xoa thong tin khach du lieu ca nhan",
         "hint": "Mở một đơn đã xong của khách"
+      },
+      "reviews": {
+        "label": "Đánh giá và bình luận của khách",
+        "keywords": "danh gia binh luan sao review an spam tra loi bao cao",
+        "hint": ""
       }
     }
+  },
+  "reviews": {
+    "title": "Đánh giá",
+    "hint": "Đánh giá chỉ do người đã mua viết (theo đơn đã giao). Bình luận do khách đăng nhập Google viết. Mọi thứ hiện ngay; ẩn những gì là spam, quảng cáo hay thô lỗ. Trả lời với tên Chuvachi.",
+    "loading": "Đang tải đánh giá...",
+    "loadError": "Không tải được đánh giá. Vui lòng tải lại trang.",
+    "error": "Có lỗi xảy ra. Vui lòng thử lại.",
+    "filters": {
+      "all": "Tất cả",
+      "reported": "Bị báo cáo",
+      "low": "1–2 sao",
+      "photos": "Có ảnh",
+      "hidden": "Đã ẩn"
+    },
+    "empty": "Không có đánh giá nào ở mục này.",
+    "reportedComments": "Bình luận bị báo cáo",
+    "reports": "{count} báo cáo",
+    "votes": "▲ {up} · ▼ {down}",
+    "order": "Đơn {code}",
+    "noText": "(chỉ chấm sao, không viết gì)",
+    "hiddenBadge": "Đã ẩn",
+    "deletedComment": "(khách đã xóa)",
+    "hide": "Ẩn",
+    "show": "Hiện lại",
+    "keep": "Giữ lại, bỏ báo cáo",
+    "hiddenDone": "Đã ẩn. Khách không còn thấy nội dung này.",
+    "keptDone": "Đã hiện lại và xóa báo cáo.",
+    "reply": "Trả lời với tên Chuvachi",
+    "replyPlaceholder": "Cảm ơn bạn đã ủng hộ tiệm...",
+    "sendReply": "Gửi trả lời",
+    "replied": "Đã gửi trả lời.",
+    "cancel": "Hủy",
+    "viewOnShop": "Xem trên trang khách",
+    "removePhoto": "Gỡ ảnh",
+    "removePhotoConfirm": "Gỡ ảnh này? Ảnh bị xóa hẳn, phần chữ vẫn giữ.",
+    "photoRemoved": "Đã gỡ ảnh."
   }
 }

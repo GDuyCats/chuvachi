@@ -14,6 +14,7 @@ export type MenuItem = {
   soldOutUntil: string | null;
   soldCount: number | null;
   availability: Availability;
+  rating: { average: number; count: number } | null;
   imageUrl: string | null;
   categorySlug: string;
   categoryName: string;
@@ -120,6 +121,7 @@ export function MenuGrid({ lang, items, labels, cardLabels }: Props) {
                 soldOutUntil={item.soldOutUntil}
                 soldCount={item.soldCount}
                 availability={item.availability}
+                rating={item.rating}
                 imageUrl={item.imageUrl}
                 labels={cardLabels}
                 actionLabel={labels.view}

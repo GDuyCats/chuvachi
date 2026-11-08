@@ -23,5 +23,24 @@
   "test": {
     "pushTitle": "Chuvachi",
     "pushBody": "Thông báo thử: máy này sẽ nhận báo đơn mới."
+  },
+  "lowReview": {
+    "subject": "Đánh giá {rating} sao cho {product}",
+    "heading": "Có đánh giá {rating} sao cho {product}",
+    "body": "Nên đọc và trả lời khách sớm trong admin, tab Đánh giá.",
+    "pushTitle": "Đánh giá {rating} sao",
+    "pushBody": "{product}: {text}"
+  },
+  "reported": {
+    "subject": "Có đánh giá hoặc bình luận bị báo cáo",
+    "heading": "Có nội dung bị nhiều người báo cáo",
+    "body": "Vào admin, tab Đánh giá, chọn Bị báo cáo để xem và ẩn nếu cần.",
+    "pushTitle": "Nội dung bị báo cáo",
+    "pushBody": "Vào tab Đánh giá để xem."
+  },
+  "newPhotos": {
+    "pushTitle": "Ảnh mới từ khách",
+    "pushBody": "{product}: {count} ảnh mới. Mở tab Đánh giá để xem.",
+    "comment": "Bình luận"
   }
 }

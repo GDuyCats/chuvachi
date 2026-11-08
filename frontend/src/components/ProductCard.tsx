@@ -14,6 +14,7 @@ export type ProductCardLabels = {
   sold?: string; // "Sold {count}"
   outOfStock?: string;
   comingSoon?: string;
+  ratingShort?: string; // "{average} ({count})"
 };
 
 type Props = {
@@ -25,6 +26,7 @@ type Props = {
   soldOutUntil?: string | null;
   soldCount?: number | null; // shown only when the shop turned it on
   availability?: Availability;
+  rating?: { average: number; count: number } | null;
   imageUrl: string | null;
   labels: ProductCardLabels;
   actionLabel: string;
@@ -47,6 +49,7 @@ export function ProductCard({
   soldOutUntil = null,
   soldCount = null,
   availability = "AVAILABLE",
+  rating = null,
   imageUrl,
   labels,
   actionLabel,
@@ -84,6 +87,14 @@ export function ProductCard({
       <div className="flex min-h-12 flex-col gap-1">
         {eyebrow && <span className="text-xs font-bold uppercase tracking-widest text-muted">{eyebrow}</span>}
         <span className="text-[15px] leading-snug md:text-[17px]">{name}</span>
+        {rating && rating.count > 0 && labels.ratingShort && (
+          <span className="flex items-center gap-1 text-xs md:text-[13px]">
+            <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z" fill="#000000" />
+            </svg>
+            {labels.ratingShort.replace("{average}", rating.average.toFixed(1)).replace("{count}", String(rating.count))}
+          </span>
+        )}
         {soldCount != null && labels.sold && (
           <span className="text-xs text-muted md:text-[13px]">{soldText(labels.sold, soldCount, lang)}</span>
         )}

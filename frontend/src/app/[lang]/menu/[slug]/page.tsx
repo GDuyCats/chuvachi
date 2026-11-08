@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PhotoBox } from "@/components/PhotoBox";
 import { ProductCard, soldText } from "@/components/ProductCard";
+import { ProductReviews } from "@/components/reviews/ProductReviews";
+import { Stars } from "@/components/reviews/Stars";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductOptions, type OptionChoice } from "@/components/product/ProductOptions";
 import { isLocale, type Locale } from "@/i18n/config";
@@ -109,6 +111,16 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[s
               )}
             </div>
             <h1 className="font-display text-5xl uppercase leading-[1.05] md:text-[64px]">{product.name}</h1>
+            {product.rating && product.rating.count > 0 && (
+              <a href="#reviews" className="flex items-center gap-2 self-start text-sm">
+                <Stars
+                  value={product.rating.average}
+                  label={dict.reviews.outOfFive.replace("{count}", product.rating.average.toFixed(1))}
+                />
+                <span className="font-bold">{product.rating.average.toFixed(1)}</span>
+                <span className="text-muted underline">{dict.reviews.count.replace("{count}", String(product.rating.count))}</span>
+              </a>
+            )}
             {product.description && <p className="text-base leading-relaxed text-[#333333]">{product.description}</p>}
           </div>
 
@@ -162,6 +174,8 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[s
         </div>
       </section>
 
+      <ProductReviews lang={locale} slug={product.slug} labels={dict.reviews} />
+
       {related.length > 0 && (
         <section className="flex flex-col gap-6 px-4 pb-20 md:px-10">
           <h2 className="font-display text-[32px] uppercase tracking-wide md:text-[40px]">{labels.alsoLike}</h2>
@@ -175,6 +189,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[s
                 price={item.basePrice}
                 isNew={item.isNew}
                 availability={item.availability}
+                rating={item.rating}
                 imageUrl={item.imageUrl}
                 labels={dict.product}
                 actionLabel={labels.view}

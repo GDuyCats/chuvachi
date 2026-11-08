@@ -10,7 +10,8 @@
     "home": "Homepage",
     "accounts": "Accounts",
     "stats": "Sales",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "reviews": "Reviews"
   },
   "login": {
     "title": "Staff sign in",
@@ -808,7 +809,48 @@
         "label": "Erase customer data on request",
         "keywords": "erase customer personal data",
         "hint": "Open one of the customer's finished orders"
+      },
+      "reviews": {
+        "label": "Customer reviews and comments",
+        "keywords": "reviews comments stars hide spam reply report",
+        "hint": ""
       }
     }
+  },
+  "reviews": {
+    "title": "Reviews",
+    "hint": "Reviews are written only by buyers (from delivered orders). Comments are written by customers signed in with Google. Everything shows at once; hide spam, ads or rude content. Replies show as Chuvachi.",
+    "loading": "Loading reviews...",
+    "loadError": "Couldn't load the reviews. Please reload the page.",
+    "error": "Something went wrong. Please try again.",
+    "filters": {
+      "all": "All",
+      "reported": "Reported",
+      "low": "1–2 stars",
+      "photos": "With photos",
+      "hidden": "Hidden"
+    },
+    "empty": "No reviews here.",
+    "reportedComments": "Reported comments",
+    "reports": "{count} reports",
+    "votes": "▲ {up} · ▼ {down}",
+    "order": "Order {code}",
+    "noText": "(stars only, no text)",
+    "hiddenBadge": "Hidden",
+    "deletedComment": "(deleted by the customer)",
+    "hide": "Hide",
+    "show": "Show again",
+    "keep": "Keep, clear reports",
+    "hiddenDone": "Hidden. Customers no longer see it.",
+    "keptDone": "Shown again and reports cleared.",
+    "reply": "Reply as Chuvachi",
+    "replyPlaceholder": "Thank you for supporting us...",
+    "sendReply": "Send reply",
+    "replied": "Reply sent.",
+    "cancel": "Cancel",
+    "viewOnShop": "See it on the shop",
+    "removePhoto": "Remove photo",
+    "removePhotoConfirm": "Remove this photo? It is deleted for good; the text stays.",
+    "photoRemoved": "Photo removed."
   }
 }

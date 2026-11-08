@@ -14,6 +14,7 @@ const PLACES = [
   { key: "refund", href: "/admin/orders", adminOnly: false },
   { key: "products", href: "/admin/products", adminOnly: false },
   { key: "stock", href: "/admin/products", adminOnly: false },
+  { key: "reviews", href: "/admin/reviews", adminOnly: false },
   { key: "pushAlerts", href: "/admin/notifications", target: "notifications-push", adminOnly: false },
   { key: "emailAlerts", href: "/admin/notifications", target: "notifications-email", adminOnly: false },
   { key: "password", href: "/admin/password", adminOnly: false },
@@ -97,6 +98,7 @@ export function AdminSearch() {
     "/admin/products": t.nav.products,
     "/admin/products/edit": t.nav.products,
     "/admin/stats": t.nav.stats,
+    "/admin/reviews": t.nav.reviews,
     "/admin/home": t.nav.home,
     "/admin/settings": t.nav.settings,
     "/admin/accounts": t.nav.accounts,
@@ -172,7 +174,7 @@ export function AdminSearch() {
                 }}
                 placeholder={s.placeholder}
                 aria-label={s.placeholder}
-                className="h-14 min-w-0 flex-1 bg-transparent text-base outline-none"
+                className="h-14 min-w-0 flex-1 appearance-none bg-transparent text-base outline-none focus-visible:outline-none"
               />
               <button type="button" onClick={() => setOpen(false)} className="py-2 text-sm font-semibold underline">
                 {s.close}

@@ -81,6 +81,52 @@ export type AdminOrderList = {
 
 export type AdminRole = "ADMIN" | "STAFF";
 
+export type AdminReviewComment = {
+  id: number;
+  parentId: number | null;
+  displayName: string;
+  isShop: boolean;
+  body: string | null;
+  photoUrl: string | null;
+  deleted: boolean;
+  hidden: boolean;
+  reportCount: number;
+  createdAt: string;
+};
+
+export type AdminReview = {
+  id: number;
+  product: { nameVi: string; nameEn: string; slug: string };
+  orderCode: string;
+  displayName: string;
+  rating: number;
+  body: string | null;
+  flavor: string | null;
+  photos: string[];
+  upvotes: number;
+  downvotes: number;
+  reportCount: number;
+  hidden: boolean;
+  createdAt: string;
+  comments: AdminReviewComment[];
+};
+
+export type ReviewFilter = "all" | "reported" | "low" | "photos" | "hidden";
+
+export type AdminReviewList = {
+  reviews: AdminReview[];
+  reportedComments: {
+    id: number;
+    reviewId: number;
+    product: { nameVi: string; nameEn: string };
+    displayName: string;
+    body: string | null;
+    photoUrl: string | null;
+    reportCount: number;
+    createdAt: string;
+  }[];
+};
+
 // Polled by every admin page: newest order, orders waiting for the payment check, open orders per day.
 export type OrderPulse = {
   latestId: number;
@@ -360,6 +406,16 @@ export const adminApi = {
   pushUnsubscribe: (endpoint: string) =>
     request<{ ok: true }>("/push/unsubscribe", { method: "POST", body: JSON.stringify({ endpoint }) }),
   pushTest: () => request<{ sent: number }>("/push/test", { method: "POST", body: "{}" }),
+  listReviews: (filter: ReviewFilter) => request<AdminReviewList>(`/reviews?filter=${filter}`),
+  hideReview: (id: number, hidden: boolean) =>
+    request<{ ok: true }>(`/reviews/${id}/hide`, { method: "POST", body: JSON.stringify({ hidden }) }),
+  hideReviewComment: (id: number, hidden: boolean) =>
+    request<{ ok: true }>(`/reviews/comments/${id}/hide`, { method: "POST", body: JSON.stringify({ hidden }) }),
+  removeReviewPhoto: (id: number, url: string) =>
+    request<{ ok: true }>(`/reviews/${id}/photos/remove`, { method: "POST", body: JSON.stringify({ url }) }),
+  removeCommentPhoto: (id: number) => request<{ ok: true }>(`/reviews/comments/${id}/photo/remove`, { method: "POST", body: "{}" }),
+  replyToReview: (id: number, body: string, parentId: number | null) =>
+    request<{ ok: true }>(`/reviews/${id}/reply`, { method: "POST", body: JSON.stringify({ body, parentId }) }),
   getStats: (from: string | null, to: string | null) => {
     const query = new URLSearchParams();
     if (from) query.set("from", from);

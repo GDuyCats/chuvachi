@@ -100,6 +100,7 @@ model Product {
   announcedIn   HomeContent[]   @relation("AnnouncementProduct")
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+  reviews       Review[]
 }
 
 model ProductOption {
@@ -242,6 +243,7 @@ model Order {
   customer             Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
   items          OrderItem[]
   events         OrderEvent[]
+  reviews        Review[]
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
@@ -357,6 +359,7 @@ model AdminUser {
   passwordResets     AdminPasswordReset[]
   pushSubscriptions  AdminPushSubscription[]
   orderEvents        OrderEvent[]
+  reviewComments     ReviewComment[] // replies written for the shop
 }
 
 // A phone or computer that asked for push notifications about new orders.
@@ -432,6 +435,10 @@ model Customer {
   lastLoginAt      DateTime          @default(now())
   sessions         CustomerSession[]
   orders           Order[]
+  reviews          Review[]
+  reviewComments   ReviewComment[]
+  reviewVotes      ReviewVote[]
+  reviewReports    ReviewReport[]
 }
 
 // A signed-in browser. The cookie holds a random token; only its SHA-256 hash is stored here.
@@ -444,4 +451,93 @@ model CustomerSession {
   createdAt  DateTime @default(now())
 
   @@index([expiresAt])
+}
+
+// ---------- Reviews ----------
+
+// A star rating with optional words, by someone who bought the cake: one per cake per delivered order.
+model Review {
+  id          Int             @id @default(autoincrement())
+  productId   Int
+  product     Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderId     Int
+  order       Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  customerId  Int?            // set when written from a signed-in account
+  customer    Customer?       @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  displayName String          // short public name, e.g. "Anh N."
+  flavor      String?         // what was bought, e.g. "Matcha · Box of 4" (Vietnamese text)
+  flavorEn    String?
+  rating      Int             // 1 to 5
+  body        String?
+  photos      String[]        @default([]) // up to 4 photo URLs on our image storage
+  upvotes     Int             @default(0)
+  downvotes   Int             @default(0)
+  reportCount Int             @default(0)
+  hiddenAt    DateTime?       // hidden by staff
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  comments    ReviewComment[]
+  votes       ReviewVote[]
+  reports     ReviewReport[]
+
+  @@unique([orderId, productId])
+  @@index([productId, hiddenAt])
+}
+
+// A comment under a review (parentId empty) or a reply to such a comment (only two levels).
+model ReviewComment {
+  id          Int             @id @default(autoincrement())
+  reviewId    Int
+  review      Review          @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  parentId    Int?
+  parent      ReviewComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     ReviewComment[] @relation("CommentReplies")
+  customerId  Int?            // the signed-in customer who wrote it
+  customer    Customer?       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  adminUserId Int?            // set for replies written by the shop
+  adminUser   AdminUser?      @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+  displayName String
+  body        String?         // empty once deleted (kept so replies still make sense)
+  photoUrl    String?         // one photo, only from customers who bought this cake
+  upvotes     Int             @default(0)
+  downvotes   Int             @default(0)
+  reportCount Int             @default(0)
+  hiddenAt    DateTime?
+  deletedAt   DateTime?
+  createdAt   DateTime        @default(now())
+  votes       ReviewVote[]
+  reports     ReviewReport[]
+
+  @@index([reviewId, createdAt])
+}
+
+// Up (+1) or down (-1) vote by a signed-in customer on a review or a comment.
+model ReviewVote {
+  id         Int            @id @default(autoincrement())
+  customerId Int
+  customer   Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  reviewId   Int?
+  review     Review?        @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  commentId  Int?
+  comment    ReviewComment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  value      Int
+  createdAt  DateTime       @default(now())
+
+  @@unique([customerId, reviewId])
+  @@unique([customerId, commentId])
+}
+
+// "Report" by a signed-in customer; staff see reported items first.
+model ReviewReport {
+  id         Int            @id @default(autoincrement())
+  customerId Int
+  customer   Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  reviewId   Int?
+  review     Review?        @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  commentId  Int?
+  comment    ReviewComment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  createdAt  DateTime       @default(now())
+
+  @@unique([customerId, reviewId])
+  @@unique([customerId, commentId])
 }

@@ -88,7 +88,8 @@ export async function request<T>(path: string, init?: RequestInit): Promise<T> {
       ...init,
       // Sends the sign-in cookie (if any), so orders are saved to the customer's account.
       credentials: "include",
-      headers: { "Content-Type": "application/json", ...init?.headers },
+      // File uploads (FormData) set their own content type; everything else is JSON.
+      headers: init?.body instanceof FormData ? init?.headers : { "Content-Type": "application/json", ...init?.headers },
     });
   } catch {
     throw new ApiError("NETWORK");

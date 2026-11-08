@@ -18,6 +18,7 @@ import { useAdminI18n } from "./AdminI18n";
 import { useAdminMe } from "./AdminShell";
 import { AdminRowsSkeleton } from "./AdminSkeletons";
 import { BulkCancelPanel } from "./BulkCancelPanel";
+import { OPEN_ORDER_EVENT, useOrderPulse } from "./OrderPulse";
 import { useToast } from "./Toast";
 
 const REFRESH_MS = 30_000;
@@ -53,6 +54,7 @@ export function OrdersBoard() {
   const [loadFailed, setLoadFailed] = useState(false);
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
   const toast = useToast();
+  const { pulse } = useOrderPulse();
 
   const load = useCallback(async () => {
     try {
@@ -74,6 +76,35 @@ export function OrdersBoard() {
     const timer = window.setInterval(load, REFRESH_MS);
     return () => window.clearInterval(timer);
   }, [load]);
+
+  // A new order arrived (seen by the shared poller): reload the list right away.
+  const latestId = pulse?.latestId;
+  useEffect(() => {
+    if (latestId !== undefined) void load();
+  }, [latestId, load]);
+
+  // Open one order when asked by the bell (from this page, or via /admin/orders?open=CODE).
+  useEffect(() => {
+    function open(code: string) {
+      setDay("upcoming");
+      setStatusFilter("ALL");
+      setSelectedCode(code);
+      window.setTimeout(
+        () => document.getElementById("order-detail")?.scrollIntoView({ behavior: "smooth", block: "start" }),
+        400,
+      );
+    }
+    const fromAddress = new URLSearchParams(window.location.search).get("open");
+    if (fromAddress) {
+      open(fromAddress);
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+    function onOpen(event: Event) {
+      open((event as CustomEvent<string>).detail);
+    }
+    window.addEventListener(OPEN_ORDER_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_ORDER_EVENT, onOpen);
+  }, []);
 
   const orders = data?.orders ?? [];
   const selected = orders.find((o) => o.code === selectedCode) ?? null;
@@ -157,9 +188,19 @@ export function OrdersBoard() {
                   setDay(option);
                   setSelectedCode(null);
                 }}
-                className={`min-h-10 px-3.5 ${option === day ? "bg-black text-white" : "bg-white"}`}
+                className={`flex min-h-10 items-center gap-1.5 px-3.5 ${option === day ? "bg-black text-white" : "bg-white"}`}
               >
                 {t.orders.days[option]}
+                {(pulse?.open[option] ?? 0) > 0 && (
+                  <span
+                    aria-label={t.inbox.openCount.replace("{count}", String(pulse?.open[option]))}
+                    className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[11px] leading-none ${
+                      option === day ? "bg-white text-black" : "bg-black text-white"
+                    }`}
+                  >
+                    {pulse?.open[option]}
+                  </span>
+                )}
               </button>
             ))}
           </div>

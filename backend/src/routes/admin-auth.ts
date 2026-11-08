@@ -84,6 +84,7 @@ adminAuthRouter.post("/login", loginLimiter, async (req, res) => {
     email: admin.email,
     role: admin.role,
     mustChangePassword: admin.mustChangePassword,
+    notifyNewOrders: admin.notifyNewOrders,
     expiresAt: expiresAt.toISOString(),
   });
 });
@@ -145,4 +146,15 @@ adminAuthRouter.post("/me/password", passwordLimiter, requireSession, async (req
   await deleteSessionsOf(account.id, token);
   console.log(`Password changed by ${account.email}`);
   res.json({ ...req.admin, mustChangePassword: false });
+});
+
+// PUT /api/admin/me/notifications - switch your own "new order" emails on or off
+adminAuthRouter.put("/me/notifications", requireSession, async (req, res) => {
+  const parsed = z.object({ notifyNewOrders: z.boolean() }).safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "VALIDATION_ERROR" });
+    return;
+  }
+  await prisma.adminUser.update({ where: { id: req.admin!.id }, data: { notifyNewOrders: parsed.data.notifyNewOrders } });
+  res.json({ ...req.admin, notifyNewOrders: parsed.data.notifyNewOrders });
 });

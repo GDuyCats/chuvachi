@@ -7,6 +7,8 @@ import { adminApi, AdminApiError, type AdminMe } from "@/lib/admin-api";
 import { AdminLanguageSwitch, useAdminI18n } from "./AdminI18n";
 import { AdminShellSkeleton } from "./AdminSkeletons";
 import { ChangePasswordForm } from "./ChangePasswordForm";
+import { OrderInbox } from "./OrderInbox";
+import { OrderPulseProvider } from "./OrderPulse";
 import { NewOrderAlerts } from "./NewOrderAlerts";
 
 const AdminMeContext = createContext<AdminMe | null>(null);
@@ -75,6 +77,7 @@ export function AdminShell({ children, adminOnly = false }: ShellProps) {
 
   return (
     <AdminMeContext.Provider value={me}>
+      <PulseWhenReady ready={!me.mustChangePassword}>
       <div className="min-h-screen bg-[#fafafa]">
         <header className="flex flex-wrap items-center justify-between gap-3 bg-black px-4 py-3.5 text-white md:px-8">
           <div className="flex items-baseline gap-3">
@@ -86,11 +89,17 @@ export function AdminShell({ children, adminOnly = false }: ShellProps) {
               {t.signedInAs} {me.name} · {t.roles[me.role]}
             </span>
             {!me.mustChangePassword && (
-              <Link href="/admin/password" className="py-2 font-semibold underline">
-                {t.changePassword}
-              </Link>
+              <>
+                <Link href="/admin/notifications" className="py-2 font-semibold underline">
+                  {t.nav.notifications}
+                </Link>
+                <Link href="/admin/password" className="py-2 font-semibold underline">
+                  {t.changePassword}
+                </Link>
+              </>
             )}
             {!me.mustChangePassword && <NewOrderAlerts />}
+            {!me.mustChangePassword && <OrderInbox />}
             <AdminLanguageSwitch />
             <button type="button" onClick={signOut} className="py-2 font-semibold underline">
               {t.signOut}
@@ -116,6 +125,12 @@ export function AdminShell({ children, adminOnly = false }: ShellProps) {
         )}
         <main className="px-4 pb-12 pt-6 md:px-8">{content}</main>
       </div>
+      </PulseWhenReady>
     </AdminMeContext.Provider>
   );
+}
+
+// The order poller only runs once the person may use the admin (not while a new password is required).
+function PulseWhenReady({ ready, children }: { ready: boolean; children: ReactNode }) {
+  return ready ? <OrderPulseProvider>{children}</OrderPulseProvider> : <>{children}</>;
 }

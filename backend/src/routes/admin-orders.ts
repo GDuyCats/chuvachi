@@ -171,14 +171,46 @@ function handleActionError(res: import("express").Response, error: unknown): voi
   throw error;
 }
 
-// GET /api/admin/orders/latest - tiny answer polled by every admin page, so staff hear
-// about new orders even while they are on another tab.
+// GET /api/admin/orders/latest - small answer polled by every admin page (every 20 seconds), so
+// staff hear about new orders on any tab. Also gives the numbers for the bell and the day tabs:
+// - waiting: orders still waiting for the payment check (PENDING), with the newest few listed
+// - open: orders still to make or deliver (not completed or cancelled) for today, tomorrow, and from today on
 adminOrdersRouter.get("/latest", async (_req, res) => {
-  const [latest, waiting] = await Promise.all([
+  const today = vietnamToday();
+  const tomorrow = new Date(today.getTime() + DAY_MS);
+  const openStatus = { notIn: [OrderStatus.COMPLETED, OrderStatus.CANCELLED] };
+  const [latest, waiting, pending, openToday, openTomorrow, openUpcoming] = await Promise.all([
     prisma.order.findFirst({ orderBy: { id: "desc" }, select: { id: true, code: true } }),
     prisma.order.count({ where: { status: OrderStatus.PENDING } }),
+    prisma.order.findMany({
+      where: { status: OrderStatus.PENDING },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: {
+        code: true,
+        total: true,
+        totalPortions: true,
+        deliveryType: true,
+        deliveryDate: true,
+        deliverySlot: true,
+        createdAt: true,
+      },
+    }),
+    prisma.order.count({ where: { deliveryDate: today, status: openStatus } }),
+    prisma.order.count({ where: { deliveryDate: tomorrow, status: openStatus } }),
+    prisma.order.count({ where: { deliveryDate: { gte: today }, status: openStatus } }),
   ]);
-  res.json({ latestId: latest?.id ?? 0, latestCode: latest?.code ?? null, waiting });
+  res.json({
+    latestId: latest?.id ?? 0,
+    latestCode: latest?.code ?? null,
+    waiting,
+    pending: pending.map((order) => ({
+      ...order,
+      deliveryDate: formatDateOnly(order.deliveryDate),
+      createdAt: order.createdAt.toISOString(),
+    })),
+    open: { today: openToday, tomorrow: openTomorrow, upcoming: openUpcoming },
+  });
 });
 
 // GET /api/admin/orders/:code

@@ -341,10 +341,26 @@ model AdminUser {
   failedLogins       Int            @default(0)
   lockedUntil        DateTime?      // set after too many wrong passwords
   lastLoginAt        DateTime?
+  notifyNewOrders    Boolean        @default(true) // receives the "new order" emails
   createdAt          DateTime       @default(now())
   sessions           AdminSession[]
   passwordResets     AdminPasswordReset[]
+  pushSubscriptions  AdminPushSubscription[]
   orderEvents        OrderEvent[]
+}
+
+// A phone or computer that asked for push notifications about new orders.
+// The keys are created by the browser and only let us send it messages.
+model AdminPushSubscription {
+  id          Int       @id @default(autoincrement())
+  adminUserId Int
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  endpoint    String    @unique
+  p256dh      String
+  auth        String
+  createdAt   DateTime  @default(now())
+
+  @@index([adminUserId])
 }
 
 // A "forgot password" link sent by email. Only the SHA-256 hash of the token is stored;

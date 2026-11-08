@@ -81,12 +81,30 @@ export type AdminOrderList = {
 
 export type AdminRole = "ADMIN" | "STAFF";
 
+// Polled by every admin page: newest order, orders waiting for the payment check, open orders per day.
+export type OrderPulse = {
+  latestId: number;
+  latestCode: string | null;
+  waiting: number;
+  pending: {
+    code: string;
+    total: number;
+    totalPortions: number;
+    deliveryType: "ASAP" | "SCHEDULED";
+    deliveryDate: string;
+    deliverySlot: string | null;
+    createdAt: string;
+  }[];
+  open: Record<AdminDay, number>;
+};
+
 export type AdminMe = {
   id: number;
   name: string;
   email: string;
   role: AdminRole;
   mustChangePassword: boolean; // signed in with a temporary password
+  notifyNewOrders: boolean; // receives "new order" emails
 };
 
 export type AdminAccount = {
@@ -328,6 +346,14 @@ export const adminApi = {
     request<{ ok: true }>("/password-reset/request", { method: "POST", body: JSON.stringify({ email }) }),
   confirmPasswordReset: (token: string, newPassword: string) =>
     request<{ ok: true }>("/password-reset/confirm", { method: "POST", body: JSON.stringify({ token, newPassword }) }),
+  setNotifyNewOrders: (notifyNewOrders: boolean) =>
+    request<AdminMe>("/me/notifications", { method: "PUT", body: JSON.stringify({ notifyNewOrders }) }),
+  pushPublicKey: () => request<{ publicKey: string | null }>("/push/public-key"),
+  pushSubscribe: (subscription: { endpoint: string; keys: { p256dh: string; auth: string } }) =>
+    request<{ ok: true }>("/push/subscribe", { method: "POST", body: JSON.stringify(subscription) }),
+  pushUnsubscribe: (endpoint: string) =>
+    request<{ ok: true }>("/push/unsubscribe", { method: "POST", body: JSON.stringify({ endpoint }) }),
+  pushTest: () => request<{ sent: number }>("/push/test", { method: "POST", body: "{}" }),
   getStats: (from: string | null, to: string | null) => {
     const query = new URLSearchParams();
     if (from) query.set("from", from);
@@ -367,7 +393,7 @@ export const adminApi = {
     request<AdminOrder>(`/orders/${code}/erase-customer`, { method: "POST", body: "{}" }),
   refund: (code: string) => request<AdminOrder>(`/orders/${code}/refund`, { method: "POST", body: "{}" }),
   testTelegram: () => request<{ ok: true }>("/telegram/test", { method: "POST", body: "{}" }),
-  latestOrder: () => request<{ latestId: number; latestCode: string | null; waiting: number }>("/orders/latest"),
+  latestOrder: () => request<OrderPulse>("/orders/latest"),
   getSettings: () => request<SettingsBundle>("/settings"),
   saveSettings: (settings: ShopSettings) =>
     request<SettingsBundle>("/settings", { method: "PUT", body: JSON.stringify(settings) }),

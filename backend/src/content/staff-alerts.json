@@ -1,0 +1,27 @@
+{
+  "newOrder": {
+    "subject": "Đơn mới {code} · {total}",
+    "heading": "Đơn mới {code}",
+    "totals": "Tiền bánh: {total} · {portions} phần",
+    "delivery": "Giao: {when} · {zone}",
+    "itemsTitle": "Món:",
+    "waiting": "Đang chờ khách chuyển khoản với nội dung {code}.",
+    "autoCancel": "Đơn tự hủy sau {minutes} phút nếu chưa xác nhận.",
+    "button": "Mở trang đơn hàng",
+    "pushTitle": "Đơn mới {code}",
+    "pushBody": "{total} · {portions} phần · giao {when}"
+  },
+  "autoCancelled": {
+    "subject": "Đơn tự hủy vì chưa xác nhận: {codes}",
+    "heading": "Các đơn vừa tự hủy",
+    "body": "Nếu khách đã chuyển tiền cho đơn nào trong số này, hãy kiểm tra app ngân hàng và liên hệ khách.",
+    "pushTitle": "Đơn tự hủy",
+    "pushBody": "{codes}"
+  },
+  "asap": "Giao sớm nhất",
+  "footer": "Bạn nhận thư này vì tài khoản quản lý {email} đang bật email báo đơn. Tắt ở trang admin, mục Thông báo.",
+  "test": {
+    "pushTitle": "Chuvachi",
+    "pushBody": "Thông báo thử: máy này sẽ nhận báo đơn mới."
+  }
+}

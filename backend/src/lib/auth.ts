@@ -72,6 +72,7 @@ export type AdminContext = {
   email: string;
   role: AdminRole;
   mustChangePassword: boolean;
+  notifyNewOrders: boolean;
 };
 
 declare module "express-serve-static-core" {
@@ -102,7 +103,14 @@ async function loadSession(req: Request, res: Response): Promise<AdminContext | 
   }
 
   const user = session.adminUser;
-  return { id: user.id, name: user.name, email: user.email, role: user.role, mustChangePassword: user.mustChangePassword };
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    mustChangePassword: user.mustChangePassword,
+    notifyNewOrders: user.notifyNewOrders,
+  };
 }
 
 // Any signed-in account, even one that still has to replace its temporary password.

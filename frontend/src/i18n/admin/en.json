@@ -9,7 +9,8 @@
     "products": "Products",
     "home": "Homepage",
     "accounts": "Accounts",
-    "stats": "Sales"
+    "stats": "Sales",
+    "notifications": "Notifications"
   },
   "login": {
     "title": "Staff sign in",
@@ -587,5 +588,64 @@
     "byMonth": "By month",
     "portionsCount": "{count} portions",
     "ordersCount": "{count} orders"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "hint": "Choose how you hear about new orders, even when the admin page is closed. Notifications never include the customer's name, phone or address.",
+    "push": {
+      "title": "Notifications on this device",
+      "hint": "Shows an app-style notification on the phone or computer you are using, even after closing the admin page. Each device is switched on separately.",
+      "checking": "Checking...",
+      "unsupported": "This browser doesn't support notifications. Use Chrome on Android or a computer, or Safari on iPhone (see the steps).",
+      "needsHomeScreen": "On iPhone, add the admin to the home screen first, then switch notifications on:",
+      "iosSteps": [
+        "Open chuvachi.com/admin in Safari.",
+        "Tap Share (the square with an up arrow), choose “Add to Home Screen”, tap Add.",
+        "Open Chuvachi from the new home screen icon, sign in, go to Notifications and switch on. Needs iOS 16.4 or later."
+      ],
+      "blocked": "Notifications are blocked for this site. Open the site settings in your browser (the lock icon next to the address), allow Notifications, then reload.",
+      "off": "This device doesn't get notifications yet.",
+      "on": "This device gets new order notifications.",
+      "turnOn": "Switch on for this device",
+      "turnOff": "Switch off on this device",
+      "test": "Send a test notification",
+      "turnedOn": "Switched on. Press Send a test notification to check.",
+      "turnedOff": "Notifications switched off on this device.",
+      "testSent": "Sent. It should appear within a few seconds.",
+      "testNone": "Couldn't reach any device. Try switching off and on again.",
+      "notConfigured": "The server has no notification keys (VAPID) yet. See the handbook.",
+      "failed": "Something went wrong. Please try again.",
+      "perDevice": "Signing out doesn't stop notifications; switch them off on the device itself."
+    },
+    "email": {
+      "title": "New order emails",
+      "hint": "Emails {email} for every new order and every auto-cancelled order.",
+      "on": "New order emails are on",
+      "off": "New order emails are off",
+      "turnedOn": "New order emails switched on.",
+      "turnedOff": "New order emails switched off.",
+      "gmailTip": "Tip: turn on Gmail app notifications on your phone so these emails ring like messages. If one lands in Spam, mark it “Not spam” once."
+    },
+    "sound": {
+      "title": "Sound while the admin is open",
+      "hint": "The bell in the black bar plays a ding and counts waiting orders in the tab while the admin page is open. After each reload, press the bell once (a browser rule)."
+    }
+  },
+  "inbox": {
+    "button": "Orders to handle",
+    "buttonWithCount": "{count} orders waiting for the payment check",
+    "title": "Orders to handle",
+    "waiting": "You have {count} orders waiting for the payment check",
+    "noneWaiting": "No orders waiting for the payment check",
+    "waitingHint": "Check the bank app; if the money is there, open the order and press Payment received.",
+    "delivery": "Delivery {date} · {slot}",
+    "asap": "ASAP",
+    "portions": "{count} portions",
+    "minutesAgo": "{count} min ago",
+    "hoursAgo": "{count} h ago",
+    "openToday": "{count} orders still to deliver today",
+    "openTomorrow": "{count} orders for tomorrow",
+    "seeAll": "See all orders",
+    "openCount": "{count} orders not delivered yet"
   }
 }

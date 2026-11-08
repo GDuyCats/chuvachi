@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   title: "Chuvachi — Staff",
   // Keep the staff pages out of search engines.
   robots: { index: false, follow: false },
+  // Lets staff add the admin to the phone's home screen (needed for push notifications on iPhone).
+  manifest: "/admin/manifest.webmanifest",
+  appleWebApp: { capable: true, title: "Chuvachi", statusBarStyle: "black" },
 };
 
 // Separate root layout for staff pages: no shop header or footer.

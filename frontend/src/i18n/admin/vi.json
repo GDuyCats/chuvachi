@@ -9,7 +9,8 @@
     "products": "Sản phẩm",
     "home": "Trang chủ",
     "accounts": "Tài khoản",
-    "stats": "Thống kê"
+    "stats": "Thống kê",
+    "notifications": "Thông báo"
   },
   "login": {
     "title": "Đăng nhập nhân viên",
@@ -587,5 +588,64 @@
     "byMonth": "Theo tháng",
     "portionsCount": "{count} phần",
     "ordersCount": "{count} đơn"
+  },
+  "notifications": {
+    "title": "Thông báo",
+    "hint": "Chọn cách bạn được báo khi có đơn mới, kể cả lúc không mở trang admin. Thông báo không chứa tên, số điện thoại hay địa chỉ khách.",
+    "push": {
+      "title": "Thông báo trên máy này",
+      "hint": "Hiện thông báo như tin nhắn app trên điện thoại hoặc máy tính đang dùng, kể cả khi đã đóng trang admin. Mỗi máy bật riêng.",
+      "checking": "Đang kiểm tra...",
+      "unsupported": "Trình duyệt này không hỗ trợ thông báo. Dùng Chrome trên Android hoặc máy tính, hoặc Safari trên iPhone (xem hướng dẫn).",
+      "needsHomeScreen": "Trên iPhone, phải thêm trang admin vào màn hình chính rồi mới bật được thông báo:",
+      "iosSteps": [
+        "Mở chuvachi.com/admin bằng Safari.",
+        "Bấm nút Chia sẻ (ô vuông có mũi tên lên), chọn “Thêm vào MH chính”, bấm Thêm.",
+        "Mở Chuvachi từ biểu tượng vừa tạo trên màn hình chính, đăng nhập, vào Thông báo và bấm Bật. Cần iOS 16.4 trở lên."
+      ],
+      "blocked": "Bạn đã chặn thông báo của trang này. Mở cài đặt trang trong trình duyệt (biểu tượng ổ khóa cạnh địa chỉ), cho phép Thông báo, rồi tải lại trang.",
+      "off": "Máy này chưa nhận thông báo.",
+      "on": "Máy này đang nhận thông báo đơn mới.",
+      "turnOn": "Bật thông báo trên máy này",
+      "turnOff": "Tắt trên máy này",
+      "test": "Gửi thông báo thử",
+      "turnedOn": "Đã bật. Bấm Gửi thông báo thử để kiểm tra.",
+      "turnedOff": "Đã tắt thông báo trên máy này.",
+      "testSent": "Đã gửi. Thông báo sẽ hiện trong vài giây.",
+      "testNone": "Không gửi được tới máy nào. Thử tắt rồi bật lại.",
+      "notConfigured": "Máy chủ chưa cài khóa thông báo (VAPID). Xem sổ tay để cài.",
+      "failed": "Có lỗi xảy ra. Vui lòng thử lại.",
+      "perDevice": "Đăng xuất không tắt thông báo; muốn ngừng nhận trên máy nào thì bấm Tắt trên máy đó."
+    },
+    "email": {
+      "title": "Email báo đơn",
+      "hint": "Gửi email tới {email} mỗi khi có đơn mới hoặc đơn tự hủy.",
+      "on": "Đang nhận email báo đơn",
+      "off": "Không nhận email báo đơn",
+      "turnedOn": "Đã bật email báo đơn.",
+      "turnedOff": "Đã tắt email báo đơn.",
+      "gmailTip": "Mẹo: bật thông báo của app Gmail trên điện thoại để email báo đơn kêu như tin nhắn. Nếu thư vào Spam, đánh dấu “Không phải spam” một lần."
+    },
+    "sound": {
+      "title": "Âm thanh khi đang mở admin",
+      "hint": "Nút chuông trên thanh đen bật tiếng “ting” và đếm số đơn chờ trên tab khi trang admin đang mở. Mỗi lần tải lại trang phải bấm chuông một lần (quy định của trình duyệt)."
+    }
+  },
+  "inbox": {
+    "button": "Đơn chờ xử lý",
+    "buttonWithCount": "{count} đơn chờ xác nhận tiền",
+    "title": "Đơn chờ xử lý",
+    "waiting": "Bạn đang có {count} đơn chờ xác nhận tiền",
+    "noneWaiting": "Không có đơn nào chờ xác nhận tiền",
+    "waitingHint": "Kiểm tra app ngân hàng, đúng tiền thì mở đơn và bấm Đã nhận tiền.",
+    "delivery": "Giao {date} · {slot}",
+    "asap": "sớm nhất",
+    "portions": "{count} phần",
+    "minutesAgo": "{count} phút trước",
+    "hoursAgo": "{count} giờ trước",
+    "openToday": "Hôm nay còn {count} đơn chưa giao xong",
+    "openTomorrow": "Ngày mai có {count} đơn",
+    "seeAll": "Xem tất cả đơn",
+    "openCount": "{count} đơn chưa giao xong"
   }
 }

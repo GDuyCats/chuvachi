@@ -11,13 +11,13 @@ const isDev = process.env.NODE_ENV !== "production";
 // customer data away. Next.js itself needs inline scripts, hence 'unsafe-inline'.
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://challenges.cloudflare.com${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style",
   // Our photos, bank QR codes, Google profile photos
   `img-src 'self' data: blob: ${imageBaseUrl ?? ""} https://img.vietqr.io https://lh3.googleusercontent.com`,
   "font-src 'self'",
   `connect-src 'self' ${apiUrl ?? ""} https://accounts.google.com/gsi/${isDev ? " ws: wss:" : ""}`,
-  "frame-src https://accounts.google.com/gsi/", // Google sign-in window
+  "frame-src https://accounts.google.com/gsi/ https://challenges.cloudflare.com", // Google sign-in, bot check
   "frame-ancestors 'none'", // nobody may show our pages inside a frame
   "object-src 'none'",
   "base-uri 'self'",

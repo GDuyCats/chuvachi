@@ -47,6 +47,7 @@ services:
         NEXT_PUBLIC_IMAGE_BASE_URL: https://img.chuvachi.com
         NEXT_PUBLIC_SITE_URL: https://chuvachi.com
         NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${NEXT_PUBLIC_GOOGLE_CLIENT_ID}
+        NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${NEXT_PUBLIC_TURNSTILE_SITE_KEY:-}
         API_URL: https://api.chuvachi.com
     container_name: chuvachi-web
     restart: unless-stopped
@@ -68,8 +69,8 @@ services:
       - ../../certs:/certs:ro
       - caddy-data:/data
       - caddy-config:/config
+    # Only the API: the website is built later and needs Caddy (and the API) already running.
     depends_on:
-      - web
       - api
 
 volumes:

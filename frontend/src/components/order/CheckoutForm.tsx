@@ -29,6 +29,7 @@ import {
 } from "@/lib/public-api";
 import { accountApi, type CustomerProfile } from "@/lib/account-api";
 import { PhotoBox } from "../PhotoBox";
+import { TURNSTILE_ENABLED, TurnstileWidget } from "./TurnstileWidget";
 import { CheckoutSkeleton, Skeleton } from "../Skeleton";
 
 export type CatalogOption = { id: number; type: "FLAVOR" | "PACKAGE"; name: string; priceDelta: number; portions: number };
@@ -129,6 +130,8 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
   const [chosenSlot, setChosenSlot] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [agreed, setAgreed] = useState(false); // never ticked in advance (privacy law)
+  const [botToken, setBotToken] = useState<string | null>(null);
+  const [botReset, setBotReset] = useState(0);
 
   // Signed-in customers get their saved details filled in (only into empty fields).
   const [account, setAccount] = useState<CustomerProfile | null>(null);
@@ -170,6 +173,11 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
       return;
     }
 
+    if (TURNSTILE_ENABLED && !botToken) {
+      setErrorCode("BOT_CHECK_PENDING");
+      return;
+    }
+
     setSubmitting(true);
     setErrorCode(null);
     try {
@@ -190,7 +198,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
           packageOptionId: line.packageOptionId,
           quantity: line.quantity,
         })),
-      });
+      }, botToken);
 
       saveLastOrder({
         ...result,
@@ -206,6 +214,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
     } catch (error) {
       setErrorCode(error instanceof ApiError ? error.code : "UNKNOWN");
       setSubmitting(false);
+      setBotReset((n) => n + 1); // each check token works once; get a new one for the next try
     }
   }
 
@@ -541,6 +550,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
             {labels.consentAfter}
           </span>
         </label>
+        <TurnstileWidget lang={lang} onToken={setBotToken} resetSignal={botReset} />
         <button
           type="submit"
           disabled={!settings || submitting}

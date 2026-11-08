@@ -98,8 +98,17 @@ export function fetchOrderSettings(locale: Locale): Promise<OrderSettings> {
   return request<OrderSettings>(`/api/order-settings?locale=${locale}`, { cache: "no-store" });
 }
 
-export function placeOrder(body: PlaceOrderRequest): Promise<PlaceOrderResult> {
-  return request<PlaceOrderResult>("/api/orders", { method: "POST", body: JSON.stringify(body) });
+// Header carrying the one-time Cloudflare Turnstile token (bot check).
+function botCheckHeaders(token: string | null): Record<string, string> {
+  return token ? { "X-Turnstile-Token": token } : {};
+}
+
+export function placeOrder(body: PlaceOrderRequest, turnstileToken: string | null): Promise<PlaceOrderResult> {
+  return request<PlaceOrderResult>("/api/orders", {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: botCheckHeaders(turnstileToken),
+  });
 }
 
 export type OrderStatus = "PENDING" | "CONFIRMED" | "PREPARING" | "READY" | "COMPLETED" | "CANCELLED";
@@ -121,7 +130,10 @@ export type OrderLookup = {
   updatedAt: string;
 };
 
-export function fetchOrder(code: string, phone: string, locale: Locale): Promise<OrderLookup> {
+export function fetchOrder(code: string, phone: string, locale: Locale, turnstileToken: string | null): Promise<OrderLookup> {
   const query = new URLSearchParams({ phone, locale });
-  return request<OrderLookup>(`/api/orders/${encodeURIComponent(code)}?${query.toString()}`, { cache: "no-store" });
+  return request<OrderLookup>(`/api/orders/${encodeURIComponent(code)}?${query.toString()}`, {
+    cache: "no-store",
+    headers: botCheckHeaders(turnstileToken),
+  });
 }

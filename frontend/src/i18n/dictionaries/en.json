@@ -159,7 +159,9 @@
       "DAY_FULLY_BOOKED": "That day is fully booked. Please choose another day.",
       "TOO_MANY_REQUESTS": "Too many attempts. Please wait a while and try again.",
       "NETWORK": "We couldn't reach the shop. Check your connection and try again.",
-      "UNKNOWN": "Something went wrong. Please try again."
+      "UNKNOWN": "Something went wrong. Please try again.",
+      "BOT_CHECK_PENDING": "Running a quick security check. Please wait a few seconds and try again.",
+      "BOT_CHECK_FAILED": "The security check didn't pass. Please reload the page and try again."
     },
     "consentBefore": "I agree that the shop may use my details to deliver this order, as described in the",
     "consentPrivacy": "Privacy policy",
@@ -239,7 +241,9 @@
       "TOO_MANY_REQUESTS": "Too many lookups. Please wait a while and try again.",
       "NETWORK": "We couldn't reach the shop. Check your connection and try again.",
       "INVALID_LOOKUP": "Please enter both the order code and the phone number.",
-      "UNKNOWN": "Something went wrong. Please try again."
+      "UNKNOWN": "Something went wrong. Please try again.",
+      "BOT_CHECK_PENDING": "Running a quick security check. Please wait a few seconds and try again.",
+      "BOT_CHECK_FAILED": "The security check didn't pass. Please reload the page and try again."
     }
   },
   "loading": {

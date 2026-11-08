@@ -8,6 +8,7 @@ import { formatLongDate, formatSlot } from "@/lib/delivery-time";
 import { formatPrice } from "@/lib/format";
 import { ApiError, fetchOrder, type OrderLookup, type OrderStatus } from "@/lib/public-api";
 import { Skeleton, SkeletonGroup } from "../Skeleton";
+import { TURNSTILE_ENABLED, TurnstileWidget } from "./TurnstileWidget";
 
 type Props = {
   lang: Locale;
@@ -35,6 +36,8 @@ export function TrackOrder({ lang, labels }: Props) {
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
+  const [botToken, setBotToken] = useState<string | null>(null);
+  const [botReset, setBotReset] = useState(0);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -44,15 +47,20 @@ export function TrackOrder({ lang, labels }: Props) {
       setResult({ kind: "error", code: "INVALID_LOOKUP" });
       return;
     }
+    if (TURNSTILE_ENABLED && !botToken) {
+      setResult({ kind: "error", code: "BOT_CHECK_PENDING" });
+      return;
+    }
     setLoading(true);
     try {
-      const order = await fetchOrder(cleanCode, cleanPhone, lang);
+      const order = await fetchOrder(cleanCode, cleanPhone, lang, botToken);
       setResult({ kind: "found", order });
     } catch (error) {
       const errorCode = error instanceof ApiError ? error.code : "UNKNOWN";
       setResult(errorCode === "ORDER_NOT_FOUND" ? { kind: "notFound" } : { kind: "error", code: errorCode });
     } finally {
       setLoading(false);
+      setBotReset((n) => n + 1); // each check token works once
     }
   }
 
@@ -88,6 +96,7 @@ export function TrackOrder({ lang, labels }: Props) {
             className={inputClass}
           />
         </label>
+        <TurnstileWidget lang={lang} onToken={setBotToken} resetSignal={botReset} />
         <button
           type="submit"
           disabled={loading}

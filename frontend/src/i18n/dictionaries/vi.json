@@ -159,7 +159,9 @@
       "DAY_FULLY_BOOKED": "Ngày này tiệm đã nhận đủ đơn. Bạn chọn ngày khác nhé.",
       "TOO_MANY_REQUESTS": "Bạn thử quá nhiều lần. Đợi một lát rồi thử lại nhé.",
       "NETWORK": "Không kết nối được với tiệm. Bạn kiểm tra mạng rồi thử lại nhé.",
-      "UNKNOWN": "Có lỗi xảy ra. Bạn thử lại giúp tiệm nhé."
+      "UNKNOWN": "Có lỗi xảy ra. Bạn thử lại giúp tiệm nhé.",
+      "BOT_CHECK_PENDING": "Đang kiểm tra bảo mật, bạn đợi vài giây rồi bấm lại nhé.",
+      "BOT_CHECK_FAILED": "Không qua được bước kiểm tra bảo mật. Bạn tải lại trang rồi thử lại nhé."
     },
     "consentBefore": "Tôi đồng ý cho tiệm dùng thông tin của tôi để giao đơn, theo",
     "consentPrivacy": "Chính sách quyền riêng tư",
@@ -239,7 +241,9 @@
       "TOO_MANY_REQUESTS": "Bạn tra cứu quá nhiều lần. Đợi một lát rồi thử lại nhé.",
       "NETWORK": "Không kết nối được với tiệm. Bạn kiểm tra mạng rồi thử lại nhé.",
       "INVALID_LOOKUP": "Bạn nhập cả mã đơn và số điện thoại nhé.",
-      "UNKNOWN": "Có lỗi xảy ra. Bạn thử lại giúp tiệm nhé."
+      "UNKNOWN": "Có lỗi xảy ra. Bạn thử lại giúp tiệm nhé.",
+      "BOT_CHECK_PENDING": "Đang kiểm tra bảo mật, bạn đợi vài giây rồi bấm lại nhé.",
+      "BOT_CHECK_FAILED": "Không qua được bước kiểm tra bảo mật. Bạn tải lại trang rồi thử lại nhé."
     }
   },
   "loading": {

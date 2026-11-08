@@ -10,6 +10,7 @@ import { createOrder, findOrderForCustomer, OrderError } from "../services/order
 import { currentCustomerId } from "../lib/customer-auth";
 import { notifyNewOrder } from "../services/notifications";
 import { rateLimitKey } from "../lib/client-ip";
+import { requireHuman } from "../lib/turnstile";
 
 export const ordersRouter = Router();
 
@@ -75,7 +76,7 @@ const createOrderSchema = z
 // ---------- Routes ----------
 
 // POST /api/orders - place a new order
-ordersRouter.post("/orders", placeOrderLimiter, async (req, res) => {
+ordersRouter.post("/orders", placeOrderLimiter, requireHuman, async (req, res) => {
   const parsed = createOrderSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({
@@ -105,7 +106,7 @@ ordersRouter.post("/orders", placeOrderLimiter, async (req, res) => {
 });
 
 // GET /api/orders/:code?phone=0912345678&locale=vi - customer looks up their order
-ordersRouter.get("/orders/:code", lookupLimiter, async (req, res) => {
+ordersRouter.get("/orders/:code", lookupLimiter, requireHuman, async (req, res) => {
   const phone = typeof req.query.phone === "string" ? req.query.phone : "";
   const code = String(req.params.code);
   if (!phone || !/^[A-Za-z0-9]{4,12}$/.test(code)) {

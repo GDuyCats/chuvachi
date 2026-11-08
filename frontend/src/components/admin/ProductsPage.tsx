@@ -4,7 +4,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { formatPrice } from "@/lib/format";
-import { adminApi, AdminApiError, type AdminCategory, type AdminProduct } from "@/lib/admin-api";
+import {
+  adminApi,
+  AdminApiError,
+  AVAILABILITIES,
+  type AdminAvailability,
+  type AdminCategory,
+  type AdminProduct,
+} from "@/lib/admin-api";
 import { useAdminMe } from "./AdminShell";
 import { useAdminI18n } from "./AdminI18n";
 import { AdminCardsSkeleton } from "./AdminSkeletons";
@@ -122,6 +129,18 @@ function ProductSummary({ product }: { product: AdminProduct }) {
           {product.isNew && (
             <span className="bg-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">{p.new}</span>
           )}
+          {product.availability !== "AVAILABLE" && (
+            <span className="border border-black bg-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+              {t.availability[product.availability]}
+            </span>
+          )}
+          {product.options
+            .filter((option) => option.isActive && option.availability !== "AVAILABLE")
+            .map((option) => (
+              <span key={option.id} className="border border-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                {lang === "vi" ? option.nameVi : option.nameEn}: {t.availability[option.availability]}
+              </span>
+            ))}
           {product.soldOutUntil && (
             <span className="border border-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
               {p.soldOutUntil.replace("{date}", product.soldOutUntil)}
@@ -145,10 +164,18 @@ function ProductSummary({ product }: { product: AdminProduct }) {
 function StockEditor({ product, onSaved }: { product: AdminProduct; onSaved: (product: AdminProduct) => void }) {
   const router = useRouter();
   const toast = useToast();
-  const { t } = useAdminI18n();
+  const { t, lang } = useAdminI18n();
   const e = t.products.editor;
   const [soldOutUntil, setSoldOutUntil] = useState(product.soldOutUntil ?? "");
   const [dailyLimit, setDailyLimit] = useState(product.dailyLimit ? String(product.dailyLimit) : "");
+  const [availability, setAvailability] = useState<AdminAvailability>(product.availability);
+  // Options shown to customers; saved options always have an id.
+  const activeOptions = product.options.flatMap((option) =>
+    option.isActive && option.id !== undefined ? [{ ...option, id: option.id }] : [],
+  );
+  const [optionAvailability, setOptionAvailability] = useState<Record<number, AdminAvailability>>(() =>
+    Object.fromEntries(activeOptions.map((option) => [option.id, option.availability])),
+  );
   const [busy, setBusy] = useState(false);
 
   const limitNumber = dailyLimit.trim() === "" ? null : Number(dailyLimit);
@@ -157,7 +184,14 @@ function StockEditor({ product, onSaved }: { product: AdminProduct; onSaved: (pr
   async function save() {
     setBusy(true);
     try {
-      onSaved(await adminApi.updateStock(product.id, { soldOutUntil: soldOutUntil || null, dailyLimit: limitNumber }));
+      onSaved(
+        await adminApi.updateStock(product.id, {
+          soldOutUntil: soldOutUntil || null,
+          dailyLimit: limitNumber,
+          availability,
+          options: Object.entries(optionAvailability).map(([id, value]) => ({ id: Number(id), availability: value })),
+        }),
+      );
       toast.success(t.products.stock.saved);
     } catch (error) {
       if (error instanceof AdminApiError && error.status === 401) {
@@ -173,7 +207,36 @@ function StockEditor({ product, onSaved }: { product: AdminProduct; onSaved: (pr
   const cell = "h-11 w-full border-[1.5px] border-black bg-white px-3 text-[15px] font-normal";
 
   return (
-    <div className="grid grid-cols-1 items-end gap-3 border-t border-[#eeeeee] pt-3 sm:grid-cols-[1fr_1fr_auto]">
+    <div className="flex flex-col gap-3 border-t border-[#eeeeee] pt-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label className="flex flex-col gap-1.5 text-xs font-semibold">
+          {e.availabilityProduct}
+          <select value={availability} onChange={(ev) => setAvailability(ev.target.value as AdminAvailability)} className={cell}>
+            {AVAILABILITIES.map((value) => (
+              <option key={value} value={value}>
+                {t.availability[value]}
+              </option>
+            ))}
+          </select>
+        </label>
+        {activeOptions.map((option) => (
+          <label key={option.id} className="flex flex-col gap-1.5 text-xs font-semibold">
+            {(option.type === "FLAVOR" ? e.flavorLabel : e.sizeLabel).replace("{name}", lang === "vi" ? option.nameVi : option.nameEn)}
+            <select
+              value={optionAvailability[option.id] ?? "AVAILABLE"}
+              onChange={(ev) => setOptionAvailability((current) => ({ ...current, [option.id]: ev.target.value as AdminAvailability }))}
+              className={cell}
+            >
+              {AVAILABILITIES.map((value) => (
+                <option key={value} value={value}>
+                  {t.availability[value]}
+                </option>
+              ))}
+            </select>
+          </label>
+        ))}
+      </div>
+    <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-[1fr_1fr_auto]">
       <label className="flex flex-col gap-1.5 text-xs font-semibold">
         {e.soldOutUntil}
         <div className="flex gap-1">
@@ -200,6 +263,7 @@ function StockEditor({ product, onSaved }: { product: AdminProduct; onSaved: (pr
       <button type="button" disabled={busy || !limitValid} onClick={save} className="h-11 bg-black px-5 text-sm font-bold text-white disabled:opacity-50">
         {t.products.stock.save}
       </button>
+    </div>
     </div>
   );
 }

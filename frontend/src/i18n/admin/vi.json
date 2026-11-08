@@ -329,7 +329,12 @@
       "clear": "Bỏ",
       "soldOutHint": "Khách không đặt được bánh này để giao trong những ngày đó; từ ngày hôm sau tự mở lại. Để trống = bán bình thường.",
       "dailyLimit": "Tối đa mỗi ngày (phần)",
-      "dailyLimitHint": "Số phần bánh này nhận tối đa cho một ngày giao. Để trống = không giới hạn riêng."
+      "dailyLimitHint": "Số phần bánh này nhận tối đa cho một ngày giao. Để trống = không giới hạn riêng.",
+      "availability": "Tình trạng",
+      "availabilityProduct": "Tình trạng bánh",
+      "availabilityHint": "Hết hàng hoặc Sắp ra mắt: bánh vẫn hiện trên menu kèm nhãn, nhưng khách không bấm đặt được. Giữ nguyên cho tới khi bạn đổi lại Đang bán.",
+      "flavorLabel": "Vị {name}",
+      "sizeLabel": "Quy cách {name}"
     },
     "loading": "Đang tải danh sách bánh...",
     "soldOutUntil": "Tạm hết đến {date}",
@@ -338,7 +343,7 @@
       "title": "Tình trạng bánh",
       "save": "Lưu",
       "saved": "Đã lưu. Trang khách cập nhật trong vài phút.",
-      "staffHint": "Nhân viên chỉ chỉnh được Tạm hết và Tối đa mỗi ngày. Muốn đổi giá, ảnh hay tên bánh thì nhờ admin.",
+      "staffHint": "Nhân viên chỉ chỉnh được tình trạng (Đang bán / Hết hàng / Sắp ra mắt) của bánh và từng vị, Tạm hết đến ngày và Tối đa mỗi ngày. Muốn đổi giá, ảnh hay tên bánh thì nhờ admin.",
       "unlimited": "Không giới hạn"
     }
   },
@@ -647,5 +652,10 @@
     "openTomorrow": "Ngày mai có {count} đơn",
     "seeAll": "Xem tất cả đơn",
     "openCount": "{count} đơn chưa giao xong"
+  },
+  "availability": {
+    "AVAILABLE": "Đang bán",
+    "SOLD_OUT": "Hết hàng",
+    "COMING_SOON": "Sắp ra mắt"
   }
 }

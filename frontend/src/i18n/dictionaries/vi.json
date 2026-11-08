@@ -58,7 +58,9 @@
       "brownie": "Brownie"
     },
     "soldOut": "Tạm hết",
-    "sold": "Đã bán {count}"
+    "sold": "Đã bán {count}",
+    "outOfStock": "Hết hàng",
+    "comingSoon": "Sắp ra mắt"
   },
   "menu": {
     "title": "Menu của tiệm",
@@ -96,7 +98,12 @@
     "photoOf": "Ảnh {number}/{total}",
     "previousPhoto": "Ảnh trước",
     "nextPhoto": "Ảnh sau",
-    "soldOutNote": "Tạm hết đến hết ngày {date}. Bạn vẫn đặt được để giao từ ngày {next}."
+    "soldOutNote": "Tạm hết đến hết ngày {date}. Bạn vẫn đặt được để giao từ ngày {next}.",
+    "outOfStock": "Hết hàng",
+    "comingSoon": "Sắp ra mắt",
+    "outOfStockNote": "Bánh này đang hết hàng, tiệm sẽ mở bán lại sớm.",
+    "comingSoonNote": "Bánh này sắp ra mắt, chưa đặt được. Theo dõi trang của tiệm để biết ngày mở bán nhé.",
+    "noFlavorNote": "Các vị của bánh này đang tạm hết, bạn quay lại sau nhé."
   },
   "order": {
     "title": "Đơn hàng của bạn",
@@ -167,7 +174,9 @@
       "BOT_CHECK_FAILED": "Không qua được bước kiểm tra bảo mật. Bạn tải lại trang rồi thử lại nhé.",
       "ORDERING_PAUSED": "Tiệm đang tạm ngưng nhận đơn. Bạn quay lại sau nhé.",
       "PRODUCT_SOLD_OUT": "{product} đang tạm hết vào ngày bạn chọn. Bạn chọn ngày khác hoặc bỏ bánh này khỏi đơn nhé.",
-      "PRODUCT_LIMIT_REACHED": "{product} đã đủ đơn cho ngày bạn chọn. Bạn chọn ngày khác hoặc giảm số lượng nhé."
+      "PRODUCT_LIMIT_REACHED": "{product} đã đủ đơn cho ngày bạn chọn. Bạn chọn ngày khác hoặc giảm số lượng nhé.",
+      "PRODUCT_UNAVAILABLE": "{product} đang hết hàng. Bạn bỏ món này khỏi đơn rồi đặt lại nhé.",
+      "PRODUCT_COMING_SOON": "{product} chưa mở bán. Bạn bỏ món này khỏi đơn rồi đặt lại nhé."
     },
     "consentBefore": "Tôi đồng ý cho tiệm dùng thông tin của tôi để giao đơn, theo",
     "consentPrivacy": "Chính sách quyền riêng tư",

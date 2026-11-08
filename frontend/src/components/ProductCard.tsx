@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import type { Locale } from "@/i18n/config";
+import type { Availability } from "@/lib/api";
 import { formatPrice } from "@/lib/format";
 import { PhotoBox } from "./PhotoBox";
 import { SoldOutBadge } from "./SoldOutBadge";
@@ -11,6 +12,8 @@ export type ProductCardLabels = {
   from: string;
   photoComingSoon: string;
   sold?: string; // "Sold {count}"
+  outOfStock?: string;
+  comingSoon?: string;
 };
 
 type Props = {
@@ -21,6 +24,7 @@ type Props = {
   isNew: boolean;
   soldOutUntil?: string | null;
   soldCount?: number | null; // shown only when the shop turned it on
+  availability?: Availability;
   imageUrl: string | null;
   labels: ProductCardLabels;
   actionLabel: string;
@@ -42,6 +46,7 @@ export function ProductCard({
   isNew,
   soldOutUntil = null,
   soldCount = null,
+  availability = "AVAILABLE",
   imageUrl,
   labels,
   actionLabel,
@@ -56,12 +61,23 @@ export function ProductCard({
       className={`group flex flex-col gap-3 rounded-xl bg-surface p-3 md:gap-4 md:p-5 ${className}`}
     >
       <div className="relative">
-        <PhotoBox src={imageUrl} alt={name} fallbackText={labels.photoComingSoon} className="aspect-square" />
+        <PhotoBox
+          src={imageUrl}
+          alt={name}
+          fallbackText={labels.photoComingSoon}
+          className={`aspect-square ${availability !== "AVAILABLE" ? "opacity-60" : ""}`}
+        />
         <div className="absolute left-2 top-2 flex gap-1.5 md:left-3 md:top-3">
           {isNew && (
             <span className="bg-black px-2 py-1 text-[11px] font-bold uppercase tracking-widest text-white">{labels.new}</span>
           )}
-          <SoldOutBadge soldOutUntil={soldOutUntil} label={labels.soldOut} />
+          {availability === "AVAILABLE" ? (
+            <SoldOutBadge soldOutUntil={soldOutUntil} label={labels.soldOut} />
+          ) : (
+            <span className="border-[1.5px] border-black bg-white px-2 py-1 text-[11px] font-bold uppercase tracking-widest text-black">
+              {availability === "COMING_SOON" ? labels.comingSoon : labels.outOfStock}
+            </span>
+          )}
         </div>
       </div>
       <div className="border-t border-ink" />

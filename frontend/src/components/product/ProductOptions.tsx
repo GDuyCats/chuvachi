@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Locale } from "@/i18n/config";
+import type { Availability } from "@/lib/api";
 import { addToCart, cartItemCount, MAX_LINE_QUANTITY } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { portionsPerUnit, unitPrice } from "@/lib/pricing";
@@ -13,6 +14,7 @@ export type OptionChoice = {
   name: string;
   priceDelta: number;
   portions: number;
+  availability: Availability;
 };
 
 export type ProductOptionsLabels = {
@@ -27,6 +29,11 @@ export type ProductOptionsLabels = {
   onePortion: string;
   portionsEach: string;
   soldOutNote: string;
+  outOfStock: string;
+  comingSoon: string;
+  outOfStockNote: string;
+  comingSoonNote: string;
+  noFlavorNote: string;
 };
 
 type Props = {
@@ -36,19 +43,23 @@ type Props = {
   flavors: OptionChoice[];
   packages: OptionChoice[];
   soldOutUntil: string | null; // YYYY-MM-DD, or null
+  availability: Availability; // the whole cake
   labels: ProductOptionsLabels;
 };
 
 // Flavor and size pickers, live price, quantity and the "Add to order" button.
-export function ProductOptions({ lang, slug, basePrice, flavors, packages, soldOutUntil, labels }: Props) {
+export function ProductOptions({ lang, slug, basePrice, flavors, packages, soldOutUntil, availability, labels }: Props) {
   // Checked in the browser so a cached page stays right once the sold-out period ends.
   const [soldOut, setSoldOut] = useState(false);
   useEffect(() => {
     setSoldOut(isSoldOutToday(soldOutUntil));
   }, [soldOutUntil]);
 
-  const [flavorId, setFlavorId] = useState<number | null>(flavors[0]?.id ?? null);
-  const [packageId, setPackageId] = useState<number | null>(packages[0]?.id ?? null);
+  // Start on the first choice that can be ordered.
+  const firstAvailable = (choices: OptionChoice[]) =>
+    (choices.find((c) => c.availability === "AVAILABLE") ?? choices[0])?.id ?? null;
+  const [flavorId, setFlavorId] = useState<number | null>(firstAvailable(flavors));
+  const [packageId, setPackageId] = useState<number | null>(firstAvailable(packages));
   const [quantity, setQuantity] = useState(1);
   const [addedCount, setAddedCount] = useState<number | null>(null);
 
@@ -57,17 +68,40 @@ export function ProductOptions({ lang, slug, basePrice, flavors, packages, soldO
   const price = unitPrice(basePrice, flavor, pack);
   const portions = portionsPerUnit(pack);
 
+  // Why the cake can't be ordered right now, if it can't.
+  const noFlavorLeft = flavors.length > 0 && flavors.every((f) => f.availability !== "AVAILABLE");
+  const noSizeLeft = packages.length > 0 && packages.every((p) => p.availability !== "AVAILABLE");
+  const blockedNote =
+    availability === "COMING_SOON"
+      ? labels.comingSoonNote
+      : availability === "SOLD_OUT"
+        ? labels.outOfStockNote
+        : noFlavorLeft || noSizeLeft
+          ? labels.noFlavorNote
+          : null;
+  const isOrderable = (choice: OptionChoice | null) => !choice || choice.availability === "AVAILABLE";
+  const canOrder = blockedNote === null && isOrderable(flavor) && isOrderable(pack);
+  const statusLabel = (value: Availability) => (value === "COMING_SOON" ? labels.comingSoon : labels.outOfStock);
+
   function handleAdd() {
+    if (!canOrder) return;
     const lines = addToCart({ productSlug: slug, flavorOptionId: flavorId, packageOptionId: packageId, quantity });
     setAddedCount(cartItemCount(lines));
     setQuantity(1);
   }
 
-  const optionButton = (selected: boolean) =>
-    `border-[1.5px] border-black ${selected ? "bg-black text-white" : "bg-white text-black hover:bg-surface"}`;
+  const optionButton = (selected: boolean, available = true) =>
+    available
+      ? `border-[1.5px] border-black ${selected ? "bg-black text-white" : "bg-white text-black hover:bg-surface"}`
+      : "cursor-not-allowed border-[1.5px] border-dashed border-[#a8a8a8] bg-white text-[#8a8a8a]";
 
   return (
     <div className="flex flex-col gap-6">
+      {blockedNote && (
+        <p role="status" className="border-[1.5px] border-black bg-black px-4 py-3 text-[15px] font-semibold text-white">
+          {blockedNote}
+        </p>
+      )}
       {soldOut && soldOutUntil && (
         <p role="status" className="border-[1.5px] border-black px-4 py-3 text-[15px] font-semibold">
           {labels.soldOutNote
@@ -92,17 +126,22 @@ export function ProductOptions({ lang, slug, basePrice, flavors, packages, soldO
         <fieldset className="flex flex-col gap-2.5">
           <legend className="mb-2.5 text-sm font-bold uppercase tracking-wider">{labels.flavor}</legend>
           <div className="flex flex-wrap gap-2.5">
-            {flavors.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                aria-pressed={option.id === flavorId}
-                onClick={() => setFlavorId(option.id)}
-                className={`min-h-11 px-4 text-[15px] font-semibold ${optionButton(option.id === flavorId)}`}
-              >
-                {option.name}
-              </button>
-            ))}
+            {flavors.map((option) => {
+              const available = option.availability === "AVAILABLE";
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  disabled={!available}
+                  aria-pressed={option.id === flavorId}
+                  onClick={() => setFlavorId(option.id)}
+                  className={`min-h-11 px-4 text-[15px] font-semibold ${optionButton(option.id === flavorId && available, available)}`}
+                >
+                  {option.name}
+                  {!available && <span className="ml-1.5 text-xs font-bold uppercase tracking-wider">· {statusLabel(option.availability)}</span>}
+                </button>
+              );
+            })}
           </div>
         </fieldset>
       )}
@@ -111,18 +150,24 @@ export function ProductOptions({ lang, slug, basePrice, flavors, packages, soldO
         <fieldset className="flex flex-col gap-2.5">
           <legend className="mb-2.5 text-sm font-bold uppercase tracking-wider">{labels.size}</legend>
           <div className="grid grid-cols-3 gap-2.5">
-            {packages.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                aria-pressed={option.id === packageId}
-                onClick={() => setPackageId(option.id)}
-                className={`flex min-h-16 flex-col items-center justify-center gap-1 px-2 ${optionButton(option.id === packageId)}`}
-              >
-                <span className="text-[15px] font-bold">{option.name}</span>
-                <span className="text-[13px]">{formatPrice(unitPrice(basePrice, flavor, option), lang)}</span>
-              </button>
-            ))}
+            {packages.map((option) => {
+              const available = option.availability === "AVAILABLE";
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  disabled={!available}
+                  aria-pressed={option.id === packageId}
+                  onClick={() => setPackageId(option.id)}
+                  className={`flex min-h-16 flex-col items-center justify-center gap-1 px-2 ${optionButton(option.id === packageId && available, available)}`}
+                >
+                  <span className="text-[15px] font-bold">{option.name}</span>
+                  <span className="text-[13px]">
+                    {available ? formatPrice(unitPrice(basePrice, flavor, option), lang) : statusLabel(option.availability)}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </fieldset>
       )}
@@ -150,9 +195,14 @@ export function ProductOptions({ lang, slug, basePrice, flavors, packages, soldO
         <button
           type="button"
           onClick={handleAdd}
-          className="min-h-13 flex-1 basis-56 bg-black px-6 text-base font-bold text-white hover:bg-[#333333]"
+          disabled={!canOrder}
+          className="min-h-13 flex-1 basis-56 bg-black px-6 text-base font-bold text-white hover:bg-[#333333] disabled:cursor-not-allowed disabled:bg-[#bdbdbd] disabled:text-white"
         >
-          {labels.addToOrder} · {formatPrice(price * quantity, lang)}
+          {canOrder
+            ? `${labels.addToOrder} · ${formatPrice(price * quantity, lang)}`
+            : availability === "COMING_SOON"
+              ? labels.comingSoon
+              : labels.outOfStock}
         </button>
       </div>
 

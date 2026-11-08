@@ -87,6 +87,7 @@ homeRouter.get("/home", async (req, res) => {
               name: pickText(locale, product.nameVi, product.nameEn),
               price: startingPrice(product.basePrice, product.options),
               isNew: product.isNew,
+              availability: product.availability,
               imageUrl: product.imageUrl,
             })),
           }

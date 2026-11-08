@@ -48,7 +48,13 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/menu/[slug
 function toChoices(product: Product, type: "FLAVOR" | "PACKAGE"): OptionChoice[] {
   return product.options
     .filter((option) => option.type === type)
-    .map(({ id, name, priceDelta, portions }) => ({ id, name, priceDelta, portions }));
+    .map(({ id, name, priceDelta, portions, availability }) => ({
+      id,
+      name,
+      priceDelta,
+      portions,
+      availability: availability ?? "AVAILABLE",
+    }));
 }
 
 export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[slug]">) {
@@ -113,6 +119,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[s
             flavors={toChoices(product, "FLAVOR")}
             packages={toChoices(product, "PACKAGE")}
             soldOutUntil={product.soldOutUntil}
+            availability={product.availability ?? "AVAILABLE"}
             labels={labels}
           />
 
@@ -167,6 +174,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[s
                 name={item.name}
                 price={item.basePrice}
                 isNew={item.isNew}
+                availability={item.availability}
                 imageUrl={item.imageUrl}
                 labels={dict.product}
                 actionLabel={labels.view}

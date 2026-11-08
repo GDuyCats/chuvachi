@@ -58,7 +58,9 @@
       "brownie": "Brownie"
     },
     "soldOut": "Sold out",
-    "sold": "{count} sold"
+    "sold": "{count} sold",
+    "outOfStock": "Sold out",
+    "comingSoon": "Coming soon"
   },
   "menu": {
     "title": "Our menu",
@@ -96,7 +98,12 @@
     "photoOf": "Photo {number} of {total}",
     "previousPhoto": "Previous photo",
     "nextPhoto": "Next photo",
-    "soldOutNote": "Sold out up to {date}. You can still order it for delivery from {next}."
+    "soldOutNote": "Sold out up to {date}. You can still order it for delivery from {next}.",
+    "outOfStock": "Sold out",
+    "comingSoon": "Coming soon",
+    "outOfStockNote": "This cake is sold out for now; it will be back soon.",
+    "comingSoonNote": "This cake is coming soon and can't be ordered yet. Follow the shop to hear when it launches.",
+    "noFlavorNote": "Every flavor of this cake is unavailable right now. Please check back later."
   },
   "order": {
     "title": "Your order",
@@ -167,7 +174,9 @@
       "BOT_CHECK_FAILED": "The security check didn't pass. Please reload the page and try again.",
       "ORDERING_PAUSED": "We're not taking orders right now. Please come back later.",
       "PRODUCT_SOLD_OUT": "{product} is sold out on the day you chose. Please pick another day or remove it from your order.",
-      "PRODUCT_LIMIT_REACHED": "{product} is fully booked on the day you chose. Please pick another day or order fewer."
+      "PRODUCT_LIMIT_REACHED": "{product} is fully booked on the day you chose. Please pick another day or order fewer.",
+      "PRODUCT_UNAVAILABLE": "{product} is sold out. Please remove it from your order and try again.",
+      "PRODUCT_COMING_SOON": "{product} isn't on sale yet. Please remove it from your order and try again."
     },
     "consentBefore": "I agree that the shop may use my details to deliver this order, as described in the",
     "consentPrivacy": "Privacy policy",

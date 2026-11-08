@@ -31,6 +31,8 @@ function toProductResponse(product: ProductWithRelations, locale: Locale, soldCo
     images: product.images.length > 0 ? product.images : product.imageUrl ? [product.imageUrl] : [],
     basePrice: product.basePrice,
     isNew: product.isNew,
+    // AVAILABLE, SOLD_OUT or COMING_SOON; only AVAILABLE can be ordered
+    availability: product.availability,
     // Last day the cake can't be delivered ("temporarily sold out"), or null
     soldOutUntil: product.soldOutUntil ? formatDateOnly(product.soldOutUntil) : null,
     // Portions sold so far; null when the shop hides it or the number is still below the minimum
@@ -45,6 +47,7 @@ function toProductResponse(product: ProductWithRelations, locale: Locale, soldCo
       name: pickText(locale, option.nameVi, option.nameEn),
       priceDelta: option.priceDelta,
       portions: option.portions,
+      availability: option.availability,
     })),
   };
 }

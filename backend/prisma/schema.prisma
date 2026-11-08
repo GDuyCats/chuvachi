@@ -50,6 +50,14 @@ enum OrderStatus {
   CANCELLED
 }
 
+// Whether customers can order a cake or one of its options right now.
+// Unlike "soldOutUntil" (sold out up to a date), these stay until staff change them.
+enum Availability {
+  AVAILABLE   // can be ordered
+  SOLD_OUT    // shown with a "Sold out" label, can't be ordered
+  COMING_SOON // shown with a "Coming soon" label, can't be ordered yet
+}
+
 // ---------- Catalog ----------
 
 model Category {
@@ -77,6 +85,7 @@ model Product {
   basePrice     Int             // price of one portion in VND
   isActive      Boolean         @default(true)
   isNew         Boolean         @default(false) // shows a "NEW" badge and appears under the "New" filter
+  availability  Availability    @default(AVAILABLE)
   soldOutUntil  DateTime?       @db.Date // "temporarily sold out": no deliveries on or before this day
   dailyLimit    Int?            // most portions of this cake per delivery day; empty = no own limit
   sortOrder     Int             @default(0)
@@ -102,7 +111,8 @@ model ProductOption {
   nameEn     String
   priceDelta Int        @default(0) // extra price added to the base price
   portions   Int        @default(1) // portions per unit (PACKAGE only, e.g. box of 4 = 4)
-  isActive   Boolean    @default(true)
+  isActive   Boolean    @default(true) // false = hidden from customers
+  availability Availability @default(AVAILABLE) // shown but maybe not orderable
   sortOrder  Int        @default(0)
 }
 

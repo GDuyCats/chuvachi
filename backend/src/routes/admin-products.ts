@@ -1,5 +1,5 @@
 import { Router, type Response } from "express";
-import { OptionType, Prisma } from "@prisma/client";
+import { Availability, OptionType, Prisma } from "@prisma/client";
 import { z } from "zod";
 import { requireAdminRole, requireStaff } from "../lib/auth";
 import { prisma } from "../lib/prisma";
@@ -38,6 +38,7 @@ const optionSchema = z.object({
   priceDelta: z.number().int().min(-10_000_000).max(10_000_000),
   portions: z.number().int().min(1).max(100),
   isActive: z.boolean(),
+  availability: z.nativeEnum(Availability).default("AVAILABLE"),
   sortOrder: z.number().int().min(0).max(1000),
 });
 
@@ -63,6 +64,7 @@ const productSchema = z.object({
     .refine((value) => parseDateOnly(value) !== null, "Use the format YYYY-MM-DD")
     .nullable(),
   dailyLimit: z.number().int().min(1).max(10_000).nullable(),
+  availability: z.nativeEnum(Availability).default("AVAILABLE"),
   isActive: z.boolean(),
   isNew: z.boolean(),
   sortOrder: z.number().int().min(0).max(1000),
@@ -223,22 +225,38 @@ adminProductsRouter.put("/products/:id", requireAdminRole, async (req, res) => {
   }
 });
 
-const stockSchema = productSchema.pick({ soldOutUntil: true, dailyLimit: true });
+const stockSchema = productSchema.pick({ soldOutUntil: true, dailyLimit: true, availability: true }).extend({
+  // Availability of each flavor or box size, by option id
+  options: z
+    .array(z.object({ id: z.number().int().positive(), availability: z.nativeEnum(Availability) }))
+    .max(40)
+    .default([]),
+});
 
-// PUT /api/admin/products/:id/stock - "sold out until" and "daily limit" only (allowed for staff)
+// PUT /api/admin/products/:id/stock - availability, "sold out until" and "daily limit" only (allowed for staff)
 adminProductsRouter.put("/products/:id/stock", async (req, res) => {
   const id = idParam.safeParse(req.params.id);
   const parsed = stockSchema.safeParse(req.body);
   if (!id.success) return badRequest(res);
   if (!parsed.success) return badRequest(res, parsed.error);
   try {
-    const product = await prisma.product.update({
-      where: { id: id.data },
-      data: {
-        soldOutUntil: parsed.data.soldOutUntil ? parseDateOnly(parsed.data.soldOutUntil) : null,
-        dailyLimit: parsed.data.dailyLimit,
-      },
-      include: productInclude,
+    const product = await prisma.$transaction(async (tx) => {
+      for (const option of parsed.data.options) {
+        // updateMany with productId so an option of another cake can't be changed through this one
+        await tx.productOption.updateMany({
+          where: { id: option.id, productId: id.data },
+          data: { availability: option.availability },
+        });
+      }
+      return tx.product.update({
+        where: { id: id.data },
+        data: {
+          soldOutUntil: parsed.data.soldOutUntil ? parseDateOnly(parsed.data.soldOutUntil) : null,
+          dailyLimit: parsed.data.dailyLimit,
+          availability: parsed.data.availability,
+        },
+        include: productInclude,
+      });
     });
     console.log(`Stock of ${product.slug} updated by ${req.admin!.email}`);
     res.json(toAdminProduct(product));

@@ -149,8 +149,28 @@ export async function createOrder(input: CreateOrderInput) {
       throw new OrderError("INVALID_PRODUCT", `Product ${item.productSlug} is not available`);
     }
 
+    const name = pickText(input.locale, product.nameVi, product.nameEn);
+    if (product.availability !== "AVAILABLE") {
+      throw new OrderError(
+        product.availability === "COMING_SOON" ? "PRODUCT_COMING_SOON" : "PRODUCT_UNAVAILABLE",
+        `${product.slug} can't be ordered right now`,
+        409,
+        name,
+      );
+    }
+
     const flavor = pickOption(product.options, OptionType.FLAVOR, item.flavorOptionId, product.slug);
     const packaging = pickOption(product.options, OptionType.PACKAGE, item.packageOptionId, product.slug);
+    for (const option of [flavor, packaging]) {
+      if (option && option.availability !== "AVAILABLE") {
+        throw new OrderError(
+          option.availability === "COMING_SOON" ? "PRODUCT_COMING_SOON" : "PRODUCT_UNAVAILABLE",
+          `${product.slug} option ${option.id} can't be ordered right now`,
+          409,
+          `${name} – ${pickText(input.locale, option.nameVi, option.nameEn)}`,
+        );
+      }
+    }
 
     const portionsPerUnit = packaging?.portions ?? 1;
     // unit price = (base price + flavor extra) * portions in the package + package adjustment

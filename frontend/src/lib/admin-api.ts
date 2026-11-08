@@ -228,6 +228,10 @@ export class AdminValidationError extends AdminApiError {
   }
 }
 
+// AVAILABLE can be ordered; SOLD_OUT and COMING_SOON are shown with a label but can't be ordered.
+export type AdminAvailability = "AVAILABLE" | "SOLD_OUT" | "COMING_SOON";
+export const AVAILABILITIES: AdminAvailability[] = ["AVAILABLE", "SOLD_OUT", "COMING_SOON"];
+
 export type AdminOption = {
   id?: number;
   type: "FLAVOR" | "PACKAGE";
@@ -236,6 +240,7 @@ export type AdminOption = {
   priceDelta: number;
   portions: number;
   isActive: boolean;
+  availability: AdminAvailability;
   sortOrder: number;
 };
 
@@ -263,6 +268,7 @@ export type AdminProductInput = {
   basePrice: number;
   soldOutUntil: string | null; // YYYY-MM-DD: no deliveries on or before this day
   dailyLimit: number | null; // most portions of this cake per day
+  availability: AdminAvailability;
   isActive: boolean;
   isNew: boolean;
   sortOrder: number;
@@ -368,7 +374,15 @@ export const adminApi = {
     request<AdminAccount[]>(`/accounts/${id}`, { method: "PUT", body: JSON.stringify(input) }),
   resetPassword: (id: number) =>
     request<TemporaryPasswordResult>(`/accounts/${id}/reset-password`, { method: "POST", body: "{}" }),
-  updateStock: (id: number, input: { soldOutUntil: string | null; dailyLimit: number | null }) =>
+  updateStock: (
+    id: number,
+    input: {
+      soldOutUntil: string | null;
+      dailyLimit: number | null;
+      availability: AdminAvailability;
+      options: { id: number; availability: AdminAvailability }[];
+    },
+  ) =>
     request<AdminProduct>(`/products/${id}/stock`, { method: "PUT", body: JSON.stringify(input) }),
   listOrders: (day: AdminDay, status?: AdminStatus) =>
     request<AdminOrderList>(`/orders?day=${day}${status ? `&status=${status}` : ""}`),

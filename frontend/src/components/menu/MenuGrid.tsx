@@ -3,6 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import type { Locale } from "@/i18n/config";
+import type { Availability } from "@/lib/api";
 import { ProductCard, type ProductCardLabels } from "../ProductCard";
 
 export type MenuItem = {
@@ -12,6 +13,7 @@ export type MenuItem = {
   isNew: boolean;
   soldOutUntil: string | null;
   soldCount: number | null;
+  availability: Availability;
   imageUrl: string | null;
   categorySlug: string;
   categoryName: string;
@@ -111,6 +113,7 @@ export function MenuGrid({ lang, items, labels, cardLabels }: Props) {
                 isNew={item.isNew}
                 soldOutUntil={item.soldOutUntil}
                 soldCount={item.soldCount}
+                availability={item.availability}
                 imageUrl={item.imageUrl}
                 labels={cardLabels}
                 actionLabel={labels.view}

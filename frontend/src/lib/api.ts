@@ -3,12 +3,16 @@ import { cacheLife } from "next/cache";
 import type { Locale } from "@/i18n/config";
 
 // Shapes returned by the backend API (see backend/src/routes/catalog.ts).
+
+// Only AVAILABLE can be ordered; the others are shown with a label.
+export type Availability = "AVAILABLE" | "SOLD_OUT" | "COMING_SOON";
 export type ProductOption = {
   id: number;
   type: "FLAVOR" | "PACKAGE";
   name: string;
   priceDelta: number;
   portions: number;
+  availability?: Availability;
 };
 
 export type Product = {
@@ -22,6 +26,7 @@ export type Product = {
   images: string[]; // all photos in display order
   basePrice: number;
   isNew: boolean;
+  availability?: Availability;
   soldOutUntil: string | null; // YYYY-MM-DD: can't be delivered on or before this day
   soldCount?: number | null; // portions sold, only when the shop shows it
   category: { slug: string; name: string };
@@ -129,6 +134,7 @@ export type HomeProduct = {
   name: string;
   price: number; // starting price in VND
   isNew: boolean;
+  availability?: Availability;
   imageUrl: string | null;
 };
 

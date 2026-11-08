@@ -9,6 +9,8 @@ import {
   adminApi,
   AdminApiError,
   AdminValidationError,
+  AVAILABILITIES,
+  type AdminAvailability,
   type AdminCategory,
   type AdminOption,
   type AdminProduct,
@@ -34,6 +36,7 @@ const EMPTY_PRODUCT: AdminProductInput = {
   basePrice: 0,
   soldOutUntil: null,
   dailyLimit: null,
+  availability: "AVAILABLE",
   isActive: true,
   isNew: false,
   sortOrder: 0,
@@ -56,10 +59,11 @@ function toInput(product: AdminProduct): AdminProductInput {
     basePrice: product.basePrice,
     soldOutUntil: product.soldOutUntil,
     dailyLimit: product.dailyLimit,
+    availability: product.availability,
     isActive: product.isActive,
     isNew: product.isNew,
     sortOrder: product.sortOrder,
-    options: product.options.map(({ id, type, nameVi, nameEn, priceDelta, portions, isActive, sortOrder }) => ({
+    options: product.options.map(({ id, type, nameVi, nameEn, priceDelta, portions, isActive, availability, sortOrder }) => ({
       id,
       type,
       nameVi,
@@ -67,6 +71,7 @@ function toInput(product: AdminProduct): AdminProductInput {
       priceDelta,
       portions,
       isActive,
+      availability,
       sortOrder,
     })),
   };
@@ -153,7 +158,7 @@ export function ProductEditor() {
             ...current,
             options: [
               ...current.options,
-              { type, nameVi: "", nameEn: "", priceDelta: 0, portions: 1, isActive: true, sortOrder: current.options.length + 1 },
+              { type, nameVi: "", nameEn: "", priceDelta: 0, portions: 1, isActive: true, availability: "AVAILABLE", sortOrder: current.options.length + 1 },
             ],
           }
         : current,
@@ -208,7 +213,7 @@ export function ProductEditor() {
 
   const optionRows = (rows: { o: AdminOption; i: number }[], kind: AdminOption["type"]) =>
     rows.map(({ o, i }) => (
-      <div key={o.id ?? `new-${i}`} className="grid grid-cols-2 items-end gap-2 border-b border-[#eeeeee] pb-3 md:grid-cols-[1fr_1fr_110px_90px_auto_auto]">
+      <div key={o.id ?? `new-${i}`} className="grid grid-cols-2 items-end gap-2 border-b border-[#eeeeee] pb-3 md:grid-cols-[1fr_1fr_110px_90px_140px_auto_auto]">
         <label className="flex flex-col gap-1 text-xs font-semibold">
           {e.optionNameVi}
           <input value={o.nameVi} onChange={(ev) => updateOption(i, { nameVi: ev.target.value })} className={inputClass(`options.${i}.nameVi`)} />
@@ -241,6 +246,20 @@ export function ProductEditor() {
         ) : (
           <span className="hidden md:block" />
         )}
+        <label className="flex flex-col gap-1 text-xs font-semibold">
+          {e.availability}
+          <select
+            value={o.availability}
+            onChange={(ev) => updateOption(i, { availability: ev.target.value as AdminAvailability })}
+            className={inputClass(`options.${i}.availability`)}
+          >
+            {AVAILABILITIES.map((value) => (
+              <option key={value} value={value}>
+                {t.availability[value]}
+              </option>
+            ))}
+          </select>
+        </label>
         <label className="flex h-11 items-center gap-2 text-sm font-semibold">
           <input type="checkbox" checked={o.isActive} onChange={(ev) => updateOption(i, { isActive: ev.target.checked })} className="h-5 w-5 accent-black" />
           {e.active}
@@ -342,6 +361,21 @@ export function ProductEditor() {
             />
           </label>
         </div>
+        <label className="flex max-w-sm flex-col gap-1.5 text-sm font-semibold">
+          {e.availabilityProduct}
+          <select
+            value={form.availability}
+            onChange={(ev) => update("availability", ev.target.value as AdminAvailability)}
+            className={inputClass("availability")}
+          >
+            {AVAILABILITIES.map((value) => (
+              <option key={value} value={value}>
+                {t.availability[value]}
+              </option>
+            ))}
+          </select>
+          <span className="text-xs font-normal text-muted">{e.availabilityHint}</span>
+        </label>
         <div className="flex flex-wrap gap-6">
           <label className="flex items-center gap-2.5 font-semibold">
             <input type="checkbox" checked={form.isActive} onChange={(ev) => update("isActive", ev.target.checked)} className="h-5 w-5 accent-black" />

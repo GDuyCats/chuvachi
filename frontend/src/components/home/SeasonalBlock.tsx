@@ -49,6 +49,7 @@ export function SeasonalBlock({ lang, season, labels, productLabels }: Props) {
                 name={product.name}
                 price={product.price}
                 isNew={product.isNew}
+                availability={product.availability}
                 imageUrl={product.imageUrl}
                 labels={productLabels}
                 actionLabel={labels.orderNow}

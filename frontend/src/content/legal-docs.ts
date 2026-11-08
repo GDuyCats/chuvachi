@@ -5,7 +5,7 @@ import type { Locale } from "@/i18n/config";
 // so they can be edited without touching code.
 
 // Must match PRIVACY_POLICY_VERSION in backend/src/lib/privacy.ts.
-export const POLICY_UPDATED = "2026-11-06";
+export const POLICY_UPDATED = "2026-11-08";
 
 export type LegalBlock = { p: string } | { list: string[] };
 export type LegalSection = { id: string; title: string; blocks: LegalBlock[] };

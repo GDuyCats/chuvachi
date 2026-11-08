@@ -851,6 +851,9 @@
     "viewOnShop": "Xem trên trang khách",
     "removePhoto": "Gỡ ảnh",
     "removePhotoConfirm": "Gỡ ảnh này? Ảnh bị xóa hẳn, phần chữ vẫn giữ.",
-    "photoRemoved": "Đã gỡ ảnh."
+    "photoRemoved": "Đã gỡ ảnh.",
+    "deleteForever": "Xóa hẳn",
+    "deleteForeverConfirm": "Xóa hẳn đánh giá này cùng ảnh và bình luận? Dùng khi khách yêu cầu xóa. Không lấy lại được.",
+    "deletedForever": "Đã xóa hẳn đánh giá."
   }
 }

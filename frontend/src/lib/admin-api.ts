@@ -411,6 +411,7 @@ export const adminApi = {
     request<{ ok: true }>(`/reviews/${id}/hide`, { method: "POST", body: JSON.stringify({ hidden }) }),
   hideReviewComment: (id: number, hidden: boolean) =>
     request<{ ok: true }>(`/reviews/comments/${id}/hide`, { method: "POST", body: JSON.stringify({ hidden }) }),
+  deleteReview: (id: number) => request<{ ok: true }>(`/reviews/${id}`, { method: "DELETE" }),
   removeReviewPhoto: (id: number, url: string) =>
     request<{ ok: true }>(`/reviews/${id}/photos/remove`, { method: "POST", body: JSON.stringify({ url }) }),
   removeCommentPhoto: (id: number) => request<{ ok: true }>(`/reviews/comments/${id}/photo/remove`, { method: "POST", body: "{}" }),

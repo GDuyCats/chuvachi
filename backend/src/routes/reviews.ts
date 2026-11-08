@@ -13,6 +13,7 @@ import {
   checkCanAddReviewPhoto,
   cleanText,
   COMMENT_PHOTO_FOLDER,
+  deleteOwnReview,
   deleteOwnComment,
   hasLink,
   productReviews,
@@ -183,6 +184,24 @@ reviewsRouter.post("/reviews", reviewLimiter, async (req, res) => {
     res
       .status(isNew ? 201 : 200)
       .json({ id: review.id, rating: review.rating, body: review.body, photos: review.photos });
+  } catch (error) {
+    fail(res, error);
+  }
+});
+
+// POST /api/reviews/delete  { code, phone?, productSlug } - the buyer deletes their review for good
+reviewsRouter.post("/reviews/delete", reviewLimiter, async (req, res) => {
+  const parsed = z
+    .object({ code: codeSchema, phone: phoneSchema.optional(), productSlug: z.string().trim().min(1).max(80) })
+    .safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "VALIDATION_ERROR" });
+    return;
+  }
+  try {
+    const customerId = await currentCustomerId(req);
+    await deleteOwnReview(parsed.data.code, parsed.data.phone ?? null, parsed.data.productSlug, customerId);
+    res.json({ ok: true });
   } catch (error) {
     fail(res, error);
   }

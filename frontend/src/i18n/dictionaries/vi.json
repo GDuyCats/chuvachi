@@ -462,7 +462,10 @@
         "Bình thường",
         "Ngon",
         "Rất ngon"
-      ]
+      ],
+      "delete": "Xóa đánh giá",
+      "deleteConfirm": "Xóa hẳn đánh giá này? Ảnh và bình luận bên dưới cũng bị xóa, không lấy lại được.",
+      "deletedDone": "Đã xóa đánh giá."
     },
     "errors": {
       "LINKS_NOT_ALLOWED": "Không được chèn đường link vào đánh giá hoặc bình luận.",

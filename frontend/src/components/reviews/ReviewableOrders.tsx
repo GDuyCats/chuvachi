@@ -60,6 +60,9 @@ export function ReviewableOrderBox({
               onSaved={(review) =>
                 setItems((list) => list.map((i) => (i.productSlug === item.productSlug ? { ...i, review } : i)))
               }
+              onDeleted={() =>
+                setItems((list) => list.map((i) => (i.productSlug === item.productSlug ? { ...i, review: null } : i)))
+              }
             />
           ))}
         </ul>
@@ -76,12 +79,14 @@ function ReviewItem({
   item,
   labels,
   onSaved,
+  onDeleted,
 }: {
   code: string;
   phone: string | null;
   item: Item;
   labels: Labels;
   onSaved: (review: NonNullable<Item["review"]>) => void;
+  onDeleted: () => void;
 }) {
   const [editing, setEditing] = useState(item.review === null);
   const [rating, setRating] = useState(item.review?.rating ?? 0);
@@ -105,6 +110,25 @@ function ReviewItem({
       setPhotos(saved.photos);
       setEditing(false);
       setMessage(labels.form.saved);
+    } catch (error) {
+      setMessage(errorText(labels, error));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function remove() {
+    if (!window.confirm(labels.form.deleteConfirm)) return;
+    setBusy(true);
+    setMessage(null);
+    try {
+      await reviewsApi.remove({ code, phone, productSlug: item.productSlug });
+      onDeleted();
+      setRating(0);
+      setBody("");
+      setPhotos([]);
+      setEditing(true);
+      setMessage(labels.form.deletedDone);
     } catch (error) {
       setMessage(errorText(labels, error));
     } finally {
@@ -161,6 +185,9 @@ function ReviewItem({
               <span className="text-xs font-bold uppercase tracking-wider">{labels.form.reviewed}</span>
               <button type="button" onClick={() => setEditing(true)} className="min-h-9 text-sm font-semibold underline">
                 {labels.form.edit}
+              </button>
+              <button type="button" onClick={remove} disabled={busy} className="min-h-9 text-sm text-muted underline disabled:opacity-50">
+                {labels.form.delete}
               </button>
             </div>
             {item.review.body && <p className="text-[15px]">{item.review.body}</p>}

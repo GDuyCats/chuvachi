@@ -15,6 +15,7 @@ import { normalizePhone, PHONE_PATTERN } from "../lib/phone";
 import { prisma } from "../lib/prisma";
 import { formatDateOnly } from "../lib/time";
 import { describeItem } from "../services/order-service";
+import { deleteCustomerReviewContent } from "../services/review-service";
 import { rateLimitKey } from "../lib/client-ip";
 
 export const accountRouter = Router();
@@ -153,7 +154,9 @@ accountRouter.put("/account/me", requireCustomer, async (req, res) => {
 
 // DELETE /api/account/me - the customer deletes their account.
 // Their orders stay (the shop needs them for its accounts) but are no longer linked to the account.
+// Their reviews, comments, votes and photos are deleted.
 accountRouter.delete("/account/me", requireCustomer, async (req, res) => {
+  await deleteCustomerReviewContent(req.customerId!);
   await prisma.$transaction([
     prisma.order.updateMany({ where: { customerId: req.customerId! }, data: { customerId: null } }),
     prisma.customer.delete({ where: { id: req.customerId! } }), // sessions are deleted with it

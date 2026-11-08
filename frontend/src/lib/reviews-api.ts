@@ -89,6 +89,12 @@ export const reviewsApi = {
       method: "POST",
       body: JSON.stringify({ ...input, phone: input.phone ?? undefined }),
     }),
+  // The buyer deletes their review for good (with its photos and comments).
+  remove: (input: { code: string; phone: string | null; productSlug: string }) =>
+    request<{ ok: true }>("/api/reviews/delete", {
+      method: "POST",
+      body: JSON.stringify({ ...input, phone: input.phone ?? undefined }),
+    }),
   // A photo for a review (only for someone who may review this cake of this order). Returns its URL.
   uploadReviewPhoto: async (file: File, target: { code: string; phone: string | null; productSlug: string }) => {
     const form = new FormData();

@@ -4,7 +4,7 @@ import { vietnamToday } from "./time";
 
 // Date of the privacy policy text customers currently agree to.
 // Change it whenever the policy pages change in a way that matters to customers.
-export const PRIVACY_POLICY_VERSION = "2026-11-06";
+export const PRIVACY_POLICY_VERSION = "2026-11-08";
 
 // What is left in place of the customer's details once they are erased.
 // Amounts, items and dates stay, because the shop needs them for its accounts.

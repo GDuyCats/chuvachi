@@ -851,6 +851,9 @@
     "viewOnShop": "See it on the shop",
     "removePhoto": "Remove photo",
     "removePhotoConfirm": "Remove this photo? It is deleted for good; the text stays.",
-    "photoRemoved": "Photo removed."
+    "photoRemoved": "Photo removed.",
+    "deleteForever": "Delete for good",
+    "deleteForeverConfirm": "Delete this review with its photos and comments for good? Use this when the customer asks. It can't be undone.",
+    "deletedForever": "Review deleted for good."
   }
 }

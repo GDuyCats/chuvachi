@@ -276,6 +276,15 @@ function ReviewRow({
               {r.keep}
             </button>
           )}
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm(r.deleteForeverConfirm)) void run(() => adminApi.deleteReview(review.id), r.deletedForever);
+            }}
+            className="min-h-10 px-3 text-sm font-semibold underline"
+          >
+            {r.deleteForever}
+          </button>
           <a href={`/${lang}/menu/${review.product.slug}#reviews`} target="_blank" rel="noopener" className="flex min-h-10 items-center px-2 text-sm font-semibold underline">
             {r.viewOnShop}
           </a>

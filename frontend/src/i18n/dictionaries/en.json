@@ -462,7 +462,10 @@
         "Okay",
         "Good",
         "Delicious"
-      ]
+      ],
+      "delete": "Delete review",
+      "deleteConfirm": "Delete this review for good? Its photos and the comments under it are deleted too and can't be restored.",
+      "deletedDone": "Review deleted."
     },
     "errors": {
       "LINKS_NOT_ALLOWED": "Links aren't allowed in reviews or comments.",

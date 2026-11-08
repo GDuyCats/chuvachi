@@ -188,6 +188,50 @@ export async function saveReview(input: ReviewInput, customerId: number | null) 
   return { review, isNew: !existing, productName: product.nameVi, addedPhotos };
 }
 
+// ---------- Deleting ----------
+
+// Photo files of these reviews and of all comments under them (deleted together with the reviews).
+async function photosOfReviews(reviewIds: number[]): Promise<string[]> {
+  if (reviewIds.length === 0) return [];
+  const [reviews, comments] = await Promise.all([
+    prisma.review.findMany({ where: { id: { in: reviewIds } }, select: { photos: true } }),
+    prisma.reviewComment.findMany({ where: { reviewId: { in: reviewIds }, photoUrl: { not: null } }, select: { photoUrl: true } }),
+  ]);
+  return [...reviews.flatMap((r) => r.photos), ...comments.flatMap((c) => (c.photoUrl ? [c.photoUrl] : []))];
+}
+
+// Deletes reviews for good, with their comments, votes, reports and photo files.
+export async function deleteReviews(reviewIds: number[]): Promise<number> {
+  const photos = await photosOfReviews(reviewIds);
+  const result = await prisma.review.deleteMany({ where: { id: { in: reviewIds } } });
+  await removePhotoFiles(photos);
+  return result.count;
+}
+
+// The buyer deletes their own review (no time limit, as long as they can still open the order).
+export async function deleteOwnReview(code: string, phone: string | null, productSlug: string, customerId: number | null) {
+  const order = await findOrder(code, phone, customerId);
+  const item = order.items.find((i) => i.product?.slug === productSlug);
+  const review = item?.product ? order.reviews.find((r) => r.productId === item.product?.id) : undefined;
+  if (!review) throw new ReviewError("NOT_FOUND", 404);
+  await deleteReviews([review.id]);
+}
+
+// Before an account is deleted: remove its reviews (with everything under them) and the photos of
+// its comments. The comments themselves are deleted together with the account.
+export async function deleteCustomerReviewContent(customerId: number): Promise<void> {
+  const reviews = await prisma.review.findMany({ where: { customerId }, select: { id: true } });
+  await deleteReviews(reviews.map((r) => r.id));
+  const comments = await prisma.reviewComment.findMany({
+    where: { customerId, photoUrl: { not: null } },
+    select: { id: true, photoUrl: true },
+  });
+  if (comments.length > 0) {
+    await prisma.reviewComment.updateMany({ where: { id: { in: comments.map((c) => c.id) } }, data: { photoUrl: null } });
+    await removePhotoFiles(comments.flatMap((c) => (c.photoUrl ? [c.photoUrl] : [])));
+  }
+}
+
 // A signed-in customer counts as a buyer of a cake once an order of theirs with it was delivered.
 async function isBuyer(customerId: number, productId: number): Promise<boolean> {
   const order = await prisma.order.findFirst({

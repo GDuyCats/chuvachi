@@ -3,7 +3,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { requireStaff } from "../lib/auth";
 import { prisma } from "../lib/prisma";
-import { cleanText, removePhotoFiles } from "../services/review-service";
+import { cleanText, deleteReviews, removePhotoFiles } from "../services/review-service";
 
 // Moderating reviews and comments (admins and staff): hide or show them, answer as the shop.
 export const adminReviewsRouter = Router();
@@ -135,6 +135,21 @@ adminReviewsRouter.post("/comments/:id/hide", async (req, res) => {
     return;
   }
   console.log(`Review comment ${id.data} ${parsed.data.hidden ? "hidden" : "shown"} by ${req.admin!.email}`);
+  res.json({ ok: true });
+});
+
+// DELETE /api/admin/reviews/:id - deletes a review for good (e.g. the customer asked for it)
+adminReviewsRouter.delete("/:id", async (req, res) => {
+  const id = idParam.safeParse(req.params.id);
+  if (!id.success) {
+    res.status(400).json({ error: "VALIDATION_ERROR" });
+    return;
+  }
+  if ((await deleteReviews([id.data])) === 0) {
+    res.status(404).json({ error: "NOT_FOUND" });
+    return;
+  }
+  console.log(`Review ${id.data} deleted by ${req.admin!.email}`);
   res.json({ ok: true });
 });
 

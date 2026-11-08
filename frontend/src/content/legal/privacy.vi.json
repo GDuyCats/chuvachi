@@ -20,6 +20,7 @@
             "Khi đặt hàng: họ tên, số điện thoại, khu vực và địa chỉ giao hàng, ghi chú bạn tự nhập.",
             "Nếu bạn tạo tài khoản bằng Google: tên, email và ảnh đại diện Google gửi cho tiệm (tiệm không bao giờ thấy mật khẩu), cùng thông tin giao hàng bạn tự lưu.",
             "Thông tin đơn hàng: món, số lượng, số tiền, thời gian giao và trạng thái thanh toán.",
+            "Khi bạn đánh giá hoặc bình luận: số sao, nội dung, ảnh bạn gửi kèm, cùng các lượt bình chọn và báo cáo của bạn.",
             "Thông tin kỹ thuật: địa chỉ IP của thiết bị, chỉ dùng tạm thời để chống gian lận và tấn công (ví dụ giới hạn số lần đặt hàng).",
             "Giỏ hàng và ngôn ngữ bạn chọn được lưu ngay trên trình duyệt của bạn và không gửi về tiệm cho tới khi bạn đặt hàng."
           ]
@@ -38,6 +39,7 @@
             "Làm bánh và giao đúng đơn, đúng địa chỉ, đúng giờ.",
             "Liên hệ với bạn về đơn hàng: xác nhận, giao hàng, xử lý sự cố.",
             "Cho bạn tra cứu đơn bằng mã đơn và số điện thoại.",
+            "Hiện đánh giá, bình luận và ảnh của bạn trên trang bánh để khách khác tham khảo.",
             "Giải quyết khiếu nại, làm lại bánh hoặc hoàn tiền.",
             "Bảo vệ website khỏi gian lận và tấn công."
           ]
@@ -69,6 +71,7 @@
             "Nhà cung cấp hạ tầng: máy chủ của Amazon Web Services (đặt tại Singapore) và dịch vụ bảo mật, lưu trữ ảnh của Cloudflare. Các bên này chỉ lưu trữ và xử lý kỹ thuật cho tiệm, không được dùng dữ liệu cho mục đích riêng.",
             "Telegram: nhân viên nhận thông báo đơn mới qua Telegram, chỉ gồm mã đơn, món, số tiền, giờ giao và khu vực; không có họ tên, số điện thoại hay địa chỉ.",
             "Google: chỉ để xác nhận đăng nhập khi bạn chọn đăng nhập bằng Google.",
+            "Mọi người xem website: đánh giá, bình luận và ảnh bạn gửi (xem mục \"Đánh giá, bình luận và ảnh\").",
             "Cơ quan nhà nước có thẩm quyền khi pháp luật yêu cầu."
           ]
         },
@@ -81,6 +84,32 @@
       ]
     },
     {
+      "id": "reviews",
+      "title": "Đánh giá, bình luận và ảnh",
+      "blocks": [
+        {
+          "p": "Đánh giá, bình luận và ảnh bạn gửi được hiện công khai trên trang bánh, ai vào website cũng xem được. Đi kèm là tên rút gọn (ví dụ \"Anh N.\"), vị bánh bạn đã mua và ngày viết. Tiệm không hiện số điện thoại, địa chỉ, email hay ảnh đại diện Google của bạn."
+        },
+        {
+          "p": "Trước khi lưu, ảnh được thu nhỏ và xóa thông tin vị trí (GPS) có trong ảnh. Bạn nên tránh chụp kèm thông tin cá nhân như địa chỉ trên hộp bánh, giấy tờ hay khuôn mặt người khác."
+        },
+        {
+          "p": "Bạn có thể tự sửa hoặc xóa:"
+        },
+        {
+          "list": [
+            "Đánh giá: ở trang Tra cứu đơn hoặc trang Tài khoản, bấm Sửa để bỏ bớt ảnh, chữ, hoặc bấm Xóa đánh giá để xóa hẳn. Bạn tự làm được trong 30 ngày sau ngày giao; sau thời gian đó, hãy liên hệ tiệm để xóa.",
+            "Bình luận: bấm Xóa ngay dưới bình luận của bạn, bất cứ lúc nào.",
+            "Khi đánh giá hoặc bình luận bị xóa, ảnh đi kèm cũng bị xóa khỏi nơi lưu trữ.",
+            "Khi bạn xóa tài khoản, mọi đánh giá, bình luận, ảnh và bình chọn gắn với tài khoản đó cũng bị xóa."
+          ]
+        },
+        {
+          "p": "Tiệm có thể ẩn hoặc gỡ những nội dung là spam, quảng cáo, thô lỗ hoặc làm lộ thông tin cá nhân của người khác."
+        }
+      ]
+    },
+    {
       "id": "retention",
       "title": "Thông tin được giữ bao lâu",
       "blocks": [
@@ -89,6 +118,9 @@
         },
         {
           "p": "Tài khoản được giữ cho tới khi bạn tự xóa ở trang Tài khoản. Khi xóa, tên, email, ảnh và thông tin giao hàng đã lưu bị xóa ngay; các đơn cũ không còn gắn với bạn."
+        },
+        {
+          "p": "Đánh giá, bình luận và ảnh được giữ cho tới khi bạn hoặc tiệm xóa. Khi thông tin giao hàng của đơn được tự động xóa, đánh giá vẫn ở lại với tên rút gọn; lúc đó muốn xóa, bạn liên hệ tiệm."
         }
       ]
     },

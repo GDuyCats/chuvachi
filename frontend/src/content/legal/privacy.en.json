@@ -20,6 +20,7 @@
             "When you order: your name, phone number, delivery area and address, and any note you write.",
             "If you create an account with Google: the name, email and profile photo Google sends us (we never see your password), plus the delivery details you choose to save.",
             "Order details: items, quantities, amounts, delivery time and payment status.",
+            "When you review or comment: your star rating, text, any photos you attach, and your votes and reports.",
             "Technical data: your device's IP address, used only briefly to prevent fraud and attacks (for example, limiting how often orders can be placed).",
             "Your cart and chosen language are stored in your own browser and are not sent to us until you place an order."
           ]
@@ -38,6 +39,7 @@
             "To make and deliver the right order to the right address at the right time.",
             "To contact you about your order: confirmation, delivery and any problems.",
             "To let you look up your order with your order code and phone number.",
+            "Show your reviews, comments and photos on the cake's page so other customers can learn from them.",
             "To handle complaints, remake cakes or give refunds.",
             "To protect the website from fraud and attacks."
           ]
@@ -69,6 +71,7 @@
             "Infrastructure providers: servers from Amazon Web Services (located in Singapore), and Cloudflare for security and photo storage. They only store and process data for us and may not use it for their own purposes.",
             "Telegram: staff get new-order alerts on Telegram containing only the order code, items, amount, delivery time and area; no name, phone number or address.",
             "Google: only to confirm your sign-in when you choose to sign in with Google.",
+            "Everyone visiting the website: the reviews, comments and photos you post (see \"Reviews, comments and photos\").",
             "Government authorities, when the law requires it."
           ]
         },
@@ -81,6 +84,32 @@
       ]
     },
     {
+      "id": "reviews",
+      "title": "Reviews, comments and photos",
+      "blocks": [
+        {
+          "p": "Reviews, comments and photos you post are public on the cake's page: anyone visiting the website can see them. They are shown with a short name (for example \"Anh N.\"), the flavor you bought and the date. We never show your phone number, address, email or Google profile photo."
+        },
+        {
+          "p": "Before a photo is stored, it is resized and any location (GPS) data in it is removed. Please avoid photographing personal details such as the address on the box, documents, or other people's faces."
+        },
+        {
+          "p": "You can edit or delete them yourself:"
+        },
+        {
+          "list": [
+            "Reviews: on the Track order page or your Account page, tap Edit to remove photos or text, or Delete review to delete it for good. You can do this yourself for 30 days after delivery; after that, contact us and we will delete it.",
+            "Comments: tap Delete under your comment, at any time.",
+            "When a review or comment is deleted, its photos are deleted from storage too.",
+            "When you delete your account, all reviews, comments, photos and votes linked to it are deleted as well."
+          ]
+        },
+        {
+          "p": "We may hide or remove content that is spam, advertising, abusive, or that exposes someone else's personal details."
+        }
+      ]
+    },
+    {
       "id": "retention",
       "title": "How long we keep it",
       "blocks": [
@@ -89,6 +118,9 @@
         },
         {
           "p": "Your account is kept until you delete it on the Account page. Deleting it immediately removes your name, email, photo and saved delivery details; past orders are no longer linked to you."
+        },
+        {
+          "p": "Reviews, comments and photos are kept until you or we delete them. When an order's delivery details are erased automatically, its review stays with the short name; to delete it then, contact us."
         }
       ]
     },

@@ -499,5 +499,23 @@
       "position": "{number}/{total}",
       "alt": "Customer photo of the cake"
     }
+  },
+  "push": {
+    "accountTitle": "Notifications on this device",
+    "accountText": "Get told when your order changes status and when someone answers your review or comment.",
+    "orderTitle": "Get notified about this order",
+    "orderText": "Hear right away when we confirm, make and deliver it, and when someone answers your review.",
+    "turnOn": "Turn on notifications",
+    "turnOff": "Turn off",
+    "working": "Turning on...",
+    "on": "On for this device.",
+    "orderOn": "Notifications are on for this order.",
+    "checking": "Checking...",
+    "unsupported": "This browser doesn't support notifications.",
+    "needsHomeScreen": "On iPhone: tap Share, choose \"Add to Home Screen\", open Chuvachi from the new icon and turn notifications on there.",
+    "blocked": "Notifications are blocked for this site. Allow them for chuvachi.com in your browser settings and try again.",
+    "dismissed": "Notifications weren't allowed.",
+    "notConfigured": "Notifications aren't set up yet. Please try again later.",
+    "failed": "Couldn't turn on notifications. Please try again."
   }
 }

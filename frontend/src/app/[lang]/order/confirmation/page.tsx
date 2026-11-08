@@ -17,7 +17,7 @@ export default async function ConfirmationPage({ params }: PageProps<"/[lang]/or
 
   return (
     <section className="mx-auto w-full max-w-6xl px-4 pb-20 pt-10 md:px-10 md:pt-16">
-      <ConfirmationView lang={lang} labels={dict.thanks} />
+      <ConfirmationView lang={lang} labels={dict.thanks} pushLabels={dict.push} />
     </section>
   );
 }

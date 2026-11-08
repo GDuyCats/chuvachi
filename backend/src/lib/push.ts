@@ -1,7 +1,7 @@
 import webpush from "web-push";
 import { prisma } from "./prisma";
 
-// Web push notifications to staff phones and computers (even when the admin page is closed).
+// Web push notifications to staff and customer phones and computers (even when the page is closed).
 // Needs VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY and VAPID_SUBJECT in the backend .env;
 // create the keys once with: npx web-push generate-vapid-keys
 
@@ -45,32 +45,47 @@ export function isAllowedPushEndpoint(endpoint: string): boolean {
   }
 }
 
-// Sends to every device of the given accounts (default: every active account).
+type Target = { id: number; endpoint: string; p256dh: string; auth: string };
+
+// Sends one message to one browser. "gone" means the browser dropped the subscription
+// (app removed, permission revoked), so the caller should forget it.
+// ttlSeconds: how long the push service keeps trying when the device is offline.
+export async function deliverPush(
+  target: Target,
+  message: PushMessage,
+  ttlSeconds = 60 * 60,
+): Promise<"sent" | "gone" | "failed"> {
+  if (!ensureConfigured()) return "failed";
+  try {
+    await webpush.sendNotification(
+      { endpoint: target.endpoint, keys: { p256dh: target.p256dh, auth: target.auth } },
+      JSON.stringify(message),
+      { TTL: ttlSeconds, urgency: "high" },
+    );
+    return "sent";
+  } catch (error) {
+    const status = (error as { statusCode?: number }).statusCode;
+    if (status === 404 || status === 410) return "gone";
+    console.error(`Push to subscription ${target.id} failed:`, status ?? (error instanceof Error ? error.message : error));
+    return "failed";
+  }
+}
+
+export function isPushConfigured(): boolean {
+  return ensureConfigured();
+}
+
+// Sends to every device of the given staff accounts (default: every active account).
 export async function sendPush(message: PushMessage, adminUserIds?: number[]): Promise<number> {
   if (!ensureConfigured()) return 0;
   const subscriptions = await prisma.adminPushSubscription.findMany({
     where: { adminUser: { isActive: true }, ...(adminUserIds ? { adminUserId: { in: adminUserIds } } : {}) },
   });
-
   const results = await Promise.all(
     subscriptions.map(async (subscription) => {
-      try {
-        await webpush.sendNotification(
-          { endpoint: subscription.endpoint, keys: { p256dh: subscription.p256dh, auth: subscription.auth } },
-          JSON.stringify(message),
-          { TTL: 60 * 60, urgency: "high" },
-        );
-        return true;
-      } catch (error) {
-        const status = (error as { statusCode?: number }).statusCode;
-        if (status === 404 || status === 410) {
-          // The browser dropped this subscription (app removed, permission revoked): forget it.
-          await prisma.adminPushSubscription.deleteMany({ where: { id: subscription.id } });
-        } else {
-          console.error(`Push to subscription ${subscription.id} failed:`, status ?? (error instanceof Error ? error.message : error));
-        }
-        return false;
-      }
+      const result = await deliverPush(subscription, message);
+      if (result === "gone") await prisma.adminPushSubscription.deleteMany({ where: { id: subscription.id } });
+      return result === "sent";
     }),
   );
   return results.filter(Boolean).length;

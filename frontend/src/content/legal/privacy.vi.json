@@ -21,6 +21,7 @@
             "Nếu bạn tạo tài khoản bằng Google: tên, email và ảnh đại diện Google gửi cho tiệm (tiệm không bao giờ thấy mật khẩu), cùng thông tin giao hàng bạn tự lưu.",
             "Thông tin đơn hàng: món, số lượng, số tiền, thời gian giao và trạng thái thanh toán.",
             "Khi bạn đánh giá hoặc bình luận: số sao, nội dung, ảnh bạn gửi kèm, cùng các lượt bình chọn và báo cáo của bạn.",
+            "Nếu bạn bật thông báo: địa chỉ nhận thông báo mà trình duyệt cấp cho máy của bạn (không phải số điện thoại hay email), ngôn ngữ, và đơn hàng bạn muốn theo dõi.",
             "Thông tin kỹ thuật: địa chỉ IP của thiết bị, chỉ dùng tạm thời để chống gian lận và tấn công (ví dụ giới hạn số lần đặt hàng).",
             "Giỏ hàng và ngôn ngữ bạn chọn được lưu ngay trên trình duyệt của bạn và không gửi về tiệm cho tới khi bạn đặt hàng."
           ]
@@ -40,6 +41,7 @@
             "Liên hệ với bạn về đơn hàng: xác nhận, giao hàng, xử lý sự cố.",
             "Cho bạn tra cứu đơn bằng mã đơn và số điện thoại.",
             "Hiện đánh giá, bình luận và ảnh của bạn trên trang bánh để khách khác tham khảo.",
+            "Gửi thông báo khi đơn đổi trạng thái và khi có người trả lời đánh giá, bình luận của bạn (chỉ khi bạn tự bật).",
             "Giải quyết khiếu nại, làm lại bánh hoặc hoàn tiền.",
             "Bảo vệ website khỏi gian lận và tấn công."
           ]
@@ -72,6 +74,7 @@
             "Telegram: nhân viên nhận thông báo đơn mới qua Telegram, chỉ gồm mã đơn, món, số tiền, giờ giao và khu vực; không có họ tên, số điện thoại hay địa chỉ.",
             "Google: chỉ để xác nhận đăng nhập khi bạn chọn đăng nhập bằng Google.",
             "Mọi người xem website: đánh giá, bình luận và ảnh bạn gửi (xem mục \"Đánh giá, bình luận và ảnh\").",
+            "Dịch vụ thông báo của trình duyệt (Google, Apple, Mozilla hoặc Microsoft): chuyển tin thông báo tới máy của bạn. Tin chỉ gồm mã đơn, tên bánh và tên rút gọn đã hiện công khai; không có số điện thoại hay địa chỉ.",
             "Cơ quan nhà nước có thẩm quyền khi pháp luật yêu cầu."
           ]
         },
@@ -121,6 +124,9 @@
         },
         {
           "p": "Đánh giá, bình luận và ảnh được giữ cho tới khi bạn hoặc tiệm xóa. Khi thông tin giao hàng của đơn được tự động xóa, đánh giá vẫn ở lại với tên rút gọn; lúc đó muốn xóa, bạn liên hệ tiệm."
+        },
+        {
+          "p": "Thông báo: khi bạn bấm Tắt, tiệm xóa ngay địa chỉ nhận thông báo của máy đó; nếu bạn chặn thông báo trong trình duyệt, địa chỉ đó bị xóa ở lần gửi kế tiếp. Với khách không có tài khoản, việc theo dõi một đơn tự dừng sau 45 ngày kể từ khi đơn xong."
         }
       ]
     },
@@ -167,6 +173,7 @@
           "list": [
             "Cookie ngôn ngữ: nhớ ngôn ngữ bạn chọn.",
             "Bộ nhớ trình duyệt: giỏ hàng và đơn vừa đặt (để hiện trang xác nhận).",
+            "Service worker: một tệp nhỏ của trang chỉ dùng để hiện thông báo khi bạn đã bật; không lưu trang hay theo dõi bạn.",
             "Tiệm không dùng cookie quảng cáo hay cookie theo dõi của bên thứ ba."
           ]
         }

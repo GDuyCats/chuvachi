@@ -21,6 +21,7 @@
             "If you create an account with Google: the name, email and profile photo Google sends us (we never see your password), plus the delivery details you choose to save.",
             "Order details: items, quantities, amounts, delivery time and payment status.",
             "When you review or comment: your star rating, text, any photos you attach, and your votes and reports.",
+            "If you turn on notifications: the notification address your browser creates for your device (not your phone number or email), your language, and the orders you follow.",
             "Technical data: your device's IP address, used only briefly to prevent fraud and attacks (for example, limiting how often orders can be placed).",
             "Your cart and chosen language are stored in your own browser and are not sent to us until you place an order."
           ]
@@ -40,6 +41,7 @@
             "To contact you about your order: confirmation, delivery and any problems.",
             "To let you look up your order with your order code and phone number.",
             "Show your reviews, comments and photos on the cake's page so other customers can learn from them.",
+            "Send notifications when your order changes status and when someone answers your review or comment (only if you turn them on).",
             "To handle complaints, remake cakes or give refunds.",
             "To protect the website from fraud and attacks."
           ]
@@ -72,6 +74,7 @@
             "Telegram: staff get new-order alerts on Telegram containing only the order code, items, amount, delivery time and area; no name, phone number or address.",
             "Google: only to confirm your sign-in when you choose to sign in with Google.",
             "Everyone visiting the website: the reviews, comments and photos you post (see \"Reviews, comments and photos\").",
+            "Your browser's notification service (Google, Apple, Mozilla or Microsoft): delivers notifications to your device. They contain only the order code, cake name and public short names; no phone number or address.",
             "Government authorities, when the law requires it."
           ]
         },
@@ -121,6 +124,9 @@
         },
         {
           "p": "Reviews, comments and photos are kept until you or we delete them. When an order's delivery details are erased automatically, its review stays with the short name; to delete it then, contact us."
+        },
+        {
+          "p": "Notifications: when you tap Turn off, we delete that device's notification address right away; if you block notifications in your browser, it is deleted the next time we try to send one. For guests without an account, following an order stops 45 days after it is finished."
         }
       ]
     },
@@ -167,6 +173,7 @@
           "list": [
             "Language cookie: remembers the language you chose.",
             "Browser storage: your cart and your latest order (to show the confirmation page).",
+            "Service worker: a small file of the website used only to show notifications once you turn them on; it doesn't store pages or track you.",
             "We don't use advertising cookies or third-party tracking cookies."
           ]
         }

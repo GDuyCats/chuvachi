@@ -1,6 +1,7 @@
 import { purgeExpiredSessions } from "../lib/auth";
 import { purgeExpiredCustomerSessions } from "../lib/customer-auth";
 import { eraseExpiredCustomerData } from "../lib/privacy";
+import { purgeOldOrderWatches } from "../services/customer-push";
 import { cancelUnpaidOrders } from "../services/order-admin-service";
 import { purgeOldPasswordResets } from "../routes/admin-password-reset";
 
@@ -27,6 +28,7 @@ export function startBackgroundJobs(): () => void {
       // Privacy: once an hour, erase customer details that are past the retention period.
       if (Date.now() - lastRetentionRun >= EVERY_HOUR) {
         lastRetentionRun = Date.now();
+        await purgeOldOrderWatches();
         const erased = await eraseExpiredCustomerData();
         if (erased > 0) {
           console.log(`Erased customer details from ${erased} old order(s).`);

@@ -3,6 +3,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { requireStaff } from "../lib/auth";
 import { prisma } from "../lib/prisma";
+import { notifyNewComment } from "../services/customer-push";
 import { cleanText, deleteReviews, removePhotoFiles } from "../services/review-service";
 
 // Moderating reviews and comments (admins and staff): hide or show them, answer as the shop.
@@ -224,8 +225,9 @@ adminReviewsRouter.post("/:id/reply", async (req, res) => {
     }
     parentId = parent.parentId ?? parent.id; // still only two levels
   }
-  await prisma.reviewComment.create({
+  const comment = await prisma.reviewComment.create({
     data: { reviewId: review.id, parentId, adminUserId: req.admin!.id, displayName: SHOP_NAME, body },
   });
+  void notifyNewComment(comment.id);
   res.status(201).json({ ok: true });
 });

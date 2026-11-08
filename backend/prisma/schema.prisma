@@ -244,6 +244,7 @@ model Order {
   items          OrderItem[]
   events         OrderEvent[]
   reviews        Review[]
+  pushWatches    OrderPushWatch[]
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
@@ -439,6 +440,7 @@ model Customer {
   reviewComments   ReviewComment[]
   reviewVotes      ReviewVote[]
   reviewReports    ReviewReport[]
+  pushSubscriptions CustomerPushSubscription[]
 }
 
 // A signed-in browser. The cookie holds a random token; only its SHA-256 hash is stored here.
@@ -540,4 +542,33 @@ model ReviewReport {
 
   @@unique([customerId, reviewId])
   @@unique([customerId, commentId])
+}
+
+// A customer's browser that gets push notifications: order status changes and replies to their
+// reviews or comments. Linked to an account when switched on while signed in.
+model CustomerPushSubscription {
+  id         Int              @id @default(autoincrement())
+  endpoint   String           @unique
+  p256dh     String
+  auth       String
+  locale     String           @default("vi")
+  customerId Int?
+  customer   Customer?        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  createdAt  DateTime         @default(now())
+  watches    OrderPushWatch[]
+
+  @@index([customerId])
+}
+
+// One order followed by a browser (used by guests who ordered without an account).
+model OrderPushWatch {
+  id             Int                      @id @default(autoincrement())
+  subscriptionId Int
+  subscription   CustomerPushSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  orderId        Int
+  order          Order                    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt      DateTime                 @default(now())
+
+  @@unique([subscriptionId, orderId])
+  @@index([orderId])
 }

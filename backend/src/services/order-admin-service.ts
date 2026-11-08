@@ -1,6 +1,7 @@
 import { CancelReason, OrderStatus, PaymentStatus, Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { formatDateOnly } from "../lib/time";
+import { notifyOrderChangeLater } from "./customer-push";
 import { notifyAutoCancelled } from "./notifications";
 
 // The normal path an order follows. Cancelling is possible from any step before "completed".
@@ -58,7 +59,7 @@ export async function advanceOrder(code: string, expectedStatus: OrderStatus, ad
     throw new OrderActionError("CANNOT_ADVANCE");
   }
 
-  return prisma.$transaction(async (tx) => {
+  const order = await prisma.$transaction(async (tx) => {
     // Confirming an order means the bank transfer has arrived.
     const data: Prisma.OrderUpdateManyMutationInput =
       expectedStatus === OrderStatus.PENDING ? { status: next, paymentStatus: PaymentStatus.PAID } : { status: next };
@@ -72,6 +73,8 @@ export async function advanceOrder(code: string, expectedStatus: OrderStatus, ad
     });
     return order;
   });
+  notifyOrderChangeLater([order.id]); // tell the customer, after the change is saved
+  return order;
 }
 
 async function cancelInTransaction(
@@ -101,8 +104,10 @@ async function cancelInTransaction(
   return order;
 }
 
-export function cancelOrder(code: string, expectedStatus: OrderStatus, adminUserId: number, details: CancelDetails) {
-  return prisma.$transaction((tx) => cancelInTransaction(tx, code, expectedStatus, "CANCEL", adminUserId, details));
+export async function cancelOrder(code: string, expectedStatus: OrderStatus, adminUserId: number, details: CancelDetails) {
+  const order = await prisma.$transaction((tx) => cancelInTransaction(tx, code, expectedStatus, "CANCEL", adminUserId, details));
+  notifyOrderChangeLater([order.id]);
+  return order;
 }
 
 // ---------- Cancel many orders at once ----------
@@ -132,9 +137,10 @@ export async function bulkCancel(filter: BulkFilter, adminUserId: number, detail
   const cancelled: typeof orders = [];
   for (const order of orders) {
     try {
-      await prisma.$transaction((tx) =>
+      const done = await prisma.$transaction((tx) =>
         cancelInTransaction(tx, order.code, order.status, "BULK_CANCEL", adminUserId, details),
       );
+      notifyOrderChangeLater([done.id]);
       cancelled.push(order);
     } catch (error) {
       if (!(error instanceof OrderActionError)) throw error;
@@ -145,7 +151,7 @@ export async function bulkCancel(filter: BulkFilter, adminUserId: number, detail
 
 // Records that money for a cancelled, paid order was sent back to the customer.
 export async function markRefunded(code: string, adminUserId: number) {
-  return prisma.$transaction(async (tx) => {
+  const order = await prisma.$transaction(async (tx) => {
     const updated = await tx.order.updateMany({
       where: { code, status: OrderStatus.CANCELLED, paymentStatus: PaymentStatus.PAID },
       data: { paymentStatus: PaymentStatus.REFUNDED },
@@ -157,6 +163,8 @@ export async function markRefunded(code: string, adminUserId: number) {
     await tx.orderEvent.create({ data: { orderId: order.id, action: "REFUND", adminUserId } });
     return order;
   });
+  notifyOrderChangeLater([order.id], "refunded");
+  return order;
 }
 
 // Cancels orders that are still unpaid after the allowed time and frees their portions.
@@ -175,9 +183,10 @@ export async function cancelUnpaidOrders(): Promise<number> {
   const cancelled: string[] = [];
   for (const { code } of overdue) {
     try {
-      await prisma.$transaction((tx) =>
+      const done = await prisma.$transaction((tx) =>
         cancelInTransaction(tx, code, OrderStatus.PENDING, "AUTO_CANCEL", null, { reason: CancelReason.UNPAID_TIMEOUT }),
       );
+      notifyOrderChangeLater([done.id]);
       cancelled.push(code);
     } catch (error) {
       // Staff confirmed it at the same moment: that's fine, skip it.

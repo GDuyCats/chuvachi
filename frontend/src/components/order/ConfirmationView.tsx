@@ -8,14 +8,16 @@ import { formatLongDate, formatSlot } from "@/lib/delivery-time";
 import { vietQrImageUrl } from "@/lib/banks";
 import { formatPrice } from "@/lib/format";
 import { loadLastOrder, type LastOrder } from "@/lib/last-order";
+import { OrderPushButton } from "../push/PushControls";
 import { Skeleton, SkeletonGroup } from "../Skeleton";
 
 type Props = {
   lang: Locale;
   labels: Dictionary["thanks"];
+  pushLabels: Dictionary["push"];
 };
 
-export function ConfirmationView({ lang, labels }: Props) {
+export function ConfirmationView({ lang, labels, pushLabels }: Props) {
   // undefined = still reading the browser storage, null = nothing to show
   const [order, setOrder] = useState<LastOrder | null | undefined>(undefined);
   const [copied, setCopied] = useState(false);
@@ -166,6 +168,8 @@ export function ConfirmationView({ lang, labels }: Props) {
           <p className="text-[13px] text-muted">{labels.shippingNote}</p>
         </div>
       </div>
+
+      <OrderPushButton lang={lang} code={order.code} phone={order.customerPhone ?? null} labels={pushLabels} />
 
       <div className="flex flex-wrap gap-3">
         <Link

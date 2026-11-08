@@ -499,5 +499,23 @@
       "position": "{number}/{total}",
       "alt": "Ảnh khách chụp bánh"
     }
+  },
+  "push": {
+    "accountTitle": "Thông báo trên máy này",
+    "accountText": "Báo khi đơn của bạn đổi trạng thái và khi có người trả lời đánh giá hoặc bình luận của bạn.",
+    "orderTitle": "Nhận thông báo cho đơn này",
+    "orderText": "Báo ngay khi tiệm xác nhận, làm bánh, giao bánh, và khi có người trả lời đánh giá của bạn.",
+    "turnOn": "Bật thông báo",
+    "turnOff": "Tắt",
+    "working": "Đang bật...",
+    "on": "Đã bật trên máy này.",
+    "orderOn": "Đã bật thông báo cho đơn này.",
+    "checking": "Đang kiểm tra...",
+    "unsupported": "Trình duyệt này không hỗ trợ thông báo.",
+    "needsHomeScreen": "Trên iPhone: bấm nút Chia sẻ, chọn \"Thêm vào MH chính\", mở Chuvachi từ biểu tượng mới rồi bật thông báo ở đó.",
+    "blocked": "Bạn đã chặn thông báo cho trang này. Vào cài đặt trình duyệt, cho phép thông báo từ chuvachi.com rồi thử lại.",
+    "dismissed": "Bạn chưa cho phép thông báo.",
+    "notConfigured": "Tiệm chưa bật thông báo. Vui lòng thử lại sau.",
+    "failed": "Không bật được thông báo. Vui lòng thử lại."
   }
 }

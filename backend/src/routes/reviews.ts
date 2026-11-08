@@ -6,6 +6,7 @@ import { currentCustomerId, requireCustomer } from "../lib/customer-auth";
 import { ImageError, receiveSingleImage, storeImage } from "../lib/image-upload";
 import { parseLocale } from "../lib/locale";
 import { isStorageConfigured } from "../lib/storage";
+import { notifyNewComment } from "../services/customer-push";
 import { notifyLowReview, notifyNewPhotos, notifyReported } from "../services/notifications";
 import {
   addComment,
@@ -261,6 +262,7 @@ reviewsRouter.post("/reviews/:id/comments", commentLimiter, requireCustomer, asy
     if (comment.photoUrl) {
       void notifyNewPhotos(null, 1).catch((e: unknown) => console.error("Photo alert failed:", e));
     }
+    void notifyNewComment(comment.id); // tell the review's author and the person being answered
     res.status(201).json(await reviewComments(id.data, req.customerId!));
   } catch (error) {
     fail(res, error);

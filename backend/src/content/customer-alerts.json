@@ -1,0 +1,84 @@
+{
+  "vi": {
+    "status": {
+      "CONFIRMED": {
+        "title": "Đơn {code} đã được xác nhận",
+        "body": "Tiệm đã nhận tiền và sẽ làm bánh đúng hẹn."
+      },
+      "PREPARING": {
+        "title": "Bánh đơn {code} đang được làm",
+        "body": "Tiệm đang chuẩn bị bánh cho bạn."
+      },
+      "READY": {
+        "title": "Bánh đơn {code} đã xong",
+        "body": "Đang chờ tài xế đến lấy và giao cho bạn."
+      },
+      "COMPLETED": {
+        "title": "Đơn {code} đã giao",
+        "body": "Chúc bạn ngon miệng! Chấm sao và gửi ảnh bánh giúp tiệm nhé."
+      },
+      "CANCELLED": {
+        "title": "Đơn {code} đã bị hủy",
+        "body": "Bấm để xem lý do."
+      },
+      "REFUNDED": {
+        "title": "Đã hoàn tiền đơn {code}",
+        "body": "Tiệm đã chuyển lại tiền cho bạn, bạn kiểm tra ngân hàng nhé."
+      }
+    },
+    "reviewReply": {
+      "title": "{name} đã bình luận đánh giá của bạn",
+      "body": "{product}: {text}"
+    },
+    "commentReply": {
+      "title": "{name} đã trả lời bình luận của bạn",
+      "body": "{product}: {text}"
+    },
+    "photo": "(ảnh)",
+    "welcome": {
+      "title": "Chuvachi",
+      "body": "Đã bật thông báo trên máy này."
+    }
+  },
+  "en": {
+    "status": {
+      "CONFIRMED": {
+        "title": "Order {code} is confirmed",
+        "body": "We received your payment and will make your cakes on time."
+      },
+      "PREPARING": {
+        "title": "Order {code} is being made",
+        "body": "We're preparing your cakes."
+      },
+      "READY": {
+        "title": "Order {code} is ready",
+        "body": "Waiting for the driver to pick it up and bring it to you."
+      },
+      "COMPLETED": {
+        "title": "Order {code} was delivered",
+        "body": "Enjoy! Please rate the cakes and share a photo."
+      },
+      "CANCELLED": {
+        "title": "Order {code} was cancelled",
+        "body": "Tap to see why."
+      },
+      "REFUNDED": {
+        "title": "Order {code} was refunded",
+        "body": "We sent your money back; please check your bank."
+      }
+    },
+    "reviewReply": {
+      "title": "{name} commented on your review",
+      "body": "{product}: {text}"
+    },
+    "commentReply": {
+      "title": "{name} replied to your comment",
+      "body": "{product}: {text}"
+    },
+    "photo": "(photo)",
+    "welcome": {
+      "title": "Chuvachi",
+      "body": "Notifications are on for this device."
+    }
+  }
+}

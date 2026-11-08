@@ -4,6 +4,7 @@
 import type { PlaceOrderResult } from "./public-api";
 
 export type LastOrder = PlaceOrderResult & {
+  customerPhone?: string; // lets this tab turn on notifications for the order (proves it is theirs)
   deliveryZoneName: string;
   items: { name: string; quantity: number; lineTotal: number }[];
 };

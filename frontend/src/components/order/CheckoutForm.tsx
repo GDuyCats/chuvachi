@@ -203,6 +203,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
 
       saveLastOrder({
         ...result,
+        customerPhone: phone.trim(),
         deliveryZoneName: settings.deliveryZones.find((z) => String(z.id) === zoneId)?.name ?? "",
         items: lines.map((l) => ({
           name: [l.name, l.detail].filter(Boolean).join(" · "),

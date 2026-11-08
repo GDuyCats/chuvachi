@@ -28,6 +28,7 @@ async function eraseOrders(where: Prisma.OrderWhereInput, action: string, adminU
     const ids = orders.map((o) => o.id);
     await tx.order.updateMany({ where: { id: { in: ids } }, data: { ...ERASED, anonymizedAt: new Date() } });
     await tx.orderItem.updateMany({ where: { orderId: { in: ids } }, data: { note: null } });
+    await tx.orderPushWatch.deleteMany({ where: { orderId: { in: ids } } }); // browsers stop following these orders
     await tx.orderEvent.createMany({ data: ids.map((orderId) => ({ orderId, action, adminUserId })) });
     return ids.length;
   });

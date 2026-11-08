@@ -8,6 +8,7 @@ import { formatLongDate, formatSlot } from "@/lib/delivery-time";
 import { formatPrice } from "@/lib/format";
 import { ApiError, fetchOrder, type OrderLookup, type OrderStatus } from "@/lib/public-api";
 import { Skeleton, SkeletonGroup } from "../Skeleton";
+import { OrderPushButton } from "../push/PushControls";
 import { ReviewableOrderBox } from "../reviews/ReviewableOrders";
 import { reviewsApi, type ReviewableOrder } from "@/lib/reviews-api";
 import { TURNSTILE_ENABLED, TurnstileWidget } from "./TurnstileWidget";
@@ -17,6 +18,7 @@ type Props = {
   labels: Dictionary["track"];
   cancelReasons: Dictionary["cancelReasons"];
   reviewLabels: Dictionary["reviews"];
+  pushLabels: Dictionary["push"];
 };
 
 const STEPS: Exclude<OrderStatus, "CANCELLED">[] = ["PENDING", "CONFIRMED", "PREPARING", "READY", "COMPLETED"];
@@ -33,7 +35,7 @@ function formatTime(iso: string, locale: Locale): string {
   }).format(new Date(iso));
 }
 
-export function TrackOrder({ lang, labels, cancelReasons, reviewLabels }: Props) {
+export function TrackOrder({ lang, labels, cancelReasons, reviewLabels, pushLabels }: Props) {
   const searchParams = useSearchParams();
   // The confirmation page links here with ?code=... ; the phone number is never put in the URL.
   const [code, setCode] = useState(() => (searchParams.get("code") ?? "").toUpperCase());
@@ -139,6 +141,9 @@ export function TrackOrder({ lang, labels, cancelReasons, reviewLabels }: Props)
         result?.kind === "found" && (
           <>
             <OrderDetails lang={lang} labels={labels} cancelReasons={cancelReasons} order={result.order} />
+            {result.order.status !== "CANCELLED" && (
+              <OrderPushButton lang={lang} code={result.order.code} phone={lookupPhone} labels={pushLabels} />
+            )}
             {result.order.status === "COMPLETED" && (
               <TrackReviews lang={lang} code={result.order.code} phone={lookupPhone} labels={reviewLabels} />
             )}

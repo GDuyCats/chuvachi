@@ -15,6 +15,7 @@ import {
   type StaffCancelReason,
 } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
+import { useAdminMe } from "./AdminShell";
 import { AdminRowsSkeleton } from "./AdminSkeletons";
 import { BulkCancelPanel } from "./BulkCancelPanel";
 import { useToast } from "./Toast";
@@ -307,6 +308,7 @@ type DetailProps = {
 };
 
 function OrderDetail({ order, onClose, onAction, formatTime }: DetailProps) {
+  const isAdmin = useAdminMe()?.role === "ADMIN"; // erasing customer data is for admins only
   const { t, lang } = useAdminI18n();
   const [busy, setBusy] = useState(false);
   const [confirmingCancel, setConfirmingCancel] = useState(false);
@@ -443,7 +445,7 @@ function OrderDetail({ order, onClose, onAction, formatTime }: DetailProps) {
             {t.orders.actions.refund}
           </button>
         )}
-        {!canCancel && !order.erased && !confirmingErase && (
+        {isAdmin && !canCancel && !order.erased && !confirmingErase && (
           <button
             type="button"
             onClick={() => setConfirmingErase(true)}

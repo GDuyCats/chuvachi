@@ -6,7 +6,7 @@ import { ProductEditor } from "@/components/admin/ProductEditor";
 // /admin/products/edit?id=3     -> edit product 3
 export default function AdminProductEditPage() {
   return (
-    <AdminShell>
+    <AdminShell adminOnly>
       {/* The editor reads ?id=... from the URL, so it renders inside a Suspense boundary. */}
       <Suspense>
         <ProductEditor />

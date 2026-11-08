@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { adminApi, AdminApiError } from "@/lib/admin-api";
 import { AdminLanguageSwitch, useAdminI18n } from "./AdminI18n";
+import { PasswordInput } from "./PasswordInput";
 
 export function LoginForm() {
   const router = useRouter();
@@ -54,9 +55,8 @@ export function LoginForm() {
           </label>
           <label className="flex flex-col gap-1.5 text-sm font-semibold">
             {t.login.password}
-            <input
+            <PasswordInput
               required
-              type="password"
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

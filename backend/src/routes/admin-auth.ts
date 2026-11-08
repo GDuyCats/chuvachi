@@ -5,9 +5,12 @@ import {
   clearSessionCookie,
   createSession,
   deleteSession,
+  deleteSessionsOf,
+  hashPassword,
   LOCK_MINUTES,
   MAX_FAILED_LOGINS,
-  requireAdmin,
+  MIN_PASSWORD_LENGTH,
+  requireSession,
   SESSION_COOKIE,
   setSessionCookie,
   spendPasswordCheckTime,
@@ -69,10 +72,20 @@ adminAuthRouter.post("/login", loginLimiter, async (req, res) => {
     return;
   }
 
-  await prisma.adminUser.update({ where: { id: admin.id }, data: { failedLogins: 0, lockedUntil: null } });
+  await prisma.adminUser.update({
+    where: { id: admin.id },
+    data: { failedLogins: 0, lockedUntil: null, lastLoginAt: new Date() },
+  });
   const { token, expiresAt } = await createSession(admin.id);
   setSessionCookie(res, token, expiresAt);
-  res.json({ name: admin.name, email: admin.email, expiresAt: expiresAt.toISOString() });
+  res.json({
+    id: admin.id,
+    name: admin.name,
+    email: admin.email,
+    role: admin.role,
+    mustChangePassword: admin.mustChangePassword,
+    expiresAt: expiresAt.toISOString(),
+  });
 });
 
 // POST /api/admin/logout
@@ -86,6 +99,50 @@ adminAuthRouter.post("/logout", async (req, res) => {
 });
 
 // GET /api/admin/me - who is signed in (used by the admin pages to check the session)
-adminAuthRouter.get("/me", requireAdmin, (req, res) => {
+adminAuthRouter.get("/me", requireSession, (req, res) => {
   res.json(req.admin);
+});
+
+const passwordLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  keyGenerator: rateLimitKey,
+  message: { error: "TOO_MANY_REQUESTS" },
+});
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1).max(200),
+  newPassword: z.string().min(MIN_PASSWORD_LENGTH).max(200),
+});
+
+// POST /api/admin/me/password - change your own password (also used to replace a temporary one).
+// Every other browser signed in to this account is signed out; this one stays signed in.
+adminAuthRouter.post("/me/password", passwordLimiter, requireSession, async (req, res) => {
+  const parsed = changePasswordSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "PASSWORD_TOO_SHORT" });
+    return;
+  }
+  const { currentPassword, newPassword } = parsed.data;
+
+  const account = await prisma.adminUser.findUniqueOrThrow({ where: { id: req.admin!.id } });
+  if (!(await verifyPassword(account.passwordHash, currentPassword))) {
+    res.status(400).json({ error: "WRONG_CURRENT_PASSWORD" });
+    return;
+  }
+  if (newPassword === currentPassword) {
+    res.status(400).json({ error: "SAME_PASSWORD" });
+    return;
+  }
+
+  await prisma.adminUser.update({
+    where: { id: account.id },
+    data: { passwordHash: await hashPassword(newPassword), mustChangePassword: false },
+  });
+  const token = req.cookies?.[SESSION_COOKIE] as string;
+  await deleteSessionsOf(account.id, token);
+  console.log(`Password changed by ${account.email}`);
+  res.json({ ...req.admin, mustChangePassword: false });
 });

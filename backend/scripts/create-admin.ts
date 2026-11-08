@@ -1,4 +1,5 @@
-// Creates an admin account, or resets the password of an existing one.
+// Creates an ADMIN account, or resets the password of an existing one (for when every admin
+// has forgotten their password). Staff accounts are made in the admin pages instead.
 // Run from the backend folder:  yarn create-admin
 // The password is typed in hidden and is never shown or saved in plain text.
 
@@ -56,13 +57,13 @@ async function main(): Promise<void> {
     await prisma.$transaction([
       prisma.adminUser.update({
         where: { id: existing.id },
-        data: { passwordHash, isActive: true, failedLogins: 0, lockedUntil: null },
+        data: { passwordHash, isActive: true, mustChangePassword: false, failedLogins: 0, lockedUntil: null },
       }),
       prisma.adminSession.deleteMany({ where: { adminUserId: existing.id } }),
     ]);
     console.log(`Password updated for ${email}.`);
   } else {
-    await prisma.adminUser.create({ data: { email, name, passwordHash } });
+    await prisma.adminUser.create({ data: { email, name, passwordHash, role: "ADMIN" } });
     console.log(`Admin account created for ${email}.`);
   }
 }

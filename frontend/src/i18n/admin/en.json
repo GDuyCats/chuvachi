@@ -7,7 +7,8 @@
     "orders": "Orders",
     "settings": "Settings",
     "products": "Products",
-    "home": "Homepage"
+    "home": "Homepage",
+    "accounts": "Accounts"
   },
   "login": {
     "title": "Staff sign in",
@@ -322,7 +323,14 @@
     },
     "loading": "Loading products...",
     "soldOutUntil": "Sold out to {date}",
-    "limit": "Max {count}/day"
+    "limit": "Max {count}/day",
+    "stock": {
+      "title": "Availability",
+      "save": "Save",
+      "saved": "Saved. The shop updates within a few minutes.",
+      "staffHint": "Staff can only change Sold out and Daily limit. Ask an admin to change prices, photos or names.",
+      "unlimited": "No limit"
+    }
   },
   "close": "Close",
   "images": {
@@ -436,5 +444,85 @@
     "on": "Alerts on",
     "off": "Turn on alerts",
     "resume": "Tap to enable sound"
-  }
+  },
+  "changePassword": "Change password",
+  "roles": {
+    "ADMIN": "Admin",
+    "STAFF": "Staff"
+  },
+  "noAccess": {
+    "title": "This page is for admins only",
+    "body": "Staff accounts can use the Orders tab and the Sold out / Daily limit controls in Products. Ask an admin for anything else."
+  },
+  "password": {
+    "title": "Change password",
+    "forcedTitle": "Set a new password first",
+    "forcedHint": "You signed in with a temporary password from an admin. Choose your own password; after that, not even the admin knows it.",
+    "current": "Current password",
+    "currentTemp": "Temporary password from the admin",
+    "new": "New password (at least 12 characters)",
+    "repeat": "Repeat the new password",
+    "hint": "A short sentence is easy to remember, e.g. best-flan-in-district-3. Don't reuse your email or bank password.",
+    "save": "Save new password",
+    "saving": "Saving...",
+    "saved": "Password changed. Other devices signed in to this account were signed out.",
+    "errors": {
+      "TOO_SHORT": "The new password needs at least 12 characters.",
+      "MISMATCH": "The two new passwords don't match.",
+      "WRONG_CURRENT_PASSWORD": "The current password is wrong.",
+      "SAME_PASSWORD": "The new password must be different from the old one.",
+      "TOO_MANY_REQUESTS": "Too many attempts. Please wait 15 minutes.",
+      "UNKNOWN": "Something went wrong. Please try again."
+    }
+  },
+  "accounts": {
+    "title": "Accounts",
+    "hint": "Admins can use everything. Staff can only use the Orders tab (except erasing customer data) and Sold out / Daily limit in Products.",
+    "loading": "Loading accounts...",
+    "loadError": "Couldn't load the accounts. Please reload the page.",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "status": "Status",
+    "lastLogin": "Last sign-in",
+    "never": "Never signed in",
+    "you": "(you)",
+    "active": "Active",
+    "inactive": "Switched off",
+    "locked": "Locked for 15 minutes",
+    "pendingPassword": "Temporary password not changed yet",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saved": "Account saved.",
+    "turnOff": "Switch off",
+    "turnOn": "Switch on",
+    "turnOffHint": "A switched-off account can't sign in and is signed out right away. Order history keeps this person's name.",
+    "reset": "Reset password",
+    "resetConfirm": "Create a new temporary password for {name}? The old password stops working and they are signed out everywhere.",
+    "yesReset": "Reset",
+    "no": "No",
+    "create": {
+      "title": "Add an account",
+      "submit": "Create account",
+      "creating": "Creating..."
+    },
+    "temp": {
+      "title": "Temporary password for {name}",
+      "hint": "Shown only once. Give it to this person directly (in person or a private message), not in a group chat. They must set a new password at their first sign-in.",
+      "login": "Sign in at: chuvachi.com/admin",
+      "copy": "Copy",
+      "copied": "Copied",
+      "done": "Handed over, hide it"
+    },
+    "errors": {
+      "EMAIL_TAKEN": "This email already has an account.",
+      "CANNOT_CHANGE_SELF": "You can't switch off, demote or reset your own account. Change your own password with Change password in the black bar.",
+      "LAST_ADMIN": "At least one active admin must remain.",
+      "VALIDATION_ERROR": "Check the name and email.",
+      "UNKNOWN": "Something went wrong. Please try again."
+    }
+  },
+  "showPassword": "Show password",
+  "hidePassword": "Hide password"
 }

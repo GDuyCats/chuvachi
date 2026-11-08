@@ -13,6 +13,7 @@ import { adminSettingsRouter } from "./routes/admin-settings";
 import { adminProductsRouter } from "./routes/admin-products";
 import { adminUploadsRouter } from "./routes/admin-uploads";
 import { adminHomeRouter } from "./routes/admin-home";
+import { adminAccountsRouter } from "./routes/admin-accounts";
 import { homeRouter } from "./routes/home";
 import { accountRouter } from "./routes/account";
 import { shopInfoRouter } from "./routes/shop-info";
@@ -49,6 +50,7 @@ app.use("/api/admin", adminAuthRouter);
 app.use("/api/admin/orders", adminOrdersRouter);
 app.use("/api/admin", adminProductsRouter);
 app.use("/api/admin/uploads", adminUploadsRouter);
+app.use("/api/admin/accounts", adminAccountsRouter);
 app.use("/api/admin", adminHomeRouter);
 app.use("/api/admin", adminSettingsRouter);
 

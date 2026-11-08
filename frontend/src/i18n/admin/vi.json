@@ -7,7 +7,8 @@
     "orders": "Đơn hàng",
     "settings": "Cài đặt",
     "products": "Sản phẩm",
-    "home": "Trang chủ"
+    "home": "Trang chủ",
+    "accounts": "Tài khoản"
   },
   "login": {
     "title": "Đăng nhập nhân viên",
@@ -322,7 +323,14 @@
     },
     "loading": "Đang tải danh sách bánh...",
     "soldOutUntil": "Tạm hết đến {date}",
-    "limit": "Tối đa {count}/ngày"
+    "limit": "Tối đa {count}/ngày",
+    "stock": {
+      "title": "Tình trạng bánh",
+      "save": "Lưu",
+      "saved": "Đã lưu. Trang khách cập nhật trong vài phút.",
+      "staffHint": "Nhân viên chỉ chỉnh được Tạm hết và Tối đa mỗi ngày. Muốn đổi giá, ảnh hay tên bánh thì nhờ admin.",
+      "unlimited": "Không giới hạn"
+    }
   },
   "close": "Đóng",
   "images": {
@@ -436,5 +444,85 @@
     "on": "Đang bật báo đơn",
     "off": "Bật báo đơn",
     "resume": "Bấm để bật âm thanh"
-  }
+  },
+  "changePassword": "Đổi mật khẩu",
+  "roles": {
+    "ADMIN": "Admin",
+    "STAFF": "Nhân viên"
+  },
+  "noAccess": {
+    "title": "Trang này chỉ dành cho admin",
+    "body": "Tài khoản nhân viên dùng được tab Đơn hàng và phần Tạm hết / Tối đa mỗi ngày ở tab Sản phẩm. Cần đổi gì khác thì nhờ admin."
+  },
+  "password": {
+    "title": "Đổi mật khẩu",
+    "forcedTitle": "Đặt mật khẩu mới trước khi dùng",
+    "forcedHint": "Bạn đang dùng mật khẩu tạm do admin đưa. Hãy đặt mật khẩu của riêng bạn; sau đó admin cũng không biết mật khẩu này.",
+    "current": "Mật khẩu hiện tại",
+    "currentTemp": "Mật khẩu tạm admin đưa",
+    "new": "Mật khẩu mới (ít nhất 12 ký tự)",
+    "repeat": "Nhập lại mật khẩu mới",
+    "hint": "Nên dùng một câu dễ nhớ, ví dụ: banh-flan-ngon-nhat-quan-3. Đừng dùng lại mật khẩu email hay ngân hàng.",
+    "save": "Lưu mật khẩu mới",
+    "saving": "Đang lưu...",
+    "saved": "Đã đổi mật khẩu. Các máy khác đang đăng nhập tài khoản này đã bị đăng xuất.",
+    "errors": {
+      "TOO_SHORT": "Mật khẩu mới phải có ít nhất 12 ký tự.",
+      "MISMATCH": "Hai lần nhập mật khẩu mới không giống nhau.",
+      "WRONG_CURRENT_PASSWORD": "Mật khẩu hiện tại không đúng.",
+      "SAME_PASSWORD": "Mật khẩu mới phải khác mật khẩu cũ.",
+      "TOO_MANY_REQUESTS": "Thử quá nhiều lần. Vui lòng đợi 15 phút.",
+      "UNKNOWN": "Có lỗi xảy ra. Vui lòng thử lại."
+    }
+  },
+  "accounts": {
+    "title": "Tài khoản",
+    "hint": "Admin dùng được mọi thứ. Nhân viên chỉ dùng được tab Đơn hàng (trừ xóa thông tin khách) và Tạm hết / Tối đa mỗi ngày ở tab Sản phẩm.",
+    "loading": "Đang tải tài khoản...",
+    "loadError": "Không tải được danh sách tài khoản. Vui lòng tải lại trang.",
+    "name": "Tên",
+    "email": "Email",
+    "role": "Vai trò",
+    "status": "Trạng thái",
+    "lastLogin": "Đăng nhập gần nhất",
+    "never": "Chưa đăng nhập",
+    "you": "(bạn)",
+    "active": "Đang dùng",
+    "inactive": "Đã tắt",
+    "locked": "Đang bị khóa 15 phút",
+    "pendingPassword": "Chưa đổi mật khẩu tạm",
+    "edit": "Sửa",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "saved": "Đã lưu tài khoản.",
+    "turnOff": "Tắt tài khoản",
+    "turnOn": "Bật lại",
+    "turnOffHint": "Tài khoản bị tắt không đăng nhập được và bị đăng xuất ngay. Lịch sử đơn vẫn giữ tên người này.",
+    "reset": "Đặt lại mật khẩu",
+    "resetConfirm": "Tạo mật khẩu tạm mới cho {name}? Mật khẩu cũ hết dùng được và người này bị đăng xuất ở mọi máy.",
+    "yesReset": "Đặt lại",
+    "no": "Không",
+    "create": {
+      "title": "Thêm tài khoản",
+      "submit": "Tạo tài khoản",
+      "creating": "Đang tạo..."
+    },
+    "temp": {
+      "title": "Mật khẩu tạm của {name}",
+      "hint": "Chỉ hiện một lần. Đưa trực tiếp cho người này (nói hoặc nhắn riêng), đừng gửi vào nhóm chat. Lần đăng nhập đầu họ phải đặt mật khẩu mới.",
+      "login": "Đăng nhập tại: chuvachi.com/admin",
+      "copy": "Sao chép",
+      "copied": "Đã sao chép",
+      "done": "Đã đưa xong, ẩn đi"
+    },
+    "errors": {
+      "EMAIL_TAKEN": "Email này đã có tài khoản.",
+      "CANNOT_CHANGE_SELF": "Bạn không thể tự tắt, tự hạ quyền hay tự đặt lại mật khẩu của mình. Đổi mật khẩu của bạn ở nút Đổi mật khẩu trên thanh đen.",
+      "LAST_ADMIN": "Phải còn ít nhất một admin đang dùng.",
+      "VALIDATION_ERROR": "Kiểm tra lại tên và email.",
+      "UNKNOWN": "Có lỗi xảy ra. Vui lòng thử lại."
+    }
+  },
+  "showPassword": "Hiện mật khẩu",
+  "hidePassword": "Ẩn mật khẩu"
 }

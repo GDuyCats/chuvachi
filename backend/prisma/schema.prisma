@@ -322,17 +322,26 @@ model ShopSetting {
 
 // ---------- Admin ----------
 
+// ADMIN: everything, including settings and accounts. STAFF: orders and stock only.
+enum AdminRole {
+  ADMIN
+  STAFF
+}
+
 model AdminUser {
-  id           Int            @id @default(autoincrement())
-  email        String         @unique
-  passwordHash String         // argon2id hash, never the password itself
-  name         String
-  isActive     Boolean        @default(true) // switch off instead of deleting, so the history stays
-  failedLogins Int            @default(0)
-  lockedUntil  DateTime?      // set after too many wrong passwords
-  createdAt    DateTime       @default(now())
-  sessions     AdminSession[]
-  orderEvents  OrderEvent[]
+  id                 Int            @id @default(autoincrement())
+  email              String         @unique
+  passwordHash       String         // argon2id hash, never the password itself
+  name               String
+  role               AdminRole      @default(ADMIN) // accounts made before roles existed belong to the owner
+  mustChangePassword Boolean        @default(false) // true after a temporary password was handed out
+  isActive           Boolean        @default(true) // switch off instead of deleting, so the history stays
+  failedLogins       Int            @default(0)
+  lockedUntil        DateTime?      // set after too many wrong passwords
+  lastLoginAt        DateTime?
+  createdAt          DateTime       @default(now())
+  sessions           AdminSession[]
+  orderEvents        OrderEvent[]
 }
 
 // A signed-in browser. The cookie holds a random token; only its SHA-256 hash is stored here.

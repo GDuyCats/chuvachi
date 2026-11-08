@@ -1,4 +1,5 @@
-import { createHash, randomBytes } from "crypto";
+import { createHash, randomBytes, randomInt } from "crypto";
+import type { AdminRole } from "@prisma/client";
 import type { NextFunction, Request, Response } from "express";
 import { hash, verify } from "@node-rs/argon2";
 import { prisma } from "./prisma";
@@ -65,7 +66,13 @@ export function clearSessionCookie(res: Response): void {
   res.clearCookie(SESSION_COOKIE, { path: "/api/admin" });
 }
 
-export type AdminContext = { id: number; name: string; email: string };
+export type AdminContext = {
+  id: number;
+  name: string;
+  email: string;
+  role: AdminRole;
+  mustChangePassword: boolean;
+};
 
 declare module "express-serve-static-core" {
   interface Request {
@@ -73,12 +80,12 @@ declare module "express-serve-static-core" {
   }
 }
 
-// Protects admin routes: continues only for a valid, unexpired session of an active admin.
-export async function requireAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
+// Finds the signed-in account for this request, or answers 401 and returns null.
+async function loadSession(req: Request, res: Response): Promise<AdminContext | null> {
   const token: unknown = req.cookies?.[SESSION_COOKIE];
   if (typeof token !== "string" || token.length === 0) {
     res.status(401).json({ error: "UNAUTHORIZED" });
-    return;
+    return null;
   }
 
   const session = await prisma.adminSession.findUnique({
@@ -91,11 +98,64 @@ export async function requireAdmin(req: Request, res: Response, next: NextFuncti
     }
     clearSessionCookie(res);
     res.status(401).json({ error: "UNAUTHORIZED" });
-    return;
+    return null;
   }
 
-  req.admin = { id: session.adminUser.id, name: session.adminUser.name, email: session.adminUser.email };
+  const user = session.adminUser;
+  return { id: user.id, name: user.name, email: user.email, role: user.role, mustChangePassword: user.mustChangePassword };
+}
+
+// Any signed-in account, even one that still has to replace its temporary password.
+// Only for "who am I", "change my password" and similar routes.
+export async function requireSession(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const admin = await loadSession(req, res);
+  if (!admin) return;
+  req.admin = admin;
   next();
+}
+
+// Any signed-in account (admin or staff) that has set its own password.
+export async function requireStaff(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const admin = await loadSession(req, res);
+  if (!admin) return;
+  if (admin.mustChangePassword) {
+    res.status(403).json({ error: "PASSWORD_CHANGE_REQUIRED" });
+    return;
+  }
+  req.admin = admin;
+  next();
+}
+
+// Use after requireStaff: only accounts with the ADMIN role may continue.
+export function requireAdminRole(req: Request, res: Response, next: NextFunction): void {
+  if (req.admin?.role !== "ADMIN") {
+    res.status(403).json({ error: "FORBIDDEN" });
+    return;
+  }
+  next();
+}
+
+// A one-time password the admin hands to a person; they must replace it at the next sign-in.
+// Letters and digits that are easy to read aloud (no 0/O, 1/l/I), in groups like "k7mp-x3qr-9fta".
+const TEMP_ALPHABET = "abcdefghjkmnpqrstuvwxyz23456789";
+export function generateTemporaryPassword(): string {
+  const groups: string[] = [];
+  for (let g = 0; g < 3; g += 1) {
+    let group = "";
+    for (let i = 0; i < 4; i += 1) group += TEMP_ALPHABET[randomInt(TEMP_ALPHABET.length)];
+    groups.push(group);
+  }
+  return groups.join("-");
+}
+
+// Signs an account out everywhere, optionally keeping the browser that made the change.
+export async function deleteSessionsOf(adminUserId: number, exceptToken?: string): Promise<void> {
+  await prisma.adminSession.deleteMany({
+    where: {
+      adminUserId,
+      ...(exceptToken ? { NOT: { tokenHash: sha256(exceptToken) } } : {}),
+    },
+  });
 }
 
 // Removes expired sessions from the database (called by the background job).

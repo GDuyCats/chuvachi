@@ -3,12 +3,12 @@ import { Router, type NextFunction, type Request, type Response } from "express"
 import rateLimit from "express-rate-limit";
 import multer from "multer";
 import sharp from "sharp";
-import { requireAdmin } from "../lib/auth";
+import { requireAdminRole, requireStaff } from "../lib/auth";
 import { isStorageConfigured, putImage } from "../lib/storage";
 import { rateLimitKey } from "../lib/client-ip";
 
 export const adminUploadsRouter = Router();
-adminUploadsRouter.use(requireAdmin);
+adminUploadsRouter.use(requireStaff, requireAdminRole);
 
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024; // 8 MB, enough for a phone photo
 // What can be uploaded: product photos and the wide homepage banner.

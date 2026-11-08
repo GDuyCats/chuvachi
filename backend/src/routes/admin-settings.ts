@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { z } from "zod";
-import { requireAdmin } from "../lib/auth";
+import { requireAdminRole, requireStaff } from "../lib/auth";
 import { prisma } from "../lib/prisma";
 import { isTelegramConfigured, sendTelegram } from "../lib/telegram";
 import { clockToMinutes, formatDateOnly, parseDateOnly, vietnamToday } from "../lib/time";
 
 export const adminSettingsRouter = Router();
-adminSettingsRouter.use(requireAdmin);
+// Admins only. The paths are listed because this router shares /api/admin with other routers.
+adminSettingsRouter.use(["/settings", "/zones", "/capacity", "/telegram"], requireStaff, requireAdminRole);
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const CAPACITY_DAYS = 14;

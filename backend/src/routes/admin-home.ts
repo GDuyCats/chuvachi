@@ -1,13 +1,14 @@
 import { Router, type Response } from "express";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
-import { requireAdmin } from "../lib/auth";
+import { requireAdminRole, requireStaff } from "../lib/auth";
 import { prisma } from "../lib/prisma";
 import { deleteImageByUrl, isOwnImageUrl } from "../lib/storage";
 import { formatDateOnly, parseDateOnly } from "../lib/time";
 
 export const adminHomeRouter = Router();
-adminHomeRouter.use(requireAdmin);
+// Admins only. The paths are listed because this router shares /api/admin with other routers.
+adminHomeRouter.use(["/home", "/seasons", "/coming-soon"], requireStaff, requireAdminRole);
 
 // ---------- Validation ----------
 

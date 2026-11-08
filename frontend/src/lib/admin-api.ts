@@ -79,7 +79,35 @@ export type AdminOrderList = {
   orders: AdminOrder[];
 };
 
-export type AdminMe = { id: number; name: string; email: string };
+export type AdminRole = "ADMIN" | "STAFF";
+
+export type AdminMe = {
+  id: number;
+  name: string;
+  email: string;
+  role: AdminRole;
+  mustChangePassword: boolean; // signed in with a temporary password
+};
+
+export type AdminAccount = {
+  id: number;
+  email: string;
+  name: string;
+  role: AdminRole;
+  isActive: boolean;
+  mustChangePassword: boolean;
+  locked: boolean;
+  lockedUntil: string | null;
+  lastLoginAt: string | null;
+  createdAt: string;
+};
+
+// Shown to the admin once, right after creating an account or resetting its password.
+export type TemporaryPasswordResult = {
+  account: AdminAccount;
+  temporaryPassword: string;
+  accounts: AdminAccount[];
+};
 
 export class AdminApiError extends Error {
   constructor(
@@ -274,6 +302,17 @@ export const adminApi = {
     request<AdminMe>("/login", { method: "POST", body: JSON.stringify({ email, password }) }),
   logout: () => request<{ ok: true }>("/logout", { method: "POST", body: "{}" }),
   me: () => request<AdminMe>("/me"),
+  changePassword: (currentPassword: string, newPassword: string) =>
+    request<AdminMe>("/me/password", { method: "POST", body: JSON.stringify({ currentPassword, newPassword }) }),
+  listAccounts: () => request<AdminAccount[]>("/accounts"),
+  createAccount: (input: { email: string; name: string; role: AdminRole }) =>
+    request<TemporaryPasswordResult>("/accounts", { method: "POST", body: JSON.stringify(input) }),
+  updateAccount: (id: number, input: { name: string; role: AdminRole; isActive: boolean }) =>
+    request<AdminAccount[]>(`/accounts/${id}`, { method: "PUT", body: JSON.stringify(input) }),
+  resetPassword: (id: number) =>
+    request<TemporaryPasswordResult>(`/accounts/${id}/reset-password`, { method: "POST", body: "{}" }),
+  updateStock: (id: number, input: { soldOutUntil: string | null; dailyLimit: number | null }) =>
+    request<AdminProduct>(`/products/${id}/stock`, { method: "PUT", body: JSON.stringify(input) }),
   listOrders: (day: AdminDay, status?: AdminStatus) =>
     request<AdminOrderList>(`/orders?day=${day}${status ? `&status=${status}` : ""}`),
   advance: (code: string, expectedStatus: AdminStatus) =>

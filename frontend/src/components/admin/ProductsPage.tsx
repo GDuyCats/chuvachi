@@ -5,13 +5,16 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { formatPrice } from "@/lib/format";
 import { adminApi, AdminApiError, type AdminCategory, type AdminProduct } from "@/lib/admin-api";
+import { useAdminMe } from "./AdminShell";
 import { useAdminI18n } from "./AdminI18n";
 import { AdminCardsSkeleton } from "./AdminSkeletons";
 import { useToast } from "./Toast";
 
 export function ProductsPage() {
   const router = useRouter();
-  const { t, lang } = useAdminI18n();
+  const { t } = useAdminI18n();
+  const me = useAdminMe();
+  const isAdmin = me?.role === "ADMIN";
   const p = t.products;
   const [products, setProducts] = useState<AdminProduct[] | null>(null);
   const [categories, setCategories] = useState<AdminCategory[]>([]);
@@ -46,68 +49,157 @@ export function ProductsPage() {
     <div className="flex flex-col gap-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-3xl uppercase md:text-[40px]">{p.title}</h1>
-        <Link href="/admin/products/edit" className="flex min-h-11 items-center bg-black px-5 font-bold text-white">
-          {p.newProduct}
-        </Link>
+        {isAdmin && (
+          <Link href="/admin/products/edit" className="flex min-h-11 items-center bg-black px-5 font-bold text-white">
+            {p.newProduct}
+          </Link>
+        )}
       </div>
+      {!isAdmin && <p className="-mt-4 text-sm text-muted">{p.stock.staffHint}</p>}
 
       {products.length === 0 ? (
         <p className="border border-dashed border-[#a8a8a8] bg-white p-7 text-center text-muted">{p.empty}</p>
       ) : (
         <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {products.map((product) => {
-            const flavorCount = product.options.filter((o) => o.type === "FLAVOR" && o.isActive).length;
-            return (
+          {products.map((product) =>
+            isAdmin ? (
               <li key={product.id}>
                 <Link
                   href={`/admin/products/edit?id=${product.id}`}
                   className={`flex gap-4 border bg-white p-4 hover:border-black ${product.isActive ? "border-[#e0e0e0]" : "border-dashed border-[#a8a8a8] opacity-70"}`}
                 >
-                  <div className="flex h-20 w-20 shrink-0 items-center justify-center bg-surface text-[11px] text-muted">
-                    {product.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element -- small admin thumbnail
-                      <img src={product.imageUrl} alt="" className="h-full w-full object-cover" />
-                    ) : (
-                      "—"
-                    )}
-                  </div>
-                  <div className="flex min-w-0 flex-1 flex-col gap-1">
-                    <span className="text-xs font-bold uppercase tracking-wider text-muted">
-                      {lang === "vi" ? product.category.nameVi : product.category.nameEn}
-                    </span>
-                    <span className="font-bold">{lang === "vi" ? product.nameVi : product.nameEn}</span>
-                    <span className="text-sm">
-                      {p.from} {formatPrice(product.basePrice, lang)}
-                      {flavorCount > 0 ? ` · ${p.flavors.replace("{count}", String(flavorCount))}` : ""}
-                    </span>
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {product.isNew && (
-                        <span className="bg-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">{p.new}</span>
-                      )}
-                      {product.soldOutUntil && (
-                        <span className="border border-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
-                          {p.soldOutUntil.replace("{date}", product.soldOutUntil)}
-                        </span>
-                      )}
-                      {product.dailyLimit && (
-                        <span className="border border-[#a8a8a8] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted">
-                          {p.limit.replace("{count}", String(product.dailyLimit))}
-                        </span>
-                      )}
-                      {!product.isActive && (
-                        <span className="border border-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">{p.hidden}</span>
-                      )}
-                    </div>
-                  </div>
+                  <ProductSummary product={product} />
                   <span className="self-center text-sm font-semibold underline">{p.edit}</span>
                 </Link>
               </li>
-            );
-          })}
+            ) : (
+              <li
+                key={product.id}
+                className={`flex flex-col gap-4 border bg-white p-4 ${product.isActive ? "border-[#e0e0e0]" : "border-dashed border-[#a8a8a8] opacity-70"}`}
+              >
+                <div className="flex gap-4">
+                  <ProductSummary product={product} />
+                </div>
+                <StockEditor
+                  product={product}
+                  onSaved={(saved) => setProducts((list) => list?.map((item) => (item.id === saved.id ? saved : item)) ?? null)}
+                />
+              </li>
+            ),
+          )}
         </ul>
       )}
 
-      <CategoriesSection categories={categories} onChanged={load} />
+      {isAdmin && <CategoriesSection categories={categories} onChanged={load} />}
+    </div>
+  );
+}
+
+function ProductSummary({ product }: { product: AdminProduct }) {
+  const { t, lang } = useAdminI18n();
+  const p = t.products;
+  const flavorCount = product.options.filter((o) => o.type === "FLAVOR" && o.isActive).length;
+  return (
+    <>
+      <div className="flex h-20 w-20 shrink-0 items-center justify-center bg-surface text-[11px] text-muted">
+        {product.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element -- small admin thumbnail
+          <img src={product.imageUrl} alt="" className="h-full w-full object-cover" />
+        ) : (
+          "—"
+        )}
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <span className="text-xs font-bold uppercase tracking-wider text-muted">
+          {lang === "vi" ? product.category.nameVi : product.category.nameEn}
+        </span>
+        <span className="font-bold">{lang === "vi" ? product.nameVi : product.nameEn}</span>
+        <span className="text-sm">
+          {p.from} {formatPrice(product.basePrice, lang)}
+          {flavorCount > 0 ? ` · ${p.flavors.replace("{count}", String(flavorCount))}` : ""}
+        </span>
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {product.isNew && (
+            <span className="bg-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">{p.new}</span>
+          )}
+          {product.soldOutUntil && (
+            <span className="border border-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+              {p.soldOutUntil.replace("{date}", product.soldOutUntil)}
+            </span>
+          )}
+          {product.dailyLimit && (
+            <span className="border border-[#a8a8a8] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted">
+              {p.limit.replace("{count}", String(product.dailyLimit))}
+            </span>
+          )}
+          {!product.isActive && (
+            <span className="border border-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">{p.hidden}</span>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
+// Staff view: only "sold out until" and "daily limit" can be changed.
+function StockEditor({ product, onSaved }: { product: AdminProduct; onSaved: (product: AdminProduct) => void }) {
+  const router = useRouter();
+  const toast = useToast();
+  const { t } = useAdminI18n();
+  const e = t.products.editor;
+  const [soldOutUntil, setSoldOutUntil] = useState(product.soldOutUntil ?? "");
+  const [dailyLimit, setDailyLimit] = useState(product.dailyLimit ? String(product.dailyLimit) : "");
+  const [busy, setBusy] = useState(false);
+
+  const limitNumber = dailyLimit.trim() === "" ? null : Number(dailyLimit);
+  const limitValid = limitNumber === null || (Number.isInteger(limitNumber) && limitNumber >= 1);
+
+  async function save() {
+    setBusy(true);
+    try {
+      onSaved(await adminApi.updateStock(product.id, { soldOutUntil: soldOutUntil || null, dailyLimit: limitNumber }));
+      toast.success(t.products.stock.saved);
+    } catch (error) {
+      if (error instanceof AdminApiError && error.status === 401) {
+        router.replace("/admin/login");
+        return;
+      }
+      toast.error(error instanceof AdminApiError && error.code === "VALIDATION_ERROR" ? e.invalid : e.unknownError);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const cell = "h-11 w-full border-[1.5px] border-black bg-white px-3 text-[15px] font-normal";
+
+  return (
+    <div className="grid grid-cols-1 items-end gap-3 border-t border-[#eeeeee] pt-3 sm:grid-cols-[1fr_1fr_auto]">
+      <label className="flex flex-col gap-1.5 text-xs font-semibold">
+        {e.soldOutUntil}
+        <div className="flex gap-1">
+          <input type="date" value={soldOutUntil} onChange={(ev) => setSoldOutUntil(ev.target.value)} className={cell} />
+          {soldOutUntil && (
+            <button type="button" onClick={() => setSoldOutUntil("")} className="px-2 text-xs font-semibold underline">
+              {e.clear}
+            </button>
+          )}
+        </div>
+      </label>
+      <label className="flex flex-col gap-1.5 text-xs font-semibold">
+        {e.dailyLimit}
+        <input
+          type="number"
+          min={1}
+          inputMode="numeric"
+          placeholder={t.products.stock.unlimited}
+          value={dailyLimit}
+          onChange={(ev) => setDailyLimit(ev.target.value)}
+          className={cell}
+        />
+      </label>
+      <button type="button" disabled={busy || !limitValid} onClick={save} className="h-11 bg-black px-5 text-sm font-bold text-white disabled:opacity-50">
+        {t.products.stock.save}
+      </button>
     </div>
   );
 }

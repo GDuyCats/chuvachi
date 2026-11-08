@@ -1,14 +1,15 @@
 import { Router } from "express";
 import { OrderStatus, PaymentStatus, Prisma } from "@prisma/client";
 import { z } from "zod";
-import { requireAdmin } from "../lib/auth";
+import { requireAdminRole, requireStaff } from "../lib/auth";
 import { prisma } from "../lib/prisma";
 import { formatDateOnly, parseDateOnly, vietnamToday } from "../lib/time";
 import { eraseCustomerOnRequest, EraseError } from "../lib/privacy";
 import { advanceOrder, bulkCancel, cancelOrder, findOrdersToCancel, markRefunded, OrderActionError } from "../services/order-admin-service";
 
 export const adminOrdersRouter = Router();
-adminOrdersRouter.use(requireAdmin);
+// Staff and admins both handle orders; erasing customer data is for admins only.
+adminOrdersRouter.use(requireStaff);
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -247,7 +248,7 @@ adminOrdersRouter.post("/:code/refund", async (req, res) => {
 // POST /api/admin/orders/:code/erase-customer
 // The customer asked us to delete their data: erases name, phone and address from all of their
 // finished orders. Refused while one of their orders is still running.
-adminOrdersRouter.post("/:code/erase-customer", async (req, res) => {
+adminOrdersRouter.post("/:code/erase-customer", requireAdminRole, async (req, res) => {
   const code = codeSchema.safeParse(String(req.params.code).toUpperCase());
   if (!code.success) {
     res.status(400).json({ error: "VALIDATION_ERROR" });

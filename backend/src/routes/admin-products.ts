@@ -1,13 +1,14 @@
 import { Router, type Response } from "express";
 import { OptionType, Prisma } from "@prisma/client";
 import { z } from "zod";
-import { requireAdmin } from "../lib/auth";
+import { requireAdminRole, requireStaff } from "../lib/auth";
 import { prisma } from "../lib/prisma";
 import { deleteImageByUrl, isOwnImageUrl } from "../lib/storage";
 import { formatDateOnly, parseDateOnly } from "../lib/time";
 
 export const adminProductsRouter = Router();
-adminProductsRouter.use(requireAdmin);
+// Staff may read products and change stock (sold out, daily limit); everything else is for admins.
+adminProductsRouter.use(["/products", "/categories"], requireStaff);
 
 // ---------- Validation ----------
 
@@ -167,7 +168,7 @@ adminProductsRouter.get("/products/:id", async (req, res) => {
 });
 
 // POST /api/admin/products
-adminProductsRouter.post("/products", async (req, res) => {
+adminProductsRouter.post("/products", requireAdminRole, async (req, res) => {
   const parsed = productSchema.safeParse(req.body);
   if (!parsed.success) return badRequest(res, parsed.error);
   try {
@@ -188,7 +189,7 @@ adminProductsRouter.post("/products", async (req, res) => {
 });
 
 // PUT /api/admin/products/:id
-adminProductsRouter.put("/products/:id", async (req, res) => {
+adminProductsRouter.put("/products/:id", requireAdminRole, async (req, res) => {
   const id = idParam.safeParse(req.params.id);
   const parsed = productSchema.safeParse(req.body);
   if (!id.success) return badRequest(res);
@@ -222,6 +223,34 @@ adminProductsRouter.put("/products/:id", async (req, res) => {
   }
 });
 
+const stockSchema = productSchema.pick({ soldOutUntil: true, dailyLimit: true });
+
+// PUT /api/admin/products/:id/stock - "sold out until" and "daily limit" only (allowed for staff)
+adminProductsRouter.put("/products/:id/stock", async (req, res) => {
+  const id = idParam.safeParse(req.params.id);
+  const parsed = stockSchema.safeParse(req.body);
+  if (!id.success) return badRequest(res);
+  if (!parsed.success) return badRequest(res, parsed.error);
+  try {
+    const product = await prisma.product.update({
+      where: { id: id.data },
+      data: {
+        soldOutUntil: parsed.data.soldOutUntil ? parseDateOnly(parsed.data.soldOutUntil) : null,
+        dailyLimit: parsed.data.dailyLimit,
+      },
+      include: productInclude,
+    });
+    console.log(`Stock of ${product.slug} updated by ${req.admin!.email}`);
+    res.json(toAdminProduct(product));
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+      res.status(404).json({ error: "NOT_FOUND" });
+      return;
+    }
+    throw error;
+  }
+});
+
 // ---------- Categories ----------
 
 // GET /api/admin/categories
@@ -234,7 +263,7 @@ adminProductsRouter.get("/categories", async (_req, res) => {
 });
 
 // POST /api/admin/categories
-adminProductsRouter.post("/categories", async (req, res) => {
+adminProductsRouter.post("/categories", requireAdminRole, async (req, res) => {
   const parsed = categorySchema.safeParse(req.body);
   if (!parsed.success) return badRequest(res, parsed.error);
   try {
@@ -249,7 +278,7 @@ adminProductsRouter.post("/categories", async (req, res) => {
 });
 
 // PUT /api/admin/categories/:id
-adminProductsRouter.put("/categories/:id", async (req, res) => {
+adminProductsRouter.put("/categories/:id", requireAdminRole, async (req, res) => {
   const id = idParam.safeParse(req.params.id);
   const parsed = categorySchema.safeParse(req.body);
   if (!id.success) return badRequest(res);

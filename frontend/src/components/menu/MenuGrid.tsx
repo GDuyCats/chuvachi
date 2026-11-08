@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Availability } from "@/lib/api";
 import { ProductCard, type ProductCardLabels } from "../ProductCard";
@@ -56,6 +56,12 @@ export function MenuGrid({ lang, items, labels, cardLabels }: Props) {
 
   const requested = searchParams.get("category") ?? ALL;
   const [active, setActive] = useState(filters.some((f) => f.id === requested) ? requested : ALL);
+  const requestedIsKnown = filters.some((f) => f.id === requested);
+
+  // Follow the address when it changes while on this page (e.g. a category picked in the search box).
+  useEffect(() => {
+    setActive(requestedIsKnown ? requested : ALL);
+  }, [requested, requestedIsKnown]);
 
   function choose(id: string) {
     setActive(id);

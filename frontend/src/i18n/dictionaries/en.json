@@ -348,5 +348,56 @@
   },
   "pause": {
     "title": "We're not taking orders right now"
+  },
+  "search": {
+    "open": "Search",
+    "placeholder": "Search cakes, flavors, categories...",
+    "close": "Close",
+    "hint": "Type a cake, a flavor (e.g. strawberry, matcha), a category or what you need (e.g. delivery, track order).",
+    "nothing": "Nothing found for “{query}”. Try another word, or browse the menu.",
+    "from": "From",
+    "hasFlavor": "Comes in {flavor}",
+    "categoryDetail": "See every cake in this category",
+    "seasonDetail": "Seasonal cakes · {count} items",
+    "seasonWords": "season seasonal special",
+    "comingSoonWords": "coming soon new soon",
+    "outOfStock": "Sold out",
+    "comingSoon": "Coming soon",
+    "groups": {
+      "cakes": "Cakes",
+      "categories": "Categories",
+      "season": "Seasonal and coming soon",
+      "pages": "Pages and info"
+    },
+    "pages": {
+      "menu": {
+        "label": "Menu",
+        "keywords": "menu all cakes prices"
+      },
+      "cart": {
+        "label": "Your order (cart)",
+        "keywords": "cart basket order checkout pay bank transfer qr"
+      },
+      "track": {
+        "label": "Track an order",
+        "keywords": "track order status code check"
+      },
+      "account": {
+        "label": "Account",
+        "keywords": "account sign in google my orders"
+      },
+      "policies": {
+        "label": "Ordering, delivery and refund policy",
+        "keywords": "policy delivery shipping fee refund cancel advance notice"
+      },
+      "privacy": {
+        "label": "Privacy",
+        "keywords": "privacy personal data delete data"
+      },
+      "contact": {
+        "label": "Contact",
+        "keywords": "contact phone messenger facebook instagram tiktok address opening hours"
+      }
+    }
   }
 }

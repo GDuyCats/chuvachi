@@ -306,7 +306,7 @@ function CategoriesSection({ categories, onChanged }: { categories: AdminCategor
   const cell = "h-11 w-full border-[1.5px] border-black bg-white px-3 text-[15px]";
 
   return (
-    <section className="flex flex-col gap-4 border border-[#e0e0e0] bg-white p-5 md:p-6">
+    <section id="products-categories" className="flex scroll-mt-6 flex-col gap-4 border border-[#e0e0e0] bg-white p-5 md:p-6">
       <div className="flex flex-col gap-1">
         <h2 className="font-display text-2xl uppercase tracking-wide">{c.title}</h2>
         <p className="text-sm text-muted">{c.hint}</p>

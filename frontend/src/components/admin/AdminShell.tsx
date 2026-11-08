@@ -7,6 +7,7 @@ import { adminApi, AdminApiError, type AdminMe } from "@/lib/admin-api";
 import { AdminLanguageSwitch, useAdminI18n } from "./AdminI18n";
 import { AdminShellSkeleton } from "./AdminSkeletons";
 import { ChangePasswordForm } from "./ChangePasswordForm";
+import { AdminSearch } from "./AdminSearch";
 import { OrderInbox } from "./OrderInbox";
 import { OrderPulseProvider } from "./OrderPulse";
 import { NewOrderAlerts } from "./NewOrderAlerts";
@@ -98,6 +99,7 @@ export function AdminShell({ children, adminOnly = false }: ShellProps) {
                 </Link>
               </>
             )}
+            {!me.mustChangePassword && <AdminSearch />}
             {!me.mustChangePassword && <NewOrderAlerts />}
             {!me.mustChangePassword && <OrderInbox />}
             <AdminLanguageSwitch />

@@ -657,5 +657,158 @@
     "AVAILABLE": "Đang bán",
     "SOLD_OUT": "Hết hàng",
     "COMING_SOON": "Sắp ra mắt"
+  },
+  "adminSearch": {
+    "open": "Tìm cài đặt",
+    "placeholder": "Tìm cài đặt hoặc chức năng... (ví dụ: ngân hàng, hết hàng)",
+    "close": "Đóng",
+    "nothing": "Không tìm thấy. Thử từ khác, không cần gõ dấu.",
+    "items": {
+      "orders": {
+        "label": "Xem đơn hàng hôm nay, ngày mai",
+        "keywords": "don hang hom nay ngay mai xac nhan tien da giao trang thai",
+        "hint": ""
+      },
+      "ordersBulk": {
+        "label": "Hủy hàng loạt",
+        "keywords": "huy nhieu don het nguyen lieu nghi dot xuat",
+        "hint": "Nút ở đầu trang Đơn hàng"
+      },
+      "refund": {
+        "label": "Hoàn tiền cho khách",
+        "keywords": "hoan tien da hoan tien huy don da thanh toan",
+        "hint": "Mở đơn đã hủy, bấm Đã hoàn tiền"
+      },
+      "products": {
+        "label": "Danh sách bánh",
+        "keywords": "san pham banh menu",
+        "hint": ""
+      },
+      "stock": {
+        "label": "Hết hàng, sắp ra mắt, tạm hết, tối đa mỗi ngày",
+        "keywords": "het hang sap ra mat tam het gioi han so phan tinh trang vi",
+        "hint": "Ngay dưới từng bánh hoặc trong trang Sửa"
+      },
+      "pushAlerts": {
+        "label": "Thông báo đơn mới trên điện thoại",
+        "keywords": "thong bao dien thoai push iphone android chuong",
+        "hint": ""
+      },
+      "emailAlerts": {
+        "label": "Email báo đơn mới",
+        "keywords": "email bao don gmail",
+        "hint": ""
+      },
+      "password": {
+        "label": "Đổi mật khẩu của tôi",
+        "keywords": "doi mat khau",
+        "hint": ""
+      },
+      "productNew": {
+        "label": "Thêm bánh mới",
+        "keywords": "them banh moi tao san pham",
+        "hint": ""
+      },
+      "photos": {
+        "label": "Thêm hoặc đổi ảnh bánh",
+        "keywords": "anh hinh upload tai anh anh bia",
+        "hint": "Bấm Sửa ở bánh, khung Ảnh"
+      },
+      "categories": {
+        "label": "Loại bánh",
+        "keywords": "loai banh danh muc category",
+        "hint": ""
+      },
+      "stats": {
+        "label": "Thống kê bán hàng, doanh thu",
+        "keywords": "thong ke doanh thu da ban bao cao",
+        "hint": ""
+      },
+      "announcement": {
+        "label": "Thanh thông báo trên cùng trang khách",
+        "keywords": "thanh thong bao khuyen mai",
+        "hint": ""
+      },
+      "hero": {
+        "label": "Banner lớn trang chủ",
+        "keywords": "banner anh bia trang chu",
+        "hint": ""
+      },
+      "seasons": {
+        "label": "Mùa bánh",
+        "keywords": "mua banh theo mua season",
+        "hint": ""
+      },
+      "comingSoon": {
+        "label": "Mục Sắp ra mắt ở trang chủ",
+        "keywords": "sap ra mat coming soon",
+        "hint": ""
+      },
+      "bank": {
+        "label": "Tài khoản ngân hàng nhận tiền, mã QR",
+        "keywords": "ngan hang so tai khoan qr vietqr chuyen khoan",
+        "hint": ""
+      },
+      "contact": {
+        "label": "Số điện thoại, Messenger, mạng xã hội",
+        "keywords": "lien he so dien thoai messenger facebook instagram tiktok",
+        "hint": ""
+      },
+      "pause": {
+        "label": "Tạm ngưng nhận đơn",
+        "keywords": "tam ngung dong cua nghi dot xuat",
+        "hint": ""
+      },
+      "sold": {
+        "label": "Hiện số đã bán cho khách",
+        "keywords": "da ban so luong ban",
+        "hint": ""
+      },
+      "business": {
+        "label": "Thông tin kinh doanh, thời gian giữ thông tin khách",
+        "keywords": "ho kinh doanh ma so thue dia chi email giu thong tin",
+        "hint": ""
+      },
+      "rules": {
+        "label": "Giờ mở cửa, đặt trước, tự hủy, khung giờ giao, ngày nghỉ",
+        "keywords": "gio mo cua dong cua dat truoc tu huy khung gio giao ngay nghi so phan mac dinh",
+        "hint": ""
+      },
+      "zones": {
+        "label": "Khu vực giao hàng",
+        "keywords": "khu vuc giao quan ship",
+        "hint": ""
+      },
+      "capacity": {
+        "label": "Số phần theo từng ngày, đóng một ngày",
+        "keywords": "so phan theo ngay dong ngay le",
+        "hint": ""
+      },
+      "telegram": {
+        "label": "Thông báo Telegram",
+        "keywords": "telegram bot",
+        "hint": ""
+      },
+      "accounts": {
+        "label": "Tài khoản nhân viên, phân quyền",
+        "keywords": "tai khoan nhan vien staff admin phan quyen",
+        "hint": ""
+      },
+      "accountCreate": {
+        "label": "Thêm tài khoản nhân viên",
+        "keywords": "them tai khoan tao nhan vien",
+        "hint": ""
+      },
+      "resetPassword": {
+        "label": "Đặt lại mật khẩu cho nhân viên",
+        "keywords": "dat lai mat khau quen mat khau mo khoa",
+        "hint": ""
+      },
+      "eraseCustomer": {
+        "label": "Xóa thông tin khách theo yêu cầu",
+        "keywords": "xoa thong tin khach du lieu ca nhan",
+        "hint": "Mở một đơn đã xong của khách"
+      }
+    }
   }
 }

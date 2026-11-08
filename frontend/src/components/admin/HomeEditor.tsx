@@ -31,9 +31,9 @@ function vietnamTodayText(): string {
   return new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().slice(0, 10);
 }
 
-function Section({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
+function Section({ id, title, hint, children }: { id?: string; title: string; hint?: string; children: ReactNode }) {
   return (
-    <section className="flex flex-col gap-4 border border-[#e0e0e0] bg-white p-5 md:p-6">
+    <section id={id} className="flex scroll-mt-6 flex-col gap-4 border border-[#e0e0e0] bg-white p-5 md:p-6">
       <div className="flex flex-col gap-1">
         <h2 className="font-display text-2xl uppercase tracking-wide">{title}</h2>
         {hint && <p className="text-sm text-muted">{hint}</p>}
@@ -201,14 +201,14 @@ function ContentForm({
         </button>
       </div>
 
-      <Section title={h.announcement.title} hint={h.announcement.hint}>
+      <Section id="home-announcement" title={h.announcement.title} hint={h.announcement.hint}>
         {pair("announcementCenterVi", "announcementCenterEn", h.announcement.center)}
         {productSelect("announcementProductId", h.announcement.link)}
         {pair("announcementLeftVi", "announcementLeftEn", h.announcement.left)}
         {pair("announcementRightVi", "announcementRightEn", h.announcement.right)}
       </Section>
 
-      <Section title={h.hero.title} hint={h.hero.hint}>
+      <Section id="home-hero" title={h.hero.title} hint={h.hero.hint}>
         <label className="flex items-center gap-2.5 font-semibold">
           <input
             type="checkbox"
@@ -273,7 +273,7 @@ function SeasonsSection({
   };
 
   return (
-    <Section title={s.title} hint={s.hint}>
+    <Section id="home-seasons" title={s.title} hint={s.hint}>
       {seasons.length === 0 && editing !== "new" && <p className="text-sm text-muted">{s.empty}</p>}
       <ul className="flex flex-col gap-3">
         {seasons.map((season) => (
@@ -535,7 +535,7 @@ function ComingSoonSection({ items, onSaved }: { items: AdminComingSoon[]; onSav
   const cell = `${inputBase} border-black`;
 
   return (
-    <Section title={c.title} hint={c.hint}>
+    <Section id="home-coming-soon" title={c.title} hint={c.hint}>
       {rows.map((row) => (
         <div key={row.id} className="grid grid-cols-2 items-end gap-2 border-b border-[#eeeeee] pb-4 md:grid-cols-[110px_1fr_1fr_1fr_1fr]">
           <label className="flex flex-col gap-1 text-xs font-semibold">

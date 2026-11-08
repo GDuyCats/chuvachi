@@ -297,7 +297,7 @@ function CreateAccountForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 border border-[#e0e0e0] bg-white p-5">
+    <form id="accounts-create" onSubmit={handleSubmit} className="flex scroll-mt-6 flex-col gap-4 border border-[#e0e0e0] bg-white p-5">
       <h2 className="font-display text-2xl uppercase tracking-wide">{a.create.title}</h2>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_1fr_180px]">
         <label className="flex flex-col gap-1.5 text-sm font-semibold">

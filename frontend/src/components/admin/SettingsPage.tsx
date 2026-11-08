@@ -35,9 +35,9 @@ function fromDraft(draft: Draft): ShopSettings {
 
 const inputBase = "h-11 border-[1.5px] px-3 text-[15px] font-normal bg-white";
 
-function Section({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
+function Section({ id, title, hint, children }: { id?: string; title: string; hint?: string; children: ReactNode }) {
   return (
-    <section className="flex flex-col gap-4 border border-[#e0e0e0] bg-white p-5 md:p-6">
+    <section id={id} className="flex scroll-mt-6 flex-col gap-4 border border-[#e0e0e0] bg-white p-5 md:p-6">
       <div className="flex flex-col gap-1">
         <h2 className="font-display text-2xl uppercase tracking-wide">{title}</h2>
         {hint && <p className="text-sm text-muted">{hint}</p>}
@@ -175,7 +175,7 @@ export function SettingsPage() {
           </button>
         </div>
 
-        <Section title={s.bank.title} hint={s.bank.hint}>
+        <Section id="settings-bank" title={s.bank.title} hint={s.bank.hint}>
           <div className="flex flex-col gap-5 md:flex-row">
             <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
               <label className="flex flex-col gap-1.5 text-sm font-semibold">
@@ -214,7 +214,7 @@ export function SettingsPage() {
           </div>
         </Section>
 
-        <Section title={s.contact.title} hint={s.contact.hint}>
+        <Section id="settings-contact" title={s.contact.title} hint={s.contact.hint}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {textField("phone", s.contact.phone, "tel", "0912 345 678")}
             {textField("messengerUrl", s.contact.messenger, "url", "https://m.me/...")}
@@ -224,7 +224,7 @@ export function SettingsPage() {
           </div>
         </Section>
 
-        <Section title={s.pause.title} hint={s.pause.hint}>
+        <Section id="settings-pause" title={s.pause.title} hint={s.pause.hint}>
           <label
             className={`flex min-h-12 items-center gap-3 border-[1.5px] px-4 font-bold ${
               draft.orderingPaused ? "border-black bg-black text-white" : "border-black"
@@ -245,7 +245,7 @@ export function SettingsPage() {
           <p className="text-xs text-muted">{s.pause.saveHint}</p>
         </Section>
 
-        <Section title={s.sold.title} hint={s.sold.hint}>
+        <Section id="settings-sold" title={s.sold.title} hint={s.sold.hint}>
           <label
             className={`flex min-h-12 items-center gap-3 border-[1.5px] px-4 font-bold ${
               draft.showSoldCount ? "border-black bg-black text-white" : "border-black"
@@ -263,7 +263,7 @@ export function SettingsPage() {
           <p className="text-xs text-muted">{s.sold.minimumHint}</p>
         </Section>
 
-        <Section title={s.business.title} hint={s.business.hint}>
+        <Section id="settings-business" title={s.business.title} hint={s.business.hint}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {textField("legalName", s.business.legalName)}
             {textField("registrationNumber", s.business.registrationNumber)}
@@ -274,7 +274,7 @@ export function SettingsPage() {
           <p className="text-xs text-muted">{s.business.retentionHint}</p>
         </Section>
 
-        <Section title={s.rules.title}>
+        <Section id="settings-rules" title={s.rules.title}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {textField("openTime", s.rules.openTime, "time")}
             {textField("closeTime", s.rules.closeTime, "time")}
@@ -360,7 +360,7 @@ function ZonesSection({ zones, onSaved, onError }: SectionProps & { zones: Deliv
   const cell = `${inputBase} w-full border-black`;
 
   return (
-    <Section title={z.title} hint={z.hint}>
+    <Section id="settings-zones" title={z.title} hint={z.hint}>
       <div className="flex flex-col gap-3">
         {rows.map((row) => (
           <div key={row.id} className="grid grid-cols-2 items-end gap-2 border-b border-[#eeeeee] pb-3 sm:grid-cols-[1fr_1fr_80px_auto_auto]">
@@ -450,7 +450,7 @@ function CapacitySection({ days, lang, onSaved, onError }: SectionProps & { days
   }
 
   return (
-    <Section title={c.title} hint={c.hint}>
+    <Section id="settings-capacity" title={c.title} hint={c.hint}>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[420px] text-[15px]">
           <thead>
@@ -528,7 +528,7 @@ function TelegramSection() {
   }
 
   return (
-    <Section title={m.title} hint={m.hint}>
+    <Section id="settings-telegram" title={m.title} hint={m.hint}>
       <button
         type="button"
         disabled={busy}

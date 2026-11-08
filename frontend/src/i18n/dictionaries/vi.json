@@ -348,5 +348,56 @@
   },
   "pause": {
     "title": "Tiệm đang tạm ngưng nhận đơn"
+  },
+  "search": {
+    "open": "Tìm kiếm",
+    "placeholder": "Tìm bánh, vị, loại bánh...",
+    "close": "Đóng",
+    "hint": "Gõ tên bánh, vị (ví dụ: dâu, matcha), loại bánh hoặc điều bạn cần (ví dụ: giao hàng, tra cứu đơn). Không cần gõ dấu.",
+    "nothing": "Không tìm thấy “{query}”. Thử từ khác, hoặc xem cả menu.",
+    "from": "Từ",
+    "hasFlavor": "Có vị {flavor}",
+    "categoryDetail": "Xem tất cả bánh loại này",
+    "seasonDetail": "Bánh theo mùa · {count} món",
+    "seasonWords": "mua theo mua season dac biet",
+    "comingSoonWords": "sap ra mat sap co coming soon",
+    "outOfStock": "Hết hàng",
+    "comingSoon": "Sắp ra mắt",
+    "groups": {
+      "cakes": "Bánh",
+      "categories": "Loại bánh",
+      "season": "Theo mùa và sắp ra mắt",
+      "pages": "Trang và thông tin"
+    },
+    "pages": {
+      "menu": {
+        "label": "Menu",
+        "keywords": "menu tat ca banh thuc don gia"
+      },
+      "cart": {
+        "label": "Đơn hàng của bạn (giỏ)",
+        "keywords": "gio hang dat hang thanh toan chuyen khoan qr cart"
+      },
+      "track": {
+        "label": "Tra cứu đơn",
+        "keywords": "tra cuu don kiem tra don trang thai ma don theo doi"
+      },
+      "account": {
+        "label": "Tài khoản",
+        "keywords": "tai khoan dang nhap google don cua toi"
+      },
+      "policies": {
+        "label": "Chính sách đặt hàng, giao hàng, đổi trả",
+        "keywords": "chinh sach giao hang ship phi ship doi tra hoan tien huy don dat truoc"
+      },
+      "privacy": {
+        "label": "Quyền riêng tư",
+        "keywords": "quyen rieng tu thong tin ca nhan du lieu xoa du lieu"
+      },
+      "contact": {
+        "label": "Liên hệ",
+        "keywords": "lien he so dien thoai messenger facebook instagram tiktok dia chi gio mo cua"
+      }
+    }
   }
 }

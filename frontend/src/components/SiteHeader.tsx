@@ -4,13 +4,17 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { AccountLink } from "./account/AccountLink";
 import { CartBadge } from "./CartBadge";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { SiteSearch } from "./SiteSearch";
+import type { SearchIndex } from "@/lib/search-index";
 
 type Props = {
   lang: Locale;
   dict: Dictionary["nav"];
+  searchIndex: SearchIndex;
+  searchLabels: Dictionary["search"];
 };
 
-export function SiteHeader({ lang, dict }: Props) {
+export function SiteHeader({ lang, dict, searchIndex, searchLabels }: Props) {
   const links = [
     { href: `/${lang}/menu`, label: dict.menu },
     { href: `/${lang}#new`, label: dict.new },
@@ -38,6 +42,7 @@ export function SiteHeader({ lang, dict }: Props) {
       </nav>
 
       <div className="flex items-center gap-1.5 md:gap-3">
+        <SiteSearch lang={lang} index={searchIndex} labels={searchLabels} />
         <LanguageSwitcher current={lang} label={dict.language} />
         <AccountLink lang={lang} signInLabel={dict.signIn} accountLabel={dict.account} />
         <Link

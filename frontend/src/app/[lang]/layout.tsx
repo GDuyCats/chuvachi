@@ -6,7 +6,8 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { isLocale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { getHomeContent, getShopInfo } from "@/lib/api";
+import { getHomeContent, getProducts, getShopInfo, type Product } from "@/lib/api";
+import { buildSearchIndex } from "@/lib/search-index";
 import { SITE_URL } from "@/lib/site-url";
 import "../globals.css";
 
@@ -58,7 +59,14 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   if (!isLocale(lang)) {
     notFound();
   }
-  const [dict, home, shop] = await Promise.all([getDictionary(lang), getHomeContent(lang), getShopInfo()]);
+  const [dict, home, shop, products] = await Promise.all([
+    getDictionary(lang),
+    getHomeContent(lang),
+    getShopInfo(),
+    // The search box still opens (with pages only) if the menu can't be loaded.
+    getProducts(lang).catch((): Product[] => []),
+  ]);
+  const searchIndex = buildSearchIndex(lang, products, home, dict);
   const pauseMessage = lang === "vi" ? shop.pauseMessageVi : shop.pauseMessageEn;
 
   return (
@@ -72,7 +80,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
             {pauseMessage ? <span> · {pauseMessage}</span> : null}
           </div>
         )}
-        <SiteHeader lang={lang} dict={dict.nav} />
+        <SiteHeader lang={lang} dict={dict.nav} searchIndex={searchIndex} searchLabels={dict.search} />
         <main className="flex-1">{children}</main>
         <SiteFooter lang={lang} dict={dict.footer} />
       </body>

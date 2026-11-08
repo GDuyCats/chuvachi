@@ -153,7 +153,7 @@ export function NotificationsPage() {
         <p className="text-sm text-muted">{n.hint}</p>
       </div>
 
-      <section className="flex flex-col gap-3 border border-[#e0e0e0] bg-white p-5">
+      <section id="notifications-push" className="flex scroll-mt-6 flex-col gap-3 border border-[#e0e0e0] bg-white p-5">
         <h2 className="font-display text-2xl uppercase tracking-wide">{n.push.title}</h2>
         <p className="text-sm">{n.push.hint}</p>
         <p className={`border-[1.5px] p-3 text-sm font-semibold ${push === "on" ? "border-black bg-black text-white" : "border-black"}`}>
@@ -186,7 +186,7 @@ export function NotificationsPage() {
         <p className="text-xs text-muted">{n.push.perDevice}</p>
       </section>
 
-      <section className="flex flex-col gap-3 border border-[#e0e0e0] bg-white p-5">
+      <section id="notifications-email" className="flex scroll-mt-6 flex-col gap-3 border border-[#e0e0e0] bg-white p-5">
         <h2 className="font-display text-2xl uppercase tracking-wide">{n.email.title}</h2>
         <p className="text-sm">{n.email.hint.replace("{email}", me?.email ?? "")}</p>
         <label

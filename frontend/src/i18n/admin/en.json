@@ -657,5 +657,158 @@
     "AVAILABLE": "On sale",
     "SOLD_OUT": "Sold out",
     "COMING_SOON": "Coming soon"
+  },
+  "adminSearch": {
+    "open": "Find a setting",
+    "placeholder": "Find a setting or feature... (e.g. bank, sold out)",
+    "close": "Close",
+    "nothing": "Nothing found. Try another word.",
+    "items": {
+      "orders": {
+        "label": "Today's and tomorrow's orders",
+        "keywords": "orders today tomorrow confirm payment delivered status",
+        "hint": ""
+      },
+      "ordersBulk": {
+        "label": "Cancel many orders",
+        "keywords": "bulk cancel out of ingredients closed",
+        "hint": "Button at the top of Orders"
+      },
+      "refund": {
+        "label": "Refund a customer",
+        "keywords": "refund refunded cancelled paid order",
+        "hint": "Open the cancelled order, press Refunded"
+      },
+      "products": {
+        "label": "Cake list",
+        "keywords": "products cakes menu",
+        "hint": ""
+      },
+      "stock": {
+        "label": "Sold out, coming soon, daily limit",
+        "keywords": "sold out coming soon limit portions status flavor",
+        "hint": "Under each cake or in Edit"
+      },
+      "pushAlerts": {
+        "label": "New order notifications on my phone",
+        "keywords": "notifications phone push iphone android bell",
+        "hint": ""
+      },
+      "emailAlerts": {
+        "label": "New order emails",
+        "keywords": "email alerts gmail",
+        "hint": ""
+      },
+      "password": {
+        "label": "Change my password",
+        "keywords": "change password",
+        "hint": ""
+      },
+      "productNew": {
+        "label": "Add a new cake",
+        "keywords": "add new cake create product",
+        "hint": ""
+      },
+      "photos": {
+        "label": "Add or change cake photos",
+        "keywords": "photo picture upload image cover",
+        "hint": "Press Edit on the cake, Photos box"
+      },
+      "categories": {
+        "label": "Cake categories",
+        "keywords": "category categories",
+        "hint": ""
+      },
+      "stats": {
+        "label": "Sales and revenue",
+        "keywords": "stats revenue sold report",
+        "hint": ""
+      },
+      "announcement": {
+        "label": "Top announcement bar",
+        "keywords": "announcement bar promotion",
+        "hint": ""
+      },
+      "hero": {
+        "label": "Home page banner",
+        "keywords": "banner hero home",
+        "hint": ""
+      },
+      "seasons": {
+        "label": "Seasons",
+        "keywords": "season seasonal",
+        "hint": ""
+      },
+      "comingSoon": {
+        "label": "Coming soon section",
+        "keywords": "coming soon",
+        "hint": ""
+      },
+      "bank": {
+        "label": "Bank account and QR code",
+        "keywords": "bank account qr vietqr transfer",
+        "hint": ""
+      },
+      "contact": {
+        "label": "Phone, Messenger, social links",
+        "keywords": "contact phone messenger facebook instagram tiktok",
+        "hint": ""
+      },
+      "pause": {
+        "label": "Pause orders",
+        "keywords": "pause closed holiday",
+        "hint": ""
+      },
+      "sold": {
+        "label": "Show sold count to customers",
+        "keywords": "sold count",
+        "hint": ""
+      },
+      "business": {
+        "label": "Business details, how long customer data is kept",
+        "keywords": "business tax address email retention",
+        "hint": ""
+      },
+      "rules": {
+        "label": "Opening hours, lead time, auto-cancel, delivery slots, closed days",
+        "keywords": "opening hours lead time auto cancel slots closed days default portions",
+        "hint": ""
+      },
+      "zones": {
+        "label": "Delivery areas",
+        "keywords": "delivery zones districts",
+        "hint": ""
+      },
+      "capacity": {
+        "label": "Portions per day, close a day",
+        "keywords": "capacity per day close holiday",
+        "hint": ""
+      },
+      "telegram": {
+        "label": "Telegram alerts",
+        "keywords": "telegram bot",
+        "hint": ""
+      },
+      "accounts": {
+        "label": "Staff accounts and roles",
+        "keywords": "accounts staff admin roles",
+        "hint": ""
+      },
+      "accountCreate": {
+        "label": "Add a staff account",
+        "keywords": "add account create staff",
+        "hint": ""
+      },
+      "resetPassword": {
+        "label": "Reset a staff password",
+        "keywords": "reset password forgot unlock",
+        "hint": ""
+      },
+      "eraseCustomer": {
+        "label": "Erase customer data on request",
+        "keywords": "erase customer personal data",
+        "hint": "Open one of the customer's finished orders"
+      }
+    }
   }
 }

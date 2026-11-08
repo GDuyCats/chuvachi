@@ -171,6 +171,7 @@ export function OrdersBoard() {
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <button
+            id="orders-bulk-button"
             type="button"
             onClick={() => setShowBulk((open) => !open)}
             aria-expanded={showBulk}

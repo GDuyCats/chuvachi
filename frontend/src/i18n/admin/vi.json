@@ -200,7 +200,8 @@
       "threshold": "Đơn lớn tính từ (số phần)",
       "capacity": "Số phần mỗi ngày (mặc định)",
       "maxDays": "Khách được đặt trước tối đa (ngày)",
-      "unpaid": "Tự hủy đơn chưa chuyển khoản sau (phút, 0 = không hủy)"
+      "unpaid": "Tự hủy đơn chưa chuyển khoản sau (phút, 0 = không hủy)",
+      "maxQuantity": "Mỗi loại bánh tối đa trong một đơn (phần)"
     },
     "zones": {
       "title": "Khu vực giao",
@@ -257,6 +258,13 @@
       "off": "Đang ẩn số đã bán",
       "minimum": "Chỉ hiện khi bánh bán được từ (phần)",
       "minimumHint": "Bánh mới bán được ít phần thì chưa hiện, để không trông vắng khách. Bấm Lưu thay đổi ở cuối trang; trang khách cập nhật sau vài phút."
+    },
+    "reviews": {
+      "title": "Đánh giá của khách",
+      "hint": "Áp dụng ngay sau khi bấm Lưu thay đổi ở cuối trang.",
+      "windowDays": "Khách được đánh giá trong (ngày sau khi giao)",
+      "maxPhotos": "Số ảnh tối đa mỗi đánh giá (0 = không cho ảnh)",
+      "reportAlert": "Báo cho tiệm khi nội dung bị báo cáo (lần)"
     }
   },
   "products": {
@@ -773,6 +781,11 @@
       "rules": {
         "label": "Giờ mở cửa, đặt trước, tự hủy, khung giờ giao, ngày nghỉ",
         "keywords": "gio mo cua dong cua dat truoc tu huy khung gio giao ngay nghi so phan mac dinh",
+        "hint": ""
+      },
+      "reviewRules": {
+        "label": "Đánh giá: số ngày được đánh giá, số ảnh, báo cáo",
+        "keywords": "danh gia so ngay so anh bao cao review",
         "hint": ""
       },
       "zones": {

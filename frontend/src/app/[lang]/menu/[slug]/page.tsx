@@ -132,6 +132,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[s
             packages={toChoices(product, "PACKAGE")}
             soldOutUntil={product.soldOutUntil}
             availability={product.availability ?? "AVAILABLE"}
+            maxQuantity={shop.maxQuantityPerItem}
             labels={labels}
           />
 

@@ -6,8 +6,10 @@ import { deleteImageByUrl, isOwnImageInFolder } from "../lib/storage";
 import { formatDateOnly, vietnamToday } from "../lib/time";
 
 // Reviews can only be written for a cake in a delivered order, for this many days after delivery.
-export const REVIEW_WINDOW_DAYS = 30;
-export const MAX_REVIEW_PHOTOS = 4;
+// How long buyers may review and how many photos they may add are set in the admin
+// (Settings > Reviews); these are only used if the settings row is missing.
+const DEFAULT_REVIEW_WINDOW_DAYS = 30;
+const DEFAULT_MAX_REVIEW_PHOTOS = 4;
 export const REVIEW_PHOTO_FOLDER = "reviews";
 export const COMMENT_PHOTO_FOLDER = "comments";
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -52,18 +54,31 @@ const orderInclude = {
 
 type OrderWithItems = Prisma.OrderGetPayload<{ include: typeof orderInclude }>;
 
-function reviewDeadline(order: { deliveryDate: Date }): Date {
-  return new Date(order.deliveryDate.getTime() + REVIEW_WINDOW_DAYS * DAY_MS);
+type ReviewRules = { windowDays: number; maxPhotos: number };
+
+export async function reviewRules(): Promise<ReviewRules> {
+  const settings = await prisma.shopSetting.findUnique({
+    where: { id: 1 },
+    select: { reviewWindowDays: true, maxReviewPhotos: true },
+  });
+  return {
+    windowDays: settings?.reviewWindowDays ?? DEFAULT_REVIEW_WINDOW_DAYS,
+    maxPhotos: settings?.maxReviewPhotos ?? DEFAULT_MAX_REVIEW_PHOTOS,
+  };
 }
 
-function whyNot(order: OrderWithItems): "NOT_DELIVERED" | "TOO_LATE" | null {
+function reviewDeadline(order: { deliveryDate: Date }, rules: ReviewRules): Date {
+  return new Date(order.deliveryDate.getTime() + rules.windowDays * DAY_MS);
+}
+
+function whyNot(order: OrderWithItems, rules: ReviewRules): "NOT_DELIVERED" | "TOO_LATE" | null {
   if (order.status !== OrderStatus.COMPLETED) return "NOT_DELIVERED";
-  if (vietnamToday() > reviewDeadline(order)) return "TOO_LATE";
+  if (vietnamToday() > reviewDeadline(order, rules)) return "TOO_LATE";
   return null;
 }
 
 // The cakes of one order that can be (or already were) reviewed.
-function toReviewable(order: OrderWithItems, locale: Locale) {
+function toReviewable(order: OrderWithItems, locale: Locale, rules: ReviewRules) {
   const byProduct = new Map<number, { product: NonNullable<OrderWithItems["items"][number]["product"]>; options: string[] }>();
   for (const item of order.items) {
     if (!item.product) continue;
@@ -72,13 +87,14 @@ function toReviewable(order: OrderWithItems, locale: Locale) {
     if (options && !entry.options.includes(options)) entry.options.push(options);
     byProduct.set(item.product.id, entry);
   }
-  const reason = whyNot(order);
+  const reason = whyNot(order, rules);
   return {
     code: order.code,
     deliveryDate: formatDateOnly(order.deliveryDate),
-    deadline: formatDateOnly(reviewDeadline(order)),
+    deadline: formatDateOnly(reviewDeadline(order, rules)),
     canReview: reason === null,
     reason,
+    maxPhotos: rules.maxPhotos,
     items: [...byProduct.values()].map(({ product, options }) => {
       const review = order.reviews.find((r) => r.productId === product.id);
       return {
@@ -102,33 +118,36 @@ async function findOrder(code: string, phone: string | null, customerId: number 
 }
 
 export async function reviewableByCode(code: string, phone: string | null, customerId: number | null, locale: Locale) {
-  return toReviewable(await findOrder(code, phone, customerId), locale);
+  const [order, rules] = await Promise.all([findOrder(code, phone, customerId), reviewRules()]);
+  return toReviewable(order, locale, rules);
 }
 
 // Delivered orders of a signed-in customer that still have cakes to review (or reviews to edit).
 export async function reviewableForCustomer(customerId: number, locale: Locale) {
-  const since = new Date(vietnamToday().getTime() - REVIEW_WINDOW_DAYS * DAY_MS);
+  const rules = await reviewRules();
+  const since = new Date(vietnamToday().getTime() - rules.windowDays * DAY_MS);
   const orders = await prisma.order.findMany({
     where: { customerId, status: OrderStatus.COMPLETED, deliveryDate: { gte: since } },
     include: orderInclude,
     orderBy: { deliveryDate: "desc" },
     take: 20,
   });
-  return orders.map((order) => toReviewable(order, locale));
+  return orders.map((order) => toReviewable(order, locale, rules));
 }
 
 // Throws unless this person may review this cake of this order right now (checked before a photo upload too).
 async function reviewTarget(code: string, phone: string | null, productSlug: string, customerId: number | null) {
-  const order = await findOrder(code, phone, customerId);
-  const reason = whyNot(order);
+  const [order, rules] = await Promise.all([findOrder(code, phone, customerId), reviewRules()]);
+  const reason = whyNot(order, rules);
   if (reason) throw new ReviewError(reason, 409);
   const item = order.items.find((i) => i.product?.slug === productSlug);
   if (!item?.product) throw new ReviewError("NOT_IN_ORDER", 409);
-  return { order, item, product: item.product };
+  return { order, item, product: item.product, rules };
 }
 
 export async function checkCanAddReviewPhoto(code: string, phone: string | null, productSlug: string, customerId: number | null) {
-  await reviewTarget(code, phone, productSlug, customerId);
+  const { rules } = await reviewTarget(code, phone, productSlug, customerId);
+  if (rules.maxPhotos === 0) throw new ReviewError("TOO_MANY_PHOTOS");
 }
 
 // Removes photo files nobody uses any more (a URL could have been copied into another review or comment).
@@ -153,11 +172,11 @@ export type ReviewInput = {
 
 // Writes a review, or updates the earlier one for the same cake in the same order.
 export async function saveReview(input: ReviewInput, customerId: number | null) {
-  const { order, product } = await reviewTarget(input.code, input.phone, input.productSlug, customerId);
+  const { order, product, rules } = await reviewTarget(input.code, input.phone, input.productSlug, customerId);
   const productId = product.id;
 
   const photos = [...new Set(input.photos)];
-  if (photos.length > MAX_REVIEW_PHOTOS) throw new ReviewError("TOO_MANY_PHOTOS");
+  if (photos.length > rules.maxPhotos) throw new ReviewError("TOO_MANY_PHOTOS");
   if (!photos.every((url) => isOwnImageInFolder(url, REVIEW_PHOTO_FOLDER))) throw new ReviewError("BAD_PHOTO");
 
   // The name shown with the review: the account name if the order belongs to an account.

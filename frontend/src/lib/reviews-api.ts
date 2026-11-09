@@ -40,14 +40,13 @@ export type PublicComment = {
 
 export type SavedReview = { id: number; rating: number; body: string | null; photos: string[] };
 
-export const MAX_REVIEW_PHOTOS = 4;
-
 export type ReviewableOrder = {
   code: string;
   deliveryDate: string;
   deadline: string;
   canReview: boolean;
   reason: "NOT_DELIVERED" | "TOO_LATE" | null;
+  maxPhotos: number; // photos allowed per review (shop setting, 0 = none)
   items: {
     productSlug: string;
     name: string;

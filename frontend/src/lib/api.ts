@@ -90,6 +90,8 @@ export type ShopInfo = {
   smallOrderLeadHours: number;
   largeOrderLeadHours: number;
   largeOrderThreshold: number;
+  maxQuantityPerItem: number;
+  reviewWindowDays: number;
   orderingPaused: boolean;
   pauseMessageVi: string | null;
   pauseMessageEn: string | null;
@@ -113,6 +115,8 @@ const EMPTY_SHOP_INFO: ShopInfo = {
   smallOrderLeadHours: 3,
   largeOrderLeadHours: 24,
   largeOrderThreshold: 10,
+  maxQuantityPerItem: 20,
+  reviewWindowDays: 30,
   orderingPaused: false,
   pauseMessageVi: null,
   pauseMessageEn: null,

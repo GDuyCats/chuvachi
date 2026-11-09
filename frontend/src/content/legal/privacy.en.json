@@ -101,7 +101,7 @@
         },
         {
           "list": [
-            "Reviews: on the Track order page or your Account page, tap Edit to remove photos or text, or Delete review to delete it for good. You can do this yourself for 30 days after delivery; after that, contact us and we will delete it.",
+            "Reviews: on the Track order page or your Account page, tap Edit to remove photos or text, or Delete review to delete it for good. You can do this yourself for {reviewDays} days after delivery; after that, contact us and we will delete it.",
             "Comments: tap Delete under your comment, at any time.",
             "When a review or comment is deleted, its photos are deleted from storage too.",
             "When you delete your account, all reviews, comments, photos and votes linked to it are deleted as well."

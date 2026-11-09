@@ -5,6 +5,7 @@ import { rateLimitKey } from "../lib/client-ip";
 import { currentCustomerId, requireCustomer } from "../lib/customer-auth";
 import { ImageError, receiveSingleImage, storeImage } from "../lib/image-upload";
 import { parseLocale } from "../lib/locale";
+import { prisma } from "../lib/prisma";
 import { isStorageConfigured } from "../lib/storage";
 import { notifyNewComment } from "../services/customer-push";
 import { notifyLowReview, notifyNewPhotos, notifyReported } from "../services/notifications";
@@ -50,7 +51,11 @@ const photoLimiter = limiter(30, 60);
 
 const PHOTO_MAX_SIDE = 1600; // longest side after resizing, in pixels
 
-const REPORT_ALERT_AT = 3; // tell staff when something gets this many reports
+// Staff are told when something reaches this many reports (Settings > Reviews).
+async function reportAlertAt(): Promise<number> {
+  const settings = await prisma.shopSetting.findUnique({ where: { id: 1 }, select: { reportAlertThreshold: true } });
+  return settings?.reportAlertThreshold ?? 3;
+}
 
 function fail(res: Response, error: unknown) {
   if (error instanceof ReviewError) {
@@ -326,7 +331,7 @@ reviewsRouter.post("/reviews/:id/report", reportLimiter, requireCustomer, async 
   }
   try {
     const count = await report({ reviewId: id.data }, req.customerId!);
-    if (count === REPORT_ALERT_AT) void notifyReported().catch((e: unknown) => console.error("Report alert failed:", e));
+    if (count === (await reportAlertAt())) void notifyReported().catch((e: unknown) => console.error("Report alert failed:", e));
     res.json({ ok: true });
   } catch (error) {
     fail(res, error);
@@ -341,7 +346,7 @@ reviewsRouter.post("/reviews/comments/:id/report", reportLimiter, requireCustome
   }
   try {
     const count = await report({ commentId: id.data }, req.customerId!);
-    if (count === REPORT_ALERT_AT) void notifyReported().catch((e: unknown) => console.error("Report alert failed:", e));
+    if (count === (await reportAlertAt())) void notifyReported().catch((e: unknown) => console.error("Report alert failed:", e));
     res.json({ ok: true });
   } catch (error) {
     fail(res, error);

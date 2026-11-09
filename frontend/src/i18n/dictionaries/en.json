@@ -177,7 +177,8 @@
       "PRODUCT_SOLD_OUT": "{product} is sold out on the day you chose. Please pick another day or remove it from your order.",
       "PRODUCT_LIMIT_REACHED": "{product} is fully booked on the day you chose. Please pick another day or order fewer.",
       "PRODUCT_UNAVAILABLE": "{product} is sold out. Please remove it from your order and try again.",
-      "PRODUCT_COMING_SOON": "{product} isn't on sale yet. Please remove it from your order and try again."
+      "PRODUCT_COMING_SOON": "{product} isn't on sale yet. Please remove it from your order and try again.",
+      "QUANTITY_TOO_HIGH": "{product}: that is more portions than the shop takes per order. Please lower the quantity."
     },
     "consentBefore": "I agree that the shop may use my details to deliver this order, as described in the",
     "consentPrivacy": "Privacy policy",
@@ -444,7 +445,7 @@
       "order": "Order {code}",
       "hint": "Each cake in the order can be reviewed once; you can edit it until {deadline}.",
       "notDelivered": "This order hasn't been delivered yet. Come back after you get your cakes.",
-      "tooLate": "It's been more than 30 days since delivery, so it can't be reviewed anymore.",
+      "tooLate": "The time to review this order has passed.",
       "yourRating": "Your rating",
       "yourReview": "Your thoughts (optional)",
       "placeholder": "How did it taste, was it too sweet, did it arrive on time...",
@@ -455,7 +456,7 @@
       "reviewed": "Reviewed",
       "edit": "Edit",
       "accountTitle": "Review cakes you bought",
-      "accountEmpty": "No orders delivered in the last 30 days.",
+      "accountEmpty": "No delivered orders still open for reviews.",
       "ratingWords": [
         "Terrible",
         "Poor",
@@ -480,7 +481,7 @@
       "NETWORK": "Can't connect. Check your connection and try again.",
       "FILE_TOO_LARGE": "The photo is too large (8 MB max).",
       "UNSUPPORTED_IMAGE": "Only JPG, PNG or WebP photos.",
-      "TOO_MANY_PHOTOS": "Up to 4 photos per review.",
+      "TOO_MANY_PHOTOS": "That is more photos than the shop allows.",
       "BAD_PHOTO": "That photo didn't work, please upload it again.",
       "PHOTO_BUYERS_ONLY": "Only people who bought this cake can attach photos.",
       "STORAGE_NOT_CONFIGURED": "Photos can't be received right now. Please try again later.",

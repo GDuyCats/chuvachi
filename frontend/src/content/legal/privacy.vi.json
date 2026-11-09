@@ -101,7 +101,7 @@
         },
         {
           "list": [
-            "Đánh giá: ở trang Tra cứu đơn hoặc trang Tài khoản, bấm Sửa để bỏ bớt ảnh, chữ, hoặc bấm Xóa đánh giá để xóa hẳn. Bạn tự làm được trong 30 ngày sau ngày giao; sau thời gian đó, hãy liên hệ tiệm để xóa.",
+            "Đánh giá: ở trang Tra cứu đơn hoặc trang Tài khoản, bấm Sửa để bỏ bớt ảnh, chữ, hoặc bấm Xóa đánh giá để xóa hẳn. Bạn tự làm được trong {reviewDays} ngày sau ngày giao; sau thời gian đó, hãy liên hệ tiệm để xóa.",
             "Bình luận: bấm Xóa ngay dưới bình luận của bạn, bất cứ lúc nào.",
             "Khi đánh giá hoặc bình luận bị xóa, ảnh đi kèm cũng bị xóa khỏi nơi lưu trữ.",
             "Khi bạn xóa tài khoản, mọi đánh giá, bình luận, ảnh và bình chọn gắn với tài khoản đó cũng bị xóa."

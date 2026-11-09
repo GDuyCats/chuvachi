@@ -151,6 +151,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
   const [errorCode, setErrorCode] = useState<string | null>(null);
   const [errorProduct, setErrorProduct] = useState("");
 
+  const maxQuantity = settings?.maxQuantityPerItem ?? MAX_LINE_QUANTITY;
   const isLargeOrder = settings ? totalPortions >= settings.largeOrderThreshold : false;
   const leadHours = settings ? (isLargeOrder ? settings.largeOrderLeadHours : settings.smallOrderLeadHours) : 0;
   const asapAllowed = Boolean(settings?.asapAvailable) && !isLargeOrder;
@@ -490,7 +491,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
                     <button
                       type="button"
                       aria-label={labels.decrease}
-                      onClick={() => setLineQuantity(l.index, l.line.quantity - 1)}
+                      onClick={() => setLineQuantity(l.index, l.line.quantity - 1, maxQuantity)}
                       className="h-full w-9 text-lg"
                     >
                       −
@@ -499,8 +500,8 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
                     <button
                       type="button"
                       aria-label={labels.increase}
-                      disabled={l.line.quantity >= MAX_LINE_QUANTITY}
-                      onClick={() => setLineQuantity(l.index, l.line.quantity + 1)}
+                      disabled={l.line.quantity >= maxQuantity}
+                      onClick={() => setLineQuantity(l.index, l.line.quantity + 1, maxQuantity)}
                       className="h-full w-9 text-lg disabled:opacity-40"
                     >
                       +

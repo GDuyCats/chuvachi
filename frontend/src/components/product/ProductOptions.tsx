@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Availability } from "@/lib/api";
-import { addToCart, cartItemCount, MAX_LINE_QUANTITY } from "@/lib/cart";
+import { addToCart, cartItemCount } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { portionsPerUnit, unitPrice } from "@/lib/pricing";
 import { isSoldOutToday, nextDayText } from "@/lib/shop-date";
@@ -44,11 +44,22 @@ type Props = {
   packages: OptionChoice[];
   soldOutUntil: string | null; // YYYY-MM-DD, or null
   availability: Availability; // the whole cake
+  maxQuantity: number; // most portions of one cake per order (shop setting)
   labels: ProductOptionsLabels;
 };
 
 // Flavor and size pickers, live price, quantity and the "Add to order" button.
-export function ProductOptions({ lang, slug, basePrice, flavors, packages, soldOutUntil, availability, labels }: Props) {
+export function ProductOptions({
+  lang,
+  slug,
+  basePrice,
+  flavors,
+  packages,
+  soldOutUntil,
+  availability,
+  maxQuantity,
+  labels,
+}: Props) {
   // Checked in the browser so a cached page stays right once the sold-out period ends.
   const [soldOut, setSoldOut] = useState(false);
   useEffect(() => {
@@ -85,7 +96,7 @@ export function ProductOptions({ lang, slug, basePrice, flavors, packages, soldO
 
   function handleAdd() {
     if (!canOrder) return;
-    const lines = addToCart({ productSlug: slug, flavorOptionId: flavorId, packageOptionId: packageId, quantity });
+    const lines = addToCart({ productSlug: slug, flavorOptionId: flavorId, packageOptionId: packageId, quantity }, maxQuantity);
     setAddedCount(cartItemCount(lines));
     setQuantity(1);
   }
@@ -186,7 +197,7 @@ export function ProductOptions({ lang, slug, basePrice, flavors, packages, soldO
           <button
             type="button"
             aria-label={labels.increase}
-            onClick={() => setQuantity((q) => Math.min(MAX_LINE_QUANTITY, q + 1))}
+            onClick={() => setQuantity((q) => Math.min(maxQuantity, q + 1))}
             className="h-full w-12 text-2xl"
           >
             +

@@ -11,6 +11,8 @@ export type CartLine = {
 
 const STORAGE_KEY = "chuvachi-cart";
 const CHANGE_EVENT = "chuvachi-cart-change";
+// The real limit is set in the admin (Settings > Order rules) and passed in by the pages;
+// this is only used before the shop settings have loaded.
 export const MAX_LINE_QUANTITY = 20;
 const EMPTY: CartLine[] = [];
 
@@ -87,23 +89,23 @@ function sameChoice(a: CartLine, b: CartLine): boolean {
 }
 
 // Adds a line, or increases the quantity if the same cake and options are already in the cart.
-export function addToCart(line: CartLine): CartLine[] {
+export function addToCart(line: CartLine, max = MAX_LINE_QUANTITY): CartLine[] {
   const lines = readCart();
   const existing = lines.find((l) => sameChoice(l, line));
   const next = existing
     ? lines.map((l) =>
-        sameChoice(l, line) ? { ...l, quantity: Math.min(MAX_LINE_QUANTITY, l.quantity + line.quantity) } : l,
+        sameChoice(l, line) ? { ...l, quantity: Math.min(max, l.quantity + line.quantity) } : l,
       )
-    : [...lines, { ...line, quantity: Math.min(MAX_LINE_QUANTITY, line.quantity) }];
+    : [...lines, { ...line, quantity: Math.min(max, line.quantity) }];
   writeCart(next);
   return next;
 }
 
-export function setLineQuantity(index: number, quantity: number): void {
+export function setLineQuantity(index: number, quantity: number, max = MAX_LINE_QUANTITY): void {
   const lines = readCart();
   if (!lines[index]) return;
   const next = lines.map((line, i) =>
-    i === index ? { ...line, quantity: Math.max(1, Math.min(MAX_LINE_QUANTITY, quantity)) } : line,
+    i === index ? { ...line, quantity: Math.max(1, Math.min(max, quantity)) } : line,
   );
   writeCart(next);
 }

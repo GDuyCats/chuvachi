@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "ShopSetting" ADD COLUMN     "maxQuantityPerItem" INTEGER NOT NULL DEFAULT 20,
+ADD COLUMN     "maxReviewPhotos" INTEGER NOT NULL DEFAULT 4,
+ADD COLUMN     "reportAlertThreshold" INTEGER NOT NULL DEFAULT 3,
+ADD COLUMN     "reviewWindowDays" INTEGER NOT NULL DEFAULT 30;

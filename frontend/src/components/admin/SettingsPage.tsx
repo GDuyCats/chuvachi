@@ -263,6 +263,14 @@ export function SettingsPage() {
           <p className="text-xs text-muted">{s.sold.minimumHint}</p>
         </Section>
 
+        <Section id="settings-reviews" title={s.reviews.title} hint={s.reviews.hint}>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {numberField("reviewWindowDays", s.reviews.windowDays)}
+            {numberField("maxReviewPhotos", s.reviews.maxPhotos)}
+            {numberField("reportAlertThreshold", s.reviews.reportAlert)}
+          </div>
+        </Section>
+
         <Section id="settings-business" title={s.business.title} hint={s.business.hint}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {textField("legalName", s.business.legalName)}
@@ -284,6 +292,7 @@ export function SettingsPage() {
             {numberField("largeOrderThreshold", s.rules.threshold)}
             {numberField("maxDaysAhead", s.rules.maxDays)}
             {numberField("unpaidCancelMinutes", s.rules.unpaid)}
+            {numberField("maxQuantityPerItem", s.rules.maxQuantity)}
           </div>
           <fieldset className="flex flex-col gap-2">
             <legend className="mb-2 text-sm font-semibold">{s.rules.closedDays}</legend>

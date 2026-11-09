@@ -32,6 +32,7 @@ const PLACES = [
   { key: "sold", href: "/admin/settings", target: "settings-sold", adminOnly: true },
   { key: "business", href: "/admin/settings", target: "settings-business", adminOnly: true },
   { key: "rules", href: "/admin/settings", target: "settings-rules", adminOnly: true },
+  { key: "reviewRules", href: "/admin/settings", target: "settings-reviews", adminOnly: true },
   { key: "zones", href: "/admin/settings", target: "settings-zones", adminOnly: true },
   { key: "capacity", href: "/admin/settings", target: "settings-capacity", adminOnly: true },
   { key: "telegram", href: "/admin/settings", target: "settings-telegram", adminOnly: true },

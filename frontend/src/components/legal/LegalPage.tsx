@@ -47,6 +47,7 @@ export async function LegalPage({ kind, lang, labels, shop }: Props) {
     smallLead: String(shop.smallOrderLeadHours),
     largeLead: String(shop.largeOrderLeadHours),
     largeThreshold: String(shop.largeOrderThreshold),
+    reviewDays: String(shop.reviewWindowDays),
   };
 
   const other: LegalKind = kind === "policies" ? "privacy" : "policies";

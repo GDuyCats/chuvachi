@@ -243,6 +243,10 @@ export type ShopSettings = {
   pauseMessageEn: string | null;
   showSoldCount: boolean;
   soldCountMinimum: number;
+  maxQuantityPerItem: number;
+  reviewWindowDays: number;
+  maxReviewPhotos: number;
+  reportAlertThreshold: number;
 };
 
 export type SalesReport = {

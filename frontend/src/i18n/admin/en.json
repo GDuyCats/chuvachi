@@ -200,7 +200,8 @@
       "threshold": "A large order starts at (portions)",
       "capacity": "Portions per day (default)",
       "maxDays": "Customers can order up to (days ahead)",
-      "unpaid": "Cancel unpaid orders after (minutes, 0 = never)"
+      "unpaid": "Cancel unpaid orders after (minutes, 0 = never)",
+      "maxQuantity": "Most portions of one cake per order"
     },
     "zones": {
       "title": "Delivery areas",
@@ -257,6 +258,13 @@
       "off": "Sold count is hidden",
       "minimum": "Only show from this many portions",
       "minimumHint": "Cakes that have sold only a few portions don't show it yet, so they don't look unpopular. Press Save at the bottom; the shop updates within a few minutes."
+    },
+    "reviews": {
+      "title": "Customer reviews",
+      "hint": "Takes effect as soon as you press Save changes at the bottom.",
+      "windowDays": "Customers can review for (days after delivery)",
+      "maxPhotos": "Photos per review (0 = no photos)",
+      "reportAlert": "Tell the shop after this many reports"
     }
   },
   "products": {
@@ -773,6 +781,11 @@
       "rules": {
         "label": "Opening hours, lead time, auto-cancel, delivery slots, closed days",
         "keywords": "opening hours lead time auto cancel slots closed days default portions",
+        "hint": ""
+      },
+      "reviewRules": {
+        "label": "Reviews: review window, photos, reports",
+        "keywords": "reviews days photos reports",
         "hint": ""
       },
       "zones": {

@@ -150,6 +150,14 @@ export async function createOrder(input: CreateOrderInput) {
     }
 
     const name = pickText(input.locale, product.nameVi, product.nameEn);
+    if (item.quantity > settings.maxQuantityPerItem) {
+      throw new OrderError(
+        "QUANTITY_TOO_HIGH",
+        `At most ${settings.maxQuantityPerItem} of ${product.slug} per order`,
+        400,
+        name,
+      );
+    }
     if (product.availability !== "AVAILABLE") {
       throw new OrderError(
         product.availability === "COMING_SOON" ? "PRODUCT_COMING_SOON" : "PRODUCT_UNAVAILABLE",

@@ -177,7 +177,8 @@
       "PRODUCT_SOLD_OUT": "{product} đang tạm hết vào ngày bạn chọn. Bạn chọn ngày khác hoặc bỏ bánh này khỏi đơn nhé.",
       "PRODUCT_LIMIT_REACHED": "{product} đã đủ đơn cho ngày bạn chọn. Bạn chọn ngày khác hoặc giảm số lượng nhé.",
       "PRODUCT_UNAVAILABLE": "{product} đang hết hàng. Bạn bỏ món này khỏi đơn rồi đặt lại nhé.",
-      "PRODUCT_COMING_SOON": "{product} chưa mở bán. Bạn bỏ món này khỏi đơn rồi đặt lại nhé."
+      "PRODUCT_COMING_SOON": "{product} chưa mở bán. Bạn bỏ món này khỏi đơn rồi đặt lại nhé.",
+      "QUANTITY_TOO_HIGH": "{product}: mỗi đơn đặt tối đa số phần tiệm cho phép. Bạn giảm số lượng giúp tiệm nhé."
     },
     "consentBefore": "Tôi đồng ý cho tiệm dùng thông tin của tôi để giao đơn, theo",
     "consentPrivacy": "Chính sách quyền riêng tư",
@@ -444,7 +445,7 @@
       "order": "Đơn {code}",
       "hint": "Mỗi bánh trong đơn được đánh giá một lần, sửa lại được tới hết ngày {deadline}.",
       "notDelivered": "Đơn này chưa giao xong. Nhận bánh rồi bạn quay lại đánh giá nhé.",
-      "tooLate": "Đã quá 30 ngày sau khi giao nên không đánh giá được nữa.",
+      "tooLate": "Đơn này đã quá hạn đánh giá.",
       "yourRating": "Chấm sao",
       "yourReview": "Cảm nhận của bạn (không bắt buộc)",
       "placeholder": "Bánh ngon không, ngọt vừa không, giao có đúng hẹn không...",
@@ -455,7 +456,7 @@
       "reviewed": "Đã đánh giá",
       "edit": "Sửa",
       "accountTitle": "Đánh giá bánh đã mua",
-      "accountEmpty": "Chưa có đơn nào đã giao trong 30 ngày qua.",
+      "accountEmpty": "Chưa có đơn đã giao nào còn trong hạn đánh giá.",
       "ratingWords": [
         "Rất tệ",
         "Tệ",
@@ -480,7 +481,7 @@
       "NETWORK": "Không kết nối được. Kiểm tra mạng rồi thử lại.",
       "FILE_TOO_LARGE": "Ảnh quá lớn (tối đa 8 MB).",
       "UNSUPPORTED_IMAGE": "Chỉ nhận ảnh JPG, PNG hoặc WebP.",
-      "TOO_MANY_PHOTOS": "Mỗi đánh giá tối đa 4 ảnh.",
+      "TOO_MANY_PHOTOS": "Bạn đã chọn nhiều ảnh hơn số tiệm cho phép.",
       "BAD_PHOTO": "Ảnh không hợp lệ, bạn thử tải lại nhé.",
       "PHOTO_BUYERS_ONLY": "Chỉ người đã mua bánh này mới đính ảnh được.",
       "STORAGE_NOT_CONFIGURED": "Tạm thời chưa nhận ảnh được. Vui lòng thử lại sau.",

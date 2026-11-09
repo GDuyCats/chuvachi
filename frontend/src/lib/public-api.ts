@@ -17,6 +17,7 @@ export type OrderSettings = {
   closedWeekdays: number[];
   maxDaysAhead: number;
   largeOrderThreshold: number;
+  maxQuantityPerItem: number;
   smallOrderLeadHours: number;
   largeOrderLeadHours: number;
   unpaidCancelMinutes: number;

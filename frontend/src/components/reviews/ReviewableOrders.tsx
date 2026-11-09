@@ -4,7 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { ApiError } from "@/lib/public-api";
-import { MAX_REVIEW_PHOTOS, reviewsApi, type ReviewableOrder } from "@/lib/reviews-api";
+import { reviewsApi, type ReviewableOrder } from "@/lib/reviews-api";
 import { PhotoGrid, PhotoPicker } from "./Photos";
 import { StarInput, Stars } from "./Stars";
 
@@ -56,6 +56,7 @@ export function ReviewableOrderBox({
               code={order.code}
               phone={phone}
               item={item}
+              maxPhotos={order.maxPhotos}
               labels={labels}
               onSaved={(review) =>
                 setItems((list) => list.map((i) => (i.productSlug === item.productSlug ? { ...i, review } : i)))
@@ -77,6 +78,7 @@ function ReviewItem({
   code,
   phone,
   item,
+  maxPhotos,
   labels,
   onSaved,
   onDeleted,
@@ -84,6 +86,7 @@ function ReviewItem({
   code: string;
   phone: string | null;
   item: Item;
+  maxPhotos: number;
   labels: Labels;
   onSaved: (review: NonNullable<Item["review"]>) => void;
   onDeleted: () => void;
@@ -164,15 +167,17 @@ function ReviewItem({
               className="border-[1.5px] border-black px-3 py-2 text-[15px] font-normal"
             />
           </label>
+          {maxPhotos > 0 && (
           <PhotoPicker
             photos={photos}
             onChange={setPhotos}
-            max={MAX_REVIEW_PHOTOS}
+            max={maxPhotos}
             upload={async (file) => (await reviewsApi.uploadReviewPhoto(file, { code, phone, productSlug: item.productSlug })).url}
             labels={labels.photos}
             errorText={(error) => errorText(labels, error)}
             onBusyChange={setUploading}
           />
+          )}
           <button type="submit" disabled={busy || uploading} className="min-h-11 self-start bg-black px-5 text-sm font-bold text-white disabled:opacity-50">
             {busy ? labels.sending : item.review ? labels.form.update : labels.form.submit}
           </button>

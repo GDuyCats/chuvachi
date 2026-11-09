@@ -49,7 +49,7 @@ const orderItemSchema = z.object({
   productSlug: z.string().regex(/^[a-z0-9-]{1,80}$/, "Invalid product"),
   flavorOptionId: optionIdSchema,
   packageOptionId: optionIdSchema,
-  quantity: z.number().int().min(1).max(20),
+  quantity: z.number().int().min(1).max(200), // the shop's own limit is checked when the order is created
   note: z.string().trim().max(200).optional(),
 });
 
@@ -155,6 +155,7 @@ ordersRouter.get("/order-settings", async (req, res) => {
     closedWeekdays: settings.closedWeekdays,
     maxDaysAhead: settings.maxDaysAhead,
     largeOrderThreshold: settings.largeOrderThreshold,
+    maxQuantityPerItem: settings.maxQuantityPerItem,
     smallOrderLeadHours: settings.smallOrderLeadHours,
     largeOrderLeadHours: settings.largeOrderLeadHours,
     unpaidCancelMinutes: settings.unpaidCancelMinutes,

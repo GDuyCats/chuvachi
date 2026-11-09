@@ -114,7 +114,9 @@ model ProductOption {
   portions   Int        @default(1) // portions per unit (PACKAGE only, e.g. box of 4 = 4)
   isActive   Boolean    @default(true) // false = hidden from customers
   availability Availability @default(AVAILABLE) // shown but maybe not orderable
+  dailyLimit Int?       // FLAVOR only: most portions of this flavor per delivery day; empty = no own limit
   sortOrder  Int        @default(0)
+  dayBookings ProductOptionDayBooking[]
 }
 
 model Combo {
@@ -268,6 +270,7 @@ model OrderItem {
   unitPrice       Int
   quantity        Int
   portions        Int    // total portions for this line
+  flavorOptionId  Int?   // chosen flavor (no link, so the order stays even if the flavor is removed); used to give back its daily limit
   note            String?
 }
 
@@ -291,6 +294,16 @@ model ProductDayBooking {
   bookedPortions Int      @default(0)
 
   @@id([productId, date])
+}
+
+// Portions already booked per flavor and delivery day (only flavors with their own daily limit).
+model ProductOptionDayBooking {
+  optionId       Int
+  option         ProductOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  date           DateTime      @db.Date
+  bookedPortions Int           @default(0)
+
+  @@id([optionId, date])
 }
 
 model DailyCapacity {

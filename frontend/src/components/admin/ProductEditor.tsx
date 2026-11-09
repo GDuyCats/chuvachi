@@ -63,7 +63,7 @@ function toInput(product: AdminProduct): AdminProductInput {
     isActive: product.isActive,
     isNew: product.isNew,
     sortOrder: product.sortOrder,
-    options: product.options.map(({ id, type, nameVi, nameEn, priceDelta, portions, isActive, availability, sortOrder }) => ({
+    options: product.options.map(({ id, type, nameVi, nameEn, priceDelta, portions, isActive, availability, dailyLimit, sortOrder }) => ({
       id,
       type,
       nameVi,
@@ -72,6 +72,7 @@ function toInput(product: AdminProduct): AdminProductInput {
       portions,
       isActive,
       availability,
+      dailyLimit,
       sortOrder,
     })),
   };
@@ -158,7 +159,17 @@ export function ProductEditor() {
             ...current,
             options: [
               ...current.options,
-              { type, nameVi: "", nameEn: "", priceDelta: 0, portions: 1, isActive: true, availability: "AVAILABLE", sortOrder: current.options.length + 1 },
+              {
+                type,
+                nameVi: "",
+                nameEn: "",
+                priceDelta: 0,
+                portions: 1,
+                isActive: true,
+                availability: "AVAILABLE",
+                dailyLimit: null,
+                sortOrder: current.options.length + 1,
+              },
             ],
           }
         : current,
@@ -244,7 +255,18 @@ export function ProductEditor() {
             />
           </label>
         ) : (
-          <span className="hidden md:block" />
+          <label className="flex flex-col gap-1 text-xs font-semibold">
+            {e.flavorDailyLimit}
+            <input
+              type="number"
+              min={1}
+              inputMode="numeric"
+              placeholder={t.products.stock.unlimited}
+              value={o.dailyLimit ?? ""}
+              onChange={(ev) => updateOption(i, { dailyLimit: ev.target.value === "" ? null : Number(ev.target.value) })}
+              className={inputClass(`options.${i}.dailyLimit`)}
+            />
+          </label>
         )}
         <label className="flex flex-col gap-1 text-xs font-semibold">
           {e.availability}

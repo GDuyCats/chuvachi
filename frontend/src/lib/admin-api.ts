@@ -291,6 +291,7 @@ export type AdminOption = {
   portions: number;
   isActive: boolean;
   availability: AdminAvailability;
+  dailyLimit: number | null; // flavors only: most portions per delivery day
   sortOrder: number;
 };
 
@@ -441,7 +442,7 @@ export const adminApi = {
       soldOutUntil: string | null;
       dailyLimit: number | null;
       availability: AdminAvailability;
-      options: { id: number; availability: AdminAvailability }[];
+      options: { id: number; availability: AdminAvailability; dailyLimit?: number | null }[];
     },
   ) =>
     request<AdminProduct>(`/products/${id}/stock`, { method: "PUT", body: JSON.stringify(input) }),

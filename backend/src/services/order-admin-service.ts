@@ -44,6 +44,19 @@ async function releaseCapacity(tx: Tx, orderId: number, deliveryDate: Date, port
       WHERE "productId" = ${item.productId} AND "date" = ${day}::date
     `;
   }
+  // And each flavor's own daily limit.
+  const flavors = await tx.orderItem.groupBy({
+    by: ["flavorOptionId"],
+    where: { orderId, flavorOptionId: { not: null } },
+    _sum: { portions: true },
+  });
+  for (const flavor of flavors) {
+    await tx.$executeRaw`
+      UPDATE "ProductOptionDayBooking"
+      SET "bookedPortions" = GREATEST("bookedPortions" - ${flavor._sum.portions ?? 0}, 0)
+      WHERE "optionId" = ${flavor.flavorOptionId} AND "date" = ${day}::date
+    `;
+  }
 }
 
 export type CancelDetails = {

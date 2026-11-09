@@ -39,6 +39,7 @@ const optionSchema = z.object({
   portions: z.number().int().min(1).max(100),
   isActive: z.boolean(),
   availability: z.nativeEnum(Availability).default("AVAILABLE"),
+  dailyLimit: z.number().int().min(1).max(10_000).nullable().default(null), // flavors only
   sortOrder: z.number().int().min(0).max(1000),
 });
 
@@ -131,7 +132,8 @@ async function syncOptions(tx: Prisma.TransactionClient, productId: number, opti
   const keptIds = new Set<number>();
 
   for (const option of options) {
-    const { id, ...data } = option;
+    const { id, ...fields } = option;
+    const data = { ...fields, dailyLimit: fields.type === OptionType.FLAVOR ? fields.dailyLimit : null };
     if (id && existingIds.has(id)) {
       await tx.productOption.update({ where: { id }, data });
       keptIds.add(id);
@@ -228,7 +230,13 @@ adminProductsRouter.put("/products/:id", requireAdminRole, async (req, res) => {
 const stockSchema = productSchema.pick({ soldOutUntil: true, dailyLimit: true, availability: true }).extend({
   // Availability of each flavor or box size, by option id
   options: z
-    .array(z.object({ id: z.number().int().positive(), availability: z.nativeEnum(Availability) }))
+    .array(
+      z.object({
+        id: z.number().int().positive(),
+        availability: z.nativeEnum(Availability),
+        dailyLimit: z.number().int().min(1).max(10_000).nullable().optional(), // flavors only
+      }),
+    )
     .max(40)
     .default([]),
 });
@@ -247,6 +255,12 @@ adminProductsRouter.put("/products/:id/stock", async (req, res) => {
           where: { id: option.id, productId: id.data },
           data: { availability: option.availability },
         });
+        if (option.dailyLimit !== undefined) {
+          await tx.productOption.updateMany({
+            where: { id: option.id, productId: id.data, type: OptionType.FLAVOR },
+            data: { dailyLimit: option.dailyLimit },
+          });
+        }
       }
       return tx.product.update({
         where: { id: id.data },

@@ -200,6 +200,7 @@ export async function createOrder(input: CreateOrderInput) {
       unitPrice,
       quantity: item.quantity,
       portions,
+      flavorOptionId: flavor?.id ?? null,
       note: item.note,
     };
   });
@@ -222,6 +223,19 @@ export async function createOrder(input: CreateOrderInput) {
     portionsByProduct.set(item.productId, (portionsByProduct.get(item.productId) ?? 0) + item.portions);
   }
   const limitedProducts = products.filter((product) => product.dailyLimit !== null);
+
+  // Portions per flavor, for flavors with their own daily limit (e.g. "mango: 10 a day")
+  const portionsByFlavor = new Map<number, number>();
+  for (const item of itemsData) {
+    if (item.flavorOptionId !== null) {
+      portionsByFlavor.set(item.flavorOptionId, (portionsByFlavor.get(item.flavorOptionId) ?? 0) + item.portions);
+    }
+  }
+  const limitedFlavors = products.flatMap((product) =>
+    product.options
+      .filter((option) => option.dailyLimit !== null && portionsByFlavor.has(option.id))
+      .map((option) => ({ option, product })),
+  );
 
   // 4. Reserve capacity and save the order in one transaction,
   // so two customers ordering at the same time cannot overbook a day.
@@ -259,6 +273,30 @@ export async function createOrder(input: CreateOrderInput) {
           `;
           if (booked === 0) {
             throw new OrderError("PRODUCT_LIMIT_REACHED", `${product.slug} is fully booked for this day`, 409, productName(product));
+          }
+        }
+
+        // And per flavor.
+        for (const { option, product } of limitedFlavors) {
+          const portions = portionsByFlavor.get(option.id) ?? 0;
+          await tx.productOptionDayBooking.createMany({
+            data: [{ optionId: option.id, date: deliveryDate }],
+            skipDuplicates: true,
+          });
+          const booked = await tx.$executeRaw`
+            UPDATE "ProductOptionDayBooking"
+            SET "bookedPortions" = "bookedPortions" + ${portions}
+            WHERE "optionId" = ${option.id}
+              AND "date" = ${formatDateOnly(deliveryDate)}::date
+              AND "bookedPortions" + ${portions} <= ${option.dailyLimit}
+          `;
+          if (booked === 0) {
+            throw new OrderError(
+              "FLAVOR_LIMIT_REACHED",
+              `${product.slug} flavor ${option.id} is fully booked for this day`,
+              409,
+              `${productName(product)} – ${pickText(input.locale, option.nameVi, option.nameEn)}`,
+            );
           }
         }
 

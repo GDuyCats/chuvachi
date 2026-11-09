@@ -343,7 +343,8 @@
       "availabilityProduct": "Tình trạng bánh",
       "availabilityHint": "Hết hàng hoặc Sắp ra mắt: bánh vẫn hiện trên menu kèm nhãn, nhưng khách không bấm đặt được. Giữ nguyên cho tới khi bạn đổi lại Đang bán.",
       "flavorLabel": "Vị {name}",
-      "sizeLabel": "Quy cách {name}"
+      "sizeLabel": "Quy cách {name}",
+      "flavorDailyLimit": "Tối đa mỗi ngày (phần)"
     },
     "loading": "Đang tải danh sách bánh...",
     "soldOutUntil": "Tạm hết đến {date}",
@@ -352,9 +353,10 @@
       "title": "Tình trạng bánh",
       "save": "Lưu",
       "saved": "Đã lưu. Trang khách cập nhật trong vài phút.",
-      "staffHint": "Nhân viên chỉ chỉnh được tình trạng (Đang bán / Hết hàng / Sắp ra mắt) của bánh và từng vị, Tạm hết đến ngày và Tối đa mỗi ngày. Muốn đổi giá, ảnh hay tên bánh thì nhờ admin.",
+      "staffHint": "Nhân viên chỉ chỉnh được tình trạng (Đang bán / Hết hàng / Sắp ra mắt) của bánh và từng vị, Tạm hết đến ngày, Tối đa mỗi ngày của bánh và của từng vị. Muốn đổi giá, ảnh hay tên bánh thì nhờ admin.",
       "unlimited": "Không giới hạn"
-    }
+    },
+    "flavorLimit": "{name}: tối đa {count}/ngày"
   },
   "close": "Đóng",
   "images": {

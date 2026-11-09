@@ -151,6 +151,18 @@ function ProductSummary({ product }: { product: AdminProduct }) {
               {p.limit.replace("{count}", String(product.dailyLimit))}
             </span>
           )}
+          {product.options
+            .filter((option) => option.isActive && option.type === "FLAVOR" && option.dailyLimit)
+            .map((option) => (
+              <span
+                key={`limit-${option.id}`}
+                className="border border-[#a8a8a8] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted"
+              >
+                {p.flavorLimit
+                  .replace("{name}", lang === "vi" ? option.nameVi : option.nameEn)
+                  .replace("{count}", String(option.dailyLimit))}
+              </span>
+            ))}
           {!product.isActive && (
             <span className="border border-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">{p.hidden}</span>
           )}
@@ -176,6 +188,15 @@ function StockEditor({ product, onSaved }: { product: AdminProduct; onSaved: (pr
   const [optionAvailability, setOptionAvailability] = useState<Record<number, AdminAvailability>>(() =>
     Object.fromEntries(activeOptions.map((option) => [option.id, option.availability])),
   );
+  // Each flavor's own daily limit, as typed ("" = no limit)
+  const [flavorLimits, setFlavorLimits] = useState<Record<number, string>>(() =>
+    Object.fromEntries(
+      activeOptions.filter((o) => o.type === "FLAVOR").map((o) => [o.id, o.dailyLimit ? String(o.dailyLimit) : ""]),
+    ),
+  );
+  const toLimit = (text: string) => (text.trim() === "" ? null : Number(text));
+  const isValidLimit = (value: number | null) => value === null || (Number.isInteger(value) && value >= 1);
+  const flavorLimitsValid = Object.values(flavorLimits).every((text) => isValidLimit(toLimit(text)));
   const [busy, setBusy] = useState(false);
 
   const limitNumber = dailyLimit.trim() === "" ? null : Number(dailyLimit);
@@ -189,7 +210,11 @@ function StockEditor({ product, onSaved }: { product: AdminProduct; onSaved: (pr
           soldOutUntil: soldOutUntil || null,
           dailyLimit: limitNumber,
           availability,
-          options: Object.entries(optionAvailability).map(([id, value]) => ({ id: Number(id), availability: value })),
+          options: Object.entries(optionAvailability).map(([id, value]) => ({
+            id: Number(id),
+            availability: value,
+            ...(Number(id) in flavorLimits ? { dailyLimit: toLimit(flavorLimits[Number(id)]) } : {}),
+          })),
         }),
       );
       toast.success(t.products.stock.saved);
@@ -220,20 +245,36 @@ function StockEditor({ product, onSaved }: { product: AdminProduct; onSaved: (pr
           </select>
         </label>
         {activeOptions.map((option) => (
-          <label key={option.id} className="flex flex-col gap-1.5 text-xs font-semibold">
-            {(option.type === "FLAVOR" ? e.flavorLabel : e.sizeLabel).replace("{name}", lang === "vi" ? option.nameVi : option.nameEn)}
-            <select
-              value={optionAvailability[option.id] ?? "AVAILABLE"}
-              onChange={(ev) => setOptionAvailability((current) => ({ ...current, [option.id]: ev.target.value as AdminAvailability }))}
-              className={cell}
-            >
-              {AVAILABILITIES.map((value) => (
-                <option key={value} value={value}>
-                  {t.availability[value]}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div key={option.id} className="flex flex-col gap-1.5">
+            <label className="flex flex-col gap-1.5 text-xs font-semibold">
+              {(option.type === "FLAVOR" ? e.flavorLabel : e.sizeLabel).replace("{name}", lang === "vi" ? option.nameVi : option.nameEn)}
+              <select
+                value={optionAvailability[option.id] ?? "AVAILABLE"}
+                onChange={(ev) => setOptionAvailability((current) => ({ ...current, [option.id]: ev.target.value as AdminAvailability }))}
+                className={cell}
+              >
+                {AVAILABILITIES.map((value) => (
+                  <option key={value} value={value}>
+                    {t.availability[value]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {option.type === "FLAVOR" && (
+              <label className="flex flex-col gap-1.5 text-xs font-semibold">
+                {e.flavorDailyLimit}
+                <input
+                  type="number"
+                  min={1}
+                  inputMode="numeric"
+                  placeholder={t.products.stock.unlimited}
+                  value={flavorLimits[option.id] ?? ""}
+                  onChange={(ev) => setFlavorLimits((current) => ({ ...current, [option.id]: ev.target.value }))}
+                  className={cell}
+                />
+              </label>
+            )}
+          </div>
         ))}
       </div>
     <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-[1fr_1fr_auto]">
@@ -260,7 +301,7 @@ function StockEditor({ product, onSaved }: { product: AdminProduct; onSaved: (pr
           className={cell}
         />
       </label>
-      <button type="button" disabled={busy || !limitValid} onClick={save} className="h-11 bg-black px-5 text-sm font-bold text-white disabled:opacity-50">
+      <button type="button" disabled={busy || !limitValid || !flavorLimitsValid} onClick={save} className="h-11 bg-black px-5 text-sm font-bold text-white disabled:opacity-50">
         {t.products.stock.save}
       </button>
     </div>

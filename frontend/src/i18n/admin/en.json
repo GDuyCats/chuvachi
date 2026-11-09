@@ -343,7 +343,8 @@
       "availabilityProduct": "Cake status",
       "availabilityHint": "Sold out or Coming soon: the cake stays on the menu with a label, but customers can't order it. Stays until you switch back to On sale.",
       "flavorLabel": "Flavor {name}",
-      "sizeLabel": "Size {name}"
+      "sizeLabel": "Size {name}",
+      "flavorDailyLimit": "Max per day (portions)"
     },
     "loading": "Loading products...",
     "soldOutUntil": "Sold out to {date}",
@@ -352,9 +353,10 @@
       "title": "Availability",
       "save": "Save",
       "saved": "Saved. The shop updates within a few minutes.",
-      "staffHint": "Staff can change the status (On sale / Sold out / Coming soon) of each cake and flavor, Sold out until and Daily limit. Ask an admin to change prices, photos or names.",
+      "staffHint": "Staff can change the status (On sale / Sold out / Coming soon) of each cake and flavor, Sold out until, and the daily limit of each cake and flavor. Ask an admin to change prices, photos or names.",
       "unlimited": "No limit"
-    }
+    },
+    "flavorLimit": "{name}: max {count}/day"
   },
   "close": "Close",
   "images": {

@@ -19,6 +19,7 @@ type Props = {
 export function SiteHeader({ lang, dict, searchIndex, searchLabels, bellLabels }: Props) {
   const links = [
     { href: `/${lang}/menu`, label: dict.menu },
+    { href: `/${lang}/orders`, label: dict.orders },
     { href: `/${lang}#new`, label: dict.new },
     { href: `/${lang}#seasonal`, label: dict.seasonal },
     { href: `/${lang}#coming-soon`, label: dict.comingSoon },

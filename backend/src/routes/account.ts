@@ -14,7 +14,7 @@ import { parseLocale, pickText } from "../lib/locale";
 import { normalizePhone, PHONE_PATTERN } from "../lib/phone";
 import { prisma } from "../lib/prisma";
 import { formatDateOnly } from "../lib/time";
-import { describeItem } from "../services/order-service";
+import { describeItem, findOrderForAccount } from "../services/order-service";
 import { deleteCustomerReviewContent } from "../services/review-service";
 import { rateLimitKey } from "../lib/client-ip";
 
@@ -204,6 +204,22 @@ const claimSchema = z.object({
 
 // POST /api/account/orders/claim  { code, phone }
 // Adds an order placed as a guest to the account. Needs the order's code and phone number.
+// GET /api/account/orders/:code?locale=vi - one order of the signed-in customer, same view as
+// the Track order page (opened from a notification or the "My orders" list, no phone needed)
+accountRouter.get("/account/orders/:code", requireCustomer, async (req, res) => {
+  const code = String(req.params.code);
+  if (!/^[A-Za-z0-9]{4,12}$/.test(code)) {
+    res.status(400).json({ error: "INVALID_LOOKUP" });
+    return;
+  }
+  const order = await findOrderForAccount(code, req.customerId!, parseLocale(req.query.locale));
+  if (!order) {
+    res.status(404).json({ error: "ORDER_NOT_FOUND" });
+    return;
+  }
+  res.json(order);
+});
+
 accountRouter.post("/account/orders/claim", requireCustomer, claimLimiter, async (req, res) => {
   const parsed = claimSchema.safeParse(req.body);
   if (!parsed.success) {

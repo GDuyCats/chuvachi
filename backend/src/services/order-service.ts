@@ -417,6 +417,16 @@ export async function createOrder(input: CreateOrderInput) {
 }
 
 // Looks up an order by code. The phone number must match, so strangers cannot read other orders.
+// The same view for a signed-in customer opening one of their own orders (no phone number needed).
+export async function findOrderForAccount(code: string, customerId: number, locale: Locale) {
+  const owner = await prisma.order.findUnique({
+    where: { code: code.toUpperCase() },
+    select: { customerId: true, customerPhone: true },
+  });
+  if (!owner || owner.customerId !== customerId) return null;
+  return findOrderForCustomer(code, owner.customerPhone, locale);
+}
+
 export async function findOrderForCustomer(code: string, phone: string, locale: Locale) {
   const order = await prisma.order.findUnique({
     where: { code: code.toUpperCase() },

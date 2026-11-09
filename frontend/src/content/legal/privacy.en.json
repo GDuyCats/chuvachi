@@ -173,6 +173,7 @@
           "list": [
             "Language cookie: remembers the language you chose.",
             "Browser storage: your cart and your latest order (to show the confirmation page).",
+            "Orders on this device: the code and phone number of orders you placed or looked up here, to open them again quickly (kept up to 90 days, only on your device; remove one on the My orders page).",
             "Service worker: a small file of the website used only to show notifications once you turn them on; it doesn't store pages or track you.",
             "We don't use advertising cookies or third-party tracking cookies."
           ]

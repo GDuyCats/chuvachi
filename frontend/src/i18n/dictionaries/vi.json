@@ -16,7 +16,8 @@
     "language": "Ngôn ngữ",
     "cart": "Đơn hàng của bạn",
     "signIn": "Đăng nhập",
-    "account": "Tài khoản của bạn"
+    "account": "Tài khoản của bạn",
+    "orders": "Đơn hàng"
   },
   "footer": {
     "tagline": "Panna cotta, tiramisu, mousse và brownie — làm mới mỗi ngày.",
@@ -350,7 +351,9 @@
       "TOO_MANY_REQUESTS": "Bạn thử quá nhiều lần. Đợi một lát rồi thử lại nhé.",
       "NETWORK": "Không kết nối được với tiệm. Bạn kiểm tra mạng rồi thử lại nhé.",
       "UNKNOWN": "Có lỗi xảy ra. Bạn thử lại giúp tiệm nhé."
-    }
+    },
+    "myOrdersLink": "Đơn hàng của tôi",
+    "myOrdersHint": "Xem trạng thái và chi tiết các đơn đã đặt."
   },
   "cancelReasons": {
     "OUT_OF_INGREDIENTS": "Tiệm hết nguyên liệu",
@@ -545,5 +548,20 @@
     "settings": "Cài đặt thông báo",
     "close": "Đóng",
     "justNow": "vừa xong"
+  },
+  "myOrders": {
+    "title": "Đơn hàng của tôi",
+    "intro": "Xem trạng thái các đơn bạn đã đặt. Bấm vào một đơn để xem chi tiết.",
+    "loading": "Đang tải đơn...",
+    "signInText": "Đăng nhập Google để xem mọi đơn đã đặt bằng tài khoản, trên mọi máy.",
+    "signIn": "Đăng nhập",
+    "deviceTitle": "Đơn trên máy này",
+    "deviceHint": "Những đơn bạn đã đặt hoặc tra cứu trên máy này. Máy nhớ số điện thoại của đơn để mở nhanh; bấm × để quên.",
+    "savedOn": "Lưu ngày {date}",
+    "open": "Xem đơn",
+    "forget": "Quên đơn {code} trên máy này",
+    "trackTitle": "Tra cứu đơn khác",
+    "trackHint": "Có mã đơn và số điện thoại đã đặt? Tra cứu bất kỳ đơn nào.",
+    "trackButton": "Tra cứu bằng mã đơn"
   }
 }

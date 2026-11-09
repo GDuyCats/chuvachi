@@ -2,7 +2,7 @@
 // never sees it; the browser simply sends it with each request.
 
 import type { Locale } from "@/i18n/config";
-import { request, type CancelReason } from "./public-api";
+import { request, type CancelReason, type OrderLookup } from "./public-api";
 
 export type CustomerProfile = {
   name: string;
@@ -75,6 +75,9 @@ export const accountApi = {
     announceChange();
   },
   orders: (locale: Locale) => request<AccountOrder[]>(`/api/account/orders?locale=${locale}`, { cache: "no-store" }),
+  // One of the customer's own orders, same view as the Track order page.
+  order: (code: string, locale: Locale) =>
+    request<OrderLookup>(`/api/account/orders/${encodeURIComponent(code)}?locale=${locale}`, { cache: "no-store" }),
   // Bell list on the website (newest first) and the number of unread ones.
   notifications: (locale: Locale) =>
     request<{ unread: number; items: CustomerNotice[] }>(`/api/account/notifications?locale=${locale}`, { cache: "no-store" }),

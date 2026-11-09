@@ -16,7 +16,8 @@
     "language": "Language",
     "cart": "Your order",
     "signIn": "Sign in",
-    "account": "Your account"
+    "account": "Your account",
+    "orders": "My orders"
   },
   "footer": {
     "tagline": "Panna cotta, tiramisu, mousse and brownies — made fresh every day.",
@@ -350,7 +351,9 @@
       "TOO_MANY_REQUESTS": "Too many tries. Please wait a moment and try again.",
       "NETWORK": "Can't reach the shop. Please check your connection and try again.",
       "UNKNOWN": "Something went wrong. Please try again."
-    }
+    },
+    "myOrdersLink": "My orders",
+    "myOrdersHint": "See the status and details of your orders."
   },
   "cancelReasons": {
     "OUT_OF_INGREDIENTS": "We ran out of ingredients",
@@ -545,5 +548,20 @@
     "settings": "Notification settings",
     "close": "Close",
     "justNow": "just now"
+  },
+  "myOrders": {
+    "title": "My orders",
+    "intro": "See the status of the orders you placed. Tap an order for its details.",
+    "loading": "Loading orders...",
+    "signInText": "Sign in with Google to see every order placed with your account, on any device.",
+    "signIn": "Sign in",
+    "deviceTitle": "Orders on this device",
+    "deviceHint": "Orders you placed or looked up on this device. It remembers each order's phone number to open it quickly; tap × to forget one.",
+    "savedOn": "Saved {date}",
+    "open": "View order",
+    "forget": "Forget order {code} on this device",
+    "trackTitle": "Look up another order",
+    "trackHint": "Have an order code and the phone number used? Look up any order.",
+    "trackButton": "Look up by order code"
   }
 }

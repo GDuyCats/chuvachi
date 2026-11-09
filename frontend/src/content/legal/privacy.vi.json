@@ -173,6 +173,7 @@
           "list": [
             "Cookie ngôn ngữ: nhớ ngôn ngữ bạn chọn.",
             "Bộ nhớ trình duyệt: giỏ hàng và đơn vừa đặt (để hiện trang xác nhận).",
+            "Đơn trên máy này: mã đơn và số điện thoại của những đơn bạn đặt hoặc tra cứu trên máy, để mở lại nhanh (giữ tối đa 90 ngày, chỉ nằm trên máy của bạn; xóa từng đơn ở trang Đơn hàng của tôi).",
             "Service worker: một tệp nhỏ của trang chỉ dùng để hiện thông báo khi bạn đã bật; không lưu trang hay theo dõi bạn.",
             "Tiệm không dùng cookie quảng cáo hay cookie theo dõi của bên thứ ba."
           ]

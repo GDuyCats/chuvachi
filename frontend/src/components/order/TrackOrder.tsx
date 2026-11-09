@@ -4,7 +4,9 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
+import { accountApi } from "@/lib/account-api";
 import { formatLongDate, formatSlot } from "@/lib/delivery-time";
+import { findDeviceOrder, rememberOrder } from "@/lib/my-orders";
 import { formatPrice } from "@/lib/format";
 import { ApiError, fetchOrder, type OrderLookup, type OrderStatus } from "@/lib/public-api";
 import { Skeleton, SkeletonGroup } from "../Skeleton";
@@ -44,7 +46,48 @@ export function TrackOrder({ lang, labels, cancelReasons, reviewLabels, pushLabe
   const [result, setResult] = useState<Result | null>(null);
   const [botToken, setBotToken] = useState<string | null>(null);
   const [botReset, setBotReset] = useState(0);
-  const [lookupPhone, setLookupPhone] = useState(""); // the phone that found the order, for reviews
+  // The phone that found the order (for reviews and notifications); null when opened from the account.
+  const [lookupPhone, setLookupPhone] = useState<string | null>(null);
+  // A phone this device remembers for the order in the link, waiting for the bot check to be ready.
+  const [autoPhone, setAutoPhone] = useState<string | null>(null);
+
+  // Opened with ?code=... (a notification, "My orders", the confirmation page): show the order right
+  // away when possible - signed in to the account that owns it, or this device remembers its phone.
+  useEffect(() => {
+    const initial = (searchParams.get("code") ?? "").trim().toUpperCase();
+    if (!initial) return;
+    let active = true;
+    setLoading(true);
+    accountApi
+      .order(initial, lang)
+      .then((order) => {
+        if (!active) return;
+        setResult({ kind: "found", order });
+        setLookupPhone(null);
+        setLoading(false);
+      })
+      .catch(() => {
+        if (!active) return;
+        setLoading(false);
+        const saved = findDeviceOrder(initial);
+        if (saved) {
+          setPhone(saved.phone);
+          setAutoPhone(saved.phone);
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, [searchParams, lang]);
+
+  // Look the remembered order up as soon as the bot check allows it.
+  useEffect(() => {
+    if (!autoPhone || (TURNSTILE_ENABLED && !botToken)) return;
+    const cleanCode = code.trim().toUpperCase();
+    setAutoPhone(null);
+    void lookup(cleanCode, autoPhone);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once when the token arrives
+  }, [autoPhone, botToken]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -54,6 +97,10 @@ export function TrackOrder({ lang, labels, cancelReasons, reviewLabels, pushLabe
       setResult({ kind: "error", code: "INVALID_LOOKUP" });
       return;
     }
+    await lookup(cleanCode, cleanPhone);
+  }
+
+  async function lookup(cleanCode: string, cleanPhone: string) {
     if (TURNSTILE_ENABLED && !botToken) {
       setResult({ kind: "error", code: "BOT_CHECK_PENDING" });
       return;
@@ -63,6 +110,7 @@ export function TrackOrder({ lang, labels, cancelReasons, reviewLabels, pushLabe
       const order = await fetchOrder(cleanCode, cleanPhone, lang, botToken);
       setResult({ kind: "found", order });
       setLookupPhone(cleanPhone);
+      rememberOrder(cleanCode, cleanPhone); // open it again later without typing
     } catch (error) {
       const errorCode = error instanceof ApiError ? error.code : "UNKNOWN";
       setResult(errorCode === "ORDER_NOT_FOUND" ? { kind: "notFound" } : { kind: "error", code: errorCode });
@@ -259,7 +307,17 @@ function OrderDetails({
 }
 
 // For a delivered order: the cakes the customer can now review (only buyers can review).
-function TrackReviews({ lang, code, phone, labels }: { lang: Locale; code: string; phone: string; labels: Dictionary["reviews"] }) {
+function TrackReviews({
+  lang,
+  code,
+  phone,
+  labels,
+}: {
+  lang: Locale;
+  code: string;
+  phone: string | null;
+  labels: Dictionary["reviews"];
+}) {
   const [order, setOrder] = useState<ReviewableOrder | null>(null);
 
   useEffect(() => {

@@ -16,8 +16,6 @@ import { AccountReviews } from "../reviews/ReviewableOrders";
 type Props = {
   lang: Locale;
   labels: Dictionary["account"];
-  statusLabels: Dictionary["track"]["steps"];
-  cancelReasons: Dictionary["cancelReasons"];
   reviewLabels: Dictionary["reviews"];
   pushLabels: Dictionary["push"];
 };
@@ -26,24 +24,18 @@ type Notice = { kind: "ok" | "error"; text: string } | null;
 
 const inputClass = "h-12 w-full border-[1.5px] border-black px-3.5 text-base font-normal";
 
-// The signed-in customer's page: their details, their orders, and account actions.
-export function AccountView({ lang, labels, statusLabels, cancelReasons, reviewLabels, pushLabels }: Props) {
+// The signed-in customer's page: their details, notifications, reviews and account actions.
+// Orders have their own page ("My orders", /[lang]/orders).
+export function AccountView({ lang, labels, reviewLabels, pushLabels }: Props) {
   const router = useRouter();
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
-  const [orders, setOrders] = useState<AccountOrder[]>([]);
   const [zones, setZones] = useState<{ id: number; name: string }[]>([]);
   const [failed, setFailed] = useState(false);
 
-  async function loadOrders() {
-    setOrders(await accountApi.orders(lang));
-  }
-
   useEffect(() => {
-    Promise.all([accountApi.me(), accountApi.orders(lang)])
-      .then(([me, list]) => {
-        setProfile(me);
-        setOrders(list);
-      })
+    accountApi
+      .me()
+      .then(setProfile)
       .catch((error: unknown) => {
         if (error instanceof ApiError && error.code === "UNAUTHORIZED") {
           router.replace(`/${lang}/login?next=${encodeURIComponent(`/${lang}/account`)}`);
@@ -97,17 +89,27 @@ export function AccountView({ lang, labels, statusLabels, cancelReasons, reviewL
         </div>
       </header>
 
-      <OrdersSection lang={lang} labels={labels} statusLabels={statusLabels} cancelReasons={cancelReasons} orders={orders} />
+      <Link
+        href={`/${lang}/orders`}
+        className="flex min-h-16 items-center justify-between gap-4 border-[1.5px] border-black p-5 hover:bg-surface"
+      >
+        <span className="flex flex-col gap-0.5">
+          <span className="font-bold">{labels.myOrdersLink}</span>
+          <span className="text-sm text-muted">{labels.myOrdersHint}</span>
+        </span>
+        <span aria-hidden="true" className="text-2xl">
+          →
+        </span>
+      </Link>
       <AccountPushSetting lang={lang} labels={pushLabels} />
       <AccountReviews lang={lang} labels={reviewLabels} />
-      <ClaimSection labels={labels} onClaimed={loadOrders} />
       <ProfileSection labels={labels} profile={profile} zones={zones} onSaved={setProfile} />
       <DangerSection lang={lang} labels={labels} />
     </div>
   );
 }
 
-function OrdersSection({
+export function OrdersSection({
   lang,
   labels,
   statusLabels,
@@ -177,7 +179,7 @@ function OrdersSection({
   );
 }
 
-function ClaimSection({ labels, onClaimed }: { labels: Dictionary["account"]; onClaimed: () => Promise<void> }) {
+export function ClaimSection({ labels, onClaimed }: { labels: Dictionary["account"]; onClaimed: () => Promise<void> }) {
   const [code, setCode] = useState("");
   const [phone, setPhone] = useState("");
   const [busy, setBusy] = useState(false);

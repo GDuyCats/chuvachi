@@ -30,6 +30,7 @@ import {
 import { accountApi, type CustomerProfile } from "@/lib/account-api";
 import { PhotoBox } from "../PhotoBox";
 import { QuantityInput } from "../QuantityInput";
+import { rememberOrder } from "@/lib/my-orders";
 import { TURNSTILE_ENABLED, TurnstileWidget } from "./TurnstileWidget";
 import { CheckoutSkeleton, Skeleton } from "../Skeleton";
 
@@ -222,6 +223,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
         })),
       }, botToken);
 
+      rememberOrder(result.code, phone.trim()); // "My orders" and notifications can open it on this device
       saveLastOrder({
         ...result,
         customerPhone: phone.trim(),

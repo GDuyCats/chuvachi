@@ -107,7 +107,14 @@
     "noFlavorNote": "Các vị của bánh này đang tạm hết, bạn quay lại sau nhé.",
     "pickFlavors": "Chọn số lượng cho từng vị",
     "flavorQuantity": "Số lượng vị {name}",
-    "units": "{count} món"
+    "units": "{count} món",
+    "mixTitle": "Chia vị cho hộp",
+    "mixHint": "Chọn đủ {size} phần cho mỗi hộp, ví dụ mỗi vị vài phần.",
+    "mixProgress": "Đã chọn {done}/{size} phần",
+    "mixRemaining": "Chọn thêm {count} phần",
+    "boxCount": "Số hộp giống nhau",
+    "addBox": "Thêm hộp vào đơn",
+    "extraPerPortion": "{price} mỗi phần"
   },
   "order": {
     "title": "Đơn hàng của bạn",
@@ -182,7 +189,8 @@
       "PRODUCT_UNAVAILABLE": "{product} đang hết hàng. Bạn bỏ món này khỏi đơn rồi đặt lại nhé.",
       "PRODUCT_COMING_SOON": "{product} chưa mở bán. Bạn bỏ món này khỏi đơn rồi đặt lại nhé.",
       "QUANTITY_TOO_HIGH": "{product}: mỗi đơn đặt tối đa số phần tiệm cho phép. Bạn giảm số lượng giúp tiệm nhé.",
-      "FLAVOR_LIMIT_REACHED": "{product} đã đủ đơn cho ngày bạn chọn. Bạn chọn vị khác, ngày khác hoặc giảm số lượng nhé."
+      "FLAVOR_LIMIT_REACHED": "{product} đã đủ đơn cho ngày bạn chọn. Bạn chọn vị khác, ngày khác hoặc giảm số lượng nhé.",
+      "INVALID_MIX": "Hộp mix chưa chia đủ số phần. Bạn xóa hộp này khỏi đơn rồi chọn lại ở trang bánh nhé."
     },
     "consentBefore": "Tôi đồng ý cho tiệm dùng thông tin của tôi để giao đơn, theo",
     "consentPrivacy": "Chính sách quyền riêng tư",

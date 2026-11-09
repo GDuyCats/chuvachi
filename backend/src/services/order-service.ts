@@ -1,4 +1,4 @@
-import { DeliveryType, OptionType, PaymentMethod, Prisma, ProductOption, ShopSetting } from "@prisma/client";
+import { DeliveryType, OptionType, PaymentMethod, Prisma, Product, ProductOption, ShopSetting } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { type Locale, pickText } from "../lib/locale";
 import { generateOrderCode } from "../lib/order-code";
@@ -35,6 +35,7 @@ export type CreateOrderInput = {
     productSlug: string;
     flavorOptionId?: number | null;
     packageOptionId?: number | null;
+    flavorMix?: { optionId: number; portions: number }[]; // mixed box, portions per box
     quantity: number;
     note?: string;
   }[];
@@ -61,6 +62,42 @@ function pickOption(
     throw new OrderError("INVALID_OPTION", `Product ${productSlug} needs a valid ${type.toLowerCase()} option`);
   }
   return chosen;
+}
+
+// Checks a mixed box: every flavor belongs to the cake and is on sale, no flavor twice,
+// and the portions add up to exactly the size of the box.
+function pickMix(
+  product: Product & { options: ProductOption[] },
+  mix: { optionId: number; portions: number }[],
+  packaging: ProductOption | null,
+): { option: ProductOption; portions: number }[] {
+  const boxSize = packaging?.portions ?? 1;
+  const seen = new Set<number>();
+  const parts = mix.map((part) => {
+    const option = product.options.find((o) => o.id === part.optionId && o.type === OptionType.FLAVOR && o.isActive);
+    if (!option || seen.has(option.id)) {
+      throw new OrderError("INVALID_OPTION", `Product ${product.slug} has an invalid flavor mix`);
+    }
+    seen.add(option.id);
+    return { option, portions: part.portions };
+  });
+  if (boxSize < 2 || parts.reduce((sum, p) => sum + p.portions, 0) !== boxSize) {
+    throw new OrderError("INVALID_MIX", `The flavors of ${product.slug} must add up to ${boxSize} portions`);
+  }
+  return parts;
+}
+
+// Reads the saved "flavorMix" of an order line ([{ optionId, portions }]); anything else gives [].
+export function mixParts(value: unknown): { optionId: number; portions: number }[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((part) =>
+    typeof part === "object" &&
+    part !== null &&
+    typeof (part as { optionId?: unknown }).optionId === "number" &&
+    typeof (part as { portions?: unknown }).portions === "number"
+      ? [{ optionId: (part as { optionId: number }).optionId, portions: (part as { portions: number }).portions }]
+      : [],
+  );
 }
 
 // Works out the delivery day (and slot for scheduled orders) and checks it against the shop rules.
@@ -167,9 +204,13 @@ export async function createOrder(input: CreateOrderInput) {
       );
     }
 
-    const flavor = pickOption(product.options, OptionType.FLAVOR, item.flavorOptionId, product.slug);
     const packaging = pickOption(product.options, OptionType.PACKAGE, item.packageOptionId, product.slug);
-    for (const option of [flavor, packaging]) {
+    // A mixed box splits its portions between flavors; otherwise one flavor for the whole line.
+    const mix = item.flavorMix && item.flavorMix.length > 0 ? pickMix(product, item.flavorMix, packaging) : null;
+    const flavor = mix
+      ? null
+      : pickOption(product.options, OptionType.FLAVOR, item.flavorOptionId, product.slug);
+    for (const option of [flavor, packaging, ...(mix?.map((m) => m.option) ?? [])]) {
       if (option && option.availability !== "AVAILABLE") {
         throw new OrderError(
           option.availability === "COMING_SOON" ? "PRODUCT_COMING_SOON" : "PRODUCT_UNAVAILABLE",
@@ -182,9 +223,20 @@ export async function createOrder(input: CreateOrderInput) {
 
     const portionsPerUnit = packaging?.portions ?? 1;
     // unit price = (base price + flavor extra) * portions in the package + package adjustment
-    const unitPrice =
-      (product.basePrice + (flavor?.priceDelta ?? 0)) * portionsPerUnit + (packaging?.priceDelta ?? 0);
+    // Same rule as the website: (base + flavor extra) per portion, plus the box adjustment.
+    const flavorExtras = mix
+      ? mix.reduce((sum, m) => sum + m.option.priceDelta * m.portions, 0)
+      : (flavor?.priceDelta ?? 0) * portionsPerUnit;
+    const unitPrice = product.basePrice * portionsPerUnit + flavorExtras + (packaging?.priceDelta ?? 0);
     const portions = portionsPerUnit * item.quantity;
+    // Shown everywhere a flavor name is shown: "Mango ×2, Strawberry ×4"
+    const mixName = mix
+      ? {
+          id: null,
+          nameVi: mix.map((m) => `${m.option.nameVi} ×${m.portions}`).join(", "),
+          nameEn: mix.map((m) => `${m.option.nameEn} ×${m.portions}`).join(", "),
+        }
+      : null;
 
     total += unitPrice * item.quantity;
     totalPortions += portions;
@@ -194,13 +246,20 @@ export async function createOrder(input: CreateOrderInput) {
       nameSnapshot: product.nameVi,
       optionsSnapshot: {
         product: { nameVi: product.nameVi, nameEn: product.nameEn },
-        flavor: flavor ? { id: flavor.id, nameVi: flavor.nameVi, nameEn: flavor.nameEn } : null,
+        flavor: mixName ?? (flavor ? { id: flavor.id, nameVi: flavor.nameVi, nameEn: flavor.nameEn } : null),
+        flavorMix: mix
+          ? mix.map((m) => ({ id: m.option.id, nameVi: m.option.nameVi, nameEn: m.option.nameEn, portions: m.portions }))
+          : null,
         package: packaging ? { id: packaging.id, nameVi: packaging.nameVi, nameEn: packaging.nameEn } : null,
       },
       unitPrice,
       quantity: item.quantity,
       portions,
       flavorOptionId: flavor?.id ?? null,
+      // Portions of each flavor for the whole line (boxes × portions per box), for the daily limits.
+      flavorMix: mix
+        ? (mix.map((m) => ({ optionId: m.option.id, portions: m.portions * item.quantity })) as Prisma.InputJsonArray)
+        : Prisma.JsonNull,
       note: item.note,
     };
   });
@@ -229,6 +288,9 @@ export async function createOrder(input: CreateOrderInput) {
   for (const item of itemsData) {
     if (item.flavorOptionId !== null) {
       portionsByFlavor.set(item.flavorOptionId, (portionsByFlavor.get(item.flavorOptionId) ?? 0) + item.portions);
+    }
+    for (const part of mixParts(item.flavorMix)) {
+      portionsByFlavor.set(part.optionId, (portionsByFlavor.get(part.optionId) ?? 0) + part.portions);
     }
   }
   const limitedFlavors = products.flatMap((product) =>

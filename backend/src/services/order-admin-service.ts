@@ -3,6 +3,7 @@ import { prisma } from "../lib/prisma";
 import { formatDateOnly } from "../lib/time";
 import { notifyOrderChangeLater } from "./customer-push";
 import { notifyAutoCancelled } from "./notifications";
+import { mixParts } from "./order-service";
 
 // The normal path an order follows. Cancelling is possible from any step before "completed".
 const NEXT_STATUS: Partial<Record<OrderStatus, OrderStatus>> = {
@@ -44,17 +45,25 @@ async function releaseCapacity(tx: Tx, orderId: number, deliveryDate: Date, port
       WHERE "productId" = ${item.productId} AND "date" = ${day}::date
     `;
   }
-  // And each flavor's own daily limit.
-  const flavors = await tx.orderItem.groupBy({
-    by: ["flavorOptionId"],
-    where: { orderId, flavorOptionId: { not: null } },
-    _sum: { portions: true },
+  // And each flavor's own daily limit (one flavor per line, or a mixed box).
+  const lines = await tx.orderItem.findMany({
+    where: { orderId },
+    select: { flavorOptionId: true, flavorMix: true, portions: true },
   });
-  for (const flavor of flavors) {
+  const byFlavor = new Map<number, number>();
+  for (const line of lines) {
+    if (line.flavorOptionId !== null) {
+      byFlavor.set(line.flavorOptionId, (byFlavor.get(line.flavorOptionId) ?? 0) + line.portions);
+    }
+    for (const part of mixParts(line.flavorMix)) {
+      byFlavor.set(part.optionId, (byFlavor.get(part.optionId) ?? 0) + part.portions);
+    }
+  }
+  for (const [optionId, portions] of byFlavor) {
     await tx.$executeRaw`
       UPDATE "ProductOptionDayBooking"
-      SET "bookedPortions" = GREATEST("bookedPortions" - ${flavor._sum.portions ?? 0}, 0)
-      WHERE "optionId" = ${flavor.flavorOptionId} AND "date" = ${day}::date
+      SET "bookedPortions" = GREATEST("bookedPortions" - ${portions}, 0)
+      WHERE "optionId" = ${optionId} AND "date" = ${day}::date
     `;
   }
 }

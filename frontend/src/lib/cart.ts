@@ -2,10 +2,14 @@
 // It only stores which cake, options and quantity were chosen - never prices.
 // Prices are always recalculated from the database when the order is placed.
 
+export type FlavorPart = { optionId: number; portions: number };
+
 export type CartLine = {
   productSlug: string;
   flavorOptionId: number | null;
   packageOptionId: number | null;
+  // Mixed box: portions of each flavor in one box (adds up to the box size). flavorOptionId is then null.
+  flavorMix?: FlavorPart[];
   quantity: number;
 };
 
@@ -24,8 +28,26 @@ function isCartLine(value: unknown): value is CartLine {
     (line.flavorOptionId === null || typeof line.flavorOptionId === "number") &&
     (line.packageOptionId === null || typeof line.packageOptionId === "number") &&
     typeof line.quantity === "number" &&
-    line.quantity > 0
+    line.quantity > 0 &&
+    (line.flavorMix === undefined ||
+      (Array.isArray(line.flavorMix) &&
+        line.flavorMix.every(
+          (part) =>
+            typeof part === "object" &&
+            part !== null &&
+            typeof (part as FlavorPart).optionId === "number" &&
+            typeof (part as FlavorPart).portions === "number",
+        )))
   );
+}
+
+// Same flavors in the same amounts, whatever the order they were picked in.
+function mixKey(mix: FlavorPart[] | undefined): string {
+  if (!mix || mix.length === 0) return "";
+  return [...mix]
+    .sort((a, b) => a.optionId - b.optionId)
+    .map((part) => `${part.optionId}:${part.portions}`)
+    .join(",");
 }
 
 function readRaw(): string | null {
@@ -84,7 +106,8 @@ function sameChoice(a: CartLine, b: CartLine): boolean {
   return (
     a.productSlug === b.productSlug &&
     a.flavorOptionId === b.flavorOptionId &&
-    a.packageOptionId === b.packageOptionId
+    a.packageOptionId === b.packageOptionId &&
+    mixKey(a.flavorMix) === mixKey(b.flavorMix)
   );
 }
 

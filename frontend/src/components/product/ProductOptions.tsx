@@ -7,6 +7,7 @@ import type { Availability } from "@/lib/api";
 import { addToCart, cartItemCount } from "@/lib/cart";
 import { QuantityInput } from "../QuantityInput";
 import { formatPrice } from "@/lib/format";
+import { fetchOrderSettings } from "@/lib/public-api";
 import { portionsPerUnit, unitPrice } from "@/lib/pricing";
 import { isSoldOutToday, nextDayText } from "@/lib/shop-date";
 
@@ -38,6 +39,13 @@ export type ProductOptionsLabels = {
   pickFlavors: string; // "Choose how many of each flavor"
   flavorQuantity: string; // "{name} quantity" (screen readers)
   units: string; // "{count} items" on the add button
+  mixTitle: string; // "Split flavors for the box"
+  mixHint: string; // "{size}" = portions in the box
+  mixProgress: string; // "{done}/{size} portions chosen"
+  mixRemaining: string; // "Choose {count} more portions"
+  boxCount: string; // "Number of identical boxes"
+  addBox: string; // "Add box to order"
+  extraPerPortion: string; // "{price} per portion"
 };
 
 type Props = {
@@ -48,7 +56,7 @@ type Props = {
   packages: OptionChoice[];
   soldOutUntil: string | null; // YYYY-MM-DD, or null
   availability: Availability; // the whole cake
-  maxQuantity: number; // most portions of one cake per order (shop setting)
+  maxQuantity: number; // most of one flavor per order (shop setting); refreshed from the server on load
   labels: ProductOptionsLabels;
 };
 
@@ -61,9 +69,17 @@ export function ProductOptions({
   packages,
   soldOutUntil,
   availability,
-  maxQuantity,
+  maxQuantity: pageMaxQuantity,
   labels,
 }: Props) {
+  // The page may be cached for a few minutes, so ask the server for the current limit.
+  const [maxQuantity, setMaxQuantity] = useState(pageMaxQuantity);
+  useEffect(() => {
+    fetchOrderSettings(lang)
+      .then((settings) => setMaxQuantity(settings.maxQuantityPerItem))
+      .catch(() => undefined); // keep the page's number if the server can't be reached
+  }, [lang]);
+
   // Checked in the browser so a cached page stays right once the sold-out period ends.
   const [soldOut, setSoldOut] = useState(false);
   useEffect(() => {
@@ -82,21 +98,38 @@ export function ProductOptions({
   // Cakes with flavors: a quantity per flavor (e.g. 2 mango + 2 strawberry). Without flavors: one quantity.
   const [counts, setCounts] = useState<Record<number, number>>(startCounts);
   const [quantity, setQuantity] = useState(1);
+  // Mixed box (box of 4, 6...): portions of each flavor in ONE box, and how many such boxes.
+  const [mix, setMix] = useState<Record<number, number>>({});
+  const [boxes, setBoxes] = useState(1);
   const [addedCount, setAddedCount] = useState<number | null>(null);
 
   const hasFlavors = flavors.length > 0;
   const pack = packages.find((p) => p.id === packageId) ?? null;
   const portions = portionsPerUnit(pack);
   const basePackPrice = unitPrice(basePrice, null, pack);
+  const isMixBox = hasFlavors && portions > 1;
 
-  // What will be added: one line per flavor with a quantity above 0.
+  // Mixed box: which flavors fill the box so far.
+  const mixChosen = flavors
+    .filter((f) => f.availability === "AVAILABLE" && (mix[f.id] ?? 0) > 0)
+    .map((f) => ({ flavor: f, portions: mix[f.id] }));
+  const mixFilled = mixChosen.reduce((sum, part) => sum + part.portions, 0);
+  const mixBoxPrice = basePackPrice + mixChosen.reduce((sum, part) => sum + part.flavor.priceDelta * part.portions, 0);
+
+  // Single portions: one line per flavor with a quantity above 0.
   const chosen = hasFlavors
     ? flavors
         .filter((f) => f.availability === "AVAILABLE" && (counts[f.id] ?? 0) > 0)
         .map((f) => ({ flavor: f, quantity: counts[f.id] }))
     : [{ flavor: null, quantity }];
-  const totalUnits = chosen.reduce((sum, line) => sum + line.quantity, 0);
-  const totalPrice = chosen.reduce((sum, line) => sum + unitPrice(basePrice, line.flavor, pack) * line.quantity, 0);
+  const totalUnits = isMixBox
+    ? mixFilled === portions
+      ? boxes
+      : 0
+    : chosen.reduce((sum, line) => sum + line.quantity, 0);
+  const totalPrice = isMixBox
+    ? mixBoxPrice * boxes
+    : chosen.reduce((sum, line) => sum + unitPrice(basePrice, line.flavor, pack) * line.quantity, 0);
 
   // Why the cake can't be ordered right now, if it can't.
   const noFlavorLeft = hasFlavors && flavors.every((f) => f.availability !== "AVAILABLE");
@@ -117,9 +150,42 @@ export function ProductOptions({
     setCounts((current) => ({ ...current, [flavorId]: Math.max(0, Math.min(maxQuantity, value)) }));
   }
 
+  function selectPackage(id: number) {
+    setPackageId(id);
+    setMix({}); // a different box size needs a new split
+    setBoxes(1);
+  }
+
+  function setMixPortions(flavorId: number, value: number) {
+    setMix((current) => {
+      const others = Object.entries(current).reduce((sum, [id, n]) => (Number(id) === flavorId ? sum : sum + n), 0);
+      return { ...current, [flavorId]: Math.max(0, Math.min(portions - others, value)) };
+    });
+  }
+
   function handleAdd() {
     if (!canOrder) return;
     let lines: ReturnType<typeof addToCart> | null = null;
+    if (isMixBox) {
+      // A box of one flavor is saved like any other line; a real mix keeps its split.
+      const single = mixChosen.length === 1 ? mixChosen[0].flavor.id : null;
+      lines = addToCart(
+        single !== null
+          ? { productSlug: slug, flavorOptionId: single, packageOptionId: packageId, quantity: boxes }
+          : {
+              productSlug: slug,
+              flavorOptionId: null,
+              packageOptionId: packageId,
+              flavorMix: mixChosen.map((part) => ({ optionId: part.flavor.id, portions: part.portions })),
+              quantity: boxes,
+            },
+        maxQuantity,
+      );
+      setAddedCount(cartItemCount(lines));
+      setMix({});
+      setBoxes(1);
+      return;
+    }
     for (const line of chosen) {
       lines = addToCart(
         { productSlug: slug, flavorOptionId: line.flavor?.id ?? null, packageOptionId: packageId, quantity: line.quantity },
@@ -137,11 +203,18 @@ export function ProductOptions({
       : "cursor-not-allowed border-[1.5px] border-dashed border-[#a8a8a8] bg-white text-[#8a8a8a]";
 
   // [−] [n] [+] control where the number can also be typed; "label" names it for screen readers.
-  const stepper = (value: number, onChange: (next: number) => void, label: string, min: number, disabled = false) => (
+  const stepper = (
+    value: number,
+    onChange: (next: number) => void,
+    label: string,
+    min: number,
+    disabled = false,
+    max = maxQuantity,
+  ) => (
     <QuantityInput
       value={value}
       min={min}
-      max={maxQuantity}
+      max={max}
       onChange={onChange}
       label={label}
       decreaseLabel={labels.decrease}
@@ -187,7 +260,7 @@ export function ProductOptions({
                   type="button"
                   disabled={!available}
                   aria-pressed={option.id === packageId}
-                  onClick={() => setPackageId(option.id)}
+                  onClick={() => selectPackage(option.id)}
                   className={`flex min-h-16 flex-col items-center justify-center gap-1 px-2 ${optionButton(option.id === packageId && available, available)}`}
                 >
                   <span className="text-[15px] font-bold">{option.name}</span>
@@ -201,7 +274,52 @@ export function ProductOptions({
         </fieldset>
       )}
 
-      {hasFlavors ? (
+      {isMixBox ? (
+        <fieldset className="flex flex-col">
+          <legend className="mb-1 text-sm font-bold uppercase tracking-wider">{labels.mixTitle}</legend>
+          <p className="mb-2 text-sm text-muted">{labels.mixHint.replace("{size}", String(portions))}</p>
+          <p aria-live="polite" className={`mb-1 text-sm font-bold ${mixFilled === portions ? "text-ink" : "text-muted"}`}>
+            {labels.mixProgress.replace("{done}", String(mixFilled)).replace("{size}", String(portions))}
+          </p>
+          <ul className="flex flex-col">
+            {flavors.map((option) => {
+              const available = option.availability === "AVAILABLE";
+              const current = available ? (mix[option.id] ?? 0) : 0;
+              return (
+                <li key={option.id} className="flex items-center justify-between gap-3 border-b border-line py-2.5 last:border-b-0">
+                  <span className={`flex min-w-0 flex-col ${available ? "" : "text-[#8a8a8a]"}`}>
+                    <span className="text-[15px] font-semibold">{option.name}</span>
+                    {!available ? (
+                      <span className="text-xs font-bold uppercase tracking-wider">{statusLabel(option.availability)}</span>
+                    ) : (
+                      option.priceDelta !== 0 && (
+                        <span className="text-xs text-muted">
+                          {labels.extraPerPortion.replace(
+                            "{price}",
+                            `${option.priceDelta > 0 ? "+" : "−"}${formatPrice(Math.abs(option.priceDelta), lang)}`,
+                          )}
+                        </span>
+                      )
+                    )}
+                  </span>
+                  {stepper(
+                    current,
+                    (next) => setMixPortions(option.id, next),
+                    labels.flavorQuantity.replace("{name}", option.name),
+                    0,
+                    !available || blockedNote !== null,
+                    current + (portions - mixFilled),
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+          <div className="mt-4 flex items-center justify-between gap-3">
+            <span className="text-sm font-bold uppercase tracking-wider">{labels.boxCount}</span>
+            {stepper(boxes, (next) => setBoxes(Math.max(1, Math.min(maxQuantity, next))), labels.boxCount, 1, blockedNote !== null)}
+          </div>
+        </fieldset>
+      ) : hasFlavors ? (
         <fieldset className="flex flex-col">
           <legend className="mb-1 text-sm font-bold uppercase tracking-wider">{labels.flavor}</legend>
           <p className="mb-2 text-sm text-muted">{labels.pickFlavors}</p>
@@ -253,8 +371,12 @@ export function ProductOptions({
           ? availability === "COMING_SOON"
             ? labels.comingSoon
             : labels.outOfStock
-          : totalUnits === 0
+          : isMixBox && mixFilled < portions
+            ? labels.mixRemaining.replace("{count}", String(portions - mixFilled))
+            : totalUnits === 0
             ? labels.pickFlavors
+            : isMixBox
+            ? `${labels.addBox} · ${formatPrice(totalPrice, lang)}`
             : `${labels.addToOrder} · ${hasFlavors ? `${labels.units.replace("{count}", String(totalUnits))} · ` : ""}${formatPrice(totalPrice, lang)}`}
       </button>
 

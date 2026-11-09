@@ -107,7 +107,14 @@
     "noFlavorNote": "Every flavor of this cake is unavailable right now. Please check back later.",
     "pickFlavors": "Choose how many of each flavor",
     "flavorQuantity": "{name} quantity",
-    "units": "{count} items"
+    "units": "{count} items",
+    "mixTitle": "Choose flavors for the box",
+    "mixHint": "Fill all {size} portions of each box, e.g. a few of each flavor.",
+    "mixProgress": "{done}/{size} portions chosen",
+    "mixRemaining": "Choose {count} more",
+    "boxCount": "Identical boxes",
+    "addBox": "Add box to order",
+    "extraPerPortion": "{price} per portion"
   },
   "order": {
     "title": "Your order",
@@ -182,7 +189,8 @@
       "PRODUCT_UNAVAILABLE": "{product} is sold out. Please remove it from your order and try again.",
       "PRODUCT_COMING_SOON": "{product} isn't on sale yet. Please remove it from your order and try again.",
       "QUANTITY_TOO_HIGH": "{product}: that is more portions than the shop takes per order. Please lower the quantity.",
-      "FLAVOR_LIMIT_REACHED": "{product} is fully booked for the day you chose. Please pick another flavor or day, or lower the quantity."
+      "FLAVOR_LIMIT_REACHED": "{product} is fully booked for the day you chose. Please pick another flavor or day, or lower the quantity.",
+      "INVALID_MIX": "A mixed box doesn't add up to its size. Please remove it and choose again on the cake page."
     },
     "consentBefore": "I agree that the shop may use my details to deliver this order, as described in the",
     "consentPrivacy": "Privacy policy",

@@ -49,6 +49,12 @@ const orderItemSchema = z.object({
   productSlug: z.string().regex(/^[a-z0-9-]{1,80}$/, "Invalid product"),
   flavorOptionId: optionIdSchema,
   packageOptionId: optionIdSchema,
+  // A box shared between flavors, e.g. box of 6 = 2 mango + 2 strawberry + 2 blueberry (portions per box).
+  flavorMix: z
+    .array(z.object({ optionId: z.number().int().positive(), portions: z.number().int().min(1).max(100) }))
+    .min(1)
+    .max(20)
+    .optional(),
   quantity: z.number().int().min(1).max(200), // the shop's own limit is checked when the order is created
   note: z.string().trim().max(200).optional(),
 });

@@ -68,9 +68,27 @@ function resolveLine(line: CartLine, index: number, catalog: Map<string, Catalog
   if (!product) return null;
   const flavors = product.options.filter((o) => o.type === "FLAVOR");
   const packages = product.options.filter((o) => o.type === "PACKAGE");
-  const flavor = flavors.find((o) => o.id === line.flavorOptionId) ?? null;
   const pack = packages.find((o) => o.id === line.packageOptionId) ?? null;
-  if ((flavors.length > 0 && !flavor) || (packages.length > 0 && !pack)) return null;
+  if (packages.length > 0 && !pack) return null;
+
+  // Mixed box: "Mango ×2, Strawberry ×4"; every flavor must still be on the menu.
+  if (line.flavorMix && line.flavorMix.length > 0) {
+    const parts = line.flavorMix.map((part) => ({ part, option: flavors.find((o) => o.id === part.optionId) ?? null }));
+    if (parts.some((p) => p.option === null)) return null;
+    const extras = parts.reduce((sum, p) => sum + (p.option?.priceDelta ?? 0) * p.part.portions, 0);
+    return {
+      index,
+      line,
+      name: product.name,
+      detail: [parts.map((p) => `${p.option?.name} ×${p.part.portions}`).join(", "), pack?.name].filter(Boolean).join(" · "),
+      imageUrl: product.imageUrl,
+      unitPrice: unitPrice(product.basePrice, null, pack) + extras,
+      portions: portionsPerUnit(pack),
+    };
+  }
+
+  const flavor = flavors.find((o) => o.id === line.flavorOptionId) ?? null;
+  if (flavors.length > 0 && !flavor) return null;
   return {
     index,
     line,
@@ -199,6 +217,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
           productSlug: line.productSlug,
           flavorOptionId: line.flavorOptionId,
           packageOptionId: line.packageOptionId,
+          ...(line.flavorMix && line.flavorMix.length > 0 ? { flavorMix: line.flavorMix } : {}),
           quantity: line.quantity,
         })),
       }, botToken);

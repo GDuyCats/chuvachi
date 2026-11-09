@@ -48,6 +48,7 @@ export type PlaceOrderRequest = {
   items: {
     productSlug: string;
     flavorOptionId: number | null;
+    flavorMix?: { optionId: number; portions: number }[];
     packageOptionId: number | null;
     quantity: number;
   }[];

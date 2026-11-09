@@ -271,6 +271,7 @@ model OrderItem {
   quantity        Int
   portions        Int    // total portions for this line
   flavorOptionId  Int?   // chosen flavor (no link, so the order stays even if the flavor is removed); used to give back its daily limit
+  flavorMix       Json?  // mixed box: [{ "optionId": 3, "portions": 4 }] = portions of each flavor for the whole line
   note            String?
 }
 

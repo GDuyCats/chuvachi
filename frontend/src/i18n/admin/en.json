@@ -201,7 +201,7 @@
       "capacity": "Portions per day (default)",
       "maxDays": "Customers can order up to (days ahead)",
       "unpaid": "Cancel unpaid orders after (minutes, 0 = never)",
-      "maxQuantity": "Most portions of one cake per order"
+      "maxQuantity": "Most of one flavor per order (items, 1 box = 1 item)"
     },
     "zones": {
       "title": "Delivery areas",

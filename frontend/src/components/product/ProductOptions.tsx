@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Availability } from "@/lib/api";
 import { addToCart, cartItemCount } from "@/lib/cart";
+import { QuantityInput } from "../QuantityInput";
 import { formatPrice } from "@/lib/format";
 import { portionsPerUnit, unitPrice } from "@/lib/pricing";
 import { isSoldOutToday, nextDayText } from "@/lib/shop-date";
@@ -135,31 +136,18 @@ export function ProductOptions({
       ? `border-[1.5px] border-black ${selected ? "bg-black text-white" : "bg-white text-black hover:bg-surface"}`
       : "cursor-not-allowed border-[1.5px] border-dashed border-[#a8a8a8] bg-white text-[#8a8a8a]";
 
-  // Small [−] n [+] control; "label" names it for screen readers.
+  // [−] [n] [+] control where the number can also be typed; "label" names it for screen readers.
   const stepper = (value: number, onChange: (next: number) => void, label: string, min: number, disabled = false) => (
-    <div role="group" aria-label={label} className={`flex h-11 shrink-0 items-center border-[1.5px] ${disabled ? "border-dashed border-[#a8a8a8] text-[#8a8a8a]" : "border-black"}`}>
-      <button
-        type="button"
-        aria-label={labels.decrease}
-        disabled={disabled || value <= min}
-        onClick={() => onChange(value - 1)}
-        className="h-full w-11 text-xl disabled:opacity-30"
-      >
-        −
-      </button>
-      <span className="min-w-8 text-center text-base font-bold" aria-live="polite">
-        {value}
-      </span>
-      <button
-        type="button"
-        aria-label={labels.increase}
-        disabled={disabled || value >= maxQuantity}
-        onClick={() => onChange(value + 1)}
-        className="h-full w-11 text-xl disabled:opacity-30"
-      >
-        +
-      </button>
-    </div>
+    <QuantityInput
+      value={value}
+      min={min}
+      max={maxQuantity}
+      onChange={onChange}
+      label={label}
+      decreaseLabel={labels.decrease}
+      increaseLabel={labels.increase}
+      disabled={disabled}
+    />
   );
 
   return (

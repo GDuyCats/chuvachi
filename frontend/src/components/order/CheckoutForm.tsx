@@ -29,6 +29,7 @@ import {
 } from "@/lib/public-api";
 import { accountApi, type CustomerProfile } from "@/lib/account-api";
 import { PhotoBox } from "../PhotoBox";
+import { QuantityInput } from "../QuantityInput";
 import { TURNSTILE_ENABLED, TurnstileWidget } from "./TurnstileWidget";
 import { CheckoutSkeleton, Skeleton } from "../Skeleton";
 
@@ -487,26 +488,16 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
                 </div>
                 {l.detail && <span className="text-[13px] text-muted">{l.detail}</span>}
                 <div className="flex items-center justify-between gap-2">
-                  <div role="group" aria-label={`${l.name} ${l.detail}`} className="flex h-9 items-center border-[1.5px] border-black bg-white">
-                    <button
-                      type="button"
-                      aria-label={labels.decrease}
-                      onClick={() => setLineQuantity(l.index, l.line.quantity - 1, maxQuantity)}
-                      className="h-full w-9 text-lg"
-                    >
-                      −
-                    </button>
-                    <span className="min-w-7 text-center text-sm font-bold">{l.line.quantity}</span>
-                    <button
-                      type="button"
-                      aria-label={labels.increase}
-                      disabled={l.line.quantity >= maxQuantity}
-                      onClick={() => setLineQuantity(l.index, l.line.quantity + 1, maxQuantity)}
-                      className="h-full w-9 text-lg disabled:opacity-40"
-                    >
-                      +
-                    </button>
-                  </div>
+                  <QuantityInput
+                    size="sm"
+                    value={l.line.quantity}
+                    min={1}
+                    max={maxQuantity}
+                    onChange={(next) => setLineQuantity(l.index, next, maxQuantity)}
+                    label={`${l.name} ${l.detail}`}
+                    decreaseLabel={labels.decrease}
+                    increaseLabel={labels.increase}
+                  />
                   <button type="button" onClick={() => removeLine(l.index)} className="py-2 text-[13px] font-semibold underline">
                     {labels.remove}
                   </button>

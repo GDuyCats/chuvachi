@@ -201,7 +201,7 @@
       "capacity": "Số phần mỗi ngày (mặc định)",
       "maxDays": "Khách được đặt trước tối đa (ngày)",
       "unpaid": "Tự hủy đơn chưa chuyển khoản sau (phút, 0 = không hủy)",
-      "maxQuantity": "Mỗi loại bánh tối đa trong một đơn (phần)"
+      "maxQuantity": "Mỗi vị tối đa trong một đơn (món, 1 hộp = 1 món)"
     },
     "zones": {
       "title": "Khu vực giao",

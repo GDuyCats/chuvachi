@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-export default async function MyOrdersPage({ params }: PageProps<"/[lang]/orders">) {
+export default async function MyOrdersPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
   const dict = await getDictionary(lang);

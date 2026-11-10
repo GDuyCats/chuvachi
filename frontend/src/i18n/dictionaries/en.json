@@ -115,7 +115,10 @@
     "mixRemaining": "Choose {count} more",
     "boxCount": "Identical boxes",
     "addBox": "Add box to order",
-    "extraPerPortion": "{price} per portion"
+    "extraPerPortion": "{price} per portion",
+    "editing": "You're changing an item in your order.",
+    "updateItem": "Update item",
+    "cancelEdit": "Cancel, back to my order"
   },
   "order": {
     "title": "Your order",
@@ -201,7 +204,8 @@
     "signedInAs": "Signed in as {email}. This order will be saved to your account.",
     "signInHint": "Have an account? Your order is saved and your details filled in.",
     "signInLink": "Sign in",
-    "pausedTitle": "We're not taking orders right now"
+    "pausedTitle": "We're not taking orders right now",
+    "edit": "Edit"
   },
   "thanks": {
     "title": "Thank you! Your order is in.",

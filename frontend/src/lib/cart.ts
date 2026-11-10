@@ -133,6 +133,31 @@ export function setLineQuantity(index: number, quantity: number, max = MAX_LINE_
   writeCart(next);
 }
 
+// Swaps one line for the edited version (one or more lines, e.g. after changing flavors),
+// keeping its place in the cart. A new line that matches another line is merged into it.
+export function replaceLine(index: number, replacements: CartLine[], max = MAX_LINE_QUANTITY): CartLine[] {
+  const lines = readCart();
+  if (!lines[index]) {
+    let result = lines;
+    for (const line of replacements) result = addToCart(line, max);
+    return result;
+  }
+  const before = lines.slice(0, index);
+  const after = lines.slice(index + 1);
+  const added: CartLine[] = [];
+  for (const line of replacements) {
+    const target = [...before, ...added, ...after].find((l) => sameChoice(l, line));
+    if (target) {
+      target.quantity = Math.min(max, target.quantity + line.quantity);
+    } else {
+      added.push({ ...line, quantity: Math.min(max, line.quantity) });
+    }
+  }
+  const next = [...before, ...added, ...after];
+  writeCart(next);
+  return next;
+}
+
 export function removeLine(index: number): void {
   writeCart(readCart().filter((_, i) => i !== index));
 }

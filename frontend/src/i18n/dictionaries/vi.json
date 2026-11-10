@@ -115,7 +115,10 @@
     "mixRemaining": "Chọn thêm {count} phần",
     "boxCount": "Số hộp giống nhau",
     "addBox": "Thêm hộp vào đơn",
-    "extraPerPortion": "{price} mỗi phần"
+    "extraPerPortion": "{price} mỗi phần",
+    "editing": "Bạn đang sửa một món trong đơn.",
+    "updateItem": "Cập nhật món",
+    "cancelEdit": "Hủy, quay lại đơn"
   },
   "order": {
     "title": "Đơn hàng của bạn",
@@ -201,7 +204,8 @@
     "signedInAs": "Đang đăng nhập bằng {email}. Đơn sẽ được lưu vào tài khoản của bạn.",
     "signInHint": "Có tài khoản? Đơn sẽ được lưu lại và thông tin tự điền.",
     "signInLink": "Đăng nhập",
-    "pausedTitle": "Tiệm đang tạm ngưng nhận đơn"
+    "pausedTitle": "Tiệm đang tạm ngưng nhận đơn",
+    "edit": "Sửa"
   },
   "thanks": {
     "title": "Cảm ơn bạn! Tiệm đã nhận đơn.",

@@ -519,9 +519,17 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
                     decreaseLabel={labels.decrease}
                     increaseLabel={labels.increase}
                   />
-                  <button type="button" onClick={() => removeLine(l.index)} className="py-2 text-[13px] font-semibold underline">
-                    {labels.remove}
-                  </button>
+                  <span className="flex items-center gap-4">
+                    <Link
+                      href={`/${lang}/menu/${l.line.productSlug}?edit=${l.index}`}
+                      className="py-2 text-[13px] font-semibold underline"
+                    >
+                      {labels.edit}
+                    </Link>
+                    <button type="button" onClick={() => removeLine(l.index)} className="py-2 text-[13px] font-semibold underline">
+                      {labels.remove}
+                    </button>
+                  </span>
                 </div>
               </div>
             </li>

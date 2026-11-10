@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Availability } from "@/lib/api";
-import { addToCart, cartItemCount } from "@/lib/cart";
+import { addToCart, cartItemCount, readCart, replaceLine, type CartLine } from "@/lib/cart";
 import { QuantityInput } from "../QuantityInput";
 import { formatPrice } from "@/lib/format";
 import { fetchOrderSettings } from "@/lib/public-api";
@@ -46,6 +47,9 @@ export type ProductOptionsLabels = {
   boxCount: string; // "Number of identical boxes"
   addBox: string; // "Add box to order"
   extraPerPortion: string; // "{price} per portion"
+  editing: string; // note shown while changing a line of the order
+  updateItem: string; // "Update item" button
+  cancelEdit: string; // "Cancel, back to my order"
 };
 
 type Props = {
@@ -102,6 +106,34 @@ export function ProductOptions({
   const [mix, setMix] = useState<Record<number, number>>({});
   const [boxes, setBoxes] = useState(1);
   const [addedCount, setAddedCount] = useState<number | null>(null);
+  const router = useRouter();
+
+  // Changing a line from the order page (?edit=2): start from that line's choices and,
+  // on save, put the new version in its place.
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  useEffect(() => {
+    const raw = new URLSearchParams(window.location.search).get("edit");
+    if (raw === null) return;
+    const index = Number(raw);
+    const line = Number.isInteger(index) ? readCart()[index] : undefined;
+    if (!line || line.productSlug !== slug) return;
+    const linePack = packages.find((p) => p.id === line.packageOptionId) ?? null;
+    const boxSize = portionsPerUnit(linePack);
+    setEditIndex(index);
+    setPackageId(line.packageOptionId);
+    if (line.flavorMix && line.flavorMix.length > 0) {
+      setMix(Object.fromEntries(line.flavorMix.map((part) => [part.optionId, part.portions])));
+      setBoxes(line.quantity);
+    } else if (line.flavorOptionId !== null && boxSize > 1) {
+      setMix({ [line.flavorOptionId]: boxSize }); // a box of one flavor
+      setBoxes(line.quantity);
+    } else if (line.flavorOptionId !== null) {
+      setCounts({ [line.flavorOptionId]: line.quantity });
+    } else {
+      setQuantity(line.quantity);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- read once when the page opens
+  }, [slug]);
 
   const hasFlavors = flavors.length > 0;
   const pack = packages.find((p) => p.id === packageId) ?? null;
@@ -163,13 +195,12 @@ export function ProductOptions({
     });
   }
 
-  function handleAdd() {
-    if (!canOrder) return;
-    let lines: ReturnType<typeof addToCart> | null = null;
+  // The cart lines for what is chosen now.
+  function chosenLines(): CartLine[] {
     if (isMixBox) {
       // A box of one flavor is saved like any other line; a real mix keeps its split.
       const single = mixChosen.length === 1 ? mixChosen[0].flavor.id : null;
-      lines = addToCart(
+      return [
         single !== null
           ? { productSlug: slug, flavorOptionId: single, packageOptionId: packageId, quantity: boxes }
           : {
@@ -179,22 +210,31 @@ export function ProductOptions({
               flavorMix: mixChosen.map((part) => ({ optionId: part.flavor.id, portions: part.portions })),
               quantity: boxes,
             },
-        maxQuantity,
-      );
-      setAddedCount(cartItemCount(lines));
-      setMix({});
-      setBoxes(1);
+      ];
+    }
+    return chosen.map((line) => ({
+      productSlug: slug,
+      flavorOptionId: line.flavor?.id ?? null,
+      packageOptionId: packageId,
+      quantity: line.quantity,
+    }));
+  }
+
+  function handleAdd() {
+    if (!canOrder) return;
+    const newLines = chosenLines();
+    if (editIndex !== null) {
+      replaceLine(editIndex, newLines, maxQuantity);
+      router.push(`/${lang}/order`);
       return;
     }
-    for (const line of chosen) {
-      lines = addToCart(
-        { productSlug: slug, flavorOptionId: line.flavor?.id ?? null, packageOptionId: packageId, quantity: line.quantity },
-        maxQuantity,
-      );
-    }
+    let lines: CartLine[] | null = null;
+    for (const line of newLines) lines = addToCart(line, maxQuantity);
     if (lines) setAddedCount(cartItemCount(lines));
     setCounts(startCounts());
     setQuantity(1);
+    setMix({});
+    setBoxes(1);
   }
 
   const optionButton = (selected: boolean, available = true) =>
@@ -225,6 +265,14 @@ export function ProductOptions({
 
   return (
     <div className="flex flex-col gap-6">
+      {editIndex !== null && (
+        <div role="status" className="flex flex-wrap items-center justify-between gap-2 border-[1.5px] border-black px-4 py-3">
+          <span className="text-[15px] font-semibold">{labels.editing}</span>
+          <Link href={`/${lang}/order`} className="text-sm font-semibold underline">
+            {labels.cancelEdit}
+          </Link>
+        </div>
+      )}
       {blockedNote && (
         <p role="status" className="border-[1.5px] border-black bg-black px-4 py-3 text-[15px] font-semibold text-white">
           {blockedNote}
@@ -375,6 +423,8 @@ export function ProductOptions({
             ? labels.mixRemaining.replace("{count}", String(portions - mixFilled))
             : totalUnits === 0
             ? labels.pickFlavors
+            : editIndex !== null
+            ? `${labels.updateItem} · ${formatPrice(totalPrice, lang)}`
             : isMixBox
             ? `${labels.addBox} · ${formatPrice(totalPrice, lang)}`
             : `${labels.addToOrder} · ${hasFlavors ? `${labels.units.replace("{count}", String(totalUnits))} · ` : ""}${formatPrice(totalPrice, lang)}`}

@@ -143,6 +143,15 @@ export type HomeProduct = {
   imageUrl: string | null;
 };
 
+export type HeroSlideView = {
+  eyebrow: string | null;
+  title: string;
+  subtitle: string | null;
+  cta: string | null;
+  imageUrl: string | null;
+  productSlug: string | null;
+};
+
 export type HomeContent = {
   announcement: { left: string | null; center: string | null; right: string | null; productSlug: string | null } | null;
   hero: {
@@ -153,6 +162,8 @@ export type HomeContent = {
     imageUrl: string | null;
     productSlug: string | null;
   } | null;
+  heroSlides: HeroSlideView[]; // the main banner first, then the extra slides
+  heroInterval: number; // seconds between slides
   hasNew: boolean;
   categories: { slug: string; name: string }[];
   season: { name: string; eyebrow: string | null; description: string | null; endDate: string; products: HomeProduct[] } | null;
@@ -162,6 +173,8 @@ export type HomeContent = {
 const EMPTY_HOME: HomeContent = {
   announcement: null,
   hero: null,
+  heroSlides: [],
+  heroInterval: 6,
   hasNew: false,
   categories: [],
   season: null,
@@ -174,7 +187,8 @@ export async function getHomeContent(locale: Locale): Promise<HomeContent> {
   "use cache";
   cacheLife("minutes");
   try {
-    return await getJson<HomeContent>(`/api/home?locale=${locale}`);
+    // Missing fields (e.g. an older backend) fall back to the empty values.
+    return { ...EMPTY_HOME, ...(await getJson<Partial<HomeContent>>(`/api/home?locale=${locale}`)) };
   } catch {
     return EMPTY_HOME;
   }

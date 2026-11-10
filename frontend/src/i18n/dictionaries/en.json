@@ -46,7 +46,13 @@
       "orderNow": "Order now",
       "scrollHint": "Swipe to see more"
     },
-    "comingSoonTitle": "Coming soon"
+    "comingSoonTitle": "Coming soon",
+    "heroPrev": "Previous banner",
+    "heroNext": "Next banner",
+    "heroGoTo": "Show banner {number}",
+    "heroPause": "Pause the banner",
+    "heroPlay": "Play the banner",
+    "heroSlideOf": "{number} of {total}"
   },
   "product": {
     "new": "New",
@@ -205,7 +211,12 @@
     "signInHint": "Have an account? Your order is saved and your details filled in.",
     "signInLink": "Sign in",
     "pausedTitle": "We're not taking orders right now",
-    "edit": "Edit"
+    "edit": "Edit",
+    "splitFlavors": "Change flavors",
+    "mixProgress": "{done}/{size} portions chosen",
+    "saveMix": "Save",
+    "cancelMix": "Cancel",
+    "soldOut": "Sold out"
   },
   "thanks": {
     "title": "Thank you! Your order is in.",

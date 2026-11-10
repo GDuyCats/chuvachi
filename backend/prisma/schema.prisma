@@ -97,6 +97,7 @@ model Product {
   seasonItems   SeasonProduct[]
   dayBookings   ProductDayBooking[]
   heroFor       HomeContent[]   @relation("HeroProduct")
+  heroSlides    HeroSlide[]     @relation("HeroSlideProduct")
   announcedIn   HomeContent[]   @relation("AnnouncementProduct")
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -171,7 +172,31 @@ model HomeContent {
   heroImageUrl            String?
   heroProductId           Int?     // the button opens this cake; empty = the menu
   heroProduct             Product? @relation("HeroProduct", fields: [heroProductId], references: [id], onDelete: SetNull)
+  heroIntervalSeconds     Int      @default(6) // the banner moves to the next slide every N seconds
   updatedAt               DateTime @updatedAt
+}
+
+// Extra slides of the homepage banner; they take turns with the main banner above.
+// Optional dates limit a slide to a promotion period (inclusive, Vietnam time).
+model HeroSlide {
+  id         Int       @id @default(autoincrement())
+  eyebrowVi  String?
+  eyebrowEn  String?
+  titleVi    String
+  titleEn    String
+  subtitleVi String?
+  subtitleEn String?
+  ctaVi      String?
+  ctaEn      String?
+  imageUrl   String?
+  productId  Int?      // the button opens this cake; empty = the menu
+  product    Product?  @relation("HeroSlideProduct", fields: [productId], references: [id], onDelete: SetNull)
+  startDate  DateTime? @db.Date
+  endDate    DateTime? @db.Date
+  isActive   Boolean   @default(true)
+  sortOrder  Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 // A season: a set of cakes sold during a time window.

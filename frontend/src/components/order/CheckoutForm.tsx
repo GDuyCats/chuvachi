@@ -12,6 +12,7 @@ import {
   MAX_LINE_QUANTITY,
   removeLine,
   removeLines,
+  replaceLine,
   setLineQuantity,
   subscribeToCart,
   type CartLine,
@@ -30,11 +31,19 @@ import {
 import { accountApi, type CustomerProfile } from "@/lib/account-api";
 import { PhotoBox } from "../PhotoBox";
 import { QuantityInput } from "../QuantityInput";
+import { MixEditor, type MixFlavor } from "./MixEditor";
 import { rememberOrder } from "@/lib/my-orders";
 import { TURNSTILE_ENABLED, TurnstileWidget } from "./TurnstileWidget";
 import { CheckoutSkeleton, Skeleton } from "../Skeleton";
 
-export type CatalogOption = { id: number; type: "FLAVOR" | "PACKAGE"; name: string; priceDelta: number; portions: number };
+export type CatalogOption = {
+  id: number;
+  type: "FLAVOR" | "PACKAGE";
+  name: string;
+  priceDelta: number;
+  portions: number;
+  availability?: "AVAILABLE" | "SOLD_OUT" | "COMING_SOON";
+};
 export type CatalogProduct = {
   slug: string;
   name: string;
@@ -58,6 +67,8 @@ type ResolvedLine = {
   imageUrl: string | null;
   unitPrice: number;
   portions: number;
+  // Boxes of several portions can be re-split between flavors right here.
+  mix: { flavors: MixFlavor[]; boxSize: number; current: Record<number, number> } | null;
 };
 
 const HOUR_MS = 60 * 60 * 1000;
@@ -71,6 +82,10 @@ function resolveLine(line: CartLine, index: number, catalog: Map<string, Catalog
   const packages = product.options.filter((o) => o.type === "PACKAGE");
   const pack = packages.find((o) => o.id === line.packageOptionId) ?? null;
   if (packages.length > 0 && !pack) return null;
+  const boxSize = portionsPerUnit(pack);
+  const mixFlavors: MixFlavor[] = flavors.map((f) => ({ id: f.id, name: f.name, available: (f.availability ?? "AVAILABLE") === "AVAILABLE" }));
+  const mixFor = (current: Record<number, number>) =>
+    flavors.length > 0 && boxSize > 1 ? { flavors: mixFlavors, boxSize, current } : null;
 
   // Mixed box: "Mango ×2, Strawberry ×4"; every flavor must still be on the menu.
   if (line.flavorMix && line.flavorMix.length > 0) {
@@ -85,6 +100,7 @@ function resolveLine(line: CartLine, index: number, catalog: Map<string, Catalog
       imageUrl: product.imageUrl,
       unitPrice: unitPrice(product.basePrice, null, pack) + extras,
       portions: portionsPerUnit(pack),
+      mix: mixFor(Object.fromEntries(line.flavorMix.map((part) => [part.optionId, part.portions]))),
     };
   }
 
@@ -98,6 +114,7 @@ function resolveLine(line: CartLine, index: number, catalog: Map<string, Catalog
     imageUrl: product.imageUrl,
     unitPrice: unitPrice(product.basePrice, flavor, pack),
     portions: portionsPerUnit(pack),
+    mix: mixFor(flavor ? { [flavor.id]: boxSize } : {}),
   };
 }
 
@@ -150,6 +167,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
   const [chosenSlot, setChosenSlot] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [agreed, setAgreed] = useState(false); // never ticked in advance (privacy law)
+  const [mixEditing, setMixEditing] = useState<number | null>(null); // the box being re-split
   const [botToken, setBotToken] = useState<string | null>(null);
   const [botReset, setBotReset] = useState(0);
 
@@ -508,6 +526,40 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
                   <span className="whitespace-nowrap font-bold">{formatPrice(l.unitPrice * l.line.quantity, lang)}</span>
                 </div>
                 {l.detail && <span className="text-[13px] text-muted">{l.detail}</span>}
+                {l.mix &&
+                  (mixEditing === l.index ? (
+                    <MixEditor
+                      flavors={l.mix.flavors}
+                      boxSize={l.mix.boxSize}
+                      initial={l.mix.current}
+                      labels={labels}
+                      onCancel={() => setMixEditing(null)}
+                      onSave={(mix) => {
+                        const parts = Object.entries(mix)
+                          .map(([id, portions]) => ({ optionId: Number(id), portions }))
+                          .filter((part) => part.portions > 0);
+                        // One flavor for the whole box is saved like any other line.
+                        replaceLine(
+                          l.index,
+                          [
+                            parts.length === 1
+                              ? { ...l.line, flavorOptionId: parts[0].optionId, flavorMix: undefined }
+                              : { ...l.line, flavorOptionId: null, flavorMix: parts },
+                          ],
+                          maxQuantity,
+                        );
+                        setMixEditing(null);
+                      }}
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setMixEditing(l.index)}
+                      className="self-start py-1 text-[13px] font-semibold underline"
+                    >
+                      {labels.splitFlavors}
+                    </button>
+                  ))}
                 <div className="flex items-center justify-between gap-2">
                   <QuantityInput
                     size="sm"

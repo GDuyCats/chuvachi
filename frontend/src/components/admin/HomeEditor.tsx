@@ -7,9 +7,11 @@ import {
   AdminApiError,
   AdminValidationError,
   type AdminComingSoon,
+  type AdminHeroSlide,
   type AdminSeason,
   type ComingSoonInput,
   type HomeBundle,
+  type HeroSlideInput,
   type HomeContentInput,
   type SeasonInput,
 } from "@/lib/admin-api";
@@ -95,6 +97,7 @@ export function HomeEditor() {
   return (
     <div className="flex flex-col gap-10">
       <ContentForm content={bundle.content} products={bundle.products} onSaved={setBundle} />
+      <HeroSlidesSection slides={bundle.heroSlides} products={bundle.products} onSaved={setBundle} />
       <SeasonsSection seasons={bundle.seasons} products={bundle.products} onSaved={setBundle} />
       <ComingSoonSection items={bundle.comingSoon} onSaved={setBundle} />
     </div>
@@ -202,7 +205,7 @@ function ContentForm({
       </div>
 
       <Section id="home-announcement" title={h.announcement.title} hint={h.announcement.hint}>
-        {pair("announcementCenterVi", "announcementCenterEn", h.announcement.center)}
+        {pair("announcementCenterVi", "announcementCenterEn", h.announcement.center, true)}
         {productSelect("announcementProductId", h.announcement.link)}
         {pair("announcementLeftVi", "announcementLeftEn", h.announcement.left)}
         {pair("announcementRightVi", "announcementRightEn", h.announcement.right)}
@@ -230,7 +233,321 @@ function ContentForm({
           invalid={badFields.includes("heroImageUrl")}
           saveLabel={h.save}
         />
+        <label className="flex flex-col gap-1.5 text-sm font-semibold md:max-w-xs">
+          {h.hero.interval}
+          <input
+            type="number"
+            min={3}
+            max={30}
+            inputMode="numeric"
+            value={draft.heroIntervalSeconds}
+            onChange={(e) => update("heroIntervalSeconds", Number(e.target.value))}
+            className={fieldClass("heroIntervalSeconds")}
+          />
+          <span className="text-xs font-normal text-muted">{h.hero.intervalHint}</span>
+        </label>
       </Section>
+    </form>
+  );
+}
+
+// ---------- Extra banner slides ----------
+
+const EMPTY_SLIDE: HeroSlideInput = {
+  eyebrowVi: null,
+  eyebrowEn: null,
+  titleVi: "",
+  titleEn: "",
+  subtitleVi: null,
+  subtitleEn: null,
+  ctaVi: null,
+  ctaEn: null,
+  imageUrl: null,
+  productId: null,
+  startDate: null,
+  endDate: null,
+  isActive: true,
+  sortOrder: 0,
+};
+
+function HeroSlidesSection({
+  slides,
+  products,
+  onSaved,
+}: {
+  slides: AdminHeroSlide[];
+  products: ProductChoice[];
+  onSaved: (bundle: HomeBundle) => void;
+}) {
+  const { t, lang } = useAdminI18n();
+  const s = t.home.slides;
+  // null = list only; "new" = creating; a number = editing that slide
+  const [editing, setEditing] = useState<number | "new" | null>(null);
+  const today = vietnamTodayText();
+
+  const status = (slide: AdminHeroSlide) => {
+    if (!slide.isActive) return s.status.off;
+    if (slide.endDate && slide.endDate < today) return s.status.ended;
+    if (slide.startDate && slide.startDate > today) return s.status.upcoming;
+    return s.status.running;
+  };
+
+  return (
+    <Section id="home-slides" title={s.title} hint={s.hint}>
+      {slides.length === 0 && editing !== "new" && <p className="text-sm text-muted">{s.empty}</p>}
+      <ul className="flex flex-col gap-3">
+        {slides.map((slide) => (
+          <li key={slide.id} className="border border-[#e0e0e0]">
+            {editing === slide.id ? (
+              <HeroSlideForm initial={slide} slideId={slide.id} products={products} onSaved={onSaved} onClose={() => setEditing(null)} />
+            ) : (
+              <div className="flex flex-wrap items-center justify-between gap-3 p-4">
+                <div className="flex min-w-0 items-center gap-3">
+                  {slide.imageUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element -- small preview
+                    <img src={slide.imageUrl} alt="" className="h-12 w-16 shrink-0 object-cover" />
+                  )}
+                  <div className="flex min-w-0 flex-col gap-1">
+                    <span className="font-bold">{lang === "vi" ? slide.titleVi : slide.titleEn}</span>
+                    <span className="text-sm text-muted">
+                      {slide.startDate || slide.endDate
+                        ? `${slide.startDate ?? "…"} → ${slide.endDate ?? "…"}`
+                        : s.always}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`px-2 py-1 text-[11px] font-bold uppercase tracking-wider ${status(slide) === s.status.running ? "bg-black text-white" : "border border-black"}`}
+                  >
+                    {status(slide)}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={editing !== null}
+                    onClick={() => setEditing(slide.id)}
+                    className="min-h-11 px-2 text-sm font-semibold underline disabled:opacity-40"
+                  >
+                    {s.edit}
+                  </button>
+                </div>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+      {editing === "new" ? (
+        <div className="border-[1.5px] border-black">
+          <HeroSlideForm
+            initial={{ ...EMPTY_SLIDE, sortOrder: slides.length + 1 }}
+            slideId={null}
+            products={products}
+            onSaved={onSaved}
+            onClose={() => setEditing(null)}
+          />
+        </div>
+      ) : (
+        <button
+          type="button"
+          disabled={editing !== null}
+          onClick={() => setEditing("new")}
+          className="self-start border-[1.5px] border-black px-4 py-2.5 text-sm font-bold disabled:opacity-40"
+        >
+          + {s.add}
+        </button>
+      )}
+    </Section>
+  );
+}
+
+function HeroSlideForm({
+  initial,
+  slideId,
+  products,
+  onSaved,
+  onClose,
+}: {
+  initial: HeroSlideInput;
+  slideId: number | null;
+  products: ProductChoice[];
+  onSaved: (bundle: HomeBundle) => void;
+  onClose: () => void;
+}) {
+  const { t, lang } = useAdminI18n();
+  const s = t.home.slides;
+  const toast = useToast();
+  const handleError = useSaveErrors();
+  const [draft, setDraft] = useState<HeroSlideInput>({
+    eyebrowVi: initial.eyebrowVi,
+    eyebrowEn: initial.eyebrowEn,
+    titleVi: initial.titleVi,
+    titleEn: initial.titleEn,
+    subtitleVi: initial.subtitleVi,
+    subtitleEn: initial.subtitleEn,
+    ctaVi: initial.ctaVi,
+    ctaEn: initial.ctaEn,
+    imageUrl: initial.imageUrl,
+    productId: initial.productId,
+    startDate: initial.startDate,
+    endDate: initial.endDate,
+    isActive: initial.isActive,
+    sortOrder: initial.sortOrder,
+  });
+  const [busy, setBusy] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [badFields, setBadFields] = useState<string[]>([]);
+
+  function update<K extends keyof HeroSlideInput>(key: K, value: HeroSlideInput[K]) {
+    setDraft((current) => ({ ...current, [key]: value }));
+  }
+
+  async function run(action: () => Promise<HomeBundle>, successText: string) {
+    setBusy(true);
+    setBadFields([]);
+    try {
+      onSaved(await action());
+      toast.success(successText);
+      onClose();
+    } catch (error) {
+      setBadFields(handleError(error));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function save(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    void run(() => (slideId ? adminApi.updateHeroSlide(slideId, draft) : adminApi.createHeroSlide(draft)), t.home.saved);
+  }
+
+  const fieldClass = (field: string) =>
+    `${inputBase} ${badFields.includes(field) ? "border-black bg-[#fff6f6] outline outline-2 outline-offset-1 outline-black" : "border-black"}`;
+
+  type TextKey = "eyebrowVi" | "eyebrowEn" | "titleVi" | "titleEn" | "subtitleVi" | "subtitleEn" | "ctaVi" | "ctaEn";
+  const pair = (keyVi: TextKey, keyEn: TextKey, label: string, required = false, long = false) => (
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+      {(
+        [
+          [keyVi, `${label} (VI)`],
+          [keyEn, `${label} (EN)`],
+        ] as const
+      ).map(([key, text]) => (
+        <label key={key} className="flex flex-col gap-1.5 text-sm font-semibold">
+          {text}
+          {long ? (
+            <textarea
+              rows={2}
+              value={draft[key] ?? ""}
+              onChange={(e) => update(key, nullable(e.target.value) as never)}
+              className={`${fieldClass(key)} h-auto py-2.5`}
+            />
+          ) : (
+            <input
+              required={required}
+              value={draft[key] ?? ""}
+              onChange={(e) => update(key, (required ? e.target.value : nullable(e.target.value)) as never)}
+              className={fieldClass(key)}
+            />
+          )}
+        </label>
+      ))}
+    </div>
+  );
+
+  return (
+    <form onSubmit={save} className="flex flex-col gap-4 p-4">
+      {pair("eyebrowVi", "eyebrowEn", t.home.hero.eyebrow)}
+      {pair("titleVi", "titleEn", t.home.hero.heading, true)}
+      {pair("subtitleVi", "subtitleEn", t.home.hero.subtitle, false, true)}
+      {pair("ctaVi", "ctaEn", t.home.hero.button)}
+      <label className="flex flex-col gap-1.5 text-sm font-semibold md:max-w-md">
+        {t.home.hero.link}
+        <select
+          value={draft.productId ?? ""}
+          onChange={(e) => update("productId", e.target.value ? Number(e.target.value) : null)}
+          className={fieldClass("productId")}
+        >
+          <option value="">{t.home.linkToMenu}</option>
+          {products.map((product) => (
+            <option key={product.id} value={product.id}>
+              {lang === "vi" ? product.nameVi : product.nameEn}
+              {product.isActive ? "" : ` (${t.home.hiddenProduct})`}
+            </option>
+          ))}
+        </select>
+      </label>
+      <ImageUploadField
+        kind="banner"
+        value={draft.imageUrl}
+        onChange={(url) => update("imageUrl", url)}
+        invalid={badFields.includes("imageUrl")}
+        saveLabel={s.save}
+      />
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <label className="flex flex-col gap-1.5 text-sm font-semibold">
+          {s.start}
+          <input
+            type="date"
+            value={draft.startDate ?? ""}
+            onChange={(e) => update("startDate", e.target.value || null)}
+            className={fieldClass("startDate")}
+          />
+        </label>
+        <label className="flex flex-col gap-1.5 text-sm font-semibold">
+          {s.end}
+          <input
+            type="date"
+            value={draft.endDate ?? ""}
+            onChange={(e) => update("endDate", e.target.value || null)}
+            className={fieldClass("endDate")}
+          />
+        </label>
+        <label className="flex flex-col gap-1.5 text-sm font-semibold">
+          {s.order}
+          <input
+            type="number"
+            min={0}
+            max={1000}
+            value={draft.sortOrder}
+            onChange={(e) => update("sortOrder", Number(e.target.value))}
+            className={fieldClass("sortOrder")}
+          />
+        </label>
+      </div>
+      <label className="flex items-center gap-2.5 font-semibold">
+        <input type="checkbox" checked={draft.isActive} onChange={(e) => update("isActive", e.target.checked)} className="h-5 w-5 accent-black" />
+        {s.active}
+      </label>
+
+      <div className="flex flex-wrap items-center gap-3 border-t border-[#eeeeee] pt-4">
+        <button type="submit" disabled={busy} className="min-h-11 bg-black px-5 text-sm font-bold text-white disabled:opacity-60">
+          {busy ? t.home.saving : s.save}
+        </button>
+        <button type="button" disabled={busy} onClick={onClose} className="min-h-11 px-2 text-sm font-semibold underline">
+          {s.cancel}
+        </button>
+        {slideId &&
+          (confirmDelete ? (
+            <span className="ml-auto flex flex-wrap items-center gap-2 text-sm font-semibold">
+              {s.confirmDelete}
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => run(() => adminApi.deleteHeroSlide(slideId), s.deleted)}
+                className="min-h-11 border-[1.5px] border-black px-3 font-bold"
+              >
+                {s.yesDelete}
+              </button>
+              <button type="button" onClick={() => setConfirmDelete(false)} className="min-h-11 px-2 underline">
+                {s.no}
+              </button>
+            </span>
+          ) : (
+            <button type="button" onClick={() => setConfirmDelete(true)} className="ml-auto min-h-11 px-2 text-sm font-semibold underline">
+              {s.delete}
+            </button>
+          ))}
+      </div>
     </form>
   );
 }

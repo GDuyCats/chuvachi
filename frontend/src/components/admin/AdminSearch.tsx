@@ -24,6 +24,7 @@ const PLACES = [
   { key: "stats", href: "/admin/stats", adminOnly: true },
   { key: "announcement", href: "/admin/home", target: "home-announcement", adminOnly: true },
   { key: "hero", href: "/admin/home", target: "home-hero", adminOnly: true },
+  { key: "heroSlides", href: "/admin/home", target: "home-slides", adminOnly: true },
   { key: "seasons", href: "/admin/home", target: "home-seasons", adminOnly: true },
   { key: "comingSoon", href: "/admin/home", target: "home-coming-soon", adminOnly: true },
   { key: "bank", href: "/admin/settings", target: "settings-bank", adminOnly: true },

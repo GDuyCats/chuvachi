@@ -8,7 +8,7 @@ import { formatDateOnly, parseDateOnly } from "../lib/time";
 
 export const adminHomeRouter = Router();
 // Admins only. The paths are listed because this router shares /api/admin with other routers.
-adminHomeRouter.use(["/home", "/seasons", "/coming-soon"], requireStaff, requireAdminRole);
+adminHomeRouter.use(["/home", "/seasons", "/coming-soon", "/hero-slides"], requireStaff, requireAdminRole);
 
 // ---------- Validation ----------
 
@@ -28,8 +28,9 @@ const dateText = z.string().refine((value) => parseDateOnly(value) !== null, "Us
 const contentSchema = z.object({
   announcementLeftVi: optionalText(80),
   announcementLeftEn: optionalText(80),
-  announcementCenterVi: optionalText(140),
-  announcementCenterEn: optionalText(140),
+  // One message per line; several lines take turns in the bar.
+  announcementCenterVi: optionalText(600),
+  announcementCenterEn: optionalText(600),
   announcementRightVi: optionalText(80),
   announcementRightEn: optionalText(80),
   announcementProductId: z.number().int().positive().nullable(),
@@ -44,7 +45,38 @@ const contentSchema = z.object({
   heroCtaEn: optionalText(30),
   heroImageUrl: z.string().trim().max(500).refine(isOwnImageUrl, "Upload the photo with the upload button").nullable(),
   heroProductId: z.number().int().positive().nullable(),
+  heroIntervalSeconds: z.number().int().min(3).max(30),
 });
+
+const heroSlideSchema = z
+  .object({
+    eyebrowVi: optionalText(60),
+    eyebrowEn: optionalText(60),
+    titleVi: requiredText(90),
+    titleEn: requiredText(90),
+    subtitleVi: optionalText(220),
+    subtitleEn: optionalText(220),
+    ctaVi: optionalText(30),
+    ctaEn: optionalText(30),
+    imageUrl: z.string().trim().max(500).refine(isOwnImageUrl, "Upload the photo with the upload button").nullable(),
+    productId: z.number().int().positive().nullable(),
+    startDate: dateText.nullable(),
+    endDate: dateText.nullable(),
+    isActive: z.boolean(),
+    sortOrder: z.number().int().min(0).max(1000),
+  })
+  .refine((slide) => !slide.startDate || !slide.endDate || slide.endDate >= slide.startDate, {
+    path: ["endDate"],
+    message: "The slide must end on or after its first day",
+  });
+
+function heroSlideData(input: z.infer<typeof heroSlideSchema>) {
+  return {
+    ...input,
+    startDate: input.startDate ? parseDateOnly(input.startDate)! : null,
+    endDate: input.endDate ? parseDateOnly(input.endDate)! : null,
+  };
+}
 
 const seasonSchema = z
   .object({
@@ -95,7 +127,7 @@ async function productsExist(ids: (number | null)[]): Promise<boolean> {
 
 // Everything the admin homepage editor shows, in both languages.
 async function loadBundle() {
-  const [content, seasons, comingSoon, products] = await Promise.all([
+  const [content, seasons, comingSoon, products, heroSlides] = await Promise.all([
     prisma.homeContent.upsert({ where: { id: 1 }, update: {}, create: { id: 1 } }),
     prisma.season.findMany({
       orderBy: [{ startDate: "desc" }, { id: "desc" }],
@@ -106,6 +138,7 @@ async function loadBundle() {
       orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
       select: { id: true, nameVi: true, nameEn: true, isActive: true },
     }),
+    prisma.heroSlide.findMany({ orderBy: [{ sortOrder: "asc" }, { id: "asc" }] }),
   ]);
   const { id: _id, updatedAt: _updatedAt, ...contentFields } = content;
   return {
@@ -118,6 +151,11 @@ async function loadBundle() {
     })),
     comingSoon,
     products,
+    heroSlides: heroSlides.map(({ startDate, endDate, createdAt: _c, updatedAt: _u, ...slide }) => ({
+      ...slide,
+      startDate: startDate ? formatDateOnly(startDate) : null,
+      endDate: endDate ? formatDateOnly(endDate) : null,
+    })),
   };
 }
 
@@ -142,6 +180,51 @@ adminHomeRouter.put("/home", async (req, res) => {
     void deleteImageByUrl(previous.heroImageUrl);
   }
   console.log(`Homepage updated by admin ${req.admin!.email}`);
+  res.json(await loadBundle());
+});
+
+// ---------- Extra banner slides ----------
+
+// POST /api/admin/hero-slides
+adminHomeRouter.post("/hero-slides", async (req, res) => {
+  const parsed = heroSlideSchema.safeParse(req.body);
+  if (!parsed.success) return badRequest(res, parsed.error);
+  if (!(await productsExist([parsed.data.productId]))) return badRequest(res);
+  await prisma.heroSlide.create({ data: heroSlideData(parsed.data) });
+  console.log(`Banner slide "${parsed.data.titleEn}" created by admin ${req.admin!.email}`);
+  res.status(201).json(await loadBundle());
+});
+
+// PUT /api/admin/hero-slides/:id
+adminHomeRouter.put("/hero-slides/:id", async (req, res) => {
+  const id = idParam.safeParse(req.params.id);
+  const parsed = heroSlideSchema.safeParse(req.body);
+  if (!id.success) return badRequest(res);
+  if (!parsed.success) return badRequest(res, parsed.error);
+  if (!(await productsExist([parsed.data.productId]))) return badRequest(res);
+  const previous = await prisma.heroSlide.findUnique({ where: { id: id.data }, select: { imageUrl: true } });
+  if (!previous) {
+    res.status(404).json({ error: "NOT_FOUND" });
+    return;
+  }
+  await prisma.heroSlide.update({ where: { id: id.data }, data: heroSlideData(parsed.data) });
+  // The photo was replaced or removed: delete the old file.
+  if (previous.imageUrl && previous.imageUrl !== parsed.data.imageUrl) void deleteImageByUrl(previous.imageUrl);
+  res.json(await loadBundle());
+});
+
+// DELETE /api/admin/hero-slides/:id
+adminHomeRouter.delete("/hero-slides/:id", async (req, res) => {
+  const id = idParam.safeParse(req.params.id);
+  if (!id.success) return badRequest(res);
+  const previous = await prisma.heroSlide.findUnique({ where: { id: id.data }, select: { imageUrl: true } });
+  if (!previous) {
+    res.status(404).json({ error: "NOT_FOUND" });
+    return;
+  }
+  await prisma.heroSlide.delete({ where: { id: id.data } });
+  if (previous.imageUrl) void deleteImageByUrl(previous.imageUrl);
+  console.log(`Banner slide ${id.data} deleted by admin ${req.admin!.email}`);
   res.json(await loadBundle());
 });
 

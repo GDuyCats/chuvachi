@@ -402,20 +402,47 @@
     "announcement": {
       "title": "Thanh thông báo",
       "hint": "Thanh đen mỏng trên cùng mọi trang. Để trống ô nào thì ô đó không hiện.",
-      "center": "Chữ ở giữa",
+      "center": "Chữ ở giữa (mỗi dòng một tin, nhiều dòng thì tự chạy luân phiên)",
       "link": "Link \"Xem ngay\" mở tới",
       "left": "Chữ bên trái (chỉ hiện trên máy tính)",
       "right": "Chữ bên phải (chỉ hiện trên máy tính)"
     },
     "hero": {
       "title": "Banner lớn",
-      "hint": "Banner tối màu đầu trang chủ, thường dành cho bánh mới nhất.",
+      "hint": "Banner tối màu đầu trang chủ, thường dành cho bánh mới nhất. Đây là banner đầu tiên; thêm Banner phụ bên dưới để chạy luân phiên.",
       "show": "Hiện banner",
       "eyebrow": "Chữ nhỏ trên tiêu đề",
       "heading": "Tiêu đề",
       "subtitle": "Mô tả",
       "button": "Chữ trên nút",
-      "link": "Nút mở tới"
+      "link": "Nút mở tới",
+      "interval": "Chuyển banner sau (giây)",
+      "intervalHint": "Từ 3 đến 30 giây. Chỉ có tác dụng khi có Banner phụ."
+    },
+    "slides": {
+      "title": "Banner phụ (chạy luân phiên)",
+      "hint": "Hiện sau Banner lớn ở trên và tự chuyển qua lại theo số giây đã đặt. Đặt ngày để chỉ hiện trong dịp khuyến mãi; để trống ngày là hiện luôn.",
+      "empty": "Chưa có banner phụ. Chỉ Banner lớn được hiện.",
+      "add": "Thêm banner",
+      "edit": "Sửa",
+      "always": "Hiện liên tục",
+      "status": {
+        "running": "Đang hiện",
+        "upcoming": "Sắp tới",
+        "ended": "Hết hạn",
+        "off": "Đang tắt"
+      },
+      "start": "Hiện từ ngày (trống = ngay)",
+      "end": "Hiện đến hết ngày (trống = không hạn)",
+      "order": "Thứ tự",
+      "active": "Bật banner này",
+      "save": "Lưu banner",
+      "cancel": "Hủy",
+      "delete": "Xóa banner",
+      "confirmDelete": "Xóa banner này?",
+      "yesDelete": "Xóa",
+      "no": "Không",
+      "deleted": "Đã xóa banner."
     },
     "seasons": {
       "title": "Mùa bánh",
@@ -743,6 +770,11 @@
       "hero": {
         "label": "Banner lớn trang chủ",
         "keywords": "banner anh bia trang chu",
+        "hint": ""
+      },
+      "heroSlides": {
+        "label": "Banner phụ chạy luân phiên",
+        "keywords": "banner phu slide khuyen mai luan phien",
         "hint": ""
       },
       "seasons": {

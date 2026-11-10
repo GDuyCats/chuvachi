@@ -17,7 +17,7 @@ homeRouter.get("/home", async (req, res) => {
   const text = (vi: string | null, en: string | null) => pickText(locale, vi, en)?.trim() || null;
   const today = vietnamToday();
 
-  const [content, categories, newCount, season, comingSoon] = await Promise.all([
+  const [content, categories, newCount, season, comingSoon, extraSlides] = await Promise.all([
     prisma.homeContent.findUnique({
       where: { id: 1 },
       include: {
@@ -44,6 +44,18 @@ homeRouter.get("/home", async (req, res) => {
       },
     }),
     prisma.comingSoonItem.findMany({ where: { isActive: true }, orderBy: [{ sortOrder: "asc" }, { id: "asc" }] }),
+    // Extra banner slides that are switched on and inside their dates (if they have any).
+    prisma.heroSlide.findMany({
+      where: {
+        isActive: true,
+        AND: [
+          { OR: [{ startDate: null }, { startDate: { lte: today } }] },
+          { OR: [{ endDate: null }, { endDate: { gte: today } }] },
+        ],
+      },
+      orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+      include: { product: { select: { slug: true, isActive: true } } },
+    }),
   ]);
 
   const linkSlug = (product: { slug: string; isActive: boolean } | null) => (product?.isActive ? product.slug : null);
@@ -70,9 +82,26 @@ homeRouter.get("/home", async (req, res) => {
         }
       : null;
 
+  // The banner: the main slide first, then the extra ones.
+  const heroSlides = [
+    ...(hero ? [hero] : []),
+    ...(content?.heroIsActive === false
+      ? []
+      : extraSlides.map((slide) => ({
+          eyebrow: text(slide.eyebrowVi, slide.eyebrowEn),
+          title: text(slide.titleVi, slide.titleEn) ?? "",
+          subtitle: text(slide.subtitleVi, slide.subtitleEn),
+          cta: text(slide.ctaVi, slide.ctaEn),
+          imageUrl: slide.imageUrl,
+          productSlug: linkSlug(slide.product),
+        }))),
+  ].filter((slide) => slide.title !== "");
+
   res.json({
     announcement,
     hero,
+    heroSlides,
+    heroInterval: content?.heroIntervalSeconds ?? 6,
     hasNew: newCount > 0,
     categories: categories.map((c) => ({ slug: c.slug, name: pickText(locale, c.nameVi, c.nameEn) })),
     season:

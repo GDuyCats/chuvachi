@@ -356,7 +356,28 @@ export type HomeContentInput = {
   heroCtaEn: string | null;
   heroImageUrl: string | null;
   heroProductId: number | null;
+  heroIntervalSeconds: number; // banner slides change every N seconds
 };
+
+// An extra slide of the homepage banner (shown in turn after the main banner).
+export type HeroSlideInput = {
+  eyebrowVi: string | null;
+  eyebrowEn: string | null;
+  titleVi: string;
+  titleEn: string;
+  subtitleVi: string | null;
+  subtitleEn: string | null;
+  ctaVi: string | null;
+  ctaEn: string | null;
+  imageUrl: string | null;
+  productId: number | null;
+  startDate: string | null; // YYYY-MM-DD, empty = from now
+  endDate: string | null; // empty = no end
+  isActive: boolean;
+  sortOrder: number;
+};
+
+export type AdminHeroSlide = HeroSlideInput & { id: number };
 
 export type SeasonInput = {
   nameVi: string;
@@ -390,6 +411,7 @@ export type HomeBundle = {
   seasons: AdminSeason[];
   comingSoon: AdminComingSoon[];
   products: { id: number; nameVi: string; nameEn: string; isActive: boolean }[];
+  heroSlides: AdminHeroSlide[];
 };
 
 export const adminApi = {
@@ -505,6 +527,11 @@ export const adminApi = {
   updateComingSoon: (id: number, item: ComingSoonInput) =>
     request<HomeBundle>(`/coming-soon/${id}`, { method: "PUT", body: JSON.stringify(item) }),
   deleteComingSoon: (id: number) => request<HomeBundle>(`/coming-soon/${id}`, { method: "DELETE" }),
+  createHeroSlide: (slide: HeroSlideInput) =>
+    request<HomeBundle>("/hero-slides", { method: "POST", body: JSON.stringify(slide) }),
+  updateHeroSlide: (id: number, slide: HeroSlideInput) =>
+    request<HomeBundle>(`/hero-slides/${id}`, { method: "PUT", body: JSON.stringify(slide) }),
+  deleteHeroSlide: (id: number) => request<HomeBundle>(`/hero-slides/${id}`, { method: "DELETE" }),
   listCategories: () => request<AdminCategory[]>("/categories"),
   createCategory: (input: Omit<AdminCategory, "id">) =>
     request<AdminCategory>("/categories", { method: "POST", body: JSON.stringify(input) }),

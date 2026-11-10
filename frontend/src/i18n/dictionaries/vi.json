@@ -46,7 +46,13 @@
       "orderNow": "Đặt ngay",
       "scrollHint": "Vuốt để xem thêm"
     },
-    "comingSoonTitle": "Sắp ra mắt"
+    "comingSoonTitle": "Sắp ra mắt",
+    "heroPrev": "Banner trước",
+    "heroNext": "Banner sau",
+    "heroGoTo": "Xem banner {number}",
+    "heroPause": "Tạm dừng chạy banner",
+    "heroPlay": "Cho banner chạy tiếp",
+    "heroSlideOf": "{number} trên {total}"
   },
   "product": {
     "new": "Mới",
@@ -205,7 +211,12 @@
     "signInHint": "Có tài khoản? Đơn sẽ được lưu lại và thông tin tự điền.",
     "signInLink": "Đăng nhập",
     "pausedTitle": "Tiệm đang tạm ngưng nhận đơn",
-    "edit": "Sửa"
+    "edit": "Sửa",
+    "splitFlavors": "Chia lại vị",
+    "mixProgress": "Đã chọn {done}/{size} phần",
+    "saveMix": "Lưu",
+    "cancelMix": "Hủy",
+    "soldOut": "Tạm hết"
   },
   "thanks": {
     "title": "Cảm ơn bạn! Tiệm đã nhận đơn.",

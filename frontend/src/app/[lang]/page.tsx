@@ -17,7 +17,9 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
 
   return (
     <>
-      {home.hero && <HomeHero lang={lang} hero={home.hero} fallbackCta={dict.home.heroCta} />}
+      {home.heroSlides.length > 0 && (
+        <HomeHero lang={lang} slides={home.heroSlides} intervalSeconds={home.heroInterval} labels={dict.home} />
+      )}
       <Reveal>
         <CategoryTiles
           lang={lang}

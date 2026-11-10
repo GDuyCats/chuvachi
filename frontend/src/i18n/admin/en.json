@@ -402,20 +402,47 @@
     "announcement": {
       "title": "Top bar",
       "hint": "The thin black bar above every page. Leave a text empty to hide it.",
-      "center": "Middle text",
+      "center": "Middle text (one message per line; several lines take turns)",
       "link": "\"See it\" link opens",
       "left": "Left text (computer only)",
       "right": "Right text (computer only)"
     },
     "hero": {
       "title": "Big banner",
-      "hint": "The dark banner at the top of the homepage, usually for the newest cake.",
+      "hint": "The dark banner at the top of the homepage, usually for the newest cake. It is the first slide; add Extra banners below to take turns with it.",
       "show": "Show the banner",
       "eyebrow": "Small text above the title",
       "heading": "Title",
       "subtitle": "Description",
       "button": "Button text",
-      "link": "Button opens"
+      "link": "Button opens",
+      "interval": "Switch banners every (seconds)",
+      "intervalHint": "3 to 30 seconds. Only matters when there are extra banners."
+    },
+    "slides": {
+      "title": "Extra banners (take turns)",
+      "hint": "Shown after the Big banner above, switching every few seconds. Add dates to show one only during a promotion; leave them empty to show it always.",
+      "empty": "No extra banners. Only the Big banner is shown.",
+      "add": "Add banner",
+      "edit": "Edit",
+      "always": "Always shown",
+      "status": {
+        "running": "Showing",
+        "upcoming": "Upcoming",
+        "ended": "Ended",
+        "off": "Off"
+      },
+      "start": "Show from (empty = now)",
+      "end": "Show until (empty = no end)",
+      "order": "Order",
+      "active": "Turn this banner on",
+      "save": "Save banner",
+      "cancel": "Cancel",
+      "delete": "Delete banner",
+      "confirmDelete": "Delete this banner?",
+      "yesDelete": "Delete",
+      "no": "No",
+      "deleted": "Banner deleted."
     },
     "seasons": {
       "title": "Seasons",
@@ -743,6 +770,11 @@
       "hero": {
         "label": "Home page banner",
         "keywords": "banner hero home",
+        "hint": ""
+      },
+      "heroSlides": {
+        "label": "Extra rotating banners",
+        "keywords": "banner slide carousel promotion",
         "hint": ""
       },
       "seasons": {

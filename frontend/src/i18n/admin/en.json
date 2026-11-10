@@ -11,7 +11,8 @@
     "accounts": "Accounts",
     "stats": "Sales",
     "notifications": "Notifications",
-    "reviews": "Reviews"
+    "reviews": "Reviews",
+    "posts": "News"
   },
   "login": {
     "title": "Staff sign in",
@@ -861,6 +862,11 @@
         "label": "Customer reviews and comments",
         "keywords": "reviews comments stars hide spam reply report",
         "hint": ""
+      },
+      "posts": {
+        "label": "News: write, publish, schedule posts",
+        "keywords": "news posts blog journal updates",
+        "hint": ""
       }
     }
   },
@@ -902,5 +908,75 @@
     "deleteForever": "Delete for good",
     "deleteForeverConfirm": "Delete this review with its photos and comments for good? Use this when the customer asks. It can't be undone.",
     "deletedForever": "Review deleted for good."
+  },
+  "posts": {
+    "title": "News",
+    "hint": "Posts on the website's News page: cakes on the way, shop updates, a few words to customers.",
+    "add": "Write a post",
+    "loading": "Loading posts...",
+    "loadError": "Couldn't load the posts. Please reload the page.",
+    "empty": "No posts yet. Press Write a post to start.",
+    "edit": "Edit",
+    "view": "View on site",
+    "pinned": "Pinned",
+    "status": {
+      "draft": "Draft",
+      "scheduled": "Scheduled",
+      "live": "Live"
+    },
+    "categories": {
+      "NEWS": "Announcement",
+      "NEW_CAKE": "New cake",
+      "UPDATE": "Update",
+      "EVENT": "Event",
+      "LETTER": "A few words"
+    },
+    "newTitle": "New post",
+    "editTitle": "Edit post",
+    "back": "Back to the list",
+    "save": "Save post",
+    "saving": "Saving...",
+    "saved": "Saved. The News page updates within a few minutes.",
+    "saveError": "Couldn't save. Please try again.",
+    "invalid": "Some fields need fixing (highlighted).",
+    "slugTaken": "Another post already uses this link. Please choose another.",
+    "titleVi": "Title (VI)",
+    "titleEn": "Title (EN, optional)",
+    "category": "Type",
+    "slug": "Link",
+    "slugPlaceholder": "made from the title",
+    "slugHint": "E.g. mooncakes-2026 → chuvachi.com/vi/news/mooncakes-2026. Empty = made automatically. Changing it after posting breaks old links.",
+    "summaryVi": "Summary (VI)",
+    "summaryEn": "Summary (EN)",
+    "summaryHint": "A few lines shown on the post's card. Empty = the start of the post.",
+    "bodyVi": "Vietnamese text",
+    "bodyEn": "English text",
+    "preview": "Preview",
+    "backToWriting": "Back to writing",
+    "previewEmpty": "Nothing written yet.",
+    "bodyPlaceholder": "Write the post here. Leave an empty line between paragraphs.",
+    "bodyEnPlaceholder": "Optional. Empty = the English page shows the Vietnamese text.",
+    "bodyHint": "Use the buttons above: Heading, Bold, Italic, Lists, Quote, Link, Photo. Leave an empty line between paragraphs.",
+    "toolHeading": "Heading",
+    "toolList": "• List",
+    "toolNumbered": "1. List",
+    "toolQuote": "❝ Quote",
+    "toolLink": "Link",
+    "toolPhoto": "Add photo",
+    "uploading": "Uploading...",
+    "toolBoldSample": "bold text",
+    "toolItalicSample": "italic text",
+    "toolLinkSample": "link text",
+    "photoCaption": "Photo caption",
+    "photoInserted": "Photo added to the post. Press Save post to publish it.",
+    "publishAt": "Publish date and time",
+    "publishAtHint": "A later time schedules the post: it appears then (if Publish is ticked).",
+    "published": "Publish (untick = draft, customers can't see it)",
+    "pin": "Pin to the top of the News page",
+    "delete": "Delete post",
+    "confirmDelete": "Delete this post and its photos for good?",
+    "yesDelete": "Delete",
+    "no": "No",
+    "deleted": "Post deleted."
   }
 }

@@ -631,3 +631,34 @@ model CustomerNotification {
 
   @@index([customerId, createdAt])
 }
+
+enum PostCategory {
+  NEWS     // general announcement
+  NEW_CAKE // a cake is coming or just arrived
+  UPDATE   // changes to the shop or the website
+  EVENT    // promotion, holiday, market stall...
+  LETTER   // a few words from the shop
+}
+
+// News page: posts written by admins. Shown when published and publishAt has passed.
+// Texts are Markdown-like (see frontend/src/components/news/PostBody.tsx); English is optional.
+model Post {
+  id            Int          @id @default(autoincrement())
+  slug          String       @unique
+  category      PostCategory @default(NEWS)
+  titleVi       String
+  titleEn       String?
+  summaryVi     String?      // short text on the card; empty = start of the post
+  summaryEn     String?
+  bodyVi        String       @db.Text
+  bodyEn        String?      @db.Text
+  coverImageUrl String?
+  isPublished   Boolean      @default(false) // false = draft
+  isPinned      Boolean      @default(false) // pinned posts stay on top
+  publishAt     DateTime     @default(now())  // a later time = scheduled
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([isPublished, publishAt])
+}
+

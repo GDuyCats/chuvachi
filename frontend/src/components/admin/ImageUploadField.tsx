@@ -68,7 +68,7 @@ export function ImageUploadField({ kind, value, onChange, invalid = false, saveL
     }
   }
 
-  const previewShape = kind === "banner" ? "aspect-[16/9] w-full max-w-sm" : "aspect-square w-40";
+  const previewShape = kind !== "product" ? "aspect-[16/9] w-full max-w-sm" : "aspect-square w-40";
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
@@ -84,7 +84,7 @@ export function ImageUploadField({ kind, value, onChange, invalid = false, saveL
         {uploading && <div aria-hidden="true" className="absolute inset-0 bg-[#ebebeb] motion-safe:animate-pulse" />}
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-sm font-semibold">{kind === "banner" ? m.bannerTitle : m.productTitle}</span>
+        <span className="text-sm font-semibold">{kind !== "product" ? m.bannerTitle : m.productTitle}</span>
         <div className="flex flex-wrap gap-2">
           <label
             className={`flex min-h-11 cursor-pointer items-center border-[1.5px] border-black px-4 text-sm font-bold ${uploading ? "pointer-events-none opacity-60" : ""}`}
@@ -114,7 +114,7 @@ export function ImageUploadField({ kind, value, onChange, invalid = false, saveL
             </button>
           )}
         </div>
-        <span className="text-xs text-muted">{kind === "banner" ? m.bannerHint : m.productHint}</span>
+        <span className="text-xs text-muted">{kind !== "product" ? m.bannerHint : m.productHint}</span>
         {changed && !error && <span className="text-xs font-semibold">{unsavedText}</span>}
         {error && (
           <span role="alert" className="text-sm font-semibold">

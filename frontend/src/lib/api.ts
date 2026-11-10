@@ -193,3 +193,40 @@ export async function getHomeContent(locale: Locale): Promise<HomeContent> {
     return EMPTY_HOME;
   }
 }
+
+// ---------- News ----------
+
+export type PostCategory = "NEWS" | "NEW_CAKE" | "UPDATE" | "EVENT" | "LETTER";
+
+export type PostCard = {
+  slug: string;
+  category: PostCategory;
+  title: string;
+  summary: string;
+  coverImageUrl: string | null;
+  publishedAt: string; // ISO time
+  pinned: boolean;
+};
+
+export type PostFull = PostCard & { body: string };
+
+// Published news posts, pinned first. Empty list if the backend can't be reached.
+export async function getPosts(locale: Locale): Promise<PostCard[]> {
+  "use cache";
+  cacheLife("minutes");
+  try {
+    return await getJson<PostCard[]>(`/api/posts?locale=${locale}`);
+  } catch {
+    return [];
+  }
+}
+
+export async function getPost(locale: Locale, slug: string): Promise<PostFull | null> {
+  "use cache";
+  cacheLife("minutes");
+  const response = await fetch(apiUrl(`/api/posts/${encodeURIComponent(slug)}?locale=${locale}`));
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(`API request failed: ${response.status} /api/posts/${slug}`);
+  return (await response.json()) as PostFull;
+}
+

@@ -12,6 +12,7 @@ adminUploadsRouter.use(requireStaff, requireAdminRole);
 const KINDS = {
   product: { folder: "products", maxSide: 1600 }, // longest side after resizing, in pixels
   banner: { folder: "banners", maxSide: 2400 },
+  post: { folder: "posts", maxSide: 1800 }, // cover and in-text photos of news posts
 } as const;
 type UploadKind = keyof typeof KINDS;
 

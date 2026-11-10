@@ -23,6 +23,7 @@ export function SiteHeader({ lang, dict, searchIndex, searchLabels, bellLabels }
     { href: `/${lang}#new`, label: dict.new },
     { href: `/${lang}#seasonal`, label: dict.seasonal },
     { href: `/${lang}#coming-soon`, label: dict.comingSoon },
+    { href: `/${lang}/news`, label: dict.news },
     { href: "#contact", label: dict.contact },
   ];
 

@@ -12,6 +12,7 @@ import { adminOrdersRouter } from "./routes/admin-orders";
 import { adminSettingsRouter } from "./routes/admin-settings";
 import { adminProductsRouter } from "./routes/admin-products";
 import { adminUploadsRouter } from "./routes/admin-uploads";
+import { adminPostsRouter, postsRouter } from "./routes/posts";
 import { customerPushRouter } from "./routes/customer-push";
 import { adminHomeRouter } from "./routes/admin-home";
 import { adminAccountsRouter } from "./routes/admin-accounts";
@@ -43,7 +44,9 @@ app.disable("x-powered-by");
 app.use(helmet()); // standard security headers
 // credentials: true lets the admin pages send their sign-in cookie; only our own sites are allowed.
 app.use(cors({ origin: allowedOrigins, credentials: true }));
-app.use(express.json({ limit: "20kb" })); // orders are small; reject huge bodies
+// News posts can be long; everything else is small, so huge bodies are rejected.
+app.use("/api/admin/posts", express.json({ limit: "300kb" }));
+app.use(express.json({ limit: "20kb" }));
 app.use(cookieParser());
 
 app.use("/health", healthRouter);
@@ -54,6 +57,7 @@ app.use("/api", homeRouter);
 app.use("/api", accountRouter);
 app.use("/api", reviewsRouter);
 app.use("/api", customerPushRouter);
+app.use("/api", postsRouter);
 app.use("/api/admin", adminAuthRouter);
 app.use("/api/admin/password-reset", adminPasswordResetRouter);
 app.use("/api/admin/orders", adminOrdersRouter);
@@ -63,6 +67,7 @@ app.use("/api/admin/accounts", adminAccountsRouter);
 app.use("/api/admin/stats", adminStatsRouter);
 app.use("/api/admin/push", adminPushRouter);
 app.use("/api/admin/reviews", adminReviewsRouter);
+app.use("/api/admin/posts", adminPostsRouter);
 app.use("/api/admin", adminHomeRouter);
 app.use("/api/admin", adminSettingsRouter);
 

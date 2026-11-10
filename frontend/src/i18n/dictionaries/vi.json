@@ -17,7 +17,8 @@
     "cart": "Đơn hàng của bạn",
     "signIn": "Đăng nhập",
     "account": "Tài khoản của bạn",
-    "orders": "Đơn hàng"
+    "orders": "Đơn hàng",
+    "news": "Tin tức"
   },
   "footer": {
     "tagline": "Panna cotta, tiramisu, mousse và brownie — làm mới mỗi ngày.",
@@ -578,5 +579,28 @@
     "trackTitle": "Tra cứu đơn khác",
     "trackHint": "Có mã đơn và số điện thoại đã đặt? Tra cứu bất kỳ đơn nào.",
     "trackButton": "Tra cứu bằng mã đơn"
+  },
+  "news": {
+    "title": "Tin tức",
+    "intro": "Bánh sắp ra, thay đổi của tiệm và đôi lời từ Chuvachi.",
+    "empty": "Chưa có tin nào. Bạn quay lại sau nhé!",
+    "readMore": "Đọc tiếp",
+    "pinned": "Ghim",
+    "posted": "đăng ngày {date}",
+    "close": "Đóng bài",
+    "prev": "Bài phía trên",
+    "next": "Bài phía dưới",
+    "home": "Về trang chủ",
+    "loading": "Đang tải bài...",
+    "error": "Không tải được bài này. Vui lòng thử lại.",
+    "homeTitle": "Tin mới",
+    "viewAll": "Xem tất cả tin",
+    "categories": {
+      "NEWS": "Thông báo",
+      "NEW_CAKE": "Bánh mới",
+      "UPDATE": "Cập nhật",
+      "EVENT": "Sự kiện",
+      "LETTER": "Đôi lời"
+    }
   }
 }

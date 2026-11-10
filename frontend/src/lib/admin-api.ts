@@ -333,7 +333,7 @@ export type AdminProduct = AdminProductInput & {
   options: (AdminOption & { id: number })[];
 };
 
-export type UploadKind = "product" | "banner";
+export type UploadKind = "product" | "banner" | "post";
 
 // ---------- Homepage ----------
 
@@ -378,6 +378,27 @@ export type HeroSlideInput = {
 };
 
 export type AdminHeroSlide = HeroSlideInput & { id: number };
+
+// ---------- News posts ----------
+
+export type PostCategory = "NEWS" | "NEW_CAKE" | "UPDATE" | "EVENT" | "LETTER";
+
+export type PostInput = {
+  slug: string; // empty = made from the Vietnamese title
+  category: PostCategory;
+  titleVi: string;
+  titleEn: string | null;
+  summaryVi: string | null;
+  summaryEn: string | null;
+  bodyVi: string;
+  bodyEn: string | null;
+  coverImageUrl: string | null;
+  isPublished: boolean;
+  isPinned: boolean;
+  publishAt: string; // ISO time
+};
+
+export type AdminPost = PostInput & { id: number; createdAt: string; updatedAt: string };
 
 export type SeasonInput = {
   nameVi: string;
@@ -514,6 +535,11 @@ export const adminApi = {
     body.append("image", file);
     return request<{ url: string }>(`/uploads/${kind}`, { method: "POST", body });
   },
+  listPosts: () => request<AdminPost[]>("/posts"),
+  createPost: (post: PostInput) => request<AdminPost[]>("/posts", { method: "POST", body: JSON.stringify(post) }),
+  updatePost: (id: number, post: PostInput) =>
+    request<AdminPost[]>(`/posts/${id}`, { method: "PUT", body: JSON.stringify(post) }),
+  deletePost: (id: number) => request<AdminPost[]>(`/posts/${id}`, { method: "DELETE" }),
   getHome: () => request<HomeBundle>("/home"),
   saveHome: (content: HomeContentInput) =>
     request<HomeBundle>("/home", { method: "PUT", body: JSON.stringify(content) }),

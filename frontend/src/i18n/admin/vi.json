@@ -11,7 +11,8 @@
     "accounts": "Tài khoản",
     "stats": "Thống kê",
     "notifications": "Thông báo",
-    "reviews": "Đánh giá"
+    "reviews": "Đánh giá",
+    "posts": "Tin tức"
   },
   "login": {
     "title": "Đăng nhập nhân viên",
@@ -861,6 +862,11 @@
         "label": "Đánh giá và bình luận của khách",
         "keywords": "danh gia binh luan sao review an spam tra loi bao cao",
         "hint": ""
+      },
+      "posts": {
+        "label": "Tin tức: viết bài, đăng, hẹn giờ",
+        "keywords": "tin tuc bai viet blog nhat ky cap nhat",
+        "hint": ""
       }
     }
   },
@@ -902,5 +908,75 @@
     "deleteForever": "Xóa hẳn",
     "deleteForeverConfirm": "Xóa hẳn đánh giá này cùng ảnh và bình luận? Dùng khi khách yêu cầu xóa. Không lấy lại được.",
     "deletedForever": "Đã xóa hẳn đánh giá."
+  },
+  "posts": {
+    "title": "Tin tức",
+    "hint": "Bài viết trên trang Tin tức của web: bánh sắp ra, cập nhật của tiệm, đôi lời gửi khách.",
+    "add": "Viết bài mới",
+    "loading": "Đang tải bài viết...",
+    "loadError": "Không tải được danh sách bài. Vui lòng tải lại trang.",
+    "empty": "Chưa có bài nào. Bấm Viết bài mới để bắt đầu.",
+    "edit": "Sửa",
+    "view": "Xem trên web",
+    "pinned": "Ghim",
+    "status": {
+      "draft": "Nháp",
+      "scheduled": "Hẹn giờ",
+      "live": "Đang hiện"
+    },
+    "categories": {
+      "NEWS": "Thông báo",
+      "NEW_CAKE": "Bánh mới",
+      "UPDATE": "Cập nhật",
+      "EVENT": "Sự kiện",
+      "LETTER": "Đôi lời"
+    },
+    "newTitle": "Bài mới",
+    "editTitle": "Sửa bài",
+    "back": "Quay lại danh sách",
+    "save": "Lưu bài",
+    "saving": "Đang lưu...",
+    "saved": "Đã lưu. Trang Tin tức cập nhật trong vài phút.",
+    "saveError": "Lưu không được. Vui lòng thử lại.",
+    "invalid": "Có ô cần sửa (đã tô đậm).",
+    "slugTaken": "Đường link này đã có bài khác dùng. Đổi đường link khác nhé.",
+    "titleVi": "Tiêu đề (VI)",
+    "titleEn": "Tiêu đề (EN, không bắt buộc)",
+    "category": "Loại bài",
+    "slug": "Đường link",
+    "slugPlaceholder": "tự tạo từ tiêu đề",
+    "slugHint": "Ví dụ banh-trung-thu-2026 → chuvachi.com/vi/news/banh-trung-thu-2026. Để trống thì tự tạo. Đổi sau khi đăng sẽ làm hỏng link cũ.",
+    "summaryVi": "Tóm tắt (VI)",
+    "summaryEn": "Tóm tắt (EN)",
+    "summaryHint": "Vài dòng hiện trên thẻ bài. Để trống thì lấy đoạn đầu bài.",
+    "bodyVi": "Nội dung tiếng Việt",
+    "bodyEn": "Nội dung tiếng Anh",
+    "preview": "Xem trước",
+    "backToWriting": "Quay lại soạn",
+    "previewEmpty": "Chưa có nội dung.",
+    "bodyPlaceholder": "Viết bài ở đây. Cách một dòng trống để sang đoạn mới.",
+    "bodyEnPlaceholder": "Không bắt buộc. Để trống thì trang tiếng Anh hiện bản tiếng Việt.",
+    "bodyHint": "Dùng các nút phía trên: Tiêu đề nhỏ, Đậm, Nghiêng, Danh sách, Trích dẫn, Link, Chèn ảnh. Cách một dòng trống để sang đoạn mới.",
+    "toolHeading": "Tiêu đề nhỏ",
+    "toolList": "• Danh sách",
+    "toolNumbered": "1. Danh sách",
+    "toolQuote": "❝ Trích dẫn",
+    "toolLink": "Link",
+    "toolPhoto": "Chèn ảnh",
+    "uploading": "Đang tải ảnh...",
+    "toolBoldSample": "chữ đậm",
+    "toolItalicSample": "chữ nghiêng",
+    "toolLinkSample": "chữ của link",
+    "photoCaption": "Chú thích ảnh",
+    "photoInserted": "Đã chèn ảnh vào bài. Bấm Lưu bài để đăng.",
+    "publishAt": "Ngày giờ đăng",
+    "publishAtHint": "Đặt giờ sau này để hẹn giờ: bài tự hiện lúc đó (nếu đã tick Đăng bài).",
+    "published": "Đăng bài (bỏ tick = lưu nháp, khách không thấy)",
+    "pin": "Ghim lên đầu trang Tin tức",
+    "delete": "Xóa bài",
+    "confirmDelete": "Xóa hẳn bài này cùng ảnh của bài?",
+    "yesDelete": "Xóa",
+    "no": "Không",
+    "deleted": "Đã xóa bài."
   }
 }

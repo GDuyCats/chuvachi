@@ -1,10 +1,16 @@
 import { Prisma, PostCategory } from "@prisma/client";
 import { Router, type Response } from "express";
+import rateLimit from "express-rate-limit";
 import { z } from "zod";
 import { requireAdminRole, requireStaff } from "../lib/auth";
+import { rateLimitKey } from "../lib/client-ip";
+import { currentCustomerId, requireCustomer } from "../lib/customer-auth";
 import { parseLocale, pickText, type Locale } from "../lib/locale";
 import { prisma } from "../lib/prisma";
 import { deleteImageByUrl, isOwnImageInFolder, isOwnImageUrl } from "../lib/storage";
+import { notifyPostReply } from "../services/customer-push";
+import { notifyReported } from "../services/notifications";
+import { cleanText, hasLink, shortName } from "../services/review-service";
 
 // The News page: public list and single post, and the admin editor behind it.
 
@@ -85,7 +91,149 @@ postsRouter.get("/posts/:slug", async (req, res) => {
     res.status(404).json({ error: "NOT_FOUND" });
     return;
   }
-  res.json({ ...toCard(post, locale), body: pickText(locale, post.bodyVi, post.bodyEn) ?? post.bodyVi });
+  res.json({
+    ...toCard(post, locale),
+    body: pickText(locale, post.bodyVi, post.bodyEn) ?? post.bodyVi,
+    allowComments: post.allowComments,
+  });
+});
+
+// ---------- Comments (public) ----------
+
+const SHOP_NAME = "Chuvachi";
+const limiter = (limit: number, minutes: number) =>
+  rateLimit({
+    windowMs: minutes * 60 * 1000,
+    limit,
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+    keyGenerator: rateLimitKey,
+    message: { error: "TOO_MANY_REQUESTS" },
+  });
+const commentLimiter = limiter(20, 15);
+const reportLimiter = limiter(20, 60);
+const commentSchema = z.object({ body: z.string().max(1000), parentId: z.number().int().positive().nullable().optional() });
+
+async function visiblePost(slug: string) {
+  return prisma.post.findFirst({ where: { slug, ...visibleNow() }, select: { id: true, allowComments: true } });
+}
+
+// Comments in the order they were written. Hidden ones are left out; a deleted comment
+// stays as "deleted" only while someone's reply still hangs under it.
+async function publicComments(postId: number, customerId: number | null) {
+  const rows = await prisma.postComment.findMany({
+    where: { postId, hiddenAt: null },
+    orderBy: { createdAt: "asc" },
+  });
+  const liveReplies = new Set(rows.filter((r) => r.parentId !== null && !r.deletedAt).map((r) => r.parentId));
+  return rows
+    .filter((r) => !r.deletedAt || (r.parentId === null && liveReplies.has(r.id)))
+    .map((r) => ({
+      id: r.id,
+      parentId: r.parentId,
+      displayName: r.displayName,
+      isShop: r.adminUserId !== null,
+      body: r.deletedAt ? null : r.body,
+      deleted: r.deletedAt !== null,
+      createdAt: r.createdAt.toISOString(),
+      mine: customerId !== null && r.customerId === customerId,
+    }));
+}
+
+// The parent a new comment hangs under: a reply to a reply goes under the same top comment.
+async function topParent(postId: number, parentId: number | null | undefined): Promise<number | null | "BAD"> {
+  if (!parentId) return null;
+  const parent = await prisma.postComment.findFirst({ where: { id: parentId, postId, hiddenAt: null } });
+  if (!parent) return "BAD";
+  return parent.parentId ?? parent.id;
+}
+
+// GET /api/posts/:slug/comments
+postsRouter.get("/posts/:slug/comments", async (req, res) => {
+  const post = await visiblePost(String(req.params.slug));
+  if (!post) {
+    res.status(404).json({ error: "NOT_FOUND" });
+    return;
+  }
+  const customerId = await currentCustomerId(req);
+  res.json({ allowComments: post.allowComments, comments: await publicComments(post.id, customerId) });
+});
+
+// POST /api/posts/:slug/comments  { body, parentId? } - signed-in customers
+postsRouter.post("/posts/:slug/comments", commentLimiter, requireCustomer, async (req, res) => {
+  const parsed = commentSchema.safeParse(req.body);
+  if (!parsed.success) return badRequest(res, parsed.error);
+  const post = await visiblePost(String(req.params.slug));
+  if (!post) {
+    res.status(404).json({ error: "NOT_FOUND" });
+    return;
+  }
+  if (!post.allowComments) {
+    res.status(403).json({ error: "COMMENTS_OFF" });
+    return;
+  }
+  const body = cleanText(parsed.data.body);
+  if (!body) {
+    res.status(400).json({ error: "EMPTY" });
+    return;
+  }
+  if (hasLink(body)) {
+    res.status(400).json({ error: "LINKS_NOT_ALLOWED" });
+    return;
+  }
+  const parentId = await topParent(post.id, parsed.data.parentId);
+  if (parentId === "BAD") {
+    res.status(404).json({ error: "NOT_FOUND" });
+    return;
+  }
+  const customer = await prisma.customer.findUnique({ where: { id: req.customerId! }, select: { name: true } });
+  const comment = await prisma.postComment.create({
+    data: { postId: post.id, parentId, customerId: req.customerId!, displayName: shortName(customer?.name ?? ""), body },
+  });
+  void notifyPostReply(comment.id);
+  res.status(201).json({ allowComments: true, comments: await publicComments(post.id, req.customerId!) });
+});
+
+// DELETE /api/posts/comments/:id - the writer deletes their own comment
+postsRouter.delete("/posts/comments/:id", requireCustomer, async (req, res) => {
+  const id = idParam.safeParse(req.params.id);
+  if (!id.success) return badRequest(res);
+  const result = await prisma.postComment.updateMany({
+    where: { id: id.data, customerId: req.customerId!, deletedAt: null },
+    data: { deletedAt: new Date(), body: null },
+  });
+  if (result.count === 0) {
+    res.status(404).json({ error: "NOT_FOUND" });
+    return;
+  }
+  res.json({ ok: true });
+});
+
+// POST /api/posts/comments/:id/report - one report per customer; staff are told at the threshold
+postsRouter.post("/posts/comments/:id/report", reportLimiter, requireCustomer, async (req, res) => {
+  const id = idParam.safeParse(req.params.id);
+  if (!id.success) return badRequest(res);
+  const comment = await prisma.postComment.findFirst({ where: { id: id.data, hiddenAt: null, deletedAt: null } });
+  if (!comment) {
+    res.status(404).json({ error: "NOT_FOUND" });
+    return;
+  }
+  const created = await prisma.postCommentReport.createMany({
+    data: [{ commentId: comment.id, customerId: req.customerId! }],
+    skipDuplicates: true,
+  });
+  if (created.count > 0) {
+    const updated = await prisma.postComment.update({
+      where: { id: comment.id },
+      data: { reportCount: { increment: 1 } },
+      select: { reportCount: true },
+    });
+    const settings = await prisma.shopSetting.findUnique({ where: { id: 1 }, select: { reportAlertThreshold: true } });
+    if (updated.reportCount === (settings?.reportAlertThreshold ?? 3)) {
+      void notifyReported("/admin/posts").catch((e: unknown) => console.error("Report alert failed:", e));
+    }
+  }
+  res.json({ ok: true });
 });
 
 // ---------- Admin ----------
@@ -114,6 +262,7 @@ const postSchema = z.object({
   coverImageUrl: z.string().trim().max(500).refine(isOwnImageUrl, "Upload the photo with the upload button").nullable(),
   isPublished: z.boolean(),
   isPinned: z.boolean(),
+  allowComments: z.boolean(),
   publishAt: z.string().datetime({ offset: true }),
 });
 
@@ -131,8 +280,18 @@ function toAdmin(post: PostRow) {
 }
 
 async function listAll() {
-  const posts = await prisma.post.findMany({ orderBy: [{ isPinned: "desc" }, { publishAt: "desc" }, { id: "desc" }] });
-  return posts.map(toAdmin);
+  const posts = await prisma.post.findMany({
+    orderBy: [{ isPinned: "desc" }, { publishAt: "desc" }, { id: "desc" }],
+    include: {
+      _count: { select: { comments: { where: { deletedAt: null } } } },
+      comments: { where: { reportCount: { gt: 0 }, hiddenAt: null, deletedAt: null }, select: { id: true } },
+    },
+  });
+  return posts.map(({ _count, comments, ...post }) => ({
+    ...toAdmin(post),
+    commentCount: _count.comments,
+    reportedComments: comments.length,
+  }));
 }
 
 // Deletes photos the old version used and the new one doesn't.
@@ -217,4 +376,69 @@ adminPostsRouter.delete("/:id", async (req, res) => {
   await cleanUpImages(before, null);
   console.log(`Post ${id.data} deleted by admin ${req.admin!.email}`);
   res.json(await listAll());
+});
+
+// ---------- Comments (admin) ----------
+
+// GET /api/admin/posts/:id/comments - every comment, hidden ones too
+adminPostsRouter.get("/:id/comments", async (req, res) => {
+  const id = idParam.safeParse(req.params.id);
+  if (!id.success) return badRequest(res);
+  const rows = await prisma.postComment.findMany({
+    where: { postId: id.data },
+    orderBy: { createdAt: "asc" },
+    include: { adminUser: { select: { name: true } } },
+  });
+  res.json(
+    rows.map((r) => ({
+      id: r.id,
+      parentId: r.parentId,
+      displayName: r.adminUserId ? `${SHOP_NAME} (${r.adminUser?.name ?? ""})` : r.displayName,
+      isShop: r.adminUserId !== null,
+      body: r.body,
+      deleted: r.deletedAt !== null,
+      hidden: r.hiddenAt !== null,
+      reportCount: r.reportCount,
+      createdAt: r.createdAt.toISOString(),
+    })),
+  );
+});
+
+// POST /api/admin/posts/comments/:id/hide  { hidden } - showing again also clears the reports
+adminPostsRouter.post("/comments/:id/hide", async (req, res) => {
+  const id = idParam.safeParse(req.params.id);
+  const parsed = z.object({ hidden: z.boolean() }).safeParse(req.body);
+  if (!id.success || !parsed.success) return badRequest(res);
+  const result = await prisma.postComment.updateMany({
+    where: { id: id.data },
+    data: parsed.data.hidden ? { hiddenAt: new Date() } : { hiddenAt: null, reportCount: 0 },
+  });
+  if (result.count === 0) {
+    res.status(404).json({ error: "NOT_FOUND" });
+    return;
+  }
+  res.json({ ok: true });
+});
+
+// POST /api/admin/posts/:id/comments  { body, parentId? } - answer as the shop
+adminPostsRouter.post("/:id/comments", async (req, res) => {
+  const id = idParam.safeParse(req.params.id);
+  const parsed = commentSchema.safeParse(req.body);
+  if (!id.success) return badRequest(res);
+  if (!parsed.success) return badRequest(res, parsed.error);
+  const body = cleanText(parsed.data.body);
+  if (!body) {
+    res.status(400).json({ error: "EMPTY" });
+    return;
+  }
+  const parentId = await topParent(id.data, parsed.data.parentId);
+  if (parentId === "BAD") {
+    res.status(404).json({ error: "NOT_FOUND" });
+    return;
+  }
+  const comment = await prisma.postComment.create({
+    data: { postId: id.data, parentId, adminUserId: req.admin!.id, displayName: SHOP_NAME, body },
+  });
+  void notifyPostReply(comment.id);
+  res.status(201).json({ ok: true });
 });

@@ -183,6 +183,37 @@ export async function notifyNewComment(commentId: number): Promise<void> {
   }
 }
 
+// Someone answered a customer's comment under a news post: tell that customer.
+export async function notifyPostReply(commentId: number): Promise<void> {
+  try {
+    const comment = await prisma.postComment.findUnique({
+      where: { id: commentId },
+      include: {
+        parent: { select: { customerId: true } },
+        post: { select: { id: true, slug: true, titleVi: true, titleEn: true } },
+      },
+    });
+    const author = comment?.parent?.customerId ?? null;
+    if (!comment || author === null || author === comment.customerId) return;
+    const notice: Notice = {
+      kind: "commentReply",
+      values: {
+        name: comment.displayName,
+        productVi: comment.post.titleVi,
+        productEn: comment.post.titleEn ?? comment.post.titleVi,
+        text: comment.body,
+      },
+      path: `/news/${comment.post.slug}`,
+      tag: `post-${comment.post.id}`,
+    };
+    await saveToBell([author], notice);
+    const subscriptions = await prisma.customerPushSubscription.findMany({ where: { customerId: author } });
+    await sendAll(subscriptions, (locale) => toPush(locale, notice));
+  } catch (error) {
+    console.error("News comment notification failed:", error);
+  }
+}
+
 // A short "it works" message right after a device is switched on.
 export async function sendWelcome(subscriptionId: number): Promise<boolean> {
   const subscription = await prisma.customerPushSubscription.findUnique({ where: { id: subscriptionId } });

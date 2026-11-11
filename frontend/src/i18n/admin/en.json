@@ -977,6 +977,35 @@
     "confirmDelete": "Delete this post and its photos for good?",
     "yesDelete": "Delete",
     "no": "No",
-    "deleted": "Post deleted."
+    "deleted": "Post deleted.",
+    "allowComments": "Allow comments",
+    "allowCommentsHint": "When off, existing comments stay visible but customers can't add new ones.",
+    "comments": {
+      "button": "Comments ({count})",
+      "reportedBadge": "{count} reported",
+      "off": "off",
+      "title": "Comments",
+      "hint": "Only customers signed in with Google can comment; comments show right away. Hide spam or rude ones.",
+      "offHint": "Comments are off for this post: customers only see the old ones. The shop can still reply.",
+      "back": "Back to the list",
+      "loading": "Loading comments...",
+      "loadError": "Couldn't load the comments. Please reload the page.",
+      "empty": "No comments yet.",
+      "reports": "{count} reports",
+      "hiddenBadge": "Hidden",
+      "deleted": "(deleted by the customer)",
+      "reply": "Reply as Chuvachi",
+      "write": "Write a comment as Chuvachi",
+      "placeholder": "Thanks for reading...",
+      "send": "Send",
+      "cancel": "Cancel",
+      "sent": "Sent.",
+      "hide": "Hide",
+      "show": "Show again",
+      "keep": "Keep, clear reports",
+      "hiddenDone": "Hidden. Customers no longer see this comment.",
+      "shownDone": "Shown again and reports cleared.",
+      "error": "Something went wrong. Please try again."
+    }
   }
 }

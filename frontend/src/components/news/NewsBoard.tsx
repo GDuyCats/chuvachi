@@ -8,6 +8,7 @@ import type { PostCard, PostFull } from "@/lib/api";
 import { formatPostDate } from "@/lib/post-date";
 import { request } from "@/lib/public-api";
 import { PostBody } from "./PostBody";
+import { PostComments } from "./PostComments";
 
 type Labels = Dictionary["news"];
 
@@ -207,6 +208,9 @@ export function NewsBoard({
                   )}
                   <div className="px-5 py-6 md:px-8 md:py-8">
                     <PostBody text={post.body} />
+                  </div>
+                  <div className="border-t border-line px-5 py-6 md:px-8">
+                    <PostComments lang={lang} slug={post.slug} labels={labels.comments} />
                   </div>
                 </>
               )}

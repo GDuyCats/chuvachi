@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { adminApi, AdminApiError, AdminValidationError, type AdminPost, type PostCategory, type PostInput } from "@/lib/admin-api";
 import { PostBody } from "../news/PostBody";
+import { PostCommentsPanel } from "./PostCommentsPanel";
 import { useAdminI18n } from "./AdminI18n";
 import { AdminRowsSkeleton } from "./AdminSkeletons";
 import { ImageUploadField } from "./ImageUploadField";
@@ -35,6 +36,7 @@ function emptyPost(): PostInput {
     coverImageUrl: null,
     isPublished: false,
     isPinned: false,
+    allowComments: true,
     publishAt: new Date().toISOString(),
   };
 }
@@ -48,6 +50,7 @@ export function PostsPage() {
   const [failed, setFailed] = useState(false);
   // null = list only; "new" = writing a new post; a number = editing that post
   const [editing, setEditing] = useState<number | "new" | null>(null);
+  const [commentsOf, setCommentsOf] = useState<AdminPost | null>(null); // post whose comments are open
 
   useEffect(() => {
     adminApi
@@ -67,6 +70,18 @@ export function PostsPage() {
     if (new Date(post.publishAt) > new Date()) return p.status.scheduled;
     return p.status.live;
   };
+
+  if (commentsOf) {
+    return (
+      <PostCommentsPanel
+        post={commentsOf}
+        onClose={() => {
+          setCommentsOf(null);
+          adminApi.listPosts().then(setPosts).catch(() => undefined); // refresh the counts
+        }}
+      />
+    );
+  }
 
   if (editing !== null) {
     const current = editing === "new" ? null : (posts?.find((post) => post.id === editing) ?? null);
@@ -130,6 +145,15 @@ export function PostsPage() {
                     {p.view}
                   </a>
                 )}
+                <button type="button" onClick={() => setCommentsOf(post)} className="min-h-11 px-2 text-sm font-semibold underline">
+                  {p.comments.button.replace("{count}", String(post.commentCount))}
+                  {post.reportedComments > 0 && (
+                    <span className="ml-1.5 bg-black px-1.5 py-0.5 text-[10px] uppercase text-white no-underline">
+                      {p.comments.reportedBadge.replace("{count}", String(post.reportedComments))}
+                    </span>
+                  )}
+                  {!post.allowComments && <span className="ml-1 text-xs text-muted">({p.comments.off})</span>}
+                </button>
                 <button type="button" onClick={() => setEditing(post.id)} className="min-h-11 px-2 text-sm font-semibold underline">
                   {p.edit}
                 </button>
@@ -157,7 +181,7 @@ function PostEditor({
   const p = t.posts;
   const [draft, setDraft] = useState<PostInput>(() => {
     if (!post) return emptyPost();
-    const { id: _id, createdAt: _c, updatedAt: _u, ...input } = post;
+    const { id: _id, createdAt: _c, updatedAt: _u, commentCount: _n, reportedComments: _r, ...input } = post;
     return input;
   });
   const [tab, setTab] = useState<"vi" | "en">("vi");
@@ -438,6 +462,18 @@ function PostEditor({
         <label className="flex items-center gap-2.5 font-semibold">
           <input type="checkbox" checked={draft.isPinned} onChange={(e) => update("isPinned", e.target.checked)} className="h-5 w-5 accent-black" />
           {p.pin}
+        </label>
+        <label className="flex flex-col gap-1 font-semibold">
+          <span className="flex items-center gap-2.5">
+            <input
+              type="checkbox"
+              checked={draft.allowComments}
+              onChange={(e) => update("allowComments", e.target.checked)}
+              className="h-5 w-5 accent-black"
+            />
+            {p.allowComments}
+          </span>
+          <span className="pl-[30px] text-xs font-normal text-muted">{p.allowCommentsHint}</span>
         </label>
       </section>
 

@@ -152,9 +152,10 @@ export async function notifyLowReview(product: string, rating: number, body: str
 }
 
 // Something was reported by several customers.
-export async function notifyReported(): Promise<void> {
+// Something got many reports. "url" is the admin page where staff can look at it.
+export async function notifyReported(url = "/admin/reviews"): Promise<void> {
   await allChannels([
-    () => sendPush({ title: text.reported.pushTitle, body: text.reported.pushBody, url: "/admin/reviews", tag: "reported" }),
+    () => sendPush({ title: text.reported.pushTitle, body: text.reported.pushBody, url, tag: "reported" }),
     () => emailStaff({ subject: text.reported.subject, heading: text.reported.heading, lines: [text.reported.body] }),
   ]);
 }

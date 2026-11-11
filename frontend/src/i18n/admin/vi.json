@@ -977,6 +977,35 @@
     "confirmDelete": "Xóa hẳn bài này cùng ảnh của bài?",
     "yesDelete": "Xóa",
     "no": "Không",
-    "deleted": "Đã xóa bài."
+    "deleted": "Đã xóa bài.",
+    "allowComments": "Cho phép bình luận",
+    "allowCommentsHint": "Tắt đi thì bình luận cũ vẫn hiện, nhưng khách không viết thêm được.",
+    "comments": {
+      "button": "Bình luận ({count})",
+      "reportedBadge": "{count} bị báo cáo",
+      "off": "đã tắt",
+      "title": "Bình luận",
+      "hint": "Khách đăng nhập Google mới bình luận được; mọi bình luận hiện ngay. Ẩn những gì spam hay thô lỗ.",
+      "offHint": "Bài này đang tắt bình luận: khách chỉ xem được bình luận cũ. Tiệm vẫn trả lời được.",
+      "back": "Quay lại danh sách",
+      "loading": "Đang tải bình luận...",
+      "loadError": "Không tải được bình luận. Vui lòng tải lại trang.",
+      "empty": "Chưa có bình luận nào.",
+      "reports": "{count} báo cáo",
+      "hiddenBadge": "Đã ẩn",
+      "deleted": "(khách đã xóa)",
+      "reply": "Trả lời với tên Chuvachi",
+      "write": "Viết bình luận với tên Chuvachi",
+      "placeholder": "Cảm ơn bạn đã ghé đọc...",
+      "send": "Gửi",
+      "cancel": "Hủy",
+      "sent": "Đã gửi.",
+      "hide": "Ẩn",
+      "show": "Hiện lại",
+      "keep": "Giữ lại, bỏ báo cáo",
+      "hiddenDone": "Đã ẩn. Khách không còn thấy bình luận này.",
+      "shownDone": "Đã hiện lại và xóa báo cáo.",
+      "error": "Có lỗi xảy ra. Vui lòng thử lại."
+    }
   }
 }

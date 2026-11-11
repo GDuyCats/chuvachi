@@ -404,6 +404,7 @@ model AdminUser {
   pushSubscriptions  AdminPushSubscription[]
   orderEvents        OrderEvent[]
   reviewComments     ReviewComment[] // replies written for the shop
+  postComments       PostComment[]   // replies to news comments written for the shop
 }
 
 // A phone or computer that asked for push notifications about new orders.
@@ -483,6 +484,8 @@ model Customer {
   reviewComments   ReviewComment[]
   reviewVotes      ReviewVote[]
   reviewReports    ReviewReport[]
+  postComments       PostComment[]
+  postCommentReports PostCommentReport[]
   pushSubscriptions CustomerPushSubscription[]
   notifications     CustomerNotification[]
 }
@@ -655,10 +658,46 @@ model Post {
   coverImageUrl String?
   isPublished   Boolean      @default(false) // false = draft
   isPinned      Boolean      @default(false) // pinned posts stay on top
+  allowComments Boolean      @default(true)  // off = old comments stay visible, no new ones
+  comments      PostComment[]
   publishAt     DateTime     @default(now())  // a later time = scheduled
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
   @@index([isPublished, publishAt])
+}
+
+// Comments under a news post (signed-in customers; two levels: comment and replies).
+model PostComment {
+  id          Int                 @id @default(autoincrement())
+  postId      Int
+  post        Post                @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parentId    Int?                // the top comment this replies to
+  parent      PostComment?        @relation("PostCommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     PostComment[]       @relation("PostCommentReplies")
+  customerId  Int?
+  customer    Customer?           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  adminUserId Int?                // written as the shop
+  adminUser   AdminUser?          @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+  displayName String              // short public name, e.g. "Anh N.", or "Chuvachi"
+  body        String?             // empty once deleted (kept so replies still make sense)
+  reportCount Int                 @default(0)
+  hiddenAt    DateTime?           // hidden by staff
+  deletedAt   DateTime?           // deleted by its writer
+  createdAt   DateTime            @default(now())
+  reports     PostCommentReport[]
+
+  @@index([postId, createdAt])
+}
+
+model PostCommentReport {
+  id         Int         @id @default(autoincrement())
+  commentId  Int
+  comment    PostComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  customerId Int
+  customer   Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  createdAt  DateTime    @default(now())
+
+  @@unique([customerId, commentId])
 }
 

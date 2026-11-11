@@ -395,10 +395,29 @@ export type PostInput = {
   coverImageUrl: string | null;
   isPublished: boolean;
   isPinned: boolean;
+  allowComments: boolean; // customers may comment under the post
   publishAt: string; // ISO time
 };
 
-export type AdminPost = PostInput & { id: number; createdAt: string; updatedAt: string };
+export type AdminPost = PostInput & {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  commentCount: number;
+  reportedComments: number; // reported and still showing
+};
+
+export type AdminPostComment = {
+  id: number;
+  parentId: number | null;
+  displayName: string;
+  isShop: boolean;
+  body: string | null;
+  deleted: boolean;
+  hidden: boolean;
+  reportCount: number;
+  createdAt: string;
+};
 
 export type SeasonInput = {
   nameVi: string;
@@ -540,6 +559,11 @@ export const adminApi = {
   updatePost: (id: number, post: PostInput) =>
     request<AdminPost[]>(`/posts/${id}`, { method: "PUT", body: JSON.stringify(post) }),
   deletePost: (id: number) => request<AdminPost[]>(`/posts/${id}`, { method: "DELETE" }),
+  listPostComments: (postId: number) => request<AdminPostComment[]>(`/posts/${postId}/comments`),
+  hidePostComment: (id: number, hidden: boolean) =>
+    request<{ ok: true }>(`/posts/comments/${id}/hide`, { method: "POST", body: JSON.stringify({ hidden }) }),
+  replyPostComment: (postId: number, body: string, parentId: number | null) =>
+    request<{ ok: true }>(`/posts/${postId}/comments`, { method: "POST", body: JSON.stringify({ body, parentId }) }),
   getHome: () => request<HomeBundle>("/home"),
   saveHome: (content: HomeContentInput) =>
     request<HomeBundle>("/home", { method: "PUT", body: JSON.stringify(content) }),

@@ -601,6 +601,38 @@
       "UPDATE": "Cập nhật",
       "EVENT": "Sự kiện",
       "LETTER": "Đôi lời"
+    },
+    "comments": {
+      "title": "Bình luận",
+      "titleCount": "Bình luận ({count})",
+      "empty": "Chưa có bình luận. Bạn là người đầu tiên nhé!",
+      "closed": "Bài này đã tắt bình luận.",
+      "write": "Viết bình luận...",
+      "writeReply": "Trả lời {name}...",
+      "send": "Gửi",
+      "sending": "Đang gửi...",
+      "cancel": "Hủy",
+      "reply": "Trả lời",
+      "delete": "Xóa",
+      "deleteConfirm": "Xóa bình luận này?",
+      "deleted": "Bình luận đã bị xóa.",
+      "report": "Báo cáo",
+      "reportConfirm": "Báo cáo bình luận này là spam hoặc không phù hợp?",
+      "reported": "Đã báo cáo, cảm ơn bạn. Tiệm sẽ xem lại.",
+      "shop": "Chuvachi",
+      "signIn": "Đăng nhập Google để bình luận",
+      "loading": "Đang tải bình luận...",
+      "loadError": "Không tải được bình luận.",
+      "errors": {
+        "COMMENTS_OFF": "Bài này đã tắt bình luận.",
+        "LINKS_NOT_ALLOWED": "Bình luận không được chứa đường link.",
+        "EMPTY": "Bạn viết nội dung bình luận nhé.",
+        "UNAUTHORIZED": "Bạn đăng nhập lại rồi thử nhé.",
+        "NOT_FOUND": "Bình luận này không còn nữa.",
+        "TOO_MANY_REQUESTS": "Bạn gửi hơi nhiều. Đợi một lát rồi thử lại nhé.",
+        "NETWORK": "Không kết nối được với tiệm. Bạn kiểm tra mạng rồi thử lại nhé.",
+        "UNKNOWN": "Có lỗi xảy ra. Bạn thử lại giúp tiệm nhé."
+      }
     }
   }
 }

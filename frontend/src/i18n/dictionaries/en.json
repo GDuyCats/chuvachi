@@ -601,6 +601,38 @@
       "UPDATE": "Update",
       "EVENT": "Event",
       "LETTER": "A few words"
+    },
+    "comments": {
+      "title": "Comments",
+      "titleCount": "Comments ({count})",
+      "empty": "No comments yet. Be the first!",
+      "closed": "Comments are turned off for this post.",
+      "write": "Write a comment...",
+      "writeReply": "Reply to {name}...",
+      "send": "Send",
+      "sending": "Sending...",
+      "cancel": "Cancel",
+      "reply": "Reply",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this comment?",
+      "deleted": "This comment was deleted.",
+      "report": "Report",
+      "reportConfirm": "Report this comment as spam or inappropriate?",
+      "reported": "Reported, thank you. The shop will take a look.",
+      "shop": "Chuvachi",
+      "signIn": "Sign in with Google to comment",
+      "loading": "Loading comments...",
+      "loadError": "Couldn't load the comments.",
+      "errors": {
+        "COMMENTS_OFF": "Comments are turned off for this post.",
+        "LINKS_NOT_ALLOWED": "Comments can't contain links.",
+        "EMPTY": "Please write something first.",
+        "UNAUTHORIZED": "Please sign in again and retry.",
+        "NOT_FOUND": "This comment is no longer there.",
+        "TOO_MANY_REQUESTS": "You're sending a lot. Please wait a moment and try again.",
+        "NETWORK": "Couldn't reach the shop. Check your connection and try again.",
+        "UNKNOWN": "Something went wrong. Please try again."
+      }
     }
   }
 }

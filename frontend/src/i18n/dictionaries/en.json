@@ -293,7 +293,40 @@
       "BOT_CHECK_FAILED": "The security check didn't pass. Please reload the page and try again."
     },
     "cancelledBecause": "Reason:",
-    "refundNote": "You paid for this order. We'll refund you within 3 working days."
+    "refundNote": "You paid for this order. We'll refund you within 3 working days.",
+    "edit": {
+      "open": "Change delivery details",
+      "title": "Change delivery details",
+      "intro": "You can change the name, phone, address, zone and note until the shop starts making your cakes. {count} changes left.",
+      "name": "Recipient name",
+      "phone": "New phone number",
+      "phoneHint": "Leave empty to keep it.",
+      "address": "New address",
+      "addressHint": "Leave empty to keep the current address ({current}).",
+      "zone": "Delivery zone",
+      "zoneHint": "A different zone may change the shipping fee you pay the driver.",
+      "note": "Note for the shop",
+      "save": "Save changes",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "saved": "Saved. The shop has been told about your change.",
+      "savedPhone": "Saved. From now on, look the order up with your new phone number.",
+      "locked": "The shop has started making your cakes, so the details can't be changed here any more. Message the shop on Facebook if something needs to change.",
+      "limit": "You've changed this order as many times as allowed. Message the shop on Facebook for anything else.",
+      "errors": {
+        "VALIDATION_ERROR": "Please check: a 10-digit phone number and an address of at least 5 characters.",
+        "NO_CHANGES": "You haven't changed anything.",
+        "EDIT_LOCKED": "The shop just started making your cakes, so it can't be changed now. Please message the shop on Facebook.",
+        "EDIT_LIMIT": "You've changed this order as many times as allowed.",
+        "INVALID_ZONE": "The shop doesn't deliver to this zone.",
+        "ORDER_NOT_FOUND": "Order not found. Please reload the page and try again.",
+        "TOO_MANY_REQUESTS": "Too many tries. Please wait a moment and try again.",
+        "BOT_CHECK_PENDING": "Running the security check, please wait a few seconds and try again.",
+        "BOT_CHECK_FAILED": "The security check failed. Please reload the page and try again.",
+        "NETWORK": "Couldn't reach the shop. Check your connection and try again.",
+        "UNKNOWN": "Something went wrong. Please try again."
+      }
+    }
   },
   "loading": {
     "page": "Loading...",

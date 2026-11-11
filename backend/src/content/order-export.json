@@ -1,0 +1,41 @@
+{
+  "columns": [
+    "Mã đơn",
+    "Đặt lúc",
+    "Ngày giao",
+    "Giờ giao",
+    "Trạng thái",
+    "Thanh toán",
+    "Tên khách",
+    "Số điện thoại",
+    "Địa chỉ",
+    "Khu vực",
+    "Món",
+    "Số phần",
+    "Tiền bánh (đ)",
+    "Ghi chú",
+    "Lý do hủy"
+  ],
+  "asap": "Sớm nhất",
+  "status": {
+    "PENDING": "Chờ thanh toán",
+    "CONFIRMED": "Đã nhận đơn",
+    "PREPARING": "Đang làm",
+    "READY": "Xong, chờ giao",
+    "COMPLETED": "Đã giao",
+    "CANCELLED": "Đã hủy"
+  },
+  "payment": {
+    "UNPAID": "Chưa thanh toán",
+    "PAID": "Đã thanh toán",
+    "REFUNDED": "Đã hoàn tiền"
+  },
+  "cancelReasons": {
+    "OUT_OF_INGREDIENTS": "Hết nguyên liệu",
+    "CANNOT_DELIVER": "Không giao được",
+    "CUSTOMER_REQUEST": "Khách yêu cầu hủy",
+    "SHOP_CLOSED": "Tiệm nghỉ đột xuất",
+    "UNPAID_TIMEOUT": "Không thanh toán kịp",
+    "OTHER": "Lý do khác"
+  }
+}

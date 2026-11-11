@@ -11,6 +11,7 @@ import { currentCustomerId } from "../lib/customer-auth";
 import { notifyNewOrder } from "../services/notifications";
 import { rateLimitKey } from "../lib/client-ip";
 import { requireHuman } from "../lib/turnstile";
+import { contactChangesSchema, editOrderContact, OrderEditError } from "../services/order-edit-service";
 
 export const ordersRouter = Router();
 
@@ -128,6 +129,52 @@ ordersRouter.get("/orders/:code", lookupLimiter, requireHuman, async (req, res) 
   }
 
   res.json(order);
+});
+
+// Changing an order's contact details: a few times per order at most, so a low limit is enough.
+const editLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 10,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  keyGenerator: rateLimitKey,
+  message: { error: "TOO_MANY_REQUESTS" },
+});
+
+const guestEditSchema = z.object({
+  phone: z.string().trim().min(1).max(20), // the phone the order was looked up with
+  locale: z.enum(["vi", "en"]).default("vi"),
+  changes: contactChangesSchema,
+});
+
+// POST /api/orders/:code/contact  { phone, locale, changes: { customerName?, customerPhone?, address?, deliveryZoneId?, note? } }
+// A guest fixes the contact details of their order (code + phone, like the lookup). Returns the order again
+// and the phone to use from now on.
+ordersRouter.post("/orders/:code/contact", editLimiter, requireHuman, async (req, res) => {
+  const code = String(req.params.code);
+  const parsed = guestEditSchema.safeParse(req.body);
+  if (!parsed.success || !/^[A-Za-z0-9]{4,12}$/.test(code)) {
+    res.status(400).json({
+      error: "VALIDATION_ERROR",
+      details: parsed.success ? [] : parsed.error.issues.map((issue) => ({ field: issue.path.join("."), message: issue.message })),
+    });
+    return;
+  }
+  const { phone, locale, changes } = parsed.data;
+  if (!(await findOrderForCustomer(code, phone, locale))) {
+    res.status(404).json({ error: "ORDER_NOT_FOUND" });
+    return;
+  }
+  try {
+    const result = await editOrderContact(code, changes, { kind: "customer" });
+    res.json({ order: await findOrderForCustomer(code, result.phone, locale), phone: result.phone });
+  } catch (error) {
+    if (error instanceof OrderEditError) {
+      res.status(error.status).json({ error: error.code });
+      return;
+    }
+    throw error;
+  }
 });
 
 // GET /api/order-settings?locale=vi - everything the checkout page needs

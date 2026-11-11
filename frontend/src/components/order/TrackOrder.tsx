@@ -13,6 +13,7 @@ import { Skeleton, SkeletonGroup } from "../Skeleton";
 import { OrderPushButton } from "../push/PushControls";
 import { ReviewableOrderBox } from "../reviews/ReviewableOrders";
 import { reviewsApi, type ReviewableOrder } from "@/lib/reviews-api";
+import { EditOrderContact } from "./EditOrderContact";
 import { TURNSTILE_ENABLED, TurnstileWidget } from "./TurnstileWidget";
 
 type Props = {
@@ -189,6 +190,20 @@ export function TrackOrder({ lang, labels, cancelReasons, reviewLabels, pushLabe
         result?.kind === "found" && (
           <>
             <OrderDetails lang={lang} labels={labels} cancelReasons={cancelReasons} order={result.order} />
+            <EditOrderContact
+              key={result.order.code}
+              lang={lang}
+              order={result.order}
+              phone={lookupPhone}
+              labels={labels.edit}
+              onUpdated={(order, newPhone) => {
+                setResult({ kind: "found", order });
+                if (newPhone) {
+                  setLookupPhone(newPhone);
+                  setPhone(newPhone);
+                }
+              }}
+            />
             {result.order.status !== "CANCELLED" && (
               <OrderPushButton lang={lang} code={result.order.code} phone={lookupPhone} labels={pushLabels} />
             )}

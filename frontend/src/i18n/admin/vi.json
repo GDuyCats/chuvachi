@@ -108,7 +108,9 @@
       "REFUND": "Đã hoàn tiền",
       "AUTO_ERASE": "Đã xóa thông tin khách (hết thời hạn lưu)",
       "ERASE_ON_REQUEST": "Đã xóa thông tin khách theo yêu cầu",
-      "BULK_CANCEL": "Hủy hàng loạt"
+      "BULK_CANCEL": "Hủy hàng loạt",
+      "EDIT": "Sửa thông tin",
+      "CUSTOMER_EDIT": "Khách tự sửa thông tin"
     },
     "errors": {
       "ORDER_CHANGED": "Người khác vừa cập nhật đơn này. Danh sách đã được tải lại.",
@@ -151,6 +153,74 @@
       "refundHint": "Các đơn dưới đây đã thanh toán. Chuyển trả tiền cho từng khách rồi bấm \"Đã hoàn tiền\".",
       "refunded": "Đã hoàn tiền",
       "noRefund": "Không có đơn nào cần hoàn tiền."
+    },
+    "history": {
+      "open": "Tất cả đơn",
+      "back": "Đơn hàng hôm nay",
+      "title": "Tất cả đơn",
+      "hint": "Mọi đơn từ trước tới nay. Tìm, lọc rồi bấm vào một đơn để xem chi tiết.",
+      "search": "Tìm đơn",
+      "searchPlaceholder": "Tìm theo mã đơn, số điện thoại, tên khách hoặc địa chỉ...",
+      "status": "Trạng thái",
+      "payment": "Thanh toán",
+      "cancelReason": "Lý do hủy",
+      "product": "Có bánh",
+      "zone": "Khu vực",
+      "dateBy": "Lọc ngày theo",
+      "dateByCreated": "Ngày đặt",
+      "dateByDelivery": "Ngày giao",
+      "from": "Từ ngày",
+      "to": "Đến ngày",
+      "sort": "Sắp xếp",
+      "sorts": {
+        "new": "Mới nhất",
+        "old": "Cũ nhất",
+        "totalDesc": "Tiền nhiều nhất",
+        "totalAsc": "Tiền ít nhất"
+      },
+      "any": "Tất cả",
+      "editedOnly": "Chỉ đơn khách vừa sửa",
+      "summary": "{count} đơn · {revenue} (không tính đơn hủy)",
+      "reset": "Xóa bộ lọc",
+      "empty": "Không có đơn nào khớp bộ lọc.",
+      "export": "Xuất Excel (CSV)",
+      "exporting": "Đang xuất...",
+      "exportError": "Không xuất được file. Vui lòng thử lại.",
+      "pages": "Trang",
+      "prev": "Trang trước",
+      "next": "Trang sau",
+      "pageOf": "Trang {page} / {pages}"
+    },
+    "edit": {
+      "open": "Sửa thông tin",
+      "title": "Sửa thông tin giao hàng",
+      "name": "Tên người nhận",
+      "phone": "Số điện thoại",
+      "address": "Địa chỉ",
+      "zone": "Khu vực giao",
+      "note": "Ghi chú của khách",
+      "hint": "Thay đổi được ghi vào lịch sử đơn. Khách thấy thông tin mới ở trang tra cứu đơn.",
+      "save": "Lưu thay đổi",
+      "cancel": "Thôi",
+      "badge": "Khách vừa sửa",
+      "changedTitle": "Khách vừa sửa thông tin đơn này",
+      "changedText": "Xem phần Lịch sử bên dưới để biết đã đổi gì, rồi bấm Đã xem.",
+      "seen": "Đã xem",
+      "erasedValues": "đã xóa theo quyền riêng tư",
+      "fields": {
+        "customerName": "Tên",
+        "customerPhone": "SĐT",
+        "address": "Địa chỉ",
+        "deliveryZoneId": "Khu vực",
+        "note": "Ghi chú"
+      },
+      "errors": {
+        "VALIDATION_ERROR": "Kiểm tra lại: số điện thoại 10 số, địa chỉ ít nhất 5 ký tự.",
+        "INVALID_ZONE": "Khu vực này không còn giao.",
+        "NO_CHANGES": "Chưa có gì thay đổi.",
+        "ORDER_ERASED": "Thông tin khách của đơn này đã bị xóa.",
+        "UNKNOWN": "Có lỗi xảy ra. Vui lòng thử lại."
+      }
     }
   },
   "settings": {
@@ -706,6 +776,11 @@
       "orders": {
         "label": "Xem đơn hàng hôm nay, ngày mai",
         "keywords": "don hang hom nay ngay mai xac nhan tien da giao trang thai",
+        "hint": ""
+      },
+      "ordersAll": {
+        "label": "Tất cả đơn: tìm, lọc, xuất Excel",
+        "keywords": "tat ca don lich su don cu tim don loc huy da giao xuat excel csv so sach",
         "hint": ""
       },
       "ordersBulk": {

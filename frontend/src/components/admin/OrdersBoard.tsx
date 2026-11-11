@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { formatLongDate, formatSlot } from "@/lib/delivery-time";
@@ -18,6 +19,7 @@ import { useAdminI18n } from "./AdminI18n";
 import { useAdminMe } from "./AdminShell";
 import { AdminRowsSkeleton } from "./AdminSkeletons";
 import { BulkCancelPanel } from "./BulkCancelPanel";
+import { OrderContactForm } from "./OrderContactForm";
 import { OPEN_ORDER_EVENT, useOrderPulse } from "./OrderPulse";
 import { useToast } from "./Toast";
 
@@ -25,7 +27,7 @@ const REFRESH_MS = 30_000;
 const STATUS_ORDER: AdminStatus[] = ["PENDING", "CONFIRMED", "PREPARING", "READY", "COMPLETED", "CANCELLED"];
 
 // Monochrome status chips: the first step stands out, finished/cancelled ones fade.
-const chipClass: Record<AdminStatus, string> = {
+export const chipClass: Record<AdminStatus, string> = {
   PENDING: "bg-black text-white border-black",
   CONFIRMED: "bg-white text-black border-black",
   PREPARING: "bg-white text-black border-black",
@@ -34,7 +36,7 @@ const chipClass: Record<AdminStatus, string> = {
   CANCELLED: "bg-white text-[#595959] border-[#a8a8a8] line-through",
 };
 
-function formatTime(iso: string, lang: "vi" | "en"): string {
+export function formatTime(iso: string, lang: "vi" | "en"): string {
   return new Intl.DateTimeFormat(lang === "vi" ? "vi-VN" : "en-US", {
     hour: "2-digit",
     minute: "2-digit",
@@ -170,6 +172,9 @@ export function OrdersBoard() {
           <span className="text-[13px] text-muted">{t.orders.autoRefresh}</span>
         </div>
         <div className="flex flex-wrap items-center gap-3">
+          <Link href="/admin/orders/all" className="flex min-h-11 items-center bg-black px-4 text-sm font-bold text-white">
+            {t.orders.history.open}
+          </Link>
           <button
             id="orders-bulk-button"
             type="button"
@@ -305,7 +310,7 @@ export function OrdersBoard() {
   );
 }
 
-function OrderRow({ order, selected, onSelect }: { order: AdminOrder; selected: boolean; onSelect: () => void }) {
+export function OrderRow({ order, selected, onSelect }: { order: AdminOrder; selected: boolean; onSelect: () => void }) {
   const { t, lang } = useAdminI18n();
   const when =
     order.deliveryType === "ASAP"
@@ -329,7 +334,14 @@ function OrderRow({ order, selected, onSelect }: { order: AdminOrder; selected: 
         <span className="text-[13px] text-muted">{when}</span>
       </span>
       <span className="flex min-w-0 flex-1 basis-40 flex-col">
-        <span className="font-semibold">{order.customerName}</span>
+        <span className="font-semibold">
+          {order.customerName}
+          {order.customerEditedAt && (
+            <span className="ml-2 bg-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+              {t.orders.edit.badge}
+            </span>
+          )}
+        </span>
         <span className="text-[13px] text-muted">
           {order.deliveryZone[lang]} · {t.orders.portionsShort.replace("{count}", String(order.totalPortions))}
         </span>
@@ -349,7 +361,7 @@ type DetailProps = {
   formatTime: (iso: string) => string;
 };
 
-function OrderDetail({ order, onClose, onAction, formatTime }: DetailProps) {
+export function OrderDetail({ order, onClose, onAction, formatTime }: DetailProps) {
   const isAdmin = useAdminMe()?.role === "ADMIN"; // erasing customer data is for admins only
   const { t, lang } = useAdminI18n();
   const [busy, setBusy] = useState(false);
@@ -358,6 +370,7 @@ function OrderDetail({ order, onClose, onAction, formatTime }: DetailProps) {
   const [cancelReason, setCancelReason] = useState<StaffCancelReason | "">("");
   const [cancelNote, setCancelNote] = useState("");
   const [copied, setCopied] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   const canAdvance = ["PENDING", "CONFIRMED", "PREPARING", "READY"].includes(order.status);
   const canCancel = order.status !== "COMPLETED" && order.status !== "CANCELLED";
@@ -410,6 +423,21 @@ function OrderDetail({ order, onClose, onAction, formatTime }: DetailProps) {
         </div>
       </div>
 
+      {order.customerEditedAt && (
+        <div className="flex flex-col gap-2 bg-black p-3.5 text-sm text-white">
+          <span className="font-bold">{t.orders.edit.changedTitle}</span>
+          <span>{t.orders.edit.changedText}</span>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => run(() => adminApi.markEditSeen(order.code))}
+            className="min-h-10 self-start bg-white px-3.5 font-bold text-black disabled:opacity-60"
+          >
+            {t.orders.edit.seen}
+          </button>
+        </div>
+      )}
+
       <div className={section}>
         <span className={sectionTitle}>{t.orders.detail.customer}</span>
         <span className="font-semibold">{order.customerName}</span>
@@ -431,7 +459,26 @@ function OrderDetail({ order, onClose, onAction, formatTime }: DetailProps) {
           >
             {copied ? t.orders.detail.copied : t.orders.detail.copyAddress}
           </button>
+          {!order.erased && !editing && (
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              className="min-h-10 border-[1.5px] border-black px-3.5 text-sm font-bold"
+            >
+              {t.orders.edit.open}
+            </button>
+          )}
         </div>
+        {editing && (
+          <OrderContactForm
+            order={order}
+            onCancel={() => setEditing(false)}
+            onSaved={(updated) => {
+              setEditing(false);
+              void onAction(async () => updated);
+            }}
+          />
+        )}
       </div>
 
       <div className={section}>
@@ -596,7 +643,11 @@ function OrderDetail({ order, onClose, onAction, formatTime }: DetailProps) {
                 <span>
                   {t.orders.events[event.action as keyof typeof t.orders.events] ?? event.action}
                   {event.toStatus && event.action === "ADVANCE" ? ` → ${t.orders.status[event.toStatus]}` : ""}
-                  {event.note ? ` (${event.note})` : ""}
+                  {isEditEvent(event.action) ? (
+                    <EditChanges note={event.note} />
+                  ) : (
+                    event.note && ` (${event.note})`
+                  )}
                 </span>
                 <span className="text-muted">
                   {event.by ?? t.orders.detail.system} · {formatTime(event.at)}
@@ -607,5 +658,33 @@ function OrderDetail({ order, onClose, onAction, formatTime }: DetailProps) {
         </div>
       )}
     </aside>
+  );
+}
+
+function isEditEvent(action: string): boolean {
+  return action === "EDIT" || action === "CUSTOMER_EDIT";
+}
+
+// A contact change in the history: "Address: old → new", one line per field.
+function EditChanges({ note }: { note: string | null }) {
+  const { t } = useAdminI18n();
+  let changes: [string, string, string][] = [];
+  try {
+    const parsed: unknown = note ? JSON.parse(note) : [];
+    if (Array.isArray(parsed)) changes = parsed.filter((row): row is [string, string, string] => Array.isArray(row) && row.length === 3);
+  } catch {
+    changes = [];
+  }
+  if (changes.length === 0) return note === null ? <span className="text-muted"> ({t.orders.edit.erasedValues})</span> : null;
+  const labels = t.orders.edit.fields as Record<string, string>;
+  return (
+    <span className="mt-1 flex flex-col gap-0.5">
+      {changes.map(([field, before, after]) => (
+        <span key={field} className="break-words">
+          <span className="font-semibold">{labels[field] ?? field}:</span> <span className="text-muted line-through">{before || "—"}</span> →{" "}
+          {after || "—"}
+        </span>
+      ))}
+    </span>
   );
 }

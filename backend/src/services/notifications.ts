@@ -173,3 +173,28 @@ export async function notifyNewPhotos(product: string | null, count: number): Pr
       }),
   ]);
 }
+
+// A customer changed the contact details of an order (which fields only, never the new values).
+export async function notifyCustomerEdited(code: string, fields: string[]): Promise<void> {
+  const names = text.customerEdited.fields as Record<string, string>;
+  const values = { code, fields: fields.map((field) => names[field] ?? field).join(", ") };
+  await allChannels([
+    () =>
+      sendPush({
+        title: fill(text.customerEdited.pushTitle, values),
+        body: fill(text.customerEdited.pushBody, values),
+        url: `/admin/orders?open=${encodeURIComponent(code)}`,
+        tag: `order-${code}`,
+      }),
+    () =>
+      emailStaff({
+        subject: fill(text.customerEdited.subject, values),
+        heading: fill(text.customerEdited.heading, values),
+        lines: [fill(text.customerEdited.body, values)],
+      }),
+    () =>
+      sendTelegram(
+        [`<b>${escapeHtml(fill(text.customerEdited.heading, values))}</b>`, escapeHtml(fill(text.customerEdited.body, values))].join("\n"),
+      ),
+  ]);
+}

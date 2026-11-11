@@ -15,6 +15,7 @@ import { normalizePhone, PHONE_PATTERN } from "../lib/phone";
 import { prisma } from "../lib/prisma";
 import { formatDateOnly } from "../lib/time";
 import { describeItem, findOrderForAccount } from "../services/order-service";
+import { contactChangesSchema, editOrderContact, OrderEditError } from "../services/order-edit-service";
 import { deleteCustomerReviewContent } from "../services/review-service";
 import { rateLimitKey } from "../lib/client-ip";
 
@@ -218,6 +219,35 @@ accountRouter.get("/account/orders/:code", requireCustomer, async (req, res) => 
     return;
   }
   res.json(order);
+});
+
+// POST /api/account/orders/:code/contact  { locale, changes } - same as the guest version, for the account's own order
+const accountEditSchema = z.object({ locale: z.enum(["vi", "en"]).default("vi"), changes: contactChangesSchema });
+accountRouter.post("/account/orders/:code/contact", requireCustomer, claimLimiter, async (req, res) => {
+  const code = String(req.params.code);
+  const parsed = accountEditSchema.safeParse(req.body);
+  if (!parsed.success || !/^[A-Za-z0-9]{4,12}$/.test(code)) {
+    res.status(400).json({
+      error: "VALIDATION_ERROR",
+      details: parsed.success ? [] : parsed.error.issues.map((issue) => ({ field: issue.path.join("."), message: issue.message })),
+    });
+    return;
+  }
+  const { locale, changes } = parsed.data;
+  if (!(await findOrderForAccount(code, req.customerId!, locale))) {
+    res.status(404).json({ error: "ORDER_NOT_FOUND" });
+    return;
+  }
+  try {
+    const result = await editOrderContact(code, changes, { kind: "customer" });
+    res.json({ order: await findOrderForAccount(code, req.customerId!, locale), phone: result.phone });
+  } catch (error) {
+    if (error instanceof OrderEditError) {
+      res.status(error.status).json({ error: error.code });
+      return;
+    }
+    throw error;
+  }
 });
 
 accountRouter.post("/account/orders/claim", requireCustomer, claimLimiter, async (req, res) => {

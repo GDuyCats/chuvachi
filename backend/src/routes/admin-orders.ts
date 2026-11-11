@@ -1,11 +1,13 @@
 import { Router } from "express";
-import { OrderStatus, PaymentStatus, Prisma } from "@prisma/client";
+import { CancelReason, OrderStatus, PaymentStatus, Prisma } from "@prisma/client";
+import exportText from "../content/order-export.json";
 import { z } from "zod";
 import { requireAdminRole, requireStaff } from "../lib/auth";
 import { prisma } from "../lib/prisma";
 import { formatDateOnly, parseDateOnly, vietnamToday } from "../lib/time";
 import { eraseCustomerOnRequest, EraseError } from "../lib/privacy";
 import { advanceOrder, bulkCancel, cancelOrder, findOrdersToCancel, markRefunded, OrderActionError } from "../services/order-admin-service";
+import { contactChangesSchema, editOrderContact, OrderEditError } from "../services/order-edit-service";
 
 export const adminOrdersRouter = Router();
 // Staff and admins both handle orders; erasing customer data is for admins only.
@@ -43,7 +45,10 @@ function toAdminOrder(order: FullOrder) {
     address: order.address,
     note: order.note,
     locale: order.locale,
+    deliveryZoneId: order.deliveryZoneId,
     deliveryZone: { vi: order.deliveryZone.nameVi, en: order.deliveryZone.nameEn },
+    customerEditCount: order.customerEditCount,
+    customerEditedAt: order.customerEditedAt?.toISOString() ?? null, // set until staff mark the change as seen
     deliveryType: order.deliveryType,
     deliveryDate: formatDateOnly(order.deliveryDate),
     deliverySlot: order.deliverySlot,
@@ -213,6 +218,153 @@ adminOrdersRouter.get("/latest", async (_req, res) => {
   });
 });
 
+// ---------- All orders (history, search, export) ----------
+
+const VIETNAM_OFFSET_MS = 7 * 60 * 60 * 1000;
+const PAGE_SIZE = 50;
+const dateText = z.string().refine((value) => parseDateOnly(value) !== null, "Use the format YYYY-MM-DD");
+
+const historyQuery = z.object({
+  q: z.string().trim().max(100).optional(),
+  status: z.nativeEnum(OrderStatus).optional(),
+  payment: z.nativeEnum(PaymentStatus).optional(),
+  cancelReason: z.nativeEnum(CancelReason).optional(),
+  dateBy: z.enum(["created", "delivery"]).default("created"),
+  from: dateText.optional(),
+  to: dateText.optional(),
+  productId: z.coerce.number().int().positive().optional(),
+  zoneId: z.coerce.number().int().positive().optional(),
+  edited: z.enum(["1"]).optional(), // only orders the customer changed and staff haven't looked at
+  sort: z.enum(["new", "old", "totalDesc", "totalAsc"]).default("new"),
+  page: z.coerce.number().int().min(1).max(10_000).default(1),
+});
+type HistoryQuery = z.infer<typeof historyQuery>;
+
+function historyWhere(query: HistoryQuery): Prisma.OrderWhereInput {
+  const and: Prisma.OrderWhereInput[] = [];
+  if (query.q) {
+    const digits = query.q.replace(/[\s.+-]/g, "");
+    and.push({
+      OR: [
+        { code: { contains: query.q.toUpperCase() } },
+        { customerName: { contains: query.q, mode: "insensitive" } },
+        { address: { contains: query.q, mode: "insensitive" } },
+        ...(/^\d{3,}$/.test(digits) ? [{ customerPhone: { contains: digits.replace(/^84/, "0") } }] : []),
+      ],
+    });
+  }
+  if (query.status) and.push({ status: query.status });
+  if (query.payment) and.push({ paymentStatus: query.payment });
+  if (query.cancelReason) and.push({ cancelReason: query.cancelReason });
+  if (query.productId) and.push({ items: { some: { productId: query.productId } } });
+  if (query.zoneId) and.push({ deliveryZoneId: query.zoneId });
+  if (query.edited) and.push({ customerEditedAt: { not: null } });
+  const from = query.from ? parseDateOnly(query.from)! : null;
+  const to = query.to ? parseDateOnly(query.to)! : null;
+  if (query.dateBy === "delivery") {
+    if (from) and.push({ deliveryDate: { gte: from } });
+    if (to) and.push({ deliveryDate: { lte: to } });
+  } else {
+    // Days are Vietnamese calendar days: 00:00 in Vietnam is 17:00 UTC the day before.
+    if (from) and.push({ createdAt: { gte: new Date(from.getTime() - VIETNAM_OFFSET_MS) } });
+    if (to) and.push({ createdAt: { lt: new Date(to.getTime() + DAY_MS - VIETNAM_OFFSET_MS) } });
+  }
+  return and.length ? { AND: and } : {};
+}
+
+function historyOrderBy(sort: HistoryQuery["sort"]): Prisma.OrderOrderByWithRelationInput[] {
+  if (sort === "old") return [{ createdAt: "asc" }];
+  if (sort === "totalDesc") return [{ total: "desc" }, { createdAt: "desc" }];
+  if (sort === "totalAsc") return [{ total: "asc" }, { createdAt: "desc" }];
+  return [{ createdAt: "desc" }];
+}
+
+// GET /api/admin/orders/history?q=&status=&payment=&cancelReason=&dateBy=created|delivery&from=&to=&productId=&zoneId=&edited=1&sort=&page=
+adminOrdersRouter.get("/history", async (req, res) => {
+  const parsed = historyQuery.safeParse(req.query);
+  if (!parsed.success) {
+    res.status(400).json({ error: "VALIDATION_ERROR" });
+    return;
+  }
+  const query = parsed.data;
+  const where = historyWhere(query);
+  const [orders, count, money, products, zones] = await Promise.all([
+    prisma.order.findMany({
+      where,
+      include: orderInclude,
+      orderBy: historyOrderBy(query.sort),
+      skip: (query.page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+    prisma.order.count({ where }),
+    // Money of the matching orders, cancelled ones left out.
+    prisma.order.aggregate({ where: { AND: [where, { status: { not: OrderStatus.CANCELLED } }] }, _sum: { total: true } }),
+    prisma.product.findMany({ orderBy: { nameVi: "asc" }, select: { id: true, nameVi: true, nameEn: true } }),
+    prisma.deliveryZone.findMany({ orderBy: { sortOrder: "asc" }, select: { id: true, nameVi: true, nameEn: true, isActive: true } }),
+  ]);
+  res.json({
+    orders: orders.map(toAdminOrder),
+    count,
+    revenue: money._sum.total ?? 0,
+    page: query.page,
+    pageSize: PAGE_SIZE,
+    products,
+    zones,
+  });
+});
+
+const EXPORT_LIMIT = 5000;
+
+// One CSV cell. Text that starts like a formula gets a leading quote so Excel shows it as text.
+function csvCell(value: string | number | null | undefined): string {
+  let text = value === null || value === undefined ? "" : String(value);
+  if (/^[=+\-@\t\r]/.test(text)) text = `'${text}`;
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
+// GET /api/admin/orders/export?(same filters as /history) - a CSV file Excel opens (up to 5000 orders)
+adminOrdersRouter.get("/export", async (req, res) => {
+  const parsed = historyQuery.safeParse(req.query);
+  if (!parsed.success) {
+    res.status(400).json({ error: "VALIDATION_ERROR" });
+    return;
+  }
+  const orders = await prisma.order.findMany({
+    where: historyWhere(parsed.data),
+    include: { items: true, deliveryZone: true },
+    orderBy: historyOrderBy(parsed.data.sort),
+    take: EXPORT_LIMIT,
+  });
+  const placedAt = (date: Date) => new Date(date.getTime() + VIETNAM_OFFSET_MS).toISOString().slice(0, 16).replace("T", " ");
+  const rows = orders.map((order) =>
+    [
+      csvCell(order.code),
+      csvCell(placedAt(order.createdAt)),
+      csvCell(formatDateOnly(order.deliveryDate)),
+      csvCell(order.deliveryType === "ASAP" ? exportText.asap : order.deliverySlot),
+      csvCell(exportText.status[order.status]),
+      csvCell(exportText.payment[order.paymentStatus]),
+      csvCell(order.customerName),
+      // ="0912..." keeps the leading zero in Excel; only digits ever go in here.
+      order.customerPhone ? `"=""${order.customerPhone.replace(/\D/g, "")}"""` : csvCell(""),
+      csvCell(order.address),
+      csvCell(order.deliveryZone.nameVi),
+      csvCell(order.items.map((item) => `${item.quantity} × ${itemNames(item.optionsSnapshot, item.nameSnapshot).vi}`).join("; ")),
+      csvCell(order.totalPortions),
+      csvCell(order.total),
+      csvCell(order.note),
+      csvCell(order.cancelReason ? exportText.cancelReasons[order.cancelReason] : ""),
+    ].join(","),
+  );
+  const csv = "\uFEFF" + [exportText.columns.map(csvCell).join(","), ...rows].join("\r\n"); // BOM: Excel reads it as UTF-8
+  const day = formatDateOnly(vietnamToday());
+  res.setHeader("Content-Type", "text/csv; charset=utf-8");
+  res.setHeader("Content-Disposition", `attachment; filename="chuvachi-orders-${day}.csv"`);
+  res.setHeader("Cache-Control", "no-store");
+  console.log(`Orders exported (${orders.length}) by admin ${req.admin!.email}`);
+  res.send(csv);
+});
+
 // GET /api/admin/orders/:code
 adminOrdersRouter.get("/:code", async (req, res) => {
   const code = codeSchema.safeParse(req.params.code.toUpperCase());
@@ -296,6 +448,38 @@ adminOrdersRouter.post("/:code/erase-customer", requireAdminRole, async (req, re
     }
     throw error;
   }
+  await sendOrder(res, code.data);
+});
+
+// POST /api/admin/orders/:code/contact  { customerName?, customerPhone?, address?, deliveryZoneId?, note? }
+// Staff change the contact details (e.g. the customer asked on Facebook). Allowed at any status.
+adminOrdersRouter.post("/:code/contact", async (req, res) => {
+  const code = codeSchema.safeParse(String(req.params.code).toUpperCase());
+  const body = contactChangesSchema.safeParse(req.body);
+  if (!code.success || !body.success) {
+    res.status(400).json({ error: "VALIDATION_ERROR" });
+    return;
+  }
+  try {
+    await editOrderContact(code.data, body.data, { kind: "staff", adminUserId: req.admin!.id });
+  } catch (error) {
+    if (error instanceof OrderEditError) {
+      res.status(error.status).json({ error: error.code });
+      return;
+    }
+    throw error;
+  }
+  await sendOrder(res, code.data);
+});
+
+// POST /api/admin/orders/:code/edit-seen - staff saw the customer's change; removes the "changed" label
+adminOrdersRouter.post("/:code/edit-seen", async (req, res) => {
+  const code = codeSchema.safeParse(String(req.params.code).toUpperCase());
+  if (!code.success) {
+    res.status(400).json({ error: "VALIDATION_ERROR" });
+    return;
+  }
+  await prisma.order.updateMany({ where: { code: code.data }, data: { customerEditedAt: null } });
   await sendOrder(res, code.data);
 });
 

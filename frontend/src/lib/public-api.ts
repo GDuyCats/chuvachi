@@ -139,7 +139,10 @@ export type OrderLookup = {
   paymentStatus: "UNPAID" | "PAID" | "REFUNDED";
   customerName: string;
   address: string; // partly hidden by the server
+  note: string | null;
+  deliveryZoneId: number;
   deliveryZone: string;
+  editsLeft: number; // times the customer may still change the contact details (0 = locked)
   deliveryType: DeliveryType;
   deliveryDate: string;
   deliverySlot: string | null;
@@ -149,6 +152,32 @@ export type OrderLookup = {
   createdAt: string;
   updatedAt: string;
 };
+
+// Contact details a customer can fix after ordering; only the fields sent are changed.
+export type OrderContactChanges = Partial<{
+  customerName: string;
+  customerPhone: string;
+  address: string;
+  deliveryZoneId: number;
+  note: string | null;
+}>;
+
+export type OrderEditResult = { order: OrderLookup; phone: string };
+
+// A guest changes their order (the phone it was looked up with proves it's theirs).
+export function editOrderAsGuest(
+  code: string,
+  phone: string,
+  locale: Locale,
+  changes: OrderContactChanges,
+  turnstileToken: string | null,
+): Promise<OrderEditResult> {
+  return request<OrderEditResult>(`/api/orders/${encodeURIComponent(code)}/contact`, {
+    method: "POST",
+    body: JSON.stringify({ phone, locale, changes }),
+    headers: botCheckHeaders(turnstileToken),
+  });
+}
 
 export function fetchOrder(code: string, phone: string, locale: Locale, turnstileToken: string | null): Promise<OrderLookup> {
   const query = new URLSearchParams({ phone, locale });

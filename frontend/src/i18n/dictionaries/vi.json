@@ -293,7 +293,40 @@
       "BOT_CHECK_FAILED": "Không qua được bước kiểm tra bảo mật. Bạn tải lại trang rồi thử lại nhé."
     },
     "cancelledBecause": "Lý do:",
-    "refundNote": "Bạn đã thanh toán đơn này. Tiệm sẽ hoàn tiền trong 3 ngày làm việc."
+    "refundNote": "Bạn đã thanh toán đơn này. Tiệm sẽ hoàn tiền trong 3 ngày làm việc.",
+    "edit": {
+      "open": "Sửa thông tin giao hàng",
+      "title": "Sửa thông tin giao hàng",
+      "intro": "Bạn sửa được tên, số điện thoại, địa chỉ, khu vực và ghi chú cho tới khi tiệm bắt đầu làm bánh. Còn {count} lần sửa.",
+      "name": "Tên người nhận",
+      "phone": "Số điện thoại mới",
+      "phoneHint": "Để trống nếu không đổi.",
+      "address": "Địa chỉ mới",
+      "addressHint": "Để trống nếu giữ địa chỉ cũ ({current}).",
+      "zone": "Khu vực giao",
+      "zoneHint": "Đổi khu vực thì phí ship trả cho tài xế có thể khác.",
+      "note": "Ghi chú cho tiệm",
+      "save": "Lưu thay đổi",
+      "saving": "Đang lưu...",
+      "cancel": "Thôi",
+      "saved": "Đã lưu. Tiệm đã được báo về thay đổi của bạn.",
+      "savedPhone": "Đã lưu. Từ giờ bạn tra cứu đơn bằng số điện thoại mới.",
+      "locked": "Tiệm đã bắt đầu làm bánh nên không sửa trên web được nữa. Cần đổi gì bạn nhắn tiệm qua Facebook nhé.",
+      "limit": "Bạn đã sửa đơn này đủ số lần cho phép. Cần đổi gì thêm bạn nhắn tiệm qua Facebook nhé.",
+      "errors": {
+        "VALIDATION_ERROR": "Bạn kiểm tra lại: số điện thoại 10 số, địa chỉ ít nhất 5 ký tự.",
+        "NO_CHANGES": "Bạn chưa thay đổi gì.",
+        "EDIT_LOCKED": "Tiệm vừa bắt đầu làm bánh nên không sửa được nữa. Bạn nhắn tiệm qua Facebook nhé.",
+        "EDIT_LIMIT": "Bạn đã sửa đơn này đủ số lần cho phép.",
+        "INVALID_ZONE": "Tiệm không giao tới khu vực này.",
+        "ORDER_NOT_FOUND": "Không tìm thấy đơn. Bạn tải lại trang rồi thử lại nhé.",
+        "TOO_MANY_REQUESTS": "Bạn thử quá nhiều lần. Đợi một lát rồi thử lại nhé.",
+        "BOT_CHECK_PENDING": "Đang kiểm tra bảo mật, bạn đợi vài giây rồi bấm lại nhé.",
+        "BOT_CHECK_FAILED": "Không qua được bước kiểm tra bảo mật. Bạn tải lại trang rồi thử lại nhé.",
+        "NETWORK": "Không kết nối được với tiệm. Bạn kiểm tra mạng rồi thử lại nhé.",
+        "UNKNOWN": "Có lỗi xảy ra. Bạn thử lại giúp tiệm nhé."
+      }
+    }
   },
   "loading": {
     "page": "Đang tải...",

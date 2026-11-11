@@ -108,7 +108,9 @@
       "REFUND": "Marked as refunded",
       "AUTO_ERASE": "Customer details erased (retention period over)",
       "ERASE_ON_REQUEST": "Customer details erased on request",
-      "BULK_CANCEL": "Cancelled in bulk"
+      "BULK_CANCEL": "Cancelled in bulk",
+      "EDIT": "Details changed",
+      "CUSTOMER_EDIT": "Customer changed details"
     },
     "errors": {
       "ORDER_CHANGED": "Someone else just updated this order. The list has been refreshed.",
@@ -151,6 +153,74 @@
       "refundHint": "These orders were paid. Send each customer their money back, then press \"Refunded\".",
       "refunded": "Refunded",
       "noRefund": "No orders need a refund."
+    },
+    "history": {
+      "open": "All orders",
+      "back": "Today's orders",
+      "title": "All orders",
+      "hint": "Every order ever placed. Search, filter, then click an order to see its details.",
+      "search": "Search orders",
+      "searchPlaceholder": "Search by order code, phone, customer name or address...",
+      "status": "Status",
+      "payment": "Payment",
+      "cancelReason": "Cancel reason",
+      "product": "Contains cake",
+      "zone": "Zone",
+      "dateBy": "Filter dates by",
+      "dateByCreated": "Order date",
+      "dateByDelivery": "Delivery date",
+      "from": "From",
+      "to": "To",
+      "sort": "Sort",
+      "sorts": {
+        "new": "Newest",
+        "old": "Oldest",
+        "totalDesc": "Highest total",
+        "totalAsc": "Lowest total"
+      },
+      "any": "All",
+      "editedOnly": "Only orders the customer just changed",
+      "summary": "{count} orders · {revenue} (cancelled not counted)",
+      "reset": "Clear filters",
+      "empty": "No orders match these filters.",
+      "export": "Export to Excel (CSV)",
+      "exporting": "Exporting...",
+      "exportError": "Couldn't export the file. Please try again.",
+      "pages": "Pages",
+      "prev": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {pages}"
+    },
+    "edit": {
+      "open": "Edit details",
+      "title": "Edit delivery details",
+      "name": "Recipient name",
+      "phone": "Phone",
+      "address": "Address",
+      "zone": "Delivery zone",
+      "note": "Customer note",
+      "hint": "The change is written in the order history. The customer sees the new details on the order lookup page.",
+      "save": "Save changes",
+      "cancel": "Cancel",
+      "badge": "Changed by customer",
+      "changedTitle": "The customer just changed this order's details",
+      "changedText": "See History below for what changed, then press Seen.",
+      "seen": "Seen",
+      "erasedValues": "erased for privacy",
+      "fields": {
+        "customerName": "Name",
+        "customerPhone": "Phone",
+        "address": "Address",
+        "deliveryZoneId": "Zone",
+        "note": "Note"
+      },
+      "errors": {
+        "VALIDATION_ERROR": "Check the details: a 10-digit phone, an address of at least 5 characters.",
+        "INVALID_ZONE": "The shop no longer delivers to this zone.",
+        "NO_CHANGES": "Nothing has changed.",
+        "ORDER_ERASED": "This order's customer details were erased.",
+        "UNKNOWN": "Something went wrong. Please try again."
+      }
     }
   },
   "settings": {
@@ -706,6 +776,11 @@
       "orders": {
         "label": "Today's and tomorrow's orders",
         "keywords": "orders today tomorrow confirm payment delivered status",
+        "hint": ""
+      },
+      "ordersAll": {
+        "label": "All orders: search, filter, export to Excel",
+        "keywords": "all orders history past search filter cancelled delivered export excel csv accounting",
         "hint": ""
       },
       "ordersBulk": {

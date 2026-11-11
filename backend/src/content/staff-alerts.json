@@ -42,5 +42,19 @@
     "pushTitle": "Ảnh mới từ khách",
     "pushBody": "{product}: {count} ảnh mới. Mở tab Đánh giá để xem.",
     "comment": "Bình luận"
+  },
+  "customerEdited": {
+    "subject": "Khách sửa thông tin đơn {code}",
+    "heading": "Khách vừa sửa đơn {code}",
+    "body": "Đã đổi: {fields}. Mở đơn trong admin để xem thông tin mới trước khi giao.",
+    "pushTitle": "Khách sửa đơn {code}",
+    "pushBody": "Đã đổi: {fields}",
+    "fields": {
+      "customerName": "tên người nhận",
+      "customerPhone": "số điện thoại",
+      "address": "địa chỉ",
+      "deliveryZoneId": "khu vực giao",
+      "note": "ghi chú"
+    }
   }
 }

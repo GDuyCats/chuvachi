@@ -43,7 +43,10 @@ export type AdminOrder = {
   address: string;
   note: string | null;
   locale: string;
+  deliveryZoneId: number;
   deliveryZone: { vi: string; en: string };
+  customerEditCount: number; // times the customer changed the contact details
+  customerEditedAt: string | null; // a change by the customer that staff haven't marked as seen
   deliveryType: "ASAP" | "SCHEDULED";
   deliveryDate: string;
   deliverySlot: string | null;
@@ -64,6 +67,48 @@ export type AdminOrder = {
   cancelReason: CancelReason | null;
   cancelNote: string | null;
 };
+
+// Contact details staff (or the customer) can change after ordering. Only the fields sent change.
+export type ContactChanges = Partial<{
+  customerName: string;
+  customerPhone: string;
+  address: string;
+  deliveryZoneId: number;
+  note: string | null;
+}>;
+
+export type OrderHistoryFilters = {
+  q?: string;
+  status?: AdminStatus;
+  payment?: AdminPaymentStatus;
+  cancelReason?: CancelReason;
+  dateBy?: "created" | "delivery";
+  from?: string; // YYYY-MM-DD
+  to?: string;
+  productId?: number;
+  zoneId?: number;
+  edited?: "1";
+  sort?: "new" | "old" | "totalDesc" | "totalAsc";
+  page?: number;
+};
+
+export type OrderHistory = {
+  orders: AdminOrder[];
+  count: number;
+  revenue: number; // matching orders, cancelled ones left out
+  page: number;
+  pageSize: number;
+  products: { id: number; nameVi: string; nameEn: string }[];
+  zones: { id: number; nameVi: string; nameEn: string; isActive: boolean }[];
+};
+
+export function historyQueryString(filters: OrderHistoryFilters): string {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(filters)) {
+    if (value !== undefined && value !== "" && value !== null) params.set(key, String(value));
+  }
+  return params.toString();
+}
 
 export type AdminOrderList = {
   day: AdminDay;
@@ -508,6 +553,32 @@ export const adminApi = {
     },
   ) =>
     request<AdminProduct>(`/products/${id}/stock`, { method: "PUT", body: JSON.stringify(input) }),
+  orderHistory: (filters: OrderHistoryFilters) => request<OrderHistory>(`/orders/history?${historyQueryString(filters)}`),
+  // Downloads the CSV file of the filtered orders (opens in Excel).
+  exportOrders: async (filters: OrderHistoryFilters) => {
+    let response: Response;
+    try {
+      response = await fetch(`${API_BASE}/api/admin/orders/export?${historyQueryString({ ...filters, page: undefined })}`, {
+        credentials: "include",
+        cache: "no-store",
+      });
+    } catch {
+      throw new AdminApiError("NETWORK", 0);
+    }
+    if (!response.ok) throw new AdminApiError(response.status === 401 ? "UNAUTHORIZED" : "UNKNOWN", response.status);
+    const name = /filename="([^"]+)"/.exec(response.headers.get("Content-Disposition") ?? "")?.[1] ?? "orders.csv";
+    const url = URL.createObjectURL(await response.blob());
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = name;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  },
+  editContact: (code: string, changes: ContactChanges) =>
+    request<AdminOrder>(`/orders/${code}/contact`, { method: "POST", body: JSON.stringify(changes) }),
+  markEditSeen: (code: string) => request<AdminOrder>(`/orders/${code}/edit-seen`, { method: "POST", body: "{}" }),
   listOrders: (day: AdminDay, status?: AdminStatus) =>
     request<AdminOrderList>(`/orders?day=${day}${status ? `&status=${status}` : ""}`),
   advance: (code: string, expectedStatus: AdminStatus) =>

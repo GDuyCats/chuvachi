@@ -10,6 +10,7 @@ import { useAdminI18n } from "./AdminI18n";
 // to scroll to and highlight. Admin-only places are hidden from staff.
 const PLACES = [
   { key: "orders", href: "/admin/orders", adminOnly: false },
+  { key: "ordersAll", href: "/admin/orders/all", adminOnly: false },
   { key: "ordersBulk", href: "/admin/orders", target: "orders-bulk-button", adminOnly: false },
   { key: "refund", href: "/admin/orders", adminOnly: false },
   { key: "products", href: "/admin/products", adminOnly: false },
@@ -98,6 +99,7 @@ export function AdminSearch() {
 
   const pageName: Record<string, string> = {
     "/admin/orders": t.nav.orders,
+    "/admin/orders/all": t.orders.history.title,
     "/admin/products": t.nav.products,
     "/admin/products/edit": t.nav.products,
     "/admin/stats": t.nav.stats,

@@ -1,4 +1,4 @@
-import { DeliveryType, OptionType, PaymentMethod, Prisma, Product, ProductOption, ShopSetting } from "@prisma/client";
+import { DeliveryType, OptionType, OrderStatus, PaymentMethod, Prisma, Product, ProductOption, ShopSetting } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { type Locale, pickText } from "../lib/locale";
 import { generateOrderCode } from "../lib/order-code";
@@ -416,6 +416,15 @@ export async function createOrder(input: CreateOrderInput) {
   throw new OrderError("ORDER_FAILED", "Could not create the order, please try again", 500);
 }
 
+// Customers may fix their own name, phone, address and note until the shop starts making the order.
+export const CUSTOMER_EDITABLE: OrderStatus[] = [OrderStatus.PENDING, OrderStatus.CONFIRMED];
+export const MAX_CUSTOMER_EDITS = 3;
+
+export function customerEditsLeft(order: { status: OrderStatus; customerEditCount: number; anonymizedAt: Date | null }): number {
+  if (!CUSTOMER_EDITABLE.includes(order.status) || order.anonymizedAt) return 0;
+  return Math.max(0, MAX_CUSTOMER_EDITS - order.customerEditCount);
+}
+
 // Looks up an order by code. The phone number must match, so strangers cannot read other orders.
 // The same view for a signed-in customer opening one of their own orders (no phone number needed).
 export async function findOrderForAccount(code: string, customerId: number, locale: Locale) {
@@ -444,7 +453,11 @@ export async function findOrderForCustomer(code: string, phone: string, locale: 
     customerName: order.customerName,
     // Only part of the address is shown, in case someone else learns the code and phone number.
     address: maskAddress(order.address),
+    note: order.note,
+    deliveryZoneId: order.deliveryZoneId,
     deliveryZone: pickText(locale, order.deliveryZone.nameVi, order.deliveryZone.nameEn),
+    // How many more times the customer may change the contact details (0 = locked).
+    editsLeft: customerEditsLeft(order),
     deliveryType: order.deliveryType,
     deliveryDate: formatDateOnly(order.deliveryDate),
     deliverySlot: order.deliverySlot,

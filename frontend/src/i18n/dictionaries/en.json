@@ -18,7 +18,7 @@
     "signIn": "Sign in",
     "account": "Your account",
     "orders": "My orders",
-    "news": "News"
+    "news": "Journal"
   },
   "footer": {
     "tagline": "Panna cotta, tiramisu, mousse and brownies — made fresh every day.",
@@ -581,9 +581,9 @@
     "trackButton": "Look up by order code"
   },
   "news": {
-    "title": "News",
+    "title": "Journal",
     "intro": "Cakes on the way, changes at the shop and a few words from Chuvachi.",
-    "empty": "No news yet. Check back soon!",
+    "empty": "Nothing in the journal yet. Check back soon!",
     "readMore": "Read more",
     "pinned": "Pinned",
     "posted": "posted {date}",
@@ -593,8 +593,8 @@
     "home": "Back to the homepage",
     "loading": "Loading the post...",
     "error": "Couldn't load this post. Please try again.",
-    "homeTitle": "Latest news",
-    "viewAll": "All news",
+    "homeTitle": "From the journal",
+    "viewAll": "Read the journal",
     "categories": {
       "NEWS": "Announcement",
       "NEW_CAKE": "New cake",

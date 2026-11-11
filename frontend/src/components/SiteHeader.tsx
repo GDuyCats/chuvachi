@@ -4,6 +4,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { AccountLink } from "./account/AccountLink";
 import { NotificationBell } from "./account/NotificationBell";
 import { CartBadge } from "./CartBadge";
+import { HeaderNav } from "./HeaderNav";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { SiteSearch } from "./SiteSearch";
 import type { SearchIndex } from "@/lib/search-index";
@@ -34,16 +35,7 @@ export function SiteHeader({ lang, dict, searchIndex, searchLabels, bellLabels }
       </Link>
 
       {/* On phones the menu moves to its own row and scrolls sideways. */}
-      <nav
-        aria-label={dict.label}
-        className="no-scrollbar order-3 flex w-full gap-6 overflow-x-auto whitespace-nowrap text-[15px] font-semibold md:order-none md:w-auto md:gap-9"
-      >
-        {links.map((link) => (
-          <Link key={link.label} href={link.href} className="py-2 hover:text-muted">
-            {link.label}
-          </Link>
-        ))}
-      </nav>
+      <HeaderNav label={dict.label} links={links} />
 
       <div className="flex items-center gap-1.5 md:gap-3">
         <SiteSearch lang={lang} index={searchIndex} labels={searchLabels} />

@@ -8,6 +8,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import { formatPrice } from "@/lib/format";
 import type { SearchIndex } from "@/lib/search-index";
 import { matchScore, queryWords } from "@/lib/search-text";
+import { scrollToSection } from "@/lib/hash-nav";
 
 type Props = {
   lang: Locale;
@@ -170,11 +171,7 @@ function SearchBox({ lang, index, labels }: Props) {
 
   function go(href: string) {
     setOpen(false);
-    if (href.startsWith("#")) {
-      document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
-    } else {
-      router.push(href);
-    }
+    if (!scrollToSection(href)) router.push(href);
   }
 
   return (

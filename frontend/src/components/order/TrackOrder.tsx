@@ -81,14 +81,7 @@ export function TrackOrder({ lang, labels, cancelReasons, reviewLabels, pushLabe
     };
   }, [searchParams, lang]);
 
-  // Look the remembered order up as soon as the bot check allows it.
-  useEffect(() => {
-    if (!autoPhone || (TURNSTILE_ENABLED && !botToken)) return;
-    const cleanCode = code.trim().toUpperCase();
-    setAutoPhone(null);
-    void lookup(cleanCode, autoPhone);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once when the token arrives
-  }, [autoPhone, botToken]);
+
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -121,6 +114,15 @@ export function TrackOrder({ lang, labels, cancelReasons, reviewLabels, pushLabe
     }
   }
 
+  // Look the remembered order up as soon as the bot check allows it.
+  useEffect(() => {
+    if (!autoPhone || (TURNSTILE_ENABLED && !botToken)) return;
+    const cleanCode = code.trim().toUpperCase();
+    setAutoPhone(null);
+    void lookup(cleanCode, autoPhone);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once when the token arrives
+  }, [autoPhone, botToken]);
+  
   const inputClass = "h-13 border-[1.5px] border-black px-3.5 text-[17px]";
 
   return (
@@ -290,9 +292,8 @@ function OrderDetails({
           <h3 className="text-[13px] font-bold uppercase tracking-widest">{labels.paymentTitle}</h3>
           <span className="font-semibold">{formatPrice(order.total, lang)}</span>
           <span
-            className={`self-start px-2 py-1 text-xs font-bold uppercase tracking-wider ${
-              order.paymentStatus === "PAID" ? "bg-black text-white" : "border-[1.5px] border-black"
-            }`}
+            className={`self-start px-2 py-1 text-xs font-bold uppercase tracking-wider ${order.paymentStatus === "PAID" ? "bg-black text-white" : "border-[1.5px] border-black"
+              }`}
           >
             {paymentText}
           </span>

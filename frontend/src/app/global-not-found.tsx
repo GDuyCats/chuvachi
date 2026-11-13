@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import "./globals.css";
 import texts from "@/i18n/dictionaries/errors.json";
 
@@ -20,9 +21,9 @@ export default function GlobalNotFound() {
         </span>
         <h1 className="text-4xl font-bold uppercase">{vi.notFoundTitle}</h1>
         <p className="text-sm text-[#666666]">{en.notFoundTitle}</p>
-        <a href="/vi" className="flex min-h-12 items-center bg-black px-8 font-bold text-white">
+        <Link href="/vi" className="flex min-h-12 items-center bg-black px-8 font-bold text-white">
           {vi.toHome} / {en.toHome}
-        </a>
+        </Link>
       </body>
     </html>
   );

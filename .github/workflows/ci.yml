@@ -1,0 +1,71 @@
+# Checks the code on GitHub after every push: type errors, lint and the backend build.
+# It only reads the code; no passwords or keys are needed. Deploying stays manual (deploy/deploy.sh).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: # "Run workflow" button in the Actions tab
+
+permissions:
+  contents: read
+
+# A newer push cancels the check still running for the same branch.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      # Placeholder so Prisma can read the schema; CI never connects to a database.
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+          cache-dependency-path: backend/yarn.lock
+      - name: Install packages
+        run: yarn install --frozen-lockfile --network-timeout 600000
+      - name: Check the database schema
+        run: yarn prisma validate
+      - name: Prepare the database client
+        run: yarn prisma generate
+      - name: Build (finds type errors)
+        run: yarn build
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+          cache-dependency-path: frontend/yarn.lock
+      - name: Install packages
+        run: yarn install --frozen-lockfile --network-timeout 600000
+      # The full website build reads the menu from the live API, which may not have the new
+      # endpoints yet before a deploy, so CI checks types and lint instead.
+      - name: Generate route types
+        run: yarn next typegen
+      - name: Check types
+        run: yarn tsc --noEmit
+      - name: Lint
+        run: yarn lint

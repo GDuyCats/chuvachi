@@ -405,6 +405,7 @@ model AdminUser {
   passwordResets     AdminPasswordReset[]
   pushSubscriptions  AdminPushSubscription[]
   orderEvents        OrderEvent[]
+  expenses           Expense[]
   reviewComments     ReviewComment[] // replies written for the shop
   postComments       PostComment[]   // replies to news comments written for the shop
 }
@@ -703,3 +704,29 @@ model PostCommentReport {
   @@unique([customerId, commentId])
 }
 
+// ---------- Shop costs (for profit and loss) ----------
+
+enum ExpenseCategory {
+  INGREDIENT // butter, cream, fruit...
+  PACKAGING  // boxes, cups, bags, stickers
+  SHIPPING   // delivery the shop pays for
+  FIXED      // server, domain, rent: monthly costs
+  OTHER
+}
+
+// One purchase or bill, with photos of the receipt and of what was bought.
+model Expense {
+  id          Int             @id @default(autoincrement())
+  spentOn     DateTime        @db.Date // day of the purchase (Vietnam calendar day)
+  title       String          // e.g. "Chợ Bình Tây - kem, dâu"
+  amount      Int             // in VND
+  category    ExpenseCategory @default(INGREDIENT)
+  note        String?         // what was bought, quantities
+  photos      String[]        @default([]) // receipt photos in the "receipts" folder
+  createdById Int?
+  createdBy   AdminUser?      @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([spentOn])
+}

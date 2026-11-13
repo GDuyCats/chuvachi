@@ -59,6 +59,7 @@ export function AdminShell({ children, adminOnly = false }: ShellProps) {
     { href: "/admin/orders", label: t.nav.orders, show: true },
     { href: "/admin/products", label: t.nav.products, show: true },
     { href: "/admin/reviews", label: t.nav.reviews, show: true },
+    { href: "/admin/expenses", label: t.nav.expenses, show: true },
     { href: "/admin/stats", label: t.nav.stats, show: isAdmin },
     { href: "/admin/home", label: t.nav.home, show: isAdmin },
     { href: "/admin/posts", label: t.nav.posts, show: isAdmin },

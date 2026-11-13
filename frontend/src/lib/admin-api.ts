@@ -110,6 +110,71 @@ export function historyQueryString(filters: OrderHistoryFilters): string {
   return params.toString();
 }
 
+export type ExpenseCategory = "INGREDIENT" | "PACKAGING" | "SHIPPING" | "FIXED" | "OTHER";
+export const EXPENSE_CATEGORIES: ExpenseCategory[] = ["INGREDIENT", "PACKAGING", "SHIPPING", "FIXED", "OTHER"];
+
+export type ExpenseInput = {
+  spentOn: string; // YYYY-MM-DD
+  title: string;
+  amount: number; // VND
+  category: ExpenseCategory;
+  note: string | null;
+  photos: string[];
+};
+
+export type Expense = ExpenseInput & {
+  id: number;
+  createdBy: string | null;
+  createdAt: string;
+  canEdit: boolean; // staff can change only their own entries
+};
+
+export type ExpenseFilters = { from?: string; to?: string; category?: ExpenseCategory; page?: number };
+
+export type ExpenseList = { expenses: Expense[]; count: number; total: number; page: number; pageSize: number };
+
+export type ProfitSummary = {
+  from: string | null;
+  to: string | null;
+  unit: "day" | "month";
+  revenue: number;
+  orders: number;
+  costs: number;
+  expenses: number;
+  profit: number;
+  byCategory: { category: ExpenseCategory; amount: number }[];
+  periods: { start: string; revenue: number; costs: number; profit: number }[];
+};
+
+function filterQuery(filters: Record<string, string | number | undefined | null>): string {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(filters)) {
+    if (value !== undefined && value !== null && value !== "") params.set(key, String(value));
+  }
+  const text = params.toString();
+  return text ? `?${text}` : "";
+}
+
+// Downloads a file the admin API sends back (CSV exports).
+async function downloadFile(path: string, fallbackName: string): Promise<void> {
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}/api/admin${path}`, { credentials: "include", cache: "no-store" });
+  } catch {
+    throw new AdminApiError("NETWORK", 0);
+  }
+  if (!response.ok) throw new AdminApiError(response.status === 401 ? "UNAUTHORIZED" : "UNKNOWN", response.status);
+  const name = /filename="([^"]+)"/.exec(response.headers.get("Content-Disposition") ?? "")?.[1] ?? fallbackName;
+  const url = URL.createObjectURL(await response.blob());
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = name;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 export type AdminOrderList = {
   day: AdminDay;
   date: string | null;
@@ -536,6 +601,20 @@ export const adminApi = {
     const text = query.toString();
     return request<SalesReport>(`/stats${text ? `?${text}` : ""}`);
   },
+  listExpenses: (filters: ExpenseFilters) => request<ExpenseList>(`/expenses${filterQuery(filters)}`),
+  createExpense: (input: ExpenseInput) => request<Expense>("/expenses", { method: "POST", body: JSON.stringify(input) }),
+  updateExpense: (id: number, input: ExpenseInput) =>
+    request<Expense>(`/expenses/${id}`, { method: "PUT", body: JSON.stringify(input) }),
+  deleteExpense: (id: number) => request<{ ok: true }>(`/expenses/${id}`, { method: "DELETE" }),
+  uploadExpensePhoto: (file: File) => {
+    const body = new FormData();
+    body.append("image", file);
+    return request<{ url: string }>("/expenses/photo", { method: "POST", body });
+  },
+  profitSummary: (from: string | null, to: string | null) =>
+    request<ProfitSummary>(`/expenses/summary${filterQuery({ from, to })}`),
+  exportExpenses: (filters: ExpenseFilters) =>
+    downloadFile(`/expenses/export${filterQuery({ ...filters, page: undefined })}`, "expenses.csv"),
   listAccounts: () => request<AdminAccount[]>("/accounts"),
   createAccount: (input: { email: string; name: string; role: AdminRole }) =>
     request<TemporaryPasswordResult>("/accounts", { method: "POST", body: JSON.stringify(input) }),

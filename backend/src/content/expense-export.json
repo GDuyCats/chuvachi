@@ -1,0 +1,10 @@
+{
+  "columns": ["Ngày", "Nội dung", "Nhóm", "Số tiền (đ)", "Ghi chú", "Số ảnh", "Người nhập"],
+  "categories": {
+    "INGREDIENT": "Nguyên liệu",
+    "PACKAGING": "Bao bì",
+    "SHIPPING": "Ship",
+    "FIXED": "Chi phí cố định",
+    "OTHER": "Khác"
+  }
+}

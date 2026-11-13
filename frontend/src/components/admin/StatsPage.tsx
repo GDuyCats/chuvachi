@@ -7,6 +7,7 @@ import { formatPrice } from "@/lib/format";
 import { addDaysText, vietnamTodayText } from "@/lib/shop-date";
 import { useAdminI18n } from "./AdminI18n";
 import { AdminRowsSkeleton } from "./AdminSkeletons";
+import { ProfitPanel } from "./ProfitPanel";
 
 type Preset = "7" | "30" | "month" | "lastMonth" | "all" | "custom";
 type Range = { from: string | null; to: string | null };
@@ -130,6 +131,8 @@ export function StatsPage() {
 
       {report && (
         <div className={`flex flex-col gap-6 transition-opacity ${loading ? "opacity-50" : ""}`}>
+          <ProfitPanel from={report.from} to={report.to} />
+
           <p className="text-sm font-semibold">
             {report.from || report.to
               ? st.rangeLabel.replace("{from}", report.from ? showDate(report.from) : "...").replace("{to}", report.to ? showDate(report.to) : "...")

@@ -12,6 +12,7 @@
     "stats": "Sales",
     "notifications": "Notifications",
     "reviews": "Reviews",
+    "expenses": "Costs",
     "posts": "News"
   },
   "login": {
@@ -701,7 +702,25 @@
     "byDay": "By day",
     "byMonth": "By month",
     "portionsCount": "{count} portions",
-    "ordersCount": "{count} orders"
+    "ordersCount": "{count} orders",
+    "profit": {
+      "title": "Profit / loss",
+      "hint": "Revenue: paid orders that weren't cancelled, by delivery day. Costs: entries on the Costs page, by purchase day. Look at weeks or months: ingredients bought once are often used over several days.",
+      "openExpenses": "Open Costs",
+      "revenue": "Revenue",
+      "costs": "Costs",
+      "profitLabel": "Profit",
+      "loss": "Loss",
+      "margin": "{percent}% of revenue",
+      "ordersCount": "{count} orders",
+      "expensesCount": "{count} costs",
+      "noCosts": "No costs recorded in this range, so this isn't the real profit yet.",
+      "byCategory": "Costs by category",
+      "byDay": "By day",
+      "byMonth": "By month",
+      "periodNote": "The number on the right is the profit (or loss, underlined) of each day / month.",
+      "loadError": "Couldn't load profit / loss."
+    }
   },
   "notifications": {
     "title": "Notifications",
@@ -938,6 +957,16 @@
         "keywords": "reviews comments stars hide spam reply report",
         "hint": ""
       },
+      "expenses": {
+        "label": "Costs: record purchases, photograph receipts",
+        "keywords": "costs expenses shopping ingredients receipt photo packaging bills",
+        "hint": ""
+      },
+      "profit": {
+        "label": "Profit / loss",
+        "keywords": "profit loss margin revenue minus costs",
+        "hint": "At the top of the Sales page"
+      },
       "posts": {
         "label": "News: write, publish, schedule posts",
         "keywords": "news posts blog journal updates",
@@ -1082,5 +1111,57 @@
       "shownDone": "Shown again and reports cleared.",
       "error": "Something went wrong. Please try again."
     }
+  },
+  "expenses": {
+    "title": "Costs",
+    "hint": "Record every shopping trip, box order, delivery you pay for or monthly bill, with receipt photos. Used to work out profit and loss.",
+    "seeProfit": "See profit / loss",
+    "add": "Add a cost",
+    "addTitle": "Add a cost",
+    "editTitle": "Edit cost",
+    "back": "Back",
+    "from": "From",
+    "to": "To",
+    "category": "Category",
+    "allCategories": "All",
+    "categories": {
+      "INGREDIENT": "Ingredients",
+      "PACKAGING": "Packaging",
+      "SHIPPING": "Shipping",
+      "FIXED": "Fixed",
+      "OTHER": "Other"
+    },
+    "summary": "{count} costs · total {total}",
+    "empty": "No costs in this range yet.",
+    "loading": "Loading...",
+    "loadError": "Couldn't load. Please reload the page.",
+    "date": "Date",
+    "titleLabel": "Description",
+    "titlePlaceholder": "e.g. Market - cream, strawberries, sugar",
+    "amount": "Amount (VND)",
+    "note": "What was bought",
+    "notePlaceholder": "e.g.\nWhipping cream x2 - 180,000\nStrawberries 1kg - 120,000",
+    "photos": "Photos of the receipt and items",
+    "photosHint": "Photograph the receipt or what you bought, up to {max} photos. Shoot straight and bright enough to read.",
+    "addPhoto": "Take / pick photo",
+    "removePhoto": "Remove photo",
+    "openPhoto": "Photo {n}",
+    "tooManyPhotos": "Up to {max} photos per cost.",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Saved.",
+    "invalid": "Enter a description and an amount above 0.",
+    "forbidden": "You can only change costs you entered.",
+    "error": "Something went wrong. Please try again.",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Delete \"{title}\"? Its photos are deleted too.",
+    "deleted": "Deleted.",
+    "by": "Entered by {name}",
+    "export": "Export to Excel (CSV)",
+    "exporting": "Exporting...",
+    "prev": "Previous",
+    "next": "Next",
+    "pageOf": "Page {page} of {pages}"
   }
 }

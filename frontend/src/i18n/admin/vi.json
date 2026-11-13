@@ -12,6 +12,7 @@
     "stats": "Thống kê",
     "notifications": "Thông báo",
     "reviews": "Đánh giá",
+    "expenses": "Chi phí",
     "posts": "Tin tức"
   },
   "login": {
@@ -701,7 +702,25 @@
     "byDay": "Theo ngày",
     "byMonth": "Theo tháng",
     "portionsCount": "{count} phần",
-    "ordersCount": "{count} đơn"
+    "ordersCount": "{count} đơn",
+    "profit": {
+      "title": "Lời / lỗ",
+      "hint": "Doanh thu: đơn đã nhận tiền, không bị hủy, theo ngày giao. Chi phí: các khoản trong trang Chi phí, theo ngày mua. Nên xem theo tuần hoặc tháng: nguyên liệu mua một lần thường dùng cho nhiều ngày.",
+      "openExpenses": "Mở trang Chi phí",
+      "revenue": "Doanh thu",
+      "costs": "Chi phí",
+      "profitLabel": "Lời",
+      "loss": "Lỗ",
+      "margin": "{percent}% doanh thu",
+      "ordersCount": "{count} đơn",
+      "expensesCount": "{count} khoản chi",
+      "noCosts": "Chưa nhập khoản chi nào trong khoảng này, nên chưa tính được lời / lỗ thật.",
+      "byCategory": "Chi phí theo nhóm",
+      "byDay": "Theo ngày",
+      "byMonth": "Theo tháng",
+      "periodNote": "Số bên phải là lời (hoặc lỗ, gạch chân) của từng ngày / tháng.",
+      "loadError": "Không tải được lời / lỗ."
+    }
   },
   "notifications": {
     "title": "Thông báo",
@@ -938,6 +957,16 @@
         "keywords": "danh gia binh luan sao review an spam tra loi bao cao",
         "hint": ""
       },
+      "expenses": {
+        "label": "Chi phí: nhập khoản mua, chụp hóa đơn",
+        "keywords": "chi phi mua nguyen lieu di cho hoa don bien lai chup anh so chi bao bi",
+        "hint": ""
+      },
+      "profit": {
+        "label": "Lời / lỗ",
+        "keywords": "loi lo lai lo doanh thu tru chi phi loi nhuan",
+        "hint": "Ở đầu trang Thống kê"
+      },
       "posts": {
         "label": "Tin tức: viết bài, đăng, hẹn giờ",
         "keywords": "tin tuc bai viet blog nhat ky cap nhat",
@@ -1082,5 +1111,57 @@
       "shownDone": "Đã hiện lại và xóa báo cáo.",
       "error": "Có lỗi xảy ra. Vui lòng thử lại."
     }
+  },
+  "expenses": {
+    "title": "Chi phí",
+    "hint": "Ghi lại mỗi lần đi chợ, mua hộp, trả tiền ship hay hóa đơn hàng tháng, kèm ảnh hóa đơn. Dùng để tính lời / lỗ.",
+    "seeProfit": "Xem lời / lỗ",
+    "add": "Thêm khoản chi",
+    "addTitle": "Thêm khoản chi",
+    "editTitle": "Sửa khoản chi",
+    "back": "Quay lại",
+    "from": "Từ ngày",
+    "to": "Đến ngày",
+    "category": "Nhóm",
+    "allCategories": "Tất cả",
+    "categories": {
+      "INGREDIENT": "Nguyên liệu",
+      "PACKAGING": "Bao bì",
+      "SHIPPING": "Ship",
+      "FIXED": "Cố định",
+      "OTHER": "Khác"
+    },
+    "summary": "{count} khoản · tổng {total}",
+    "empty": "Chưa có khoản chi nào trong khoảng này.",
+    "loading": "Đang tải...",
+    "loadError": "Không tải được. Vui lòng tải lại trang.",
+    "date": "Ngày mua",
+    "titleLabel": "Nội dung",
+    "titlePlaceholder": "Ví dụ: Chợ Bình Tây - kem, dâu, đường",
+    "amount": "Số tiền (đ)",
+    "note": "Đã mua những gì",
+    "notePlaceholder": "Ví dụ:\nKem whipping 2 hộp - 180.000\nDâu tây 1kg - 120.000",
+    "photos": "Ảnh hóa đơn và đồ đã mua",
+    "photosHint": "Chụp hóa đơn hoặc đồ đã mua, tối đa {max} ảnh. Chụp thẳng, đủ sáng để đọc được chữ.",
+    "addPhoto": "Chụp / chọn ảnh",
+    "removePhoto": "Xóa ảnh",
+    "openPhoto": "Ảnh {n}",
+    "tooManyPhotos": "Tối đa {max} ảnh cho mỗi khoản.",
+    "save": "Lưu",
+    "saving": "Đang lưu...",
+    "saved": "Đã lưu.",
+    "invalid": "Nhập nội dung và số tiền lớn hơn 0.",
+    "forbidden": "Bạn chỉ sửa được khoản do mình nhập.",
+    "error": "Có lỗi xảy ra. Vui lòng thử lại.",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "deleteConfirm": "Xóa khoản \"{title}\"? Ảnh hóa đơn cũng bị xóa.",
+    "deleted": "Đã xóa.",
+    "by": "Nhập bởi {name}",
+    "export": "Xuất Excel (CSV)",
+    "exporting": "Đang xuất...",
+    "prev": "Trang trước",
+    "next": "Trang sau",
+    "pageOf": "Trang {page} / {pages}"
   }
 }

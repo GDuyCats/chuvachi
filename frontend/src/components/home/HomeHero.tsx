@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, type TouchEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type TouchEvent } from "react";
 import type { Locale } from "@/i18n/config";
 import type { HeroSlideView } from "@/lib/api";
 import {
@@ -10,10 +10,12 @@ import {
   DEFAULT_MOBILE_POSITION,
   DEFAULT_POSITION,
   focusStyle,
+  frameStyle,
   PLACE,
   PLACE_MD,
   shadeFor,
   type TextAlign,
+  widthStyle,
 } from "@/lib/hero-layout";
 import { FadeInImage } from "../FadeInImage";
 
@@ -119,6 +121,9 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
           const desktopPos = asPosition(slide.textPosition, DEFAULT_POSITION);
           const mobilePos = asPosition(slide.textPositionMobile, DEFAULT_MOBILE_POSITION);
           const align: TextAlign = slide.textAlign === "center" || slide.textAlign === "right" ? slide.textAlign : "left";
+          // Box for a full-width photo, inset by the dark frame chosen in the admin (none = edge to edge).
+          const framed = "absolute overflow-hidden [inset:var(--frame-m)] md:[inset:var(--frame-d)]";
+          const frame = frameStyle(slide.imagePadding) as CSSProperties;
           const motion = `${reducedMotion ? "" : "transition-[opacity,transform] duration-700 ease-out"} ${
             active ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-6 opacity-0"
           }`;
@@ -136,16 +141,18 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
                 >
                   {/* Sets the height when this is the only slide; taller slides beside it stretch it. */}
                   <div className="aspect-[4/3] md:aspect-[21/9]" aria-hidden="true" />
-                  <FadeInImage
-                    src={slide.imageUrl}
-                    alt={slide.title}
-                    fill
-                    priority={i === 0}
-                    quality={90}
-                    sizes="100vw"
-                    className="object-cover"
-                    style={focus}
-                  />
+                  <div className={framed} style={frame}>
+                    <FadeInImage
+                      src={slide.imageUrl}
+                      alt={slide.title}
+                      fill
+                      priority={i === 0}
+                      quality={90}
+                      sizes="100vw"
+                      className="object-cover"
+                      style={focus}
+                    />
+                  </div>
                 </Link>
               </div>
             );
@@ -161,16 +168,18 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
                 {...slideProps}
                 className={`relative col-start-1 row-start-1 flex min-h-[480px] overflow-hidden px-4 py-12 md:min-h-[560px] md:px-14 md:py-20 ${PLACE[mobilePos]} ${PLACE_MD[desktopPos]} ${motion}`}
               >
-                <FadeInImage
-                  src={slide.imageUrl}
-                  alt=""
-                  fill
-                  priority={i === 0}
-                  quality={90}
-                  sizes="100vw"
-                  className="object-cover"
-                  style={focus}
-                />
+                <div className={framed} style={frame}>
+                  <FadeInImage
+                    src={slide.imageUrl}
+                    alt=""
+                    fill
+                    priority={i === 0}
+                    quality={90}
+                    sizes="100vw"
+                    className="object-cover"
+                    style={focus}
+                  />
+                </div>
                 {/* Dark fade on the side of the texts: one for phones, one for computers. */}
                 <div className="absolute inset-0 md:hidden" style={{ background: shadeFor(mobilePos) }} aria-hidden="true" />
                 <div className="absolute inset-0 hidden md:block" style={{ background: shadeFor(desktopPos) }} aria-hidden="true" />
@@ -195,6 +204,7 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
               key={i}
               {...slideProps}
               className={`col-start-1 row-start-1 flex flex-col gap-8 px-4 py-12 md:flex-row md:items-center md:px-14 md:py-20 ${motion}`}
+              style={widthStyle(slide.imageWidth) as CSSProperties}
             >
               <div className="flex max-w-xl flex-1 flex-col gap-4">
                 {slide.eyebrow && <span className="text-[13px] font-bold uppercase tracking-[0.16em]">{slide.eyebrow}</span>}
@@ -210,14 +220,14 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
               </div>
 
               {slide.imageUrl && (
-                <div className="relative aspect-[4/3] flex-1 overflow-hidden md:aspect-[16/11]">
+                <div className="relative aspect-[4/3] flex-1 overflow-hidden md:aspect-[16/11] md:flex-none md:basis-[var(--photo-w)]">
                   <FadeInImage
                     src={slide.imageUrl}
                     alt={slide.title}
                     fill
                     priority={i === 0}
                     quality={90}
-                    sizes="(min-width: 768px) 50vw, 100vw"
+                    sizes="(min-width: 768px) 70vw, 100vw"
                     className="object-cover"
                     style={focus}
                   />

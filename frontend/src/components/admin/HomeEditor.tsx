@@ -265,6 +265,8 @@ function ContentForm({
             textAlign: draft.heroTextAlign ?? "left",
             focusX: draft.heroFocusX ?? 50,
             focusY: draft.heroFocusY ?? 50,
+            imagePadding: draft.heroImagePadding ?? 0,
+            imageWidth: draft.heroImageWidth ?? 50,
           }}
           onChange={(next) =>
             setDraft((current) => ({
@@ -274,6 +276,8 @@ function ContentForm({
               ...("textAlign" in next ? { heroTextAlign: next.textAlign! } : {}),
               ...("focusX" in next ? { heroFocusX: next.focusX! } : {}),
               ...("focusY" in next ? { heroFocusY: next.focusY! } : {}),
+              ...("imagePadding" in next ? { heroImagePadding: next.imagePadding! } : {}),
+              ...("imageWidth" in next ? { heroImageWidth: next.imageWidth! } : {}),
             }))
           }
         />
@@ -362,6 +366,8 @@ const EMPTY_SLIDE: HeroSlideInput = {
   textAlign: "left",
   focusX: 50,
   focusY: 50,
+  imagePadding: 0,
+  imageWidth: 50,
   linkUrl: null,
   startDate: null,
   endDate: null,
@@ -497,6 +503,8 @@ function HeroSlideForm({
     textAlign: initial.textAlign ?? "left",
     focusX: initial.focusX ?? 50,
     focusY: initial.focusY ?? 50,
+    imagePadding: initial.imagePadding ?? 0,
+    imageWidth: initial.imageWidth ?? 50,
     linkUrl: initial.linkUrl ?? null,
     startDate: initial.startDate,
     endDate: initial.endDate,

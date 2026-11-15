@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "HeroSlide" ADD COLUMN     "imagePadding" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "imageWidth" INTEGER NOT NULL DEFAULT 50;
+
+-- AlterTable
+ALTER TABLE "HomeContent" ADD COLUMN     "heroImagePadding" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "heroImageWidth" INTEGER NOT NULL DEFAULT 50;

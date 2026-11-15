@@ -612,7 +612,13 @@
       "desktop": "Computer",
       "mobile": "Phone",
       "previewNote": "A small preview using the Vietnamese texts. Press Save to put it on the homepage.",
-      "ctaFallback": "See it now"
+      "ctaFallback": "See it now",
+      "frame": "Dark frame around the photo",
+      "frameNone": "none (edge to edge)",
+      "frameHint": "Slide right to shrink the photo and leave a dark frame around it. The frame is thinner on phones.",
+      "width": "Photo width on computers",
+      "widthHint": "The rest is for the text. On phones the photo always sits under the text, full width.",
+      "tooSmall": "This photo is only {width} px wide and will look blurry on big screens. Use a photo at least {need} px wide (the original from a camera or phone, not sent through Zalo or Messenger), or add a frame so it shows smaller."
     }
   },
   "alerts": {

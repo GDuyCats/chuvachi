@@ -157,6 +157,8 @@ export type HeroSlideView = {
   textAlign?: string; // left | center | right
   focusX?: number; // part of the photo kept in view when cropped, 0-100
   focusY?: number;
+  imagePadding?: number; // dark frame around a full-width photo, 0-12
+  imageWidth?: number; // photo's share beside the texts on computers, 30-70 %
   linkUrl?: string | null; // "/news", "/news/slug" (no language) or https://...; wins over productSlug
 };
 
@@ -176,6 +178,8 @@ export type HomeContent = {
     textAlign?: string;
     focusX?: number;
     focusY?: number;
+    imagePadding?: number;
+    imageWidth?: number;
     linkUrl?: string | null;
   } | null;
   heroSlides: HeroSlideView[]; // the main banner first, then the extra slides

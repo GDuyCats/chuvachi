@@ -65,6 +65,18 @@ export function shadeFor(position: TextPosition): string {
   return "radial-gradient(ellipse at center, rgba(0,0,0,0.6), rgba(0,0,0,0.25) 75%)";
 }
 
+// The dark frame around a full-width photo: CSS variables read by the image box's inset
+// (4 px per step on phones, 8 px per step on computers).
+export function frameStyle(padding: number | null | undefined): Record<string, string> {
+  const steps = Math.min(12, Math.max(0, padding ?? 0));
+  return { "--frame-m": `${steps * 4}px`, "--frame-d": `${steps * 8}px` };
+}
+
+// The photo's share of the width beside the texts (computers), as a CSS variable.
+export function widthStyle(width: number | null | undefined): Record<string, string> {
+  return { "--photo-w": `${Math.min(70, Math.max(30, width ?? 50))}%` };
+}
+
 // CSS object-position from the "main point" picked on the photo (0-100 each way).
 export function focusStyle(x: number | null | undefined, y: number | null | undefined): { objectPosition: string } {
   const clamp = (n: number | null | undefined) => Math.min(100, Math.max(0, n ?? 50));

@@ -37,6 +37,8 @@ const POSITIONS = [
 const position = z.enum(POSITIONS);
 const textAlign = z.enum(["left", "center", "right"]);
 const focus = z.number().int().min(0).max(100);
+const imagePadding = z.number().int().min(0).max(12);
+const imageWidth = z.number().int().min(30).max(70);
 
 // A banner link: a page of this site without the language ("/news", "/news/opening") or a full https link.
 const linkUrl = z
@@ -77,6 +79,8 @@ const contentSchema = z.object({
   heroTextAlign: textAlign.default("left"),
   heroFocusX: focus.default(50),
   heroFocusY: focus.default(50),
+  heroImagePadding: imagePadding.default(0),
+  heroImageWidth: imageWidth.default(50),
   heroLinkUrl: linkUrl,
   heroIntervalSeconds: z.number().int().min(3).max(30),
 });
@@ -101,6 +105,8 @@ const heroSlideSchema = z
     textAlign: textAlign.default("left"),
     focusX: focus.default(50),
     focusY: focus.default(50),
+    imagePadding: imagePadding.default(0),
+    imageWidth: imageWidth.default(50),
     linkUrl,
     startDate: dateText.nullable(),
     endDate: dateText.nullable(),

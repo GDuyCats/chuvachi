@@ -88,6 +88,8 @@ homeRouter.get("/home", async (req, res) => {
           textAlign: content.heroTextAlign,
           focusX: content.heroFocusX,
           focusY: content.heroFocusY,
+          imagePadding: content.heroImagePadding,
+          imageWidth: content.heroImageWidth,
           linkUrl: content.heroLinkUrl,
         }
       : null;
@@ -111,6 +113,8 @@ homeRouter.get("/home", async (req, res) => {
           textAlign: slide.textAlign,
           focusX: slide.focusX,
           focusY: slide.focusY,
+          imagePadding: slide.imagePadding,
+          imageWidth: slide.imageWidth,
           linkUrl: slide.linkUrl,
         }))),
   ].filter((slide) => (slide.imageOnly ? Boolean(slide.imageUrl) : slide.title !== ""));

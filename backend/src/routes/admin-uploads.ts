@@ -11,7 +11,7 @@ adminUploadsRouter.use(requireStaff, requireAdminRole);
 // What can be uploaded: product photos and the wide homepage banner.
 const KINDS = {
   product: { folder: "products", maxSide: 1600, quality: 85 }, // longest side after resizing, in pixels
-  banner: { folder: "banners", maxSide: 2400, quality: 92 }, // shown large on the homepage: keep it sharp
+  banner: { folder: "banners", maxSide: 3200, quality: 92 }, // full screen width on sharp (retina) screens: keep it big
   post: { folder: "posts", maxSide: 1800, quality: 85 }, // cover and in-text photos of news posts
 } as const;
 type UploadKind = keyof typeof KINDS;

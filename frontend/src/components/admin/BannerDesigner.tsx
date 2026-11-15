@@ -23,6 +23,8 @@ export type BannerLook = {
   textAlign: string;
   focusX: number;
   focusY: number;
+  imagePadding: number; // 0-12, dark frame around a full-width photo
+  imageWidth: number; // 30-70 %, photo beside the texts (computers)
 };
 
 type Texts = { eyebrow: string | null; title: string | null; subtitle: string | null; cta: string | null };
@@ -43,6 +45,10 @@ export function BannerDesigner({
   const { t } = useAdminI18n();
   const d = t.home.designer;
   const [screen, setScreen] = useState<"desktop" | "mobile">("desktop");
+  const [photoWidth, setPhotoWidth] = useState<number | null>(null); // real width of the uploaded photo, in pixels
+  const fullWidth = look.imageOnly || look.textOverlay;
+  // A photo stretched over a whole wide screen needs many pixels to stay sharp.
+  const tooSmall = photoWidth !== null && photoWidth < (fullWidth ? 2000 : 1200);
   const desktopPos = asPosition(look.textPosition, DEFAULT_POSITION);
   const mobilePos = look.textPositionMobile ? asPosition(look.textPositionMobile, DEFAULT_MOBILE_POSITION) : null;
   const align: TextAlign = look.textAlign === "center" || look.textAlign === "right" ? look.textAlign : "left";
@@ -100,6 +106,45 @@ export function BannerDesigner({
       )}
 
       {imageUrl && (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {fullWidth ? (
+            <label className="flex flex-col gap-1.5 text-sm font-semibold">
+              {d.frame}: {look.imagePadding === 0 ? d.frameNone : look.imagePadding}
+              <input
+                type="range"
+                min={0}
+                max={12}
+                value={look.imagePadding}
+                onChange={(e) => onChange({ imagePadding: Number(e.target.value) })}
+                className="accent-black"
+              />
+              <span className="text-xs font-normal text-muted">{d.frameHint}</span>
+            </label>
+          ) : (
+            <label className="flex flex-col gap-1.5 text-sm font-semibold">
+              {d.width}: {look.imageWidth}%
+              <input
+                type="range"
+                min={30}
+                max={70}
+                step={5}
+                value={look.imageWidth}
+                onChange={(e) => onChange({ imageWidth: Number(e.target.value) })}
+                className="accent-black"
+              />
+              <span className="text-xs font-normal text-muted">{d.widthHint}</span>
+            </label>
+          )}
+        </div>
+      )}
+
+      {imageUrl && tooSmall && (
+        <p className="border-[1.5px] border-black bg-white px-3 py-2 text-sm font-semibold">
+          {d.tooSmall.replace("{width}", String(photoWidth)).replace("{need}", fullWidth ? "2000" : "1200")}
+        </p>
+      )}
+
+      {imageUrl && (
         <div className="flex flex-col gap-2">
           <span className="text-sm font-semibold">{d.focus}</span>
           <span className="text-xs text-muted">{d.focusHint}</span>
@@ -110,7 +155,12 @@ export function BannerDesigner({
             className="relative w-full max-w-xs cursor-crosshair self-start border border-[#d4d4d4] bg-white"
           >
             {/* eslint-disable-next-line @next/next/no-img-element -- whole photo to pick the main point */}
-            <img src={imageUrl} alt="" className="block w-full" />
+            <img
+              src={imageUrl}
+              alt=""
+              className="block w-full"
+              onLoad={(e) => setPhotoWidth(e.currentTarget.naturalWidth)}
+            />
             <span
               className="pointer-events-none absolute h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-white bg-black shadow"
               style={{ left: `${look.focusX}%`, top: `${look.focusY}%` }}
@@ -199,9 +249,16 @@ function Preview({
   const phone = screen === "mobile";
   const frame = phone ? "mx-auto w-[300px]" : "w-full";
   const focus = focusStyle(look.focusX, look.focusY);
+  // The real frame is 4 px (phone) or 8 px (computer) per step; the preview is smaller, so less.
+  const inset = `${look.imagePadding * (phone ? 3 : 4)}px`;
   const photo = imageUrl ? (
     // eslint-disable-next-line @next/next/no-img-element -- preview
-    <img src={imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" style={focus} />
+    <img src={imageUrl} alt="" className="absolute h-full w-full object-cover" style={{ ...focus, inset: 0 }} />
+  ) : null;
+  const framedPhoto = imageUrl ? (
+    <div className="absolute overflow-hidden" style={{ inset }}>
+      {photo}
+    </div>
   ) : null;
 
   const textBlock = (alignClass: string) => (
@@ -215,7 +272,7 @@ function Preview({
 
   if (look.imageOnly && imageUrl) {
     return (
-      <div className={`${frame} relative overflow-hidden bg-[#141414] ${phone ? "aspect-[4/3]" : "aspect-[21/9]"}`}>{photo}</div>
+      <div className={`${frame} relative overflow-hidden bg-[#141414] ${phone ? "aspect-[4/3]" : "aspect-[21/9]"}`}>{framedPhoto}</div>
     );
   }
 
@@ -224,7 +281,7 @@ function Preview({
       <div
         className={`${frame} relative flex overflow-hidden bg-[#141414] text-white ${phone ? "h-[400px] p-4" : "aspect-[21/9] p-6"} ${PLACE[position]}`}
       >
-        {photo}
+        {framedPhoto}
         <div className="absolute inset-0" style={{ background: shadeFor(position) }} aria-hidden="true" />
         {textBlock(ALIGN[align])}
       </div>
@@ -236,7 +293,12 @@ function Preview({
     <div className={`${frame} flex gap-4 overflow-hidden bg-[#141414] text-white ${phone ? "flex-col p-4" : "aspect-[21/9] items-center p-6"}`}>
       <div className="flex flex-1 flex-col">{textBlock("items-start text-left")}</div>
       {imageUrl && (
-        <div className={`relative flex-1 overflow-hidden ${phone ? "aspect-[4/3]" : "aspect-[16/11]"}`}>{photo}</div>
+        <div
+          className={`relative overflow-hidden ${phone ? "aspect-[4/3] flex-1" : "aspect-[16/11] flex-none"}`}
+          style={phone ? undefined : { flexBasis: `${look.imageWidth}%` }}
+        >
+          {photo}
+        </div>
       )}
     </div>
   );

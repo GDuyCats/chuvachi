@@ -534,6 +534,8 @@ export type HomeContentInput = {
   heroTextAlign: string; // left | center | right
   heroFocusX: number; // part of the photo kept in view when cropped, 0-100
   heroFocusY: number;
+  heroImagePadding: number; // dark frame around a full-width photo, 0-12
+  heroImageWidth: number; // photo's share beside the texts on computers, 30-70 %
   heroLinkUrl: string | null; // "/news", "/news/slug" or https://...; wins over heroProductId
   heroIntervalSeconds: number; // banner slides change every N seconds
 };
@@ -557,6 +559,8 @@ export type HeroSlideInput = {
   textAlign: string; // left | center | right
   focusX: number; // part of the photo kept in view when cropped, 0-100
   focusY: number;
+  imagePadding: number; // dark frame around a full-width photo, 0-12
+  imageWidth: number; // photo's share beside the texts on computers, 30-70 %
   linkUrl: string | null; // "/news", "/news/slug" or https://...; wins over productId
   startDate: string | null; // YYYY-MM-DD, empty = from now
   endDate: string | null; // empty = no end

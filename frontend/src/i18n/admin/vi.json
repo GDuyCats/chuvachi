@@ -612,7 +612,13 @@
       "desktop": "Máy tính",
       "mobile": "Điện thoại",
       "previewNote": "Bản xem trước thu nhỏ, chữ lấy từ ô tiếng Việt. Bấm Lưu để đưa lên trang chủ.",
-      "ctaFallback": "Xem ngay"
+      "ctaFallback": "Xem ngay",
+      "frame": "Viền đen quanh ảnh",
+      "frameNone": "không viền (tràn hết)",
+      "frameHint": "Kéo sang phải để thu nhỏ ảnh lại, chừa viền tối xung quanh. Viền trên điện thoại mỏng hơn trên máy tính.",
+      "width": "Độ rộng ảnh trên máy tính",
+      "widthHint": "Phần còn lại dành cho chữ. Trên điện thoại ảnh luôn nằm dưới chữ, rộng hết màn hình.",
+      "tooSmall": "Ảnh này chỉ rộng {width} px, trên màn hình lớn sẽ bị mờ. Nên dùng ảnh rộng ít nhất {need} px (ảnh gốc từ máy ảnh / điện thoại, không qua Zalo hay Messenger), hoặc kéo thêm viền để ảnh nhỏ lại."
     }
   },
   "alerts": {

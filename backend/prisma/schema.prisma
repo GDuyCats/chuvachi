@@ -183,6 +183,8 @@ model HomeContent {
   heroTextAlign           String   @default("left") // left, center or right
   heroFocusX              Int      @default(50) // the part of the photo kept in view when it is cropped, 0-100
   heroFocusY              Int      @default(50)
+  heroTitleScale          Int      @default(100) // title size, 60-160 % of normal
+  heroBodyScale           Int      @default(100) // small line, description and button size, 70-150 %
   heroImagePadding        Int      @default(0)  // dark frame around a full-width photo, 0 (edge to edge) to 12
   heroImageWidth          Int      @default(50) // photo's share of the width beside the texts on computers, 30-70 %
   heroLinkUrl             String?  // where the banner goes instead of a cake: "/news", "/news/slug" or https://...
@@ -214,6 +216,8 @@ model HeroSlide {
   textAlign          String  @default("left") // left, center or right
   focusX             Int     @default(50) // the part of the photo kept in view when it is cropped, 0-100
   focusY             Int     @default(50)
+  titleScale         Int     @default(100) // title size, 60-160 % of normal
+  bodyScale          Int     @default(100) // small line, description and button size, 70-150 %
   imagePadding       Int     @default(0)  // dark frame around a full-width photo, 0 (edge to edge) to 12
   imageWidth         Int     @default(50) // photo's share of the width beside the texts on computers, 30-70 %
   linkUrl    String?   // where the slide goes instead of a cake: "/news", "/news/slug" or https://...

@@ -71,6 +71,20 @@ export function widthStyle(width: number | null | undefined): Record<string, str
   return { "--photo-w": `${Math.min(70, Math.max(30, width ?? 50))}%` };
 }
 
+// Text sizes chosen in the admin (% of normal), as CSS variables used by the banner's text classes.
+export function textScaleStyle(title: number | null | undefined, body: number | null | undefined): Record<string, string> {
+  const factor = (n: number | null | undefined, min: number, max: number) => String(Math.min(max, Math.max(min, n ?? 100)) / 100);
+  return { "--title-s": factor(title, 60, 160), "--body-s": factor(body, 70, 150) };
+}
+
+// Normal text sizes of the banner in px (phone / computer); the admin preview uses them too.
+export const TEXT_PX = {
+  title: { mobile: 48, desktop: 72 },
+  eyebrow: { mobile: 13, desktop: 13 },
+  subtitle: { mobile: 15, desktop: 17 },
+  button: { mobile: 15, desktop: 15 },
+} as const;
+
 // CSS object-position from the "main point" picked on the photo (0-100 each way).
 export function focusStyle(x: number | null | undefined, y: number | null | undefined): { objectPosition: string } {
   return { objectPosition: `${pct(x, 50)}% ${pct(y, 50)}%` };

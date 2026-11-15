@@ -536,6 +536,8 @@ export type HomeContentInput = {
   heroTextAlign: string; // left | center | right
   heroFocusX: number; // part of the photo kept in view when cropped, 0-100
   heroFocusY: number;
+  heroTitleScale: number; // title size, 60-160 % of normal
+  heroBodyScale: number; // other texts and button, 70-150 %
   heroImagePadding: number; // dark frame around a full-width photo, 0-12
   heroImageWidth: number; // photo's share beside the texts on computers, 30-70 %
   heroLinkUrl: string | null; // "/news", "/news/slug" or https://...; wins over heroProductId
@@ -563,6 +565,8 @@ export type HeroSlideInput = {
   textAlign: string; // left | center | right
   focusX: number; // part of the photo kept in view when cropped, 0-100
   focusY: number;
+  titleScale: number; // title size, 60-160 % of normal
+  bodyScale: number; // other texts and button, 70-150 %
   imagePadding: number; // dark frame around a full-width photo, 0-12
   imageWidth: number; // photo's share beside the texts on computers, 30-70 %
   linkUrl: string | null; // "/news", "/news/slug" or https://...; wins over productId

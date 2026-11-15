@@ -14,6 +14,7 @@ import {
   pointOf,
   pointVars,
   shadeAt,
+  textScaleStyle,
   widthStyle,
 } from "@/lib/hero-layout";
 import { FadeInImage } from "../FadeInImage";
@@ -123,6 +124,7 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
           // Box for a full-width photo, inset by the dark frame chosen in the admin (none = edge to edge).
           const framed = "absolute overflow-hidden [inset:var(--frame-m)] md:[inset:var(--frame-d)]";
           const frame = frameStyle(slide.imagePadding) as CSSProperties;
+          const sizes = textScaleStyle(slide.titleScale, slide.bodyScale) as CSSProperties;
           const motion = `${reducedMotion ? "" : "transition-[opacity,transform] duration-700 ease-out"} ${
             active ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-6 opacity-0"
           }`;
@@ -166,7 +168,7 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
                 key={i}
                 {...slideProps}
                 className={`relative col-start-1 row-start-1 min-h-[480px] overflow-hidden md:min-h-[560px] ${motion}`}
-                style={{ ...frame, ...(pointVars(desktopPoint, mobilePoint) as CSSProperties) }}
+                style={{ ...frame, ...sizes, ...(pointVars(desktopPoint, mobilePoint) as CSSProperties) }}
               >
                 <div className={framed}>
                   <FadeInImage
@@ -188,13 +190,13 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
                 <div
                   className={`absolute flex w-max max-w-[min(36rem,100%)] flex-col gap-4 [left:var(--tx-m)] [top:var(--ty-m)] [transform:translate(calc(var(--tx-m)*-1),calc(var(--ty-m)*-1))] [text-shadow:0_1px_12px_rgba(0,0,0,0.35)] md:[left:var(--tx-d)] md:[top:var(--ty-d)] md:[transform:translate(calc(var(--tx-d)*-1),calc(var(--ty-d)*-1))] ${ALIGN[align]}`}
                 >
-                  {slide.eyebrow && <span className="text-[13px] font-bold uppercase tracking-[0.16em]">{slide.eyebrow}</span>}
-                  <Heading className="font-display text-5xl uppercase leading-[1.05] md:text-7xl">{slide.title}</Heading>
-                  {slide.subtitle && <p className="text-[15px] font-semibold md:text-[17px]">{slide.subtitle}</p>}
+                  {slide.eyebrow && <span className="text-[calc(13px*var(--body-s,1))] font-bold uppercase tracking-[0.16em]">{slide.eyebrow}</span>}
+                  <Heading className="break-words font-display text-[calc(3rem*var(--title-s,1))] uppercase leading-[1.05] md:text-[calc(4.5rem*var(--title-s,1))]">{slide.title}</Heading>
+                  {slide.subtitle && <p className="text-[calc(15px*var(--body-s,1))] font-semibold md:text-[calc(17px*var(--body-s,1))]">{slide.subtitle}</p>}
                   <Link
                     href={href}
                     {...linkProps}
-                    className="mt-2 bg-white px-10 py-3.5 text-[15px] font-bold text-black [text-shadow:none] hover:bg-[#e5e5e5]"
+                    className="mt-2 bg-white px-10 py-3.5 text-[calc(15px*var(--body-s,1))] font-bold text-black [text-shadow:none] hover:bg-[#e5e5e5]"
                   >
                     {slide.cta ?? labels.heroCta}
                   </Link>
@@ -209,16 +211,16 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
               key={i}
               {...slideProps}
               className={`col-start-1 row-start-1 flex flex-col gap-8 px-4 py-12 md:flex-row md:items-center md:px-14 md:py-20 ${motion}`}
-              style={widthStyle(slide.imageWidth) as CSSProperties}
+              style={{ ...(widthStyle(slide.imageWidth) as CSSProperties), ...sizes }}
             >
               <div className="flex max-w-xl flex-1 flex-col gap-4">
-                {slide.eyebrow && <span className="text-[13px] font-bold uppercase tracking-[0.16em]">{slide.eyebrow}</span>}
-                <Heading className="font-display text-5xl uppercase leading-[1.05] md:text-7xl">{slide.title}</Heading>
-                {slide.subtitle && <p className="text-[15px] font-semibold md:text-[17px]">{slide.subtitle}</p>}
+                {slide.eyebrow && <span className="text-[calc(13px*var(--body-s,1))] font-bold uppercase tracking-[0.16em]">{slide.eyebrow}</span>}
+                <Heading className="break-words font-display text-[calc(3rem*var(--title-s,1))] uppercase leading-[1.05] md:text-[calc(4.5rem*var(--title-s,1))]">{slide.title}</Heading>
+                {slide.subtitle && <p className="text-[calc(15px*var(--body-s,1))] font-semibold md:text-[calc(17px*var(--body-s,1))]">{slide.subtitle}</p>}
                 <Link
                   href={href}
                   {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  className="mt-2 self-start bg-white px-10 py-3.5 text-[15px] font-bold text-black hover:bg-[#e5e5e5]"
+                  className="mt-2 self-start bg-white px-10 py-3.5 text-[calc(15px*var(--body-s,1))] font-bold text-black hover:bg-[#e5e5e5]"
                 >
                   {slide.cta ?? labels.heroCta}
                 </Link>

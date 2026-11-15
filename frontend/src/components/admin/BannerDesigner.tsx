@@ -11,6 +11,7 @@ import {
   pointStyle,
   PRESETS,
   shadeAt,
+  TEXT_PX,
   type TextAlign,
   type TextPoint,
 } from "@/lib/hero-layout";
@@ -26,6 +27,8 @@ export type BannerLook = {
   textAlign: string;
   focusX: number;
   focusY: number;
+  titleScale: number; // 60-160 %, title size
+  bodyScale: number; // 70-150 %, other texts and button
   imagePadding: number; // 0-12, dark frame around a full-width photo
   imageWidth: number; // 30-70 %, photo beside the texts (computers)
 };
@@ -113,6 +116,36 @@ export function BannerDesigner({
               ))}
             </div>
           </div>
+        </div>
+      )}
+
+      {!(look.imageOnly && imageUrl) && (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <label className="flex flex-col gap-1.5 text-sm font-semibold">
+            {d.titleSize}: {look.titleScale}%
+            <input
+              type="range"
+              min={60}
+              max={160}
+              step={5}
+              value={look.titleScale}
+              onChange={(e) => onChange({ titleScale: Number(e.target.value) })}
+              className="accent-black"
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 text-sm font-semibold">
+            {d.bodySize}: {look.bodyScale}%
+            <input
+              type="range"
+              min={70}
+              max={150}
+              step={5}
+              value={look.bodyScale}
+              onChange={(e) => onChange({ bodyScale: Number(e.target.value) })}
+              className="accent-black"
+            />
+          </label>
+          <span className="text-xs text-muted md:col-span-2">{d.sizeHint}</span>
         </div>
       )}
 
@@ -305,12 +338,27 @@ function Preview({
     </div>
   ) : null;
 
+  // Same sizes as the homepage: normal size × the % chosen above.
+  const kind = phone ? "mobile" : "desktop";
+  const px = (base: number, scale: number) => `${(base * scale) / 100}px`;
   const textBlock = (className: string, style?: CSSProperties) => (
     <div className={`flex flex-col gap-4 ${className}`} style={style}>
-      {texts.eyebrow && <span className="text-[13px] font-bold uppercase tracking-[0.16em]">{texts.eyebrow}</span>}
-      <span className={`font-display uppercase leading-[1.05] ${phone ? "text-5xl" : "text-7xl"}`}>{texts.title || "—"}</span>
-      {texts.subtitle && <span className={`font-semibold ${phone ? "text-[15px]" : "text-[17px]"}`}>{texts.subtitle}</span>}
-      <span className="mt-2 bg-white px-10 py-3.5 text-[15px] font-bold text-black">{texts.cta || ctaFallback}</span>
+      {texts.eyebrow && (
+        <span className="font-bold uppercase tracking-[0.16em]" style={{ fontSize: px(TEXT_PX.eyebrow[kind], look.bodyScale) }}>
+          {texts.eyebrow}
+        </span>
+      )}
+      <span className="break-words font-display uppercase leading-[1.05]" style={{ fontSize: px(TEXT_PX.title[kind], look.titleScale) }}>
+        {texts.title || "—"}
+      </span>
+      {texts.subtitle && (
+        <span className="font-semibold" style={{ fontSize: px(TEXT_PX.subtitle[kind], look.bodyScale) }}>
+          {texts.subtitle}
+        </span>
+      )}
+      <span className="mt-2 bg-white px-10 py-3.5 font-bold text-black" style={{ fontSize: px(TEXT_PX.button[kind], look.bodyScale) }}>
+        {texts.cta || ctaFallback}
+      </span>
     </div>
   );
 

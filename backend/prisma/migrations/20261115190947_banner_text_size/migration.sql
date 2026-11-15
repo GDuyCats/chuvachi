@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "HeroSlide" ADD COLUMN     "bodyScale" INTEGER NOT NULL DEFAULT 100,
+ADD COLUMN     "titleScale" INTEGER NOT NULL DEFAULT 100;
+
+-- AlterTable
+ALTER TABLE "HomeContent" ADD COLUMN     "heroBodyScale" INTEGER NOT NULL DEFAULT 100,
+ADD COLUMN     "heroTitleScale" INTEGER NOT NULL DEFAULT 100;

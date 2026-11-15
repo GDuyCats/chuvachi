@@ -620,7 +620,10 @@
       "widthHint": "The rest is for the text. On phones the photo always sits under the text, full width.",
       "tooSmall": "This photo is only {width} px wide and will look blurry on big screens. Use a photo at least {need} px wide (the original from a camera or phone, not sent through Zalo or Messenger), or add a frame so it shows smaller.",
       "custom": "Custom place: {x}% across, {y}% down",
-      "dragHint": "Click or drag on the preview to put the text anywhere."
+      "dragHint": "Click or drag on the preview to put the text anywhere.",
+      "titleSize": "Title size",
+      "bodySize": "Small line, description and button size",
+      "sizeHint": "100% is the normal size. It applies to computers and phones; phones stay smaller than computers in the same proportion. A long title set very large wraps a lot on phones, so check the Phone preview."
     }
   },
   "alerts": {

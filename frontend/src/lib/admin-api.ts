@@ -175,6 +175,67 @@ async function downloadFile(path: string, fallbackName: string): Promise<void> {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+export type IngredientKind = "INGREDIENT" | "PACKAGING";
+
+export type IngredientInput = {
+  name: string;
+  kind: IngredientKind;
+  unit: string; // g, ml, cái...
+  packSize: number; // how much one pack holds
+  packPrice: number; // VND for one pack
+  note: string | null;
+};
+
+export type Ingredient = IngredientInput & { id: number; usedIn: number };
+
+export type RecipeInput = {
+  productId: number;
+  optionId: number | null; // null = product without flavors
+  yieldCount: number; // portions per batch, or boxes for packaging
+  lines: { ingredientId: number; quantity: number }[];
+};
+
+export type CostRecipe = RecipeInput & { id: number };
+
+export type ProductCost = {
+  id: number;
+  nameVi: string;
+  nameEn: string;
+  isActive: boolean;
+  basePrice: number;
+  hasFlavors: boolean;
+  hasPackages: boolean;
+  flavors: { optionId: number | null; nameVi: string; nameEn: string; priceDelta: number; isActive: boolean; costPerPortion: number | null }[];
+  packages: {
+    optionId: number | null;
+    nameVi: string;
+    nameEn: string;
+    priceDelta: number;
+    portions: number;
+    isActive: boolean;
+    costPerBox: number | null;
+  }[];
+  rows: {
+    flavorOptionId: number | null;
+    packageOptionId: number | null;
+    portions: number;
+    price: number;
+    cost: number | null;
+    profit: number | null;
+    margin: number | null;
+    missingPackaging: boolean;
+  }[];
+};
+
+export type CostingBundle = { ingredients: Ingredient[]; recipes: CostRecipe[]; products: ProductCost[] };
+
+export type SoldCosts = {
+  from: string | null;
+  to: string | null;
+  rows: { productId: number | null; nameVi: string; nameEn: string; portions: number; revenue: number; cost: number | null; profit: number | null; missing: boolean }[];
+  totals: { revenue: number; costedRevenue: number; cost: number; profit: number };
+};
+
 export type AdminOrderList = {
   day: AdminDay;
   date: string | null;
@@ -615,6 +676,14 @@ export const adminApi = {
     request<ProfitSummary>(`/expenses/summary${filterQuery({ from, to })}`),
   exportExpenses: (filters: ExpenseFilters) =>
     downloadFile(`/expenses/export${filterQuery({ ...filters, page: undefined })}`, "expenses.csv"),
+  getCosting: () => request<CostingBundle>("/costing"),
+  createIngredient: (input: IngredientInput) =>
+    request<CostingBundle>("/costing/ingredients", { method: "POST", body: JSON.stringify(input) }),
+  updateIngredient: (id: number, input: IngredientInput) =>
+    request<CostingBundle>(`/costing/ingredients/${id}`, { method: "PUT", body: JSON.stringify(input) }),
+  deleteIngredient: (id: number) => request<CostingBundle>(`/costing/ingredients/${id}`, { method: "DELETE" }),
+  saveRecipe: (input: RecipeInput) => request<CostingBundle>("/costing/recipes", { method: "PUT", body: JSON.stringify(input) }),
+  soldCosts: (from: string | null, to: string | null) => request<SoldCosts>(`/costing/sold${filterQuery({ from, to })}`),
   listAccounts: () => request<AdminAccount[]>("/accounts"),
   createAccount: (input: { email: string; name: string; role: AdminRole }) =>
     request<TemporaryPasswordResult>("/accounts", { method: "POST", body: JSON.stringify(input) }),

@@ -102,6 +102,7 @@ model Product {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   reviews       Review[]
+  costRecipes   CostRecipe[]
 }
 
 model ProductOption {
@@ -118,6 +119,7 @@ model ProductOption {
   dailyLimit Int?       // FLAVOR only: most portions of this flavor per delivery day; empty = no own limit
   sortOrder  Int        @default(0)
   dayBookings ProductOptionDayBooking[]
+  costRecipe CostRecipe? // what one batch of this flavor (or one box) costs to make
 }
 
 model Combo {
@@ -729,4 +731,50 @@ model Expense {
   updatedAt   DateTime        @updatedAt
 
   @@index([spentOn])
+}
+
+// ---------- Cost of each cake (recipes) ----------
+
+enum IngredientKind {
+  INGREDIENT // cream, fruit, sugar...
+  PACKAGING  // cups, boxes, bags, stickers
+}
+
+// Something the shop buys, with the price of one pack: 1000 ml of cream for 90,000 = 90 per ml.
+model Ingredient {
+  id          Int            @id @default(autoincrement())
+  name        String
+  kind        IngredientKind @default(INGREDIENT)
+  unit        String         // g, ml, cái...
+  packSize    Float          // how much one pack holds, in "unit"
+  packPrice   Int            // VND paid for one pack
+  note        String?
+  recipeLines RecipeLine[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+// What goes into one batch of a flavor (yieldCount = portions it makes), or into one box
+// (a PACKAGE option, yieldCount = boxes). A product without flavors has one recipe with no option.
+model CostRecipe {
+  id         Int            @id @default(autoincrement())
+  productId  Int
+  product    Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  optionId   Int?           @unique
+  option     ProductOption? @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  yieldCount Int            @default(1)
+  lines      RecipeLine[]
+  updatedAt  DateTime       @updatedAt
+
+  @@index([productId])
+}
+
+model RecipeLine {
+  id           Int        @id @default(autoincrement())
+  recipeId     Int
+  recipe       CostRecipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredientId Int
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  quantity     Float      // in the ingredient's unit
+  sortOrder    Int        @default(0)
 }

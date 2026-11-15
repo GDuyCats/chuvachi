@@ -338,6 +338,14 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
 
         <fieldset className="flex flex-col gap-4">
           <legend className="mb-4 font-display text-[26px] uppercase tracking-wide">{labels.deliveryTitle}</legend>
+          {/* Shipping is paid to the driver, so say it before the customer picks a zone and time. */}
+          <p className="flex items-start gap-2.5 border-[1.5px] border-black px-4 py-3 text-sm font-semibold">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" className="mt-0.5 shrink-0">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 11v6M12 7.5v.5" />
+            </svg>
+            {labels.shippingNote}
+          </p>
 
           {settingsFailed && <p role="alert" className="border-[1.5px] border-black p-4 text-sm font-semibold">{labels.settingsError}</p>}
           {!settings && !settingsFailed && (

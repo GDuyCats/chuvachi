@@ -15,6 +15,7 @@ type TurnstileApi = {
       "error-callback"?: () => void;
       appearance?: "always" | "execute" | "interaction-only";
       theme?: "light" | "dark" | "auto";
+      size?: "normal" | "flexible" | "compact";
       language?: string;
     },
   ): string;
@@ -55,6 +56,7 @@ export function TurnstileWidget({ lang, onToken, resetSignal }: Props) {
       sitekey: TURNSTILE_SITE_KEY,
       appearance: "interaction-only",
       theme: "light",
+      size: "flexible", // as wide as the form instead of a fixed 300 px box
       language: lang,
       callback: (token) => onTokenRef.current(token),
       "expired-callback": () => onTokenRef.current(null),
@@ -83,7 +85,8 @@ export function TurnstileWidget({ lang, onToken, resetSignal }: Props) {
   return (
     <>
       <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" strategy="afterInteractive" onReady={render} />
-      <div ref={holder} />
+      {/* Empty until Cloudflare asks the visitor to tick the box. */}
+      <div ref={holder} className="w-full empty:hidden [&_iframe]:!w-full" />
     </>
   );
 }

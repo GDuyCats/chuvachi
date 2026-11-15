@@ -10,9 +10,9 @@ adminUploadsRouter.use(requireStaff, requireAdminRole);
 
 // What can be uploaded: product photos and the wide homepage banner.
 const KINDS = {
-  product: { folder: "products", maxSide: 1600 }, // longest side after resizing, in pixels
-  banner: { folder: "banners", maxSide: 2400 },
-  post: { folder: "posts", maxSide: 1800 }, // cover and in-text photos of news posts
+  product: { folder: "products", maxSide: 1600, quality: 85 }, // longest side after resizing, in pixels
+  banner: { folder: "banners", maxSide: 2400, quality: 92 }, // shown large on the homepage: keep it sharp
+  post: { folder: "posts", maxSide: 1800, quality: 85 }, // cover and in-text photos of news posts
 } as const;
 type UploadKind = keyof typeof KINDS;
 
@@ -38,7 +38,7 @@ adminUploadsRouter.post("/:kind", uploadLimiter, receiveSingleImage, async (req,
     res.status(404).json({ error: "NOT_FOUND" });
     return;
   }
-  const { folder, maxSide } = KINDS[kind];
+  const { folder, maxSide, quality } = KINDS[kind];
   if (!isStorageConfigured()) {
     res.status(503).json({ error: "STORAGE_NOT_CONFIGURED" });
     return;
@@ -50,7 +50,7 @@ adminUploadsRouter.post("/:kind", uploadLimiter, receiveSingleImage, async (req,
 
   let url: string;
   try {
-    url = await storeImage(req.file.buffer, folder, maxSide);
+    url = await storeImage(req.file.buffer, folder, maxSide, quality);
   } catch (error) {
     if (error instanceof ImageError) {
       res.status(400).json({ error: "UNSUPPORTED_IMAGE" });

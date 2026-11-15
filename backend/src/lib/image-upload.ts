@@ -34,7 +34,7 @@ export class ImageError extends Error {}
 
 // Checks the real file content (not the name or the type the browser claims), turns the photo
 // upright, shrinks it and converts it to WebP. EXIF data (GPS location, camera details) is dropped.
-export async function toWebp(input: Buffer, maxSide: number): Promise<Buffer> {
+export async function toWebp(input: Buffer, maxSide: number, quality = 82): Promise<Buffer> {
   try {
     // limitInputPixels protects the server from "decompression bomb" images.
     const image = sharp(input, { limitInputPixels: 50_000_000 });
@@ -43,7 +43,7 @@ export async function toWebp(input: Buffer, maxSide: number): Promise<Buffer> {
     return await image
       .rotate() // apply the phone's orientation before the metadata is removed
       .resize({ width: maxSide, height: maxSide, fit: "inside", withoutEnlargement: true })
-      .webp({ quality: 82 })
+      .webp({ quality })
       .toBuffer();
   } catch {
     throw new ImageError("UNSUPPORTED_IMAGE");
@@ -51,7 +51,8 @@ export async function toWebp(input: Buffer, maxSide: number): Promise<Buffer> {
 }
 
 // Converts and stores one picture in the given folder; returns its public URL.
-export async function storeImage(input: Buffer, folder: string, maxSide: number): Promise<string> {
-  const output = await toWebp(input, maxSide);
+// Large photos seen full width (banners) use a higher quality so they stay sharp.
+export async function storeImage(input: Buffer, folder: string, maxSide: number, quality = 82): Promise<string> {
+  const output = await toWebp(input, maxSide, quality);
   return putImage(`${folder}/${randomUUID()}.webp`, output, "image/webp");
 }

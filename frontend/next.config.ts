@@ -43,6 +43,8 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: imageBaseUrl ? [new URL(`${imageBaseUrl}/**`)] : [],
+    // 75 for ordinary photos, 90 for the big homepage banner so it doesn't look blurry.
+    qualities: [75, 90],
   },
   // Builds a small self-contained server for the Docker image (see Dockerfile).
   output: "standalone",

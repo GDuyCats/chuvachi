@@ -118,6 +118,7 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
                     alt={slide.title}
                     fill
                     priority={i === 0}
+                    quality={90}
                     sizes="(min-width: 768px) 50vw, 100vw"
                     className="object-cover"
                   />

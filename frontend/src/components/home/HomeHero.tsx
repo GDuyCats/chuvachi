@@ -23,6 +23,12 @@ type Props = {
   labels: Labels;
 };
 
+// Where a slide goes: its own link (a page of this site or another site), else its cake, else the menu.
+function slideHref(slide: HeroSlideView, lang: Locale): string {
+  if (slide.linkUrl) return slide.linkUrl.startsWith("/") ? `/${lang}${slide.linkUrl}` : slide.linkUrl;
+  return slide.productSlug ? `/${lang}/menu/${slide.productSlug}` : `/${lang}/menu`;
+}
+
 function fill(template: string, values: Record<string, number>): string {
   return template.replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? String(values[key]) : match));
 }
@@ -89,24 +95,61 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
       <div className="grid">
         {slides.map((slide, i) => {
           const active = i === index;
-          const href = slide.productSlug ? `/${lang}/menu/${slide.productSlug}` : `/${lang}/menu`;
+          const href = slideHref(slide, lang);
+          const external = href.startsWith("http");
           const Heading = i === 0 ? "h1" : "h2"; // one main heading per page
+          const slideProps = {
+            role: many ? "group" : undefined,
+            "aria-roledescription": many ? "slide" : undefined,
+            "aria-label": many ? fill(labels.heroSlideOf, { number: i + 1, total: slides.length }) : undefined,
+            inert: !active,
+          };
+          const motion = `${reducedMotion ? "" : "transition-[opacity,transform] duration-700 ease-out"} ${
+            active ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-6 opacity-0"
+          }`;
+
+          // Just the photo, edge to edge; the whole banner is the link.
+          if (slide.imageOnly && slide.imageUrl) {
+            return (
+              <div key={i} {...slideProps} className={`relative col-start-1 row-start-1 ${motion}`}>
+                {slide.title && <Heading className="sr-only">{slide.title}</Heading>}
+                <Link
+                  href={href}
+                  {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  aria-label={slide.title || slide.cta || labels.heroCta}
+                  className="relative block h-full w-full"
+                >
+                  {/* Sets the height when this is the only slide; taller slides beside it stretch it. */}
+                  <div className="aspect-[4/3] md:aspect-[21/9]" aria-hidden="true" />
+                  <FadeInImage
+                    src={slide.imageUrl}
+                    alt={slide.title}
+                    fill
+                    priority={i === 0}
+                    quality={90}
+                    sizes="100vw"
+                    className="object-cover"
+                  />
+                </Link>
+              </div>
+            );
+          }
+
           return (
             <div
               key={i}
-              role={many ? "group" : undefined}
-              aria-roledescription={many ? "slide" : undefined}
-              aria-label={many ? fill(labels.heroSlideOf, { number: i + 1, total: slides.length }) : undefined}
-              inert={!active}
-              className={`col-start-1 row-start-1 flex flex-col gap-8 px-4 py-12 md:flex-row md:items-center md:px-14 md:py-20 ${
-                reducedMotion ? "" : "transition-[opacity,transform] duration-700 ease-out"
-              } ${active ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-6 opacity-0"}`}
+              {...slideProps}
+              className={`col-start-1 row-start-1 flex flex-col gap-8 px-4 py-12 md:flex-row md:items-center md:px-14 md:py-20 ${motion}`}
             >
               <div className="flex max-w-xl flex-1 flex-col gap-4">
                 {slide.eyebrow && <span className="text-[13px] font-bold uppercase tracking-[0.16em]">{slide.eyebrow}</span>}
                 <Heading className="font-display text-5xl uppercase leading-[1.05] md:text-7xl">{slide.title}</Heading>
                 {slide.subtitle && <p className="text-[15px] font-semibold md:text-[17px]">{slide.subtitle}</p>}
-                <Link href={href} className="mt-2 self-start bg-white px-10 py-3.5 text-[15px] font-bold text-black hover:bg-[#e5e5e5]">
+                <Link
+                  href={href}
+                  {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  className="mt-2 self-start bg-white px-10 py-3.5 text-[15px] font-bold text-black hover:bg-[#e5e5e5]"
+                >
                   {slide.cta ?? labels.heroCta}
                 </Link>
               </div>

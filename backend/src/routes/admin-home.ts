@@ -22,6 +22,16 @@ const optionalText = (max: number) =>
     .optional();
 
 const requiredText = (max: number) => z.string().trim().min(1).max(max);
+
+// A banner link: a page of this site without the language ("/news", "/news/opening") or a full https link.
+const linkUrl = z
+  .string()
+  .trim()
+  .max(300)
+  .transform((value) => (value === "" ? null : value))
+  .nullable()
+  .optional()
+  .refine((value) => !value || /^\/(?!\/)[^\s]*$/.test(value) || /^https:\/\/[^\s]+$/.test(value), "Use a page like /news or a link starting with https://");
 const idParam = z.coerce.number().int().positive();
 const dateText = z.string().refine((value) => parseDateOnly(value) !== null, "Use the format YYYY-MM-DD");
 
@@ -45,6 +55,8 @@ const contentSchema = z.object({
   heroCtaEn: optionalText(30),
   heroImageUrl: z.string().trim().max(500).refine(isOwnImageUrl, "Upload the photo with the upload button").nullable(),
   heroProductId: z.number().int().positive().nullable(),
+  heroImageOnly: z.boolean().default(false),
+  heroLinkUrl: linkUrl,
   heroIntervalSeconds: z.number().int().min(3).max(30),
 });
 
@@ -52,14 +64,17 @@ const heroSlideSchema = z
   .object({
     eyebrowVi: optionalText(60),
     eyebrowEn: optionalText(60),
-    titleVi: requiredText(90),
-    titleEn: requiredText(90),
+    // Not needed for a photo-only slide (then they only describe the photo for screen readers).
+    titleVi: optionalText(90),
+    titleEn: optionalText(90),
     subtitleVi: optionalText(220),
     subtitleEn: optionalText(220),
     ctaVi: optionalText(30),
     ctaEn: optionalText(30),
     imageUrl: z.string().trim().max(500).refine(isOwnImageUrl, "Upload the photo with the upload button").nullable(),
     productId: z.number().int().positive().nullable(),
+    imageOnly: z.boolean().default(false),
+    linkUrl,
     startDate: dateText.nullable(),
     endDate: dateText.nullable(),
     isActive: z.boolean(),
@@ -68,11 +83,21 @@ const heroSlideSchema = z
   .refine((slide) => !slide.startDate || !slide.endDate || slide.endDate >= slide.startDate, {
     path: ["endDate"],
     message: "The slide must end on or after its first day",
+  })
+  .refine((slide) => slide.imageOnly || (slide.titleVi && slide.titleEn), {
+    path: ["titleVi"],
+    message: "A slide with text needs a title in both languages",
+  })
+  .refine((slide) => !slide.imageOnly || slide.imageUrl, {
+    path: ["imageUrl"],
+    message: "A photo-only slide needs a photo",
   });
 
 function heroSlideData(input: z.infer<typeof heroSlideSchema>) {
   return {
     ...input,
+    titleVi: input.titleVi ?? "",
+    titleEn: input.titleEn ?? "",
     startDate: input.startDate ? parseDateOnly(input.startDate)! : null,
     endDate: input.endDate ? parseDateOnly(input.endDate)! : null,
   };
@@ -172,6 +197,10 @@ adminHomeRouter.put("/home", async (req, res) => {
   if (!parsed.success) return badRequest(res, parsed.error);
   const data = parsed.data;
   if (!(await productsExist([data.heroProductId, data.announcementProductId]))) return badRequest(res);
+  if (data.heroImageOnly && !data.heroImageUrl) {
+    res.status(400).json({ error: "VALIDATION_ERROR", details: [{ field: "heroImageUrl", message: "A photo-only banner needs a photo" }] });
+    return;
+  }
 
   const previous = await prisma.homeContent.findUnique({ where: { id: 1 }, select: { heroImageUrl: true } });
   await prisma.homeContent.upsert({ where: { id: 1 }, update: data, create: { id: 1, ...data } });
@@ -191,7 +220,7 @@ adminHomeRouter.post("/hero-slides", async (req, res) => {
   if (!parsed.success) return badRequest(res, parsed.error);
   if (!(await productsExist([parsed.data.productId]))) return badRequest(res);
   await prisma.heroSlide.create({ data: heroSlideData(parsed.data) });
-  console.log(`Banner slide "${parsed.data.titleEn}" created by admin ${req.admin!.email}`);
+  console.log(`Banner slide "${parsed.data.titleEn ?? "(photo only)"}" created by admin ${req.admin!.email}`);
   res.status(201).json(await loadBundle());
 });
 

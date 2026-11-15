@@ -16,6 +16,7 @@ import {
   type SeasonInput,
 } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
+import { BannerLinkPicker } from "./BannerLinkPicker";
 import { AdminFormSkeleton } from "./AdminSkeletons";
 import { ImageUploadField } from "./ImageUploadField";
 import { useToast } from "./Toast";
@@ -221,11 +222,33 @@ function ContentForm({
           />
           {h.hero.show}
         </label>
-        {pair("heroEyebrowVi", "heroEyebrowEn", h.hero.eyebrow)}
-        {pair("heroTitleVi", "heroTitleEn", h.hero.heading)}
-        {pair("heroSubtitleVi", "heroSubtitleEn", h.hero.subtitle, true)}
-        {pair("heroCtaVi", "heroCtaEn", h.hero.button)}
-        {productSelect("heroProductId", h.hero.link)}
+        <label className="flex flex-col gap-1 font-semibold">
+          <span className="flex items-center gap-2.5">
+            <input
+              type="checkbox"
+              checked={draft.heroImageOnly ?? false}
+              onChange={(e) => update("heroImageOnly", e.target.checked)}
+              className="h-5 w-5 accent-black"
+            />
+            {h.hero.imageOnly}
+          </span>
+          <span className="pl-[30px] text-xs font-normal text-muted">{h.hero.imageOnlyHint}</span>
+        </label>
+        {!draft.heroImageOnly && pair("heroEyebrowVi", "heroEyebrowEn", h.hero.eyebrow)}
+        {pair("heroTitleVi", "heroTitleEn", draft.heroImageOnly ? h.hero.altText : h.hero.heading)}
+        {!draft.heroImageOnly && pair("heroSubtitleVi", "heroSubtitleEn", h.hero.subtitle, true)}
+        {!draft.heroImageOnly && pair("heroCtaVi", "heroCtaEn", h.hero.button)}
+        <BannerLinkPicker
+          label={draft.heroImageOnly ? h.hero.linkImage : h.hero.link}
+          productId={draft.heroProductId}
+          linkUrl={draft.heroLinkUrl ?? null}
+          products={products}
+          invalid={badFields.includes("heroLinkUrl")}
+          onChange={({ productId, linkUrl }) => {
+            update("heroProductId", productId);
+            update("heroLinkUrl", linkUrl);
+          }}
+        />
         <ImageUploadField
           kind="banner"
           value={draft.heroImageUrl}
@@ -264,6 +287,8 @@ const EMPTY_SLIDE: HeroSlideInput = {
   ctaEn: null,
   imageUrl: null,
   productId: null,
+  imageOnly: false,
+  linkUrl: null,
   startDate: null,
   endDate: null,
   isActive: true,
@@ -308,7 +333,10 @@ function HeroSlidesSection({
                     <img src={slide.imageUrl} alt="" className="h-12 w-16 shrink-0 object-cover" />
                   )}
                   <div className="flex min-w-0 flex-col gap-1">
-                    <span className="font-bold">{lang === "vi" ? slide.titleVi : slide.titleEn}</span>
+                    <span className="font-bold">
+                      {(lang === "vi" ? slide.titleVi : slide.titleEn) || s.photoOnly}
+                      {slide.imageOnly && slide.titleVi ? ` · ${s.photoOnly}` : ""}
+                    </span>
                     <span className="text-sm text-muted">
                       {slide.startDate || slide.endDate
                         ? `${slide.startDate ?? "…"} → ${slide.endDate ?? "…"}`
@@ -373,7 +401,7 @@ function HeroSlideForm({
   onSaved: (bundle: HomeBundle) => void;
   onClose: () => void;
 }) {
-  const { t, lang } = useAdminI18n();
+  const { t } = useAdminI18n();
   const s = t.home.slides;
   const toast = useToast();
   const handleError = useSaveErrors();
@@ -388,6 +416,8 @@ function HeroSlideForm({
     ctaEn: initial.ctaEn,
     imageUrl: initial.imageUrl,
     productId: initial.productId,
+    imageOnly: initial.imageOnly ?? false,
+    linkUrl: initial.linkUrl ?? null,
     startDate: initial.startDate,
     endDate: initial.endDate,
     isActive: initial.isActive,
@@ -456,26 +486,30 @@ function HeroSlideForm({
 
   return (
     <form onSubmit={save} className="flex flex-col gap-4 p-4">
-      {pair("eyebrowVi", "eyebrowEn", t.home.hero.eyebrow)}
-      {pair("titleVi", "titleEn", t.home.hero.heading, true)}
-      {pair("subtitleVi", "subtitleEn", t.home.hero.subtitle, false, true)}
-      {pair("ctaVi", "ctaEn", t.home.hero.button)}
-      <label className="flex flex-col gap-1.5 text-sm font-semibold md:max-w-md">
-        {t.home.hero.link}
-        <select
-          value={draft.productId ?? ""}
-          onChange={(e) => update("productId", e.target.value ? Number(e.target.value) : null)}
-          className={fieldClass("productId")}
-        >
-          <option value="">{t.home.linkToMenu}</option>
-          {products.map((product) => (
-            <option key={product.id} value={product.id}>
-              {lang === "vi" ? product.nameVi : product.nameEn}
-              {product.isActive ? "" : ` (${t.home.hiddenProduct})`}
-            </option>
-          ))}
-        </select>
+      <label className="flex flex-col gap-1 font-semibold">
+        <span className="flex items-center gap-2.5">
+          <input
+            type="checkbox"
+            checked={draft.imageOnly}
+            onChange={(e) => update("imageOnly", e.target.checked)}
+            className="h-5 w-5 accent-black"
+          />
+          {t.home.hero.imageOnly}
+        </span>
+        <span className="pl-[30px] text-xs font-normal text-muted">{t.home.hero.imageOnlyHint}</span>
       </label>
+      {!draft.imageOnly && pair("eyebrowVi", "eyebrowEn", t.home.hero.eyebrow)}
+      {pair("titleVi", "titleEn", draft.imageOnly ? t.home.hero.altText : t.home.hero.heading, !draft.imageOnly)}
+      {!draft.imageOnly && pair("subtitleVi", "subtitleEn", t.home.hero.subtitle, false, true)}
+      {!draft.imageOnly && pair("ctaVi", "ctaEn", t.home.hero.button)}
+      <BannerLinkPicker
+        label={draft.imageOnly ? t.home.hero.linkImage : t.home.hero.link}
+        productId={draft.productId}
+        linkUrl={draft.linkUrl}
+        products={products}
+        invalid={badFields.includes("linkUrl")}
+        onChange={({ productId, linkUrl }) => setDraft((current) => ({ ...current, productId, linkUrl }))}
+      />
       <ImageUploadField
         kind="banner"
         value={draft.imageUrl}

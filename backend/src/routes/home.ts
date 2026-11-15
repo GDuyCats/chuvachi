@@ -70,15 +70,19 @@ homeRouter.get("/home", async (req, res) => {
     : null;
 
   const heroTitle = content ? text(content.heroTitleVi, content.heroTitleEn) : null;
+  // A photo-only banner needs its photo; a normal one needs its title.
+  const heroShown = content?.heroIsActive && (content.heroImageOnly ? Boolean(content.heroImageUrl) : Boolean(heroTitle));
   const hero =
-    content && content.heroIsActive && heroTitle
+    content && heroShown
       ? {
           eyebrow: text(content.heroEyebrowVi, content.heroEyebrowEn),
-          title: heroTitle,
+          title: heroTitle ?? "",
           subtitle: text(content.heroSubtitleVi, content.heroSubtitleEn),
           cta: text(content.heroCtaVi, content.heroCtaEn),
           imageUrl: content.heroImageUrl,
           productSlug: linkSlug(content.heroProduct),
+          imageOnly: content.heroImageOnly,
+          linkUrl: content.heroLinkUrl,
         }
       : null;
 
@@ -94,8 +98,10 @@ homeRouter.get("/home", async (req, res) => {
           cta: text(slide.ctaVi, slide.ctaEn),
           imageUrl: slide.imageUrl,
           productSlug: linkSlug(slide.product),
+          imageOnly: slide.imageOnly,
+          linkUrl: slide.linkUrl,
         }))),
-  ].filter((slide) => slide.title !== "");
+  ].filter((slide) => (slide.imageOnly ? Boolean(slide.imageUrl) : slide.title !== ""));
 
   res.json({
     announcement,

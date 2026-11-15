@@ -490,7 +490,11 @@
       "button": "Chữ trên nút",
       "link": "Nút mở tới",
       "interval": "Chuyển banner sau (giây)",
-      "intervalHint": "Từ 3 đến 30 giây. Chỉ có tác dụng khi có Banner phụ."
+      "intervalHint": "Từ 3 đến 30 giây. Chỉ có tác dụng khi có Banner phụ.",
+      "imageOnly": "Chỉ hiện ảnh (không chữ, không nút)",
+      "imageOnlyHint": "Ảnh trải hết banner, bấm vào ảnh là mở link bên dưới. Nên dùng ảnh ngang tỉ lệ khoảng 21:9 trên máy tính; trên điện thoại ảnh được cắt về 4:3 nên để chữ hay chi tiết quan trọng ở giữa.",
+      "altText": "Mô tả ảnh (không hiện trên banner, dành cho người khiếm thị và Google)",
+      "linkImage": "Bấm vào ảnh sẽ mở"
     },
     "slides": {
       "title": "Banner phụ (chạy luân phiên)",
@@ -515,7 +519,8 @@
       "confirmDelete": "Xóa banner này?",
       "yesDelete": "Xóa",
       "no": "Không",
-      "deleted": "Đã xóa banner."
+      "deleted": "Đã xóa banner.",
+      "photoOnly": "(chỉ ảnh)"
     },
     "seasons": {
       "title": "Mùa bánh",
@@ -563,6 +568,13 @@
       "add": "Thêm",
       "added": "Đã thêm.",
       "deleted": "Đã xóa."
+    },
+    "link": {
+      "news": "Trang Tin tức",
+      "custom": "Trang khác / bài tin cụ thể / link ngoài...",
+      "cakes": "Một món bánh",
+      "customLabel": "Đường dẫn",
+      "customHint": "Mở bài tin hoặc trang muốn trỏ tới trên chuvachi.com, copy địa chỉ trên thanh trình duyệt rồi dán vào đây (web tự bỏ phần /vi hay /en). Link trang web khác phải bắt đầu bằng https://."
     }
   },
   "alerts": {

@@ -527,6 +527,8 @@ export type HomeContentInput = {
   heroCtaEn: string | null;
   heroImageUrl: string | null;
   heroProductId: number | null;
+  heroImageOnly: boolean; // just the photo, no texts
+  heroLinkUrl: string | null; // "/news", "/news/slug" or https://...; wins over heroProductId
   heroIntervalSeconds: number; // banner slides change every N seconds
 };
 
@@ -542,6 +544,8 @@ export type HeroSlideInput = {
   ctaEn: string | null;
   imageUrl: string | null;
   productId: number | null;
+  imageOnly: boolean; // just the photo, no texts
+  linkUrl: string | null; // "/news", "/news/slug" or https://...; wins over productId
   startDate: string | null; // YYYY-MM-DD, empty = from now
   endDate: string | null; // empty = no end
   isActive: boolean;

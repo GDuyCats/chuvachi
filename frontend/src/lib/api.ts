@@ -145,11 +145,13 @@ export type HomeProduct = {
 
 export type HeroSlideView = {
   eyebrow: string | null;
-  title: string;
+  title: string; // may be empty on a photo-only slide
   subtitle: string | null;
   cta: string | null;
   imageUrl: string | null;
   productSlug: string | null;
+  imageOnly?: boolean; // just the photo; the whole slide is the link
+  linkUrl?: string | null; // "/news", "/news/slug" (no language) or https://...; wins over productSlug
 };
 
 export type HomeContent = {
@@ -161,6 +163,8 @@ export type HomeContent = {
     cta: string | null;
     imageUrl: string | null;
     productSlug: string | null;
+    imageOnly?: boolean;
+    linkUrl?: string | null;
   } | null;
   heroSlides: HeroSlideView[]; // the main banner first, then the extra slides
   heroInterval: number; // seconds between slides

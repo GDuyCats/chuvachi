@@ -174,6 +174,8 @@ model HomeContent {
   heroImageUrl            String?
   heroProductId           Int?     // the button opens this cake; empty = the menu
   heroProduct             Product? @relation("HeroProduct", fields: [heroProductId], references: [id], onDelete: SetNull)
+  heroImageOnly           Boolean  @default(false) // just the photo, no texts or button; the whole banner is the link
+  heroLinkUrl             String?  // where the banner goes instead of a cake: "/news", "/news/slug" or https://...
   heroIntervalSeconds     Int      @default(6) // the banner moves to the next slide every N seconds
   updatedAt               DateTime @updatedAt
 }
@@ -193,6 +195,8 @@ model HeroSlide {
   imageUrl   String?
   productId  Int?      // the button opens this cake; empty = the menu
   product    Product?  @relation("HeroSlideProduct", fields: [productId], references: [id], onDelete: SetNull)
+  imageOnly  Boolean   @default(false) // just the photo, no texts or button; the whole slide is the link
+  linkUrl    String?   // where the slide goes instead of a cake: "/news", "/news/slug" or https://...
   startDate  DateTime? @db.Date
   endDate    DateTime? @db.Date
   isActive   Boolean   @default(true)

@@ -490,7 +490,11 @@
       "button": "Button text",
       "link": "Button opens",
       "interval": "Switch banners every (seconds)",
-      "intervalHint": "3 to 30 seconds. Only matters when there are extra banners."
+      "intervalHint": "3 to 30 seconds. Only matters when there are extra banners.",
+      "imageOnly": "Photo only (no text, no button)",
+      "imageOnlyHint": "The photo fills the banner and opens the link below when clicked. Use a wide photo, about 21:9 on computers; phones crop it to 4:3, so keep text or key details in the middle.",
+      "altText": "Photo description (not shown on the banner; for screen readers and Google)",
+      "linkImage": "Clicking the photo opens"
     },
     "slides": {
       "title": "Extra banners (take turns)",
@@ -515,7 +519,8 @@
       "confirmDelete": "Delete this banner?",
       "yesDelete": "Delete",
       "no": "No",
-      "deleted": "Banner deleted."
+      "deleted": "Banner deleted.",
+      "photoOnly": "(photo only)"
     },
     "seasons": {
       "title": "Seasons",
@@ -563,6 +568,13 @@
       "add": "Add",
       "added": "Added.",
       "deleted": "Deleted."
+    },
+    "link": {
+      "news": "News page",
+      "custom": "Another page / a news post / an outside link...",
+      "cakes": "A cake",
+      "customLabel": "Link",
+      "customHint": "Open the post or page on chuvachi.com, copy the address from the browser bar and paste it here (the /vi or /en part is removed for you). Links to other sites must start with https://."
     }
   },
   "alerts": {

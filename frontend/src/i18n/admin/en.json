@@ -575,6 +575,44 @@
       "cakes": "A cake",
       "customLabel": "Link",
       "customHint": "Open the post or page on chuvachi.com, copy the address from the browser bar and paste it here (the /vi or /en part is removed for you). Links to other sites must start with https://."
+    },
+    "layout": {
+      "title": "Banner style",
+      "split": "Text left, photo right",
+      "splitHint": "The current style: dark background, text on one side, photo on the other.",
+      "overlay": "Text on the photo",
+      "overlayHint": "The photo fills the banner and the text and button sit on it (with a dark fade so the text stays readable). Needs a photo.",
+      "image": "Photo only",
+      "imageHint": "Just the photo, no text or button; clicking it opens the link. Needs a photo."
+    },
+    "designer": {
+      "desktopPosition": "Text position on computers",
+      "mobilePosition": "Text position on phones",
+      "mobileAuto": "Automatic (bottom left)",
+      "align": "Text alignment",
+      "alignNames": {
+        "left": "Left",
+        "center": "Center",
+        "right": "Right"
+      },
+      "positions": {
+        "top-left": "Top left",
+        "top-center": "Top center",
+        "top-right": "Top right",
+        "middle-left": "Middle left",
+        "middle-center": "Center",
+        "middle-right": "Middle right",
+        "bottom-left": "Bottom left",
+        "bottom-center": "Bottom center",
+        "bottom-right": "Bottom right"
+      },
+      "focus": "Main point of the photo",
+      "focusHint": "Click the most important spot in the photo (e.g. the cake). When the photo is cropped on computers or phones, that spot always stays in view.",
+      "preview": "Preview",
+      "desktop": "Computer",
+      "mobile": "Phone",
+      "previewNote": "A small preview using the Vietnamese texts. Press Save to put it on the homepage.",
+      "ctaFallback": "See it now"
     }
   },
   "alerts": {

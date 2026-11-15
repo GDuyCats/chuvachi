@@ -23,6 +23,21 @@ const optionalText = (max: number) =>
 
 const requiredText = (max: number) => z.string().trim().min(1).max(max);
 
+const POSITIONS = [
+  "top-left",
+  "top-center",
+  "top-right",
+  "middle-left",
+  "middle-center",
+  "middle-right",
+  "bottom-left",
+  "bottom-center",
+  "bottom-right",
+] as const;
+const position = z.enum(POSITIONS);
+const textAlign = z.enum(["left", "center", "right"]);
+const focus = z.number().int().min(0).max(100);
+
 // A banner link: a page of this site without the language ("/news", "/news/opening") or a full https link.
 const linkUrl = z
   .string()
@@ -56,6 +71,12 @@ const contentSchema = z.object({
   heroImageUrl: z.string().trim().max(500).refine(isOwnImageUrl, "Upload the photo with the upload button").nullable(),
   heroProductId: z.number().int().positive().nullable(),
   heroImageOnly: z.boolean().default(false),
+  heroTextOverlay: z.boolean().default(false),
+  heroTextPosition: position.default("middle-left"),
+  heroTextPositionMobile: position.nullable().default(null),
+  heroTextAlign: textAlign.default("left"),
+  heroFocusX: focus.default(50),
+  heroFocusY: focus.default(50),
   heroLinkUrl: linkUrl,
   heroIntervalSeconds: z.number().int().min(3).max(30),
 });
@@ -74,6 +95,12 @@ const heroSlideSchema = z
     imageUrl: z.string().trim().max(500).refine(isOwnImageUrl, "Upload the photo with the upload button").nullable(),
     productId: z.number().int().positive().nullable(),
     imageOnly: z.boolean().default(false),
+    textOverlay: z.boolean().default(false),
+    textPosition: position.default("middle-left"),
+    textPositionMobile: position.nullable().default(null),
+    textAlign: textAlign.default("left"),
+    focusX: focus.default(50),
+    focusY: focus.default(50),
     linkUrl,
     startDate: dateText.nullable(),
     endDate: dateText.nullable(),

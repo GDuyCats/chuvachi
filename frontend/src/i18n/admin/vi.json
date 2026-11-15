@@ -575,6 +575,44 @@
       "cakes": "Một món bánh",
       "customLabel": "Đường dẫn",
       "customHint": "Mở bài tin hoặc trang muốn trỏ tới trên chuvachi.com, copy địa chỉ trên thanh trình duyệt rồi dán vào đây (web tự bỏ phần /vi hay /en). Link trang web khác phải bắt đầu bằng https://."
+    },
+    "layout": {
+      "title": "Kiểu banner",
+      "split": "Chữ bên trái, ảnh bên phải",
+      "splitHint": "Kiểu hiện tại: nền đen, chữ một bên, ảnh một bên.",
+      "overlay": "Chữ nằm trên ảnh",
+      "overlayHint": "Ảnh tràn hết banner, chữ và nút nằm đè lên ảnh (có lớp tối để chữ dễ đọc). Cần có ảnh.",
+      "image": "Chỉ ảnh",
+      "imageHint": "Chỉ ảnh, không chữ, không nút; bấm vào ảnh để mở link. Cần có ảnh."
+    },
+    "designer": {
+      "desktopPosition": "Vị trí chữ trên máy tính",
+      "mobilePosition": "Vị trí chữ trên điện thoại",
+      "mobileAuto": "Tự động (dưới - trái)",
+      "align": "Canh chữ",
+      "alignNames": {
+        "left": "Trái",
+        "center": "Giữa",
+        "right": "Phải"
+      },
+      "positions": {
+        "top-left": "Trên - trái",
+        "top-center": "Trên - giữa",
+        "top-right": "Trên - phải",
+        "middle-left": "Giữa - trái",
+        "middle-center": "Chính giữa",
+        "middle-right": "Giữa - phải",
+        "bottom-left": "Dưới - trái",
+        "bottom-center": "Dưới - giữa",
+        "bottom-right": "Dưới - phải"
+      },
+      "focus": "Điểm chính của ảnh",
+      "focusHint": "Bấm vào chỗ quan trọng nhất trong ảnh (ví dụ cái bánh). Khi ảnh bị cắt trên máy tính hay điện thoại, chỗ đó luôn được giữ trong khung.",
+      "preview": "Xem trước",
+      "desktop": "Máy tính",
+      "mobile": "Điện thoại",
+      "previewNote": "Bản xem trước thu nhỏ, chữ lấy từ ô tiếng Việt. Bấm Lưu để đưa lên trang chủ.",
+      "ctaFallback": "Xem ngay"
     }
   },
   "alerts": {

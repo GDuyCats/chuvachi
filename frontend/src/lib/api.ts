@@ -151,6 +151,12 @@ export type HeroSlideView = {
   imageUrl: string | null;
   productSlug: string | null;
   imageOnly?: boolean; // just the photo; the whole slide is the link
+  textOverlay?: boolean; // the photo fills the slide, texts on top
+  textPosition?: string; // "top-left" ... "bottom-right" (computers)
+  textPositionMobile?: string | null; // phones; empty = bottom-left
+  textAlign?: string; // left | center | right
+  focusX?: number; // part of the photo kept in view when cropped, 0-100
+  focusY?: number;
   linkUrl?: string | null; // "/news", "/news/slug" (no language) or https://...; wins over productSlug
 };
 
@@ -164,6 +170,12 @@ export type HomeContent = {
     imageUrl: string | null;
     productSlug: string | null;
     imageOnly?: boolean;
+    textOverlay?: boolean;
+    textPosition?: string;
+    textPositionMobile?: string | null;
+    textAlign?: string;
+    focusX?: number;
+    focusY?: number;
     linkUrl?: string | null;
   } | null;
   heroSlides: HeroSlideView[]; // the main banner first, then the extra slides

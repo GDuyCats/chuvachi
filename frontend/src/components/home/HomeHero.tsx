@@ -4,6 +4,17 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type TouchEvent } from "react";
 import type { Locale } from "@/i18n/config";
 import type { HeroSlideView } from "@/lib/api";
+import {
+  ALIGN,
+  asPosition,
+  DEFAULT_MOBILE_POSITION,
+  DEFAULT_POSITION,
+  focusStyle,
+  PLACE,
+  PLACE_MD,
+  shadeFor,
+  type TextAlign,
+} from "@/lib/hero-layout";
 import { FadeInImage } from "../FadeInImage";
 
 type Labels = {
@@ -104,6 +115,10 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
             "aria-label": many ? fill(labels.heroSlideOf, { number: i + 1, total: slides.length }) : undefined,
             inert: !active,
           };
+          const focus = focusStyle(slide.focusX, slide.focusY);
+          const desktopPos = asPosition(slide.textPosition, DEFAULT_POSITION);
+          const mobilePos = asPosition(slide.textPositionMobile, DEFAULT_MOBILE_POSITION);
+          const align: TextAlign = slide.textAlign === "center" || slide.textAlign === "right" ? slide.textAlign : "left";
           const motion = `${reducedMotion ? "" : "transition-[opacity,transform] duration-700 ease-out"} ${
             active ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-6 opacity-0"
           }`;
@@ -129,8 +144,48 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
                     quality={90}
                     sizes="100vw"
                     className="object-cover"
+                    style={focus}
                   />
                 </Link>
+              </div>
+            );
+          }
+
+          const linkProps = external ? { target: "_blank", rel: "noopener noreferrer" } : {};
+
+          // The photo fills the banner and the texts sit on it, over a dark fade so they stay readable.
+          if (slide.textOverlay && slide.imageUrl) {
+            return (
+              <div
+                key={i}
+                {...slideProps}
+                className={`relative col-start-1 row-start-1 flex min-h-[480px] overflow-hidden px-4 py-12 md:min-h-[560px] md:px-14 md:py-20 ${PLACE[mobilePos]} ${PLACE_MD[desktopPos]} ${motion}`}
+              >
+                <FadeInImage
+                  src={slide.imageUrl}
+                  alt=""
+                  fill
+                  priority={i === 0}
+                  quality={90}
+                  sizes="100vw"
+                  className="object-cover"
+                  style={focus}
+                />
+                {/* Dark fade on the side of the texts: one for phones, one for computers. */}
+                <div className="absolute inset-0 md:hidden" style={{ background: shadeFor(mobilePos) }} aria-hidden="true" />
+                <div className="absolute inset-0 hidden md:block" style={{ background: shadeFor(desktopPos) }} aria-hidden="true" />
+                <div className={`relative flex max-w-xl flex-col gap-4 [text-shadow:0_1px_12px_rgba(0,0,0,0.35)] ${ALIGN[align]}`}>
+                  {slide.eyebrow && <span className="text-[13px] font-bold uppercase tracking-[0.16em]">{slide.eyebrow}</span>}
+                  <Heading className="font-display text-5xl uppercase leading-[1.05] md:text-7xl">{slide.title}</Heading>
+                  {slide.subtitle && <p className="text-[15px] font-semibold md:text-[17px]">{slide.subtitle}</p>}
+                  <Link
+                    href={href}
+                    {...linkProps}
+                    className="mt-2 bg-white px-10 py-3.5 text-[15px] font-bold text-black [text-shadow:none] hover:bg-[#e5e5e5]"
+                  >
+                    {slide.cta ?? labels.heroCta}
+                  </Link>
+                </div>
               </div>
             );
           }
@@ -164,6 +219,7 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
                     quality={90}
                     sizes="(min-width: 768px) 50vw, 100vw"
                     className="object-cover"
+                    style={focus}
                   />
                 </div>
               )}
@@ -173,7 +229,7 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
       </div>
 
       {many && (
-        <div className="flex items-center gap-3 px-4 pb-8 md:absolute md:bottom-8 md:left-14 md:px-0 md:pb-0">
+        <div className="flex items-center gap-3 px-4 pb-8 md:absolute md:bottom-8 md:left-14 md:z-10 md:px-0 md:pb-0">
           <button type="button" onClick={() => go(index - 1)} aria-label={labels.heroPrev} className={iconButton}>
             <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
               <path d="M9 1.5L3.5 7 9 12.5" fill="none" stroke="currentColor" strokeWidth="2" />

@@ -528,6 +528,12 @@ export type HomeContentInput = {
   heroImageUrl: string | null;
   heroProductId: number | null;
   heroImageOnly: boolean; // just the photo, no texts
+  heroTextOverlay: boolean; // photo fills the banner, texts on top
+  heroTextPosition: string; // "top-left" ... "bottom-right" (computers)
+  heroTextPositionMobile: string | null; // phones; null = bottom-left
+  heroTextAlign: string; // left | center | right
+  heroFocusX: number; // part of the photo kept in view when cropped, 0-100
+  heroFocusY: number;
   heroLinkUrl: string | null; // "/news", "/news/slug" or https://...; wins over heroProductId
   heroIntervalSeconds: number; // banner slides change every N seconds
 };
@@ -545,6 +551,12 @@ export type HeroSlideInput = {
   imageUrl: string | null;
   productId: number | null;
   imageOnly: boolean; // just the photo, no texts
+  textOverlay: boolean; // photo fills the slide, texts on top
+  textPosition: string; // "top-left" ... "bottom-right" (computers)
+  textPositionMobile: string | null; // phones; null = bottom-left
+  textAlign: string; // left | center | right
+  focusX: number; // part of the photo kept in view when cropped, 0-100
+  focusY: number;
   linkUrl: string | null; // "/news", "/news/slug" or https://...; wins over productId
   startDate: string | null; // YYYY-MM-DD, empty = from now
   endDate: string | null; // empty = no end

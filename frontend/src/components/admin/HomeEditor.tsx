@@ -16,6 +16,7 @@ import {
   type SeasonInput,
 } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
+import { BannerDesigner } from "./BannerDesigner";
 import { BannerLinkPicker } from "./BannerLinkPicker";
 import { AdminFormSkeleton } from "./AdminSkeletons";
 import { ImageUploadField } from "./ImageUploadField";
@@ -222,18 +223,15 @@ function ContentForm({
           />
           {h.hero.show}
         </label>
-        <label className="flex flex-col gap-1 font-semibold">
-          <span className="flex items-center gap-2.5">
-            <input
-              type="checkbox"
-              checked={draft.heroImageOnly ?? false}
-              onChange={(e) => update("heroImageOnly", e.target.checked)}
-              className="h-5 w-5 accent-black"
-            />
-            {h.hero.imageOnly}
-          </span>
-          <span className="pl-[30px] text-xs font-normal text-muted">{h.hero.imageOnlyHint}</span>
-        </label>
+        <BannerLayoutPicker
+          name="hero-layout"
+          imageOnly={draft.heroImageOnly ?? false}
+          textOverlay={draft.heroTextOverlay ?? false}
+          onChange={(imageOnly, textOverlay) => {
+            update("heroImageOnly", imageOnly);
+            update("heroTextOverlay", textOverlay);
+          }}
+        />
         {!draft.heroImageOnly && pair("heroEyebrowVi", "heroEyebrowEn", h.hero.eyebrow)}
         {pair("heroTitleVi", "heroTitleEn", draft.heroImageOnly ? h.hero.altText : h.hero.heading)}
         {!draft.heroImageOnly && pair("heroSubtitleVi", "heroSubtitleEn", h.hero.subtitle, true)}
@@ -256,6 +254,29 @@ function ContentForm({
           invalid={badFields.includes("heroImageUrl")}
           saveLabel={h.save}
         />
+        <BannerDesigner
+          imageUrl={draft.heroImageUrl}
+          texts={{ eyebrow: draft.heroEyebrowVi, title: draft.heroTitleVi, subtitle: draft.heroSubtitleVi, cta: draft.heroCtaVi }}
+          look={{
+            imageOnly: draft.heroImageOnly ?? false,
+            textOverlay: draft.heroTextOverlay ?? false,
+            textPosition: draft.heroTextPosition ?? "middle-left",
+            textPositionMobile: draft.heroTextPositionMobile ?? null,
+            textAlign: draft.heroTextAlign ?? "left",
+            focusX: draft.heroFocusX ?? 50,
+            focusY: draft.heroFocusY ?? 50,
+          }}
+          onChange={(next) =>
+            setDraft((current) => ({
+              ...current,
+              ...("textPosition" in next ? { heroTextPosition: next.textPosition! } : {}),
+              ...("textPositionMobile" in next ? { heroTextPositionMobile: next.textPositionMobile ?? null } : {}),
+              ...("textAlign" in next ? { heroTextAlign: next.textAlign! } : {}),
+              ...("focusX" in next ? { heroFocusX: next.focusX! } : {}),
+              ...("focusY" in next ? { heroFocusY: next.focusY! } : {}),
+            }))
+          }
+        />
         <label className="flex flex-col gap-1.5 text-sm font-semibold md:max-w-xs">
           {h.hero.interval}
           <input
@@ -274,6 +295,53 @@ function ContentForm({
   );
 }
 
+// How a banner looks: texts beside the photo, texts on the photo, or the photo alone.
+function BannerLayoutPicker({
+  name,
+  imageOnly,
+  textOverlay,
+  onChange,
+}: {
+  name: string;
+  imageOnly: boolean;
+  textOverlay: boolean;
+  onChange: (imageOnly: boolean, textOverlay: boolean) => void;
+}) {
+  const { t } = useAdminI18n();
+  const l = t.home.layout;
+  const current = imageOnly ? "image" : textOverlay ? "overlay" : "split";
+  const choices = [
+    { key: "split", label: l.split, hint: l.splitHint },
+    { key: "overlay", label: l.overlay, hint: l.overlayHint },
+    { key: "image", label: l.image, hint: l.imageHint },
+  ] as const;
+  return (
+    <fieldset className="flex flex-col gap-2">
+      <legend className="mb-1 text-sm font-semibold">{l.title}</legend>
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
+        {choices.map((choice) => (
+          <label
+            key={choice.key}
+            className={`flex cursor-pointer flex-col gap-1 border-[1.5px] p-3 ${current === choice.key ? "border-black bg-[#f4f4f4]" : "border-[#d4d4d4]"}`}
+          >
+            <span className="flex items-center gap-2 text-sm font-bold">
+              <input
+                type="radio"
+                name={name}
+                checked={current === choice.key}
+                onChange={() => onChange(choice.key === "image", choice.key === "overlay")}
+                className="h-4 w-4 accent-black"
+              />
+              {choice.label}
+            </span>
+            <span className="text-xs text-muted">{choice.hint}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
 // ---------- Extra banner slides ----------
 
 const EMPTY_SLIDE: HeroSlideInput = {
@@ -288,6 +356,12 @@ const EMPTY_SLIDE: HeroSlideInput = {
   imageUrl: null,
   productId: null,
   imageOnly: false,
+  textOverlay: false,
+  textPosition: "middle-left",
+  textPositionMobile: null,
+  textAlign: "left",
+  focusX: 50,
+  focusY: 50,
   linkUrl: null,
   startDate: null,
   endDate: null,
@@ -417,6 +491,12 @@ function HeroSlideForm({
     imageUrl: initial.imageUrl,
     productId: initial.productId,
     imageOnly: initial.imageOnly ?? false,
+    textOverlay: initial.textOverlay ?? false,
+    textPosition: initial.textPosition ?? "middle-left",
+    textPositionMobile: initial.textPositionMobile ?? null,
+    textAlign: initial.textAlign ?? "left",
+    focusX: initial.focusX ?? 50,
+    focusY: initial.focusY ?? 50,
     linkUrl: initial.linkUrl ?? null,
     startDate: initial.startDate,
     endDate: initial.endDate,
@@ -486,18 +566,12 @@ function HeroSlideForm({
 
   return (
     <form onSubmit={save} className="flex flex-col gap-4 p-4">
-      <label className="flex flex-col gap-1 font-semibold">
-        <span className="flex items-center gap-2.5">
-          <input
-            type="checkbox"
-            checked={draft.imageOnly}
-            onChange={(e) => update("imageOnly", e.target.checked)}
-            className="h-5 w-5 accent-black"
-          />
-          {t.home.hero.imageOnly}
-        </span>
-        <span className="pl-[30px] text-xs font-normal text-muted">{t.home.hero.imageOnlyHint}</span>
-      </label>
+      <BannerLayoutPicker
+        name={`slide-layout-${slideId ?? "new"}`}
+        imageOnly={draft.imageOnly}
+        textOverlay={draft.textOverlay}
+        onChange={(imageOnly, textOverlay) => setDraft((current) => ({ ...current, imageOnly, textOverlay }))}
+      />
       {!draft.imageOnly && pair("eyebrowVi", "eyebrowEn", t.home.hero.eyebrow)}
       {pair("titleVi", "titleEn", draft.imageOnly ? t.home.hero.altText : t.home.hero.heading, !draft.imageOnly)}
       {!draft.imageOnly && pair("subtitleVi", "subtitleEn", t.home.hero.subtitle, false, true)}
@@ -516,6 +590,12 @@ function HeroSlideForm({
         onChange={(url) => update("imageUrl", url)}
         invalid={badFields.includes("imageUrl")}
         saveLabel={s.save}
+      />
+      <BannerDesigner
+        imageUrl={draft.imageUrl}
+        texts={{ eyebrow: draft.eyebrowVi, title: draft.titleVi, subtitle: draft.subtitleVi, cta: draft.ctaVi }}
+        look={draft}
+        onChange={(next) => setDraft((current) => ({ ...current, ...next }))}
       />
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         <label className="flex flex-col gap-1.5 text-sm font-semibold">

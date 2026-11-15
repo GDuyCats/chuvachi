@@ -82,6 +82,12 @@ homeRouter.get("/home", async (req, res) => {
           imageUrl: content.heroImageUrl,
           productSlug: linkSlug(content.heroProduct),
           imageOnly: content.heroImageOnly,
+          textOverlay: content.heroTextOverlay,
+          textPosition: content.heroTextPosition,
+          textPositionMobile: content.heroTextPositionMobile,
+          textAlign: content.heroTextAlign,
+          focusX: content.heroFocusX,
+          focusY: content.heroFocusY,
           linkUrl: content.heroLinkUrl,
         }
       : null;
@@ -99,6 +105,12 @@ homeRouter.get("/home", async (req, res) => {
           imageUrl: slide.imageUrl,
           productSlug: linkSlug(slide.product),
           imageOnly: slide.imageOnly,
+          textOverlay: slide.textOverlay,
+          textPosition: slide.textPosition,
+          textPositionMobile: slide.textPositionMobile,
+          textAlign: slide.textAlign,
+          focusX: slide.focusX,
+          focusY: slide.focusY,
           linkUrl: slide.linkUrl,
         }))),
   ].filter((slide) => (slide.imageOnly ? Boolean(slide.imageUrl) : slide.title !== ""));

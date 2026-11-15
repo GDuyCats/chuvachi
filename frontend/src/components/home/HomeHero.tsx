@@ -6,15 +6,14 @@ import type { Locale } from "@/i18n/config";
 import type { HeroSlideView } from "@/lib/api";
 import {
   ALIGN,
-  asPosition,
-  DEFAULT_MOBILE_POSITION,
-  DEFAULT_POSITION,
+  asAlign,
+  DEFAULT_MOBILE_POINT,
+  DEFAULT_POINT,
   focusStyle,
   frameStyle,
-  PLACE,
-  PLACE_MD,
-  shadeFor,
-  type TextAlign,
+  pointOf,
+  pointVars,
+  shadeAt,
   widthStyle,
 } from "@/lib/hero-layout";
 import { FadeInImage } from "../FadeInImage";
@@ -118,9 +117,9 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
             inert: !active,
           };
           const focus = focusStyle(slide.focusX, slide.focusY);
-          const desktopPos = asPosition(slide.textPosition, DEFAULT_POSITION);
-          const mobilePos = asPosition(slide.textPositionMobile, DEFAULT_MOBILE_POSITION);
-          const align: TextAlign = slide.textAlign === "center" || slide.textAlign === "right" ? slide.textAlign : "left";
+          const desktopPoint = pointOf(slide.textX, slide.textY, DEFAULT_POINT);
+          const mobilePoint = pointOf(slide.textXMobile, slide.textYMobile, DEFAULT_MOBILE_POINT);
+          const align = asAlign(slide.textAlign);
           // Box for a full-width photo, inset by the dark frame chosen in the admin (none = edge to edge).
           const framed = "absolute overflow-hidden [inset:var(--frame-m)] md:[inset:var(--frame-d)]";
           const frame = frameStyle(slide.imagePadding) as CSSProperties;
@@ -166,9 +165,10 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
               <div
                 key={i}
                 {...slideProps}
-                className={`relative col-start-1 row-start-1 flex min-h-[480px] overflow-hidden px-4 py-12 md:min-h-[560px] md:px-14 md:py-20 ${PLACE[mobilePos]} ${PLACE_MD[desktopPos]} ${motion}`}
+                className={`relative col-start-1 row-start-1 min-h-[480px] overflow-hidden md:min-h-[560px] ${motion}`}
+                style={{ ...frame, ...(pointVars(desktopPoint, mobilePoint) as CSSProperties) }}
               >
-                <div className={framed} style={frame}>
+                <div className={framed}>
                   <FadeInImage
                     src={slide.imageUrl}
                     alt=""
@@ -181,9 +181,13 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
                   />
                 </div>
                 {/* Dark fade on the side of the texts: one for phones, one for computers. */}
-                <div className="absolute inset-0 md:hidden" style={{ background: shadeFor(mobilePos) }} aria-hidden="true" />
-                <div className="absolute inset-0 hidden md:block" style={{ background: shadeFor(desktopPos) }} aria-hidden="true" />
-                <div className={`relative flex max-w-xl flex-col gap-4 [text-shadow:0_1px_12px_rgba(0,0,0,0.35)] ${ALIGN[align]}`}>
+                <div className={`${framed} md:hidden`} style={{ background: shadeAt(mobilePoint) }} aria-hidden="true" />
+                <div className={`${framed} hidden md:block`} style={{ background: shadeAt(desktopPoint) }} aria-hidden="true" />
+                {/* Free area for the texts: inside the photo (frame included), clear of the slide buttons. */}
+                <div className="absolute [inset:calc(var(--frame-m)+2.5rem)_calc(var(--frame-m)+1rem)] md:[inset:calc(var(--frame-d)+3.5rem)_calc(var(--frame-d)+3.5rem)_calc(var(--frame-d)+6rem)]">
+                <div
+                  className={`absolute flex w-max max-w-[min(36rem,100%)] flex-col gap-4 [left:var(--tx-m)] [top:var(--ty-m)] [transform:translate(calc(var(--tx-m)*-1),calc(var(--ty-m)*-1))] [text-shadow:0_1px_12px_rgba(0,0,0,0.35)] md:[left:var(--tx-d)] md:[top:var(--ty-d)] md:[transform:translate(calc(var(--tx-d)*-1),calc(var(--ty-d)*-1))] ${ALIGN[align]}`}
+                >
                   {slide.eyebrow && <span className="text-[13px] font-bold uppercase tracking-[0.16em]">{slide.eyebrow}</span>}
                   <Heading className="font-display text-5xl uppercase leading-[1.05] md:text-7xl">{slide.title}</Heading>
                   {slide.subtitle && <p className="text-[15px] font-semibold md:text-[17px]">{slide.subtitle}</p>}
@@ -194,6 +198,7 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
                   >
                     {slide.cta ?? labels.heroCta}
                   </Link>
+                </div>
                 </div>
               </div>
             );

@@ -529,8 +529,10 @@ export type HomeContentInput = {
   heroProductId: number | null;
   heroImageOnly: boolean; // just the photo, no texts
   heroTextOverlay: boolean; // photo fills the banner, texts on top
-  heroTextPosition: string; // "top-left" ... "bottom-right" (computers)
-  heroTextPositionMobile: string | null; // phones; null = bottom-left
+  heroTextX: number; // where the texts sit on the photo (computers), 0-100 % from left
+  heroTextY: number; // 0-100 % from top
+  heroTextXMobile: number | null; // phones; null = bottom left
+  heroTextYMobile: number | null;
   heroTextAlign: string; // left | center | right
   heroFocusX: number; // part of the photo kept in view when cropped, 0-100
   heroFocusY: number;
@@ -554,8 +556,10 @@ export type HeroSlideInput = {
   productId: number | null;
   imageOnly: boolean; // just the photo, no texts
   textOverlay: boolean; // photo fills the slide, texts on top
-  textPosition: string; // "top-left" ... "bottom-right" (computers)
-  textPositionMobile: string | null; // phones; null = bottom-left
+  textX: number; // where the texts sit on the photo (computers), 0-100 % from left
+  textY: number; // 0-100 % from top
+  textXMobile: number | null; // phones; null = bottom left
+  textYMobile: number | null;
   textAlign: string; // left | center | right
   focusX: number; // part of the photo kept in view when cropped, 0-100
   focusY: number;

@@ -596,15 +596,15 @@
         "right": "Phải"
       },
       "positions": {
-        "top-left": "Trên - trái",
-        "top-center": "Trên - giữa",
-        "top-right": "Trên - phải",
-        "middle-left": "Giữa - trái",
-        "middle-center": "Chính giữa",
-        "middle-right": "Giữa - phải",
-        "bottom-left": "Dưới - trái",
-        "bottom-center": "Dưới - giữa",
-        "bottom-right": "Dưới - phải"
+        "0-0": "Trên - trái",
+        "0-50": "Trên - giữa",
+        "0-100": "Trên - phải",
+        "50-0": "Giữa - trái",
+        "50-50": "Chính giữa",
+        "50-100": "Giữa - phải",
+        "100-0": "Dưới - trái",
+        "100-50": "Dưới - giữa",
+        "100-100": "Dưới - phải"
       },
       "focus": "Điểm chính của ảnh",
       "focusHint": "Bấm vào chỗ quan trọng nhất trong ảnh (ví dụ cái bánh). Khi ảnh bị cắt trên máy tính hay điện thoại, chỗ đó luôn được giữ trong khung.",
@@ -618,7 +618,9 @@
       "frameHint": "Kéo sang phải để thu nhỏ ảnh lại, chừa viền tối xung quanh. Viền trên điện thoại mỏng hơn trên máy tính.",
       "width": "Độ rộng ảnh trên máy tính",
       "widthHint": "Phần còn lại dành cho chữ. Trên điện thoại ảnh luôn nằm dưới chữ, rộng hết màn hình.",
-      "tooSmall": "Ảnh này chỉ rộng {width} px, trên màn hình lớn sẽ bị mờ. Nên dùng ảnh rộng ít nhất {need} px (ảnh gốc từ máy ảnh / điện thoại, không qua Zalo hay Messenger), hoặc kéo thêm viền để ảnh nhỏ lại."
+      "tooSmall": "Ảnh này chỉ rộng {width} px, trên màn hình lớn sẽ bị mờ. Nên dùng ảnh rộng ít nhất {need} px (ảnh gốc từ máy ảnh / điện thoại, không qua Zalo hay Messenger), hoặc kéo thêm viền để ảnh nhỏ lại.",
+      "custom": "Vị trí tự chọn: ngang {x}%, dọc {y}%",
+      "dragHint": "Bấm hoặc kéo trên khung xem trước để đặt chữ ở bất kỳ đâu."
     }
   },
   "alerts": {

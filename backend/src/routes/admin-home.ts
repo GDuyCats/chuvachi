@@ -23,18 +23,7 @@ const optionalText = (max: number) =>
 
 const requiredText = (max: number) => z.string().trim().min(1).max(max);
 
-const POSITIONS = [
-  "top-left",
-  "top-center",
-  "top-right",
-  "middle-left",
-  "middle-center",
-  "middle-right",
-  "bottom-left",
-  "bottom-center",
-  "bottom-right",
-] as const;
-const position = z.enum(POSITIONS);
+const percent = z.number().int().min(0).max(100); // a place on the photo, 0-100 %
 const textAlign = z.enum(["left", "center", "right"]);
 const focus = z.number().int().min(0).max(100);
 const imagePadding = z.number().int().min(0).max(12);
@@ -74,8 +63,10 @@ const contentSchema = z.object({
   heroProductId: z.number().int().positive().nullable(),
   heroImageOnly: z.boolean().default(false),
   heroTextOverlay: z.boolean().default(false),
-  heroTextPosition: position.default("middle-left"),
-  heroTextPositionMobile: position.nullable().default(null),
+  heroTextX: percent.default(0),
+  heroTextY: percent.default(50),
+  heroTextXMobile: percent.nullable().default(null),
+  heroTextYMobile: percent.nullable().default(null),
   heroTextAlign: textAlign.default("left"),
   heroFocusX: focus.default(50),
   heroFocusY: focus.default(50),
@@ -100,8 +91,10 @@ const heroSlideSchema = z
     productId: z.number().int().positive().nullable(),
     imageOnly: z.boolean().default(false),
     textOverlay: z.boolean().default(false),
-    textPosition: position.default("middle-left"),
-    textPositionMobile: position.nullable().default(null),
+    textX: percent.default(0),
+    textY: percent.default(50),
+    textXMobile: percent.nullable().default(null),
+    textYMobile: percent.nullable().default(null),
     textAlign: textAlign.default("left"),
     focusX: focus.default(50),
     focusY: focus.default(50),

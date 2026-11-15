@@ -176,8 +176,10 @@ model HomeContent {
   heroProduct             Product? @relation("HeroProduct", fields: [heroProductId], references: [id], onDelete: SetNull)
   heroImageOnly           Boolean  @default(false) // just the photo, no texts or button; the whole banner is the link
   heroTextOverlay         Boolean  @default(false) // the photo fills the banner and the texts sit on top of it
-  heroTextPosition        String   @default("middle-left") // texts on the photo, computers: "top-left" ... "bottom-right"
-  heroTextPositionMobile  String?  // the same for phones; empty = bottom-left
+  heroTextX               Int      @default(0)  // where the texts sit on the photo (computers), 0-100 % from left
+  heroTextY               Int      @default(50) // 0-100 % from top
+  heroTextXMobile         Int?     // the same for phones; empty = bottom left
+  heroTextYMobile         Int?
   heroTextAlign           String   @default("left") // left, center or right
   heroFocusX              Int      @default(50) // the part of the photo kept in view when it is cropped, 0-100
   heroFocusY              Int      @default(50)
@@ -205,8 +207,10 @@ model HeroSlide {
   product    Product?  @relation("HeroSlideProduct", fields: [productId], references: [id], onDelete: SetNull)
   imageOnly  Boolean   @default(false) // just the photo, no texts or button; the whole slide is the link
   textOverlay Boolean  @default(false) // the photo fills the slide and the texts sit on top of it
-  textPosition       String  @default("middle-left") // texts on the photo, computers: "top-left" ... "bottom-right"
-  textPositionMobile String? // the same for phones; empty = bottom-left
+  textX              Int     @default(0)  // where the texts sit on the photo (computers), 0-100 % from left
+  textY              Int     @default(50) // 0-100 % from top
+  textXMobile        Int?    // the same for phones; empty = bottom left
+  textYMobile        Int?
   textAlign          String  @default("left") // left, center or right
   focusX             Int     @default(50) // the part of the photo kept in view when it is cropped, 0-100
   focusY             Int     @default(50)

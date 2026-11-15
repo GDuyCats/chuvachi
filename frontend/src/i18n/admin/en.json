@@ -596,15 +596,15 @@
         "right": "Right"
       },
       "positions": {
-        "top-left": "Top left",
-        "top-center": "Top center",
-        "top-right": "Top right",
-        "middle-left": "Middle left",
-        "middle-center": "Center",
-        "middle-right": "Middle right",
-        "bottom-left": "Bottom left",
-        "bottom-center": "Bottom center",
-        "bottom-right": "Bottom right"
+        "0-0": "Top left",
+        "0-50": "Top center",
+        "0-100": "Top right",
+        "50-0": "Middle left",
+        "50-50": "Center",
+        "50-100": "Middle right",
+        "100-0": "Bottom left",
+        "100-50": "Bottom center",
+        "100-100": "Bottom right"
       },
       "focus": "Main point of the photo",
       "focusHint": "Click the most important spot in the photo (e.g. the cake). When the photo is cropped on computers or phones, that spot always stays in view.",
@@ -618,7 +618,9 @@
       "frameHint": "Slide right to shrink the photo and leave a dark frame around it. The frame is thinner on phones.",
       "width": "Photo width on computers",
       "widthHint": "The rest is for the text. On phones the photo always sits under the text, full width.",
-      "tooSmall": "This photo is only {width} px wide and will look blurry on big screens. Use a photo at least {need} px wide (the original from a camera or phone, not sent through Zalo or Messenger), or add a frame so it shows smaller."
+      "tooSmall": "This photo is only {width} px wide and will look blurry on big screens. Use a photo at least {need} px wide (the original from a camera or phone, not sent through Zalo or Messenger), or add a frame so it shows smaller.",
+      "custom": "Custom place: {x}% across, {y}% down",
+      "dragHint": "Click or drag on the preview to put the text anywhere."
     }
   },
   "alerts": {

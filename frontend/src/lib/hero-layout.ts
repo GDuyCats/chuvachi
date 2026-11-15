@@ -1,52 +1,42 @@
 // Where the texts of a "text on the photo" banner sit, and which part of the photo stays in view.
 // Shared by the homepage banner and the admin preview so both look the same.
+//
+// The texts' place is a point in % of the free area (0,0 = top left, 100,100 = bottom right).
+// The text block is shifted by the same % of its own size, so at 0 it touches the left edge,
+// at 100 the right edge, and in between it moves smoothly: it can never stick out of the banner.
 
-export const TEXT_POSITIONS = [
-  "top-left",
-  "top-center",
-  "top-right",
-  "middle-left",
-  "middle-center",
-  "middle-right",
-  "bottom-left",
-  "bottom-center",
-  "bottom-right",
-] as const;
-export type TextPosition = (typeof TEXT_POSITIONS)[number];
 export type TextAlign = "left" | "center" | "right";
+export type TextPoint = { x: number; y: number };
 
-export const DEFAULT_POSITION: TextPosition = "middle-left";
-export const DEFAULT_MOBILE_POSITION: TextPosition = "bottom-left";
+export const DEFAULT_POINT: TextPoint = { x: 0, y: 50 }; // middle left (computers)
+export const DEFAULT_MOBILE_POINT: TextPoint = { x: 0, y: 100 }; // bottom left (phones)
 
-export function asPosition(value: string | null | undefined, fallback: TextPosition): TextPosition {
-  return TEXT_POSITIONS.includes(value as TextPosition) ? (value as TextPosition) : fallback;
+// Quick choices in the admin: top / middle / bottom × left / center / right.
+export const PRESETS: { key: string; point: TextPoint }[] = [0, 50, 100].flatMap((y) =>
+  [0, 50, 100].map((x) => ({ key: `${y}-${x}`, point: { x, y } })),
+);
+
+const pct = (n: number | null | undefined, fallback: number) => Math.min(100, Math.max(0, n ?? fallback));
+
+export function pointOf(x: number | null | undefined, y: number | null | undefined, fallback: TextPoint): TextPoint {
+  if (x === null || x === undefined || y === null || y === undefined) return fallback;
+  return { x: pct(x, fallback.x), y: pct(y, fallback.y) };
 }
 
-// The text block's place in the banner (the banner is a flex row: items = up/down, justify = left/right).
-// Written out in full so Tailwind finds every class.
-export const PLACE: Record<TextPosition, string> = {
-  "top-left": "items-start justify-start",
-  "top-center": "items-start justify-center",
-  "top-right": "items-start justify-end",
-  "middle-left": "items-center justify-start",
-  "middle-center": "items-center justify-center",
-  "middle-right": "items-center justify-end",
-  "bottom-left": "items-end justify-start",
-  "bottom-center": "items-end justify-center",
-  "bottom-right": "items-end justify-end",
-};
+// Inline style placing the text block at a point of its (relative) parent.
+export function pointStyle(point: TextPoint): { left: string; top: string; transform: string } {
+  return { left: `${point.x}%`, top: `${point.y}%`, transform: `translate(-${point.x}%, -${point.y}%)` };
+}
 
-export const PLACE_MD: Record<TextPosition, string> = {
-  "top-left": "md:items-start md:justify-start",
-  "top-center": "md:items-start md:justify-center",
-  "top-right": "md:items-start md:justify-end",
-  "middle-left": "md:items-center md:justify-start",
-  "middle-center": "md:items-center md:justify-center",
-  "middle-right": "md:items-center md:justify-end",
-  "bottom-left": "md:items-end md:justify-start",
-  "bottom-center": "md:items-end md:justify-center",
-  "bottom-right": "md:items-end md:justify-end",
-};
+// The same as CSS variables, so phones and computers can use different points (see HomeHero).
+export function pointVars(desktop: TextPoint, mobile: TextPoint): Record<string, string> {
+  return {
+    "--tx-d": `${desktop.x}%`,
+    "--ty-d": `${desktop.y}%`,
+    "--tx-m": `${mobile.x}%`,
+    "--ty-m": `${mobile.y}%`,
+  };
+}
 
 // Lines of text and the button inside the block.
 export const ALIGN: Record<TextAlign, string> = {
@@ -55,13 +45,17 @@ export const ALIGN: Record<TextAlign, string> = {
   right: "items-end text-right",
 };
 
+export function asAlign(value: string | null | undefined): TextAlign {
+  return value === "center" || value === "right" ? value : "left";
+}
+
 // A dark fade on the side where the texts are, so white text stays readable on any photo.
-export function shadeFor(position: TextPosition): string {
-  const [vertical, horizontal] = position.split("-");
-  if (horizontal === "left") return "linear-gradient(to right, rgba(0,0,0,0.78), rgba(0,0,0,0.38) 45%, rgba(0,0,0,0.05))";
-  if (horizontal === "right") return "linear-gradient(to left, rgba(0,0,0,0.78), rgba(0,0,0,0.38) 45%, rgba(0,0,0,0.05))";
-  if (vertical === "top") return "linear-gradient(to bottom, rgba(0,0,0,0.78), rgba(0,0,0,0.38) 45%, rgba(0,0,0,0.05))";
-  if (vertical === "bottom") return "linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.4) 45%, rgba(0,0,0,0.05))";
+export function shadeAt(point: TextPoint): string {
+  const fade = (direction: string) => `linear-gradient(${direction}, rgba(0,0,0,0.78), rgba(0,0,0,0.38) 45%, rgba(0,0,0,0.05))`;
+  if (point.x <= 33) return fade("to right");
+  if (point.x >= 67) return fade("to left");
+  if (point.y <= 33) return fade("to bottom");
+  if (point.y >= 67) return fade("to top");
   return "radial-gradient(ellipse at center, rgba(0,0,0,0.6), rgba(0,0,0,0.25) 75%)";
 }
 
@@ -79,6 +73,5 @@ export function widthStyle(width: number | null | undefined): Record<string, str
 
 // CSS object-position from the "main point" picked on the photo (0-100 each way).
 export function focusStyle(x: number | null | undefined, y: number | null | undefined): { objectPosition: string } {
-  const clamp = (n: number | null | undefined) => Math.min(100, Math.max(0, n ?? 50));
-  return { objectPosition: `${clamp(x)}% ${clamp(y)}%` };
+  return { objectPosition: `${pct(x, 50)}% ${pct(y, 50)}%` };
 }

@@ -152,8 +152,10 @@ export type HeroSlideView = {
   productSlug: string | null;
   imageOnly?: boolean; // just the photo; the whole slide is the link
   textOverlay?: boolean; // the photo fills the slide, texts on top
-  textPosition?: string; // "top-left" ... "bottom-right" (computers)
-  textPositionMobile?: string | null; // phones; empty = bottom-left
+  textX?: number; // where the texts sit on the photo (computers), 0-100 % from left
+  textY?: number; // 0-100 % from top
+  textXMobile?: number | null; // phones; empty = bottom left
+  textYMobile?: number | null;
   textAlign?: string; // left | center | right
   focusX?: number; // part of the photo kept in view when cropped, 0-100
   focusY?: number;
@@ -173,8 +175,10 @@ export type HomeContent = {
     productSlug: string | null;
     imageOnly?: boolean;
     textOverlay?: boolean;
-    textPosition?: string;
-    textPositionMobile?: string | null;
+    textX?: number;
+    textY?: number;
+    textXMobile?: number | null;
+    textYMobile?: number | null;
     textAlign?: string;
     focusX?: number;
     focusY?: number;

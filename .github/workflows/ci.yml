@@ -1,5 +1,7 @@
 # Checks the code on GitHub after every push: type errors, lint and the backend build.
-# It only reads the code; no passwords or keys are needed. Deploying stays manual (deploy/deploy.sh).
+# When every check on main passes, the "production" branch is moved to that commit.
+# The server looks at "production" every few minutes and deploys it (deploy/auto-deploy.sh),
+# so GitHub needs no password, key or access to the server.
 name: CI
 
 on:
@@ -69,3 +71,17 @@ jobs:
         run: yarn tsc --noEmit
       - name: Lint
         run: yarn lint
+
+  # Every check passed on main: mark this commit as ready for the server.
+  release:
+    name: Mark ready to deploy
+    needs: [backend, frontend]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write # only to move the "production" branch
+    steps:
+      - uses: actions/checkout@v4
+      - name: Move the production branch to this commit
+        run: git push --force origin "HEAD:refs/heads/production"

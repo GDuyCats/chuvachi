@@ -14,6 +14,9 @@ import {
   pointOf,
   pointVars,
   shadeAt,
+  asSplitAlign,
+  splitGapPx,
+  SPLIT_JUSTIFY_MD,
   textScaleStyle,
   widthStyle,
 } from "@/lib/hero-layout";
@@ -121,6 +124,7 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
           const desktopPoint = pointOf(slide.textX, slide.textY, DEFAULT_POINT);
           const mobilePoint = pointOf(slide.textXMobile, slide.textYMobile, DEFAULT_MOBILE_POINT);
           const align = asAlign(slide.textAlign);
+          const splitAlign = asSplitAlign(slide.splitAlign);
           // Box for a full-width photo, inset by the dark frame chosen in the admin (none = edge to edge).
           const framed = "absolute overflow-hidden [inset:var(--frame-m)] md:[inset:var(--frame-d)]";
           const frame = frameStyle(slide.imagePadding) as CSSProperties;
@@ -210,10 +214,16 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
             <div
               key={i}
               {...slideProps}
-              className={`col-start-1 row-start-1 flex flex-col gap-8 px-4 py-12 md:flex-row md:items-center md:px-14 md:py-20 ${motion}`}
-              style={{ ...(widthStyle(slide.imageWidth) as CSSProperties), ...sizes }}
+              className={`col-start-1 row-start-1 flex flex-col gap-8 px-4 py-12 md:items-center md:gap-[var(--split-gap)] md:px-14 md:py-20 ${
+                slide.imageSide === "left" ? "md:flex-row-reverse" : "md:flex-row"
+              } ${SPLIT_JUSTIFY_MD[splitAlign]} ${motion}`}
+              style={{
+                ...(widthStyle(slide.imageWidth) as CSSProperties),
+                ...sizes,
+                ...({ "--split-gap": `${splitGapPx(slide.splitGap)}px` } as CSSProperties),
+              }}
             >
-              <div className="flex max-w-xl flex-1 flex-col gap-4">
+              <div className={`flex max-w-xl flex-col gap-4 ${splitAlign === "spread" ? "flex-1" : "flex-1 md:flex-initial"}`}>
                 {slide.eyebrow && <span className="text-[calc(13px*var(--body-s,1))] font-bold uppercase tracking-[0.16em]">{slide.eyebrow}</span>}
                 <Heading className="break-words font-display text-[calc(3rem*var(--title-s,1))] uppercase leading-[1.05] md:text-[calc(4.5rem*var(--title-s,1))]">{slide.title}</Heading>
                 {slide.subtitle && <p className="text-[calc(15px*var(--body-s,1))] font-semibold md:text-[calc(17px*var(--body-s,1))]">{slide.subtitle}</p>}

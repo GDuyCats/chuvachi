@@ -94,6 +94,9 @@ homeRouter.get("/home", async (req, res) => {
           bodyScale: content.heroBodyScale,
           imagePadding: content.heroImagePadding,
           imageWidth: content.heroImageWidth,
+          imageSide: content.heroImageSide,
+          splitAlign: content.heroSplitAlign,
+          splitGap: content.heroSplitGap,
           linkUrl: content.heroLinkUrl,
         }
       : null;
@@ -123,6 +126,9 @@ homeRouter.get("/home", async (req, res) => {
           bodyScale: slide.bodyScale,
           imagePadding: slide.imagePadding,
           imageWidth: slide.imageWidth,
+          imageSide: slide.imageSide,
+          splitAlign: slide.splitAlign,
+          splitGap: slide.splitGap,
           linkUrl: slide.linkUrl,
         }))),
   ].filter((slide) => (slide.imageOnly ? Boolean(slide.imageUrl) : slide.title !== ""));

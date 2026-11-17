@@ -623,7 +623,19 @@
       "dragHint": "Click or drag on the preview to put the text anywhere.",
       "titleSize": "Title size",
       "bodySize": "Small line, description and button size",
-      "sizeHint": "100% is the normal size. It applies to computers and phones; phones stay smaller than computers in the same proportion. A long title set very large wraps a lot on phones, so check the Phone preview."
+      "sizeHint": "100% is the normal size. It applies to computers and phones; phones stay smaller than computers in the same proportion. A long title set very large wraps a lot on phones, so check the Phone preview.",
+      "gap": "Space between text and photo",
+      "side": "Photo on the",
+      "sideLeft": "Left",
+      "sideRight": "Right",
+      "group": "How text and photo sit on computers",
+      "groupNames": {
+        "spread": "Spread (as before)",
+        "start": "Left",
+        "center": "Center",
+        "end": "Right"
+      },
+      "groupHint": "\"Spread\": the text takes all free space and the photo sits at the edge. The others keep text and photo together as one group, placed left, center or right. If one side looks empty, pick \"Center\" and adjust the space. Phones still show the text above the photo."
     }
   },
   "alerts": {

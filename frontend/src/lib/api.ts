@@ -163,6 +163,9 @@ export type HeroSlideView = {
   bodyScale?: number; // other texts and button, % of normal
   imagePadding?: number; // dark frame around a full-width photo, 0-12
   imageWidth?: number; // photo's share beside the texts on computers, 30-70 %
+  imageSide?: string; // "right" | "left" (computers)
+  splitAlign?: string; // "spread" | "start" | "center" | "end"
+  splitGap?: number; // space between texts and photo, steps of 8 px
   linkUrl?: string | null; // "/news", "/news/slug" (no language) or https://...; wins over productSlug
 };
 
@@ -188,6 +191,9 @@ export type HomeContent = {
     bodyScale?: number;
     imagePadding?: number;
     imageWidth?: number;
+    imageSide?: string;
+    splitAlign?: string;
+    splitGap?: number;
     linkUrl?: string | null;
   } | null;
   heroSlides: HeroSlideView[]; // the main banner first, then the extra slides

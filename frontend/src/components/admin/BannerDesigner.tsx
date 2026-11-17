@@ -10,7 +10,9 @@ import {
   pointOf,
   pointStyle,
   PRESETS,
+  asSplitAlign,
   shadeAt,
+  splitGapPx,
   TEXT_PX,
   type TextAlign,
   type TextPoint,
@@ -31,6 +33,9 @@ export type BannerLook = {
   bodyScale: number; // 70-150 %, other texts and button
   imagePadding: number; // 0-12, dark frame around a full-width photo
   imageWidth: number; // 30-70 %, photo beside the texts (computers)
+  imageSide: string; // "right" | "left", photo beside the texts (computers)
+  splitAlign: string; // "spread" | "start" | "center" | "end"
+  splitGap: number; // 1-16, steps of 8 px between texts and photo
 };
 
 type Texts = { eyebrow: string | null; title: string | null; subtitle: string | null; cta: string | null };
@@ -179,6 +184,48 @@ export function BannerDesigner({
               <span className="text-xs font-normal text-muted">{d.widthHint}</span>
             </label>
           )}
+          {!fullWidth && (
+            <label className="flex flex-col gap-1.5 text-sm font-semibold">
+              {d.gap}: {splitGapPx(look.splitGap)} px
+              <input
+                type="range"
+                min={1}
+                max={16}
+                value={look.splitGap}
+                onChange={(e) => onChange({ splitGap: Number(e.target.value) })}
+                className="accent-black"
+              />
+            </label>
+          )}
+          {!fullWidth && (
+            <div className="flex flex-col gap-1.5">
+              <span className="text-sm font-semibold">{d.side}</span>
+              <Segmented
+                value={look.imageSide === "left" ? "left" : "right"}
+                options={[
+                  { value: "left", label: d.sideLeft },
+                  { value: "right", label: d.sideRight },
+                ]}
+                onPick={(value) => onChange({ imageSide: value })}
+              />
+            </div>
+          )}
+          {!fullWidth && (
+            <div className="flex flex-col gap-1.5 md:col-span-2">
+              <span className="text-sm font-semibold">{d.group}</span>
+              <Segmented
+                value={asSplitAlign(look.splitAlign)}
+                options={[
+                  { value: "spread", label: d.groupNames.spread },
+                  { value: "start", label: d.groupNames.start },
+                  { value: "center", label: d.groupNames.center },
+                  { value: "end", label: d.groupNames.end },
+                ]}
+                onPick={(value) => onChange({ splitAlign: value })}
+              />
+              <span className="text-xs text-muted">{d.groupHint}</span>
+            </div>
+          )}
         </div>
       )}
 
@@ -243,6 +290,32 @@ export function BannerDesigner({
         />
         <span className="text-xs text-muted">{look.textOverlay && imageUrl ? `${d.dragHint} ${d.previewNote}` : d.previewNote}</span>
       </div>
+    </div>
+  );
+}
+
+function Segmented({
+  value,
+  options,
+  onPick,
+}: {
+  value: string;
+  options: { value: string; label: string }[];
+  onPick: (value: string) => void;
+}) {
+  return (
+    <div className="flex flex-wrap">
+      {options.map((option) => (
+        <button
+          key={option.value}
+          type="button"
+          onClick={() => onPick(option.value)}
+          aria-pressed={value === option.value}
+          className={`min-h-10 flex-1 border-[1.5px] border-black px-3 text-xs font-bold [&+&]:-ml-[1.5px] ${value === option.value ? "bg-black text-white" : "bg-white"}`}
+        >
+          {option.label}
+        </button>
+      ))}
     </div>
   );
 }
@@ -408,9 +481,18 @@ function Preview({
     );
   } else {
     // Text on the dark background, photo beside it (computer) or under it (phone).
+    const splitAlign = asSplitAlign(look.splitAlign);
+    const justify = { spread: "", start: "justify-start", center: "justify-center", end: "justify-end" }[splitAlign];
     content = (
-      <div className={`absolute inset-0 flex gap-8 ${phone ? "flex-col px-4 py-12" : "items-center px-14 py-20"}`}>
-        <div className="flex max-w-xl flex-1 flex-col">{textBlock("relative items-start text-left")}</div>
+      <div
+        className={`absolute inset-0 flex ${
+          phone ? "flex-col gap-8 px-4 py-12" : `items-center px-14 py-20 ${look.imageSide === "left" ? "flex-row-reverse" : "flex-row"} ${justify}`
+        }`}
+        style={phone ? undefined : { gap: splitGapPx(look.splitGap) }}
+      >
+        <div className={`flex max-w-xl flex-col ${phone || splitAlign === "spread" ? "flex-1" : "flex-initial"}`}>
+          {textBlock("relative items-start text-left")}
+        </div>
         {imageUrl && (
           <div
             className={`relative overflow-hidden ${phone ? "aspect-[4/3] w-full" : "aspect-[16/11] flex-none"}`}

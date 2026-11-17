@@ -30,6 +30,9 @@ const imagePadding = z.number().int().min(0).max(12);
 const titleScale = z.number().int().min(60).max(160);
 const bodyScale = z.number().int().min(70).max(150);
 const imageWidth = z.number().int().min(30).max(70);
+const imageSide = z.enum(["right", "left"]);
+const splitAlign = z.enum(["spread", "start", "center", "end"]);
+const splitGap = z.number().int().min(1).max(16);
 
 // A banner link: a page of this site without the language ("/news", "/news/opening") or a full https link.
 const linkUrl = z
@@ -76,6 +79,9 @@ const contentSchema = z.object({
   heroBodyScale: bodyScale.default(100),
   heroImagePadding: imagePadding.default(0),
   heroImageWidth: imageWidth.default(50),
+  heroImageSide: imageSide.default("right"),
+  heroSplitAlign: splitAlign.default("spread"),
+  heroSplitGap: splitGap.default(4),
   heroLinkUrl: linkUrl,
   heroIntervalSeconds: z.number().int().min(3).max(30),
 });
@@ -106,6 +112,9 @@ const heroSlideSchema = z
     bodyScale: bodyScale.default(100),
     imagePadding: imagePadding.default(0),
     imageWidth: imageWidth.default(50),
+    imageSide: imageSide.default("right"),
+    splitAlign: splitAlign.default("spread"),
+    splitGap: splitGap.default(4),
     linkUrl,
     startDate: dateText.nullable(),
     endDate: dateText.nullable(),

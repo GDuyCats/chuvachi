@@ -540,6 +540,9 @@ export type HomeContentInput = {
   heroBodyScale: number; // other texts and button, 70-150 %
   heroImagePadding: number; // dark frame around a full-width photo, 0-12
   heroImageWidth: number; // photo's share beside the texts on computers, 30-70 %
+  heroImageSide: string; // "right" | "left"
+  heroSplitAlign: string; // "spread" | "start" | "center" | "end"
+  heroSplitGap: number; // space between texts and photo, steps of 8 px (1-16)
   heroLinkUrl: string | null; // "/news", "/news/slug" or https://...; wins over heroProductId
   heroIntervalSeconds: number; // banner slides change every N seconds
 };
@@ -569,6 +572,9 @@ export type HeroSlideInput = {
   bodyScale: number; // other texts and button, 70-150 %
   imagePadding: number; // dark frame around a full-width photo, 0-12
   imageWidth: number; // photo's share beside the texts on computers, 30-70 %
+  imageSide: string; // "right" | "left"
+  splitAlign: string; // "spread" | "start" | "center" | "end"
+  splitGap: number; // space between texts and photo, steps of 8 px (1-16)
   linkUrl: string | null; // "/news", "/news/slug" or https://...; wins over productId
   startDate: string | null; // YYYY-MM-DD, empty = from now
   endDate: string | null; // empty = no end

@@ -271,6 +271,9 @@ function ContentForm({
             bodyScale: draft.heroBodyScale ?? 100,
             imagePadding: draft.heroImagePadding ?? 0,
             imageWidth: draft.heroImageWidth ?? 50,
+            imageSide: draft.heroImageSide ?? "right",
+            splitAlign: draft.heroSplitAlign ?? "spread",
+            splitGap: draft.heroSplitGap ?? 4,
           }}
           onChange={(next) =>
             setDraft((current) => ({
@@ -286,6 +289,9 @@ function ContentForm({
               ...("bodyScale" in next ? { heroBodyScale: next.bodyScale! } : {}),
               ...("imagePadding" in next ? { heroImagePadding: next.imagePadding! } : {}),
               ...("imageWidth" in next ? { heroImageWidth: next.imageWidth! } : {}),
+              ...("imageSide" in next ? { heroImageSide: next.imageSide! } : {}),
+              ...("splitAlign" in next ? { heroSplitAlign: next.splitAlign! } : {}),
+              ...("splitGap" in next ? { heroSplitGap: next.splitGap! } : {}),
             }))
           }
         />
@@ -380,6 +386,9 @@ const EMPTY_SLIDE: HeroSlideInput = {
   bodyScale: 100,
   imagePadding: 0,
   imageWidth: 50,
+  imageSide: "right",
+  splitAlign: "spread",
+  splitGap: 4,
   linkUrl: null,
   startDate: null,
   endDate: null,
@@ -521,6 +530,9 @@ function HeroSlideForm({
     bodyScale: initial.bodyScale ?? 100,
     imagePadding: initial.imagePadding ?? 0,
     imageWidth: initial.imageWidth ?? 50,
+    imageSide: initial.imageSide ?? "right",
+    splitAlign: initial.splitAlign ?? "spread",
+    splitGap: initial.splitGap ?? 4,
     linkUrl: initial.linkUrl ?? null,
     startDate: initial.startDate,
     endDate: initial.endDate,

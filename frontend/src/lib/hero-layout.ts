@@ -71,6 +71,25 @@ export function widthStyle(width: number | null | undefined): Record<string, str
   return { "--photo-w": `${Math.min(70, Math.max(30, width ?? 50))}%` };
 }
 
+// "Text beside the photo" on computers: which side the photo is on, how the pair sits in the
+// banner and the space between them. Classes written out in full so Tailwind finds them.
+export type SplitAlign = "spread" | "start" | "center" | "end";
+
+export function asSplitAlign(value: string | null | undefined): SplitAlign {
+  return value === "start" || value === "center" || value === "end" ? value : "spread";
+}
+
+export const SPLIT_JUSTIFY_MD: Record<SplitAlign, string> = {
+  spread: "",
+  start: "md:justify-start",
+  center: "md:justify-center",
+  end: "md:justify-end",
+};
+
+export function splitGapPx(gap: number | null | undefined): number {
+  return Math.min(16, Math.max(1, gap ?? 4)) * 8;
+}
+
 // Text sizes chosen in the admin (% of normal), as CSS variables used by the banner's text classes.
 export function textScaleStyle(title: number | null | undefined, body: number | null | undefined): Record<string, string> {
   const factor = (n: number | null | undefined, min: number, max: number) => String(Math.min(max, Math.max(min, n ?? 100)) / 100);

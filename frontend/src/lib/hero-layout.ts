@@ -80,7 +80,7 @@ export function asSplitAlign(value: string | null | undefined): SplitAlign {
 }
 
 export const SPLIT_JUSTIFY_MD: Record<SplitAlign, string> = {
-  spread: "",
+  spread: "md:justify-between", // texts at the start, photo at the far edge
   start: "md:justify-start",
   center: "md:justify-center",
   end: "md:justify-end",

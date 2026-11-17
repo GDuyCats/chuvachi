@@ -353,10 +353,9 @@ function PositionGrid({ label, value, onPick }: { label: string; value: TextPoin
 }
 
 // Real sizes of the homepage banner the preview is drawn at, then shrunk to fit the admin page.
-const SCREENS = {
-  desktop: { width: 1440, height: 560, imageOnlyHeight: 617 }, // 21:9 for a photo-only banner
-  mobile: { width: 390, height: 480, imageOnlyHeight: 292 }, // 4:3
-} as const;
+// Computers use the width of this browser window, so the preview matches what you see on the homepage.
+const PHONE_WIDTH = 390;
+const MIN_DESKTOP_WIDTH = 1024;
 
 // A copy of the banner at its real size (computer or phone), scaled down to fit. With "text on the
 // photo", clicking or dragging on it moves the texts.
@@ -380,24 +379,50 @@ function Preview({
   onMove?: (point: TextPoint) => void;
 }) {
   const phone = screen === "mobile";
-  const size = SCREENS[screen];
   const outer = useRef<HTMLDivElement>(null);
+  const inner = useRef<HTMLDivElement>(null);
   const area = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
   const [boxWidth, setBoxWidth] = useState(0);
+  const [pageWidth, setPageWidth] = useState(1440);
+  const [contentHeight, setContentHeight] = useState(0);
 
-  // Follow the width available in the admin page.
+  // Follow the width available in the admin page and the width of the browser window.
   useEffect(() => {
     const element = outer.current;
     if (!element) return;
     const observer = new ResizeObserver(([entry]) => setBoxWidth(entry.contentRect.width));
     observer.observe(element);
+    const onResize = () => setPageWidth(Math.max(MIN_DESKTOP_WIDTH, document.documentElement.clientWidth));
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
+
+  // A banner with text beside the photo is as tall as its content, like on the homepage.
+  useEffect(() => {
+    const element = inner.current;
+    if (!element) return;
+    const observer = new ResizeObserver(() => setContentHeight(element.offsetHeight));
+    observer.observe(element);
     return () => observer.disconnect();
   }, []);
 
+  const width = phone ? PHONE_WIDTH : pageWidth;
   const shownWidth = phone ? Math.min(boxWidth, 320) : boxWidth;
-  const scale = shownWidth > 0 ? shownWidth / size.width : 0;
-  const height = look.imageOnly && imageUrl ? size.imageOnlyHeight : phone && !look.textOverlay ? 760 : size.height;
+  const scale = shownWidth > 0 ? shownWidth / width : 0;
+  // Fixed heights: photo only = its shape; text on the photo = the homepage's minimum height.
+  const fixedHeight =
+    look.imageOnly && imageUrl
+      ? Math.round(phone ? (width * 3) / 4 : (width * 9) / 21)
+      : look.textOverlay && imageUrl
+        ? phone
+          ? 480
+          : 560
+        : null;
   const inset = look.imagePadding * (phone ? 4 : 8); // same frame as the real banner
   const focus = focusStyle(look.focusX, look.focusY);
 
@@ -482,10 +507,10 @@ function Preview({
   } else {
     // Text on the dark background, photo beside it (computer) or under it (phone).
     const splitAlign = asSplitAlign(look.splitAlign);
-    const justify = { spread: "", start: "justify-start", center: "justify-center", end: "justify-end" }[splitAlign];
+    const justify = { spread: "justify-between", start: "justify-start", center: "justify-center", end: "justify-end" }[splitAlign];
     content = (
       <div
-        className={`absolute inset-0 flex ${
+        className={`flex ${
           phone ? "flex-col gap-8 px-4 py-12" : `items-center px-14 py-20 ${look.imageSide === "left" ? "flex-row-reverse" : "flex-row"} ${justify}`
         }`}
         style={phone ? undefined : { gap: splitGapPx(look.splitGap) }}
@@ -507,10 +532,11 @@ function Preview({
 
   return (
     <div ref={outer} className="w-full">
-      <div className="mx-auto overflow-hidden" style={{ width: shownWidth, height: height * scale }}>
+      <div className="mx-auto overflow-hidden" style={{ width: shownWidth, height: (fixedHeight ?? contentHeight) * scale }}>
         <div
+          ref={inner}
           className="relative overflow-hidden bg-[#141414] text-white"
-          style={{ width: size.width, height, transform: `scale(${scale})`, transformOrigin: "top left" }}
+          style={{ width, height: fixedHeight ?? undefined, transform: `scale(${scale})`, transformOrigin: "top left" }}
         >
           {content}
         </div>

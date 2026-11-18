@@ -120,6 +120,7 @@ model ProductOption {
   sortOrder  Int        @default(0)
   dayBookings ProductOptionDayBooking[]
   costRecipe CostRecipe? // what one batch of this flavor (or one box) costs to make
+  @@index([productId])
 }
 
 model Combo {
@@ -317,6 +318,7 @@ model Order {
   @@index([status])
   @@index([status, paymentStatus, createdAt])
   @@index([customerId])
+  @@index([createdAt]) // newest-first lists and date filters
 }
 
 model OrderItem {
@@ -336,6 +338,8 @@ model OrderItem {
   flavorOptionId  Int?   // chosen flavor (no link, so the order stays even if the flavor is removed); used to give back its daily limit
   flavorMix       Json?  // mixed box: [{ "optionId": 3, "portions": 4 }] = portions of each flavor for the whole line
   note            String?
+  @@index([orderId]) // every order is loaded with its items
+  @@index([productId]) // sales per cake, "contains cake" filter
 }
 
 // ---------- Delivery and capacity ----------
@@ -485,6 +489,7 @@ model AdminSession {
   createdAt   DateTime  @default(now())
 
   @@index([expiresAt])
+  @@index([adminUserId])
 }
 
 // History of every change to an order: who did what, and when.
@@ -539,6 +544,7 @@ model CustomerSession {
   createdAt  DateTime @default(now())
 
   @@index([expiresAt])
+  @@index([customerId])
 }
 
 // ---------- Reviews ----------
@@ -570,6 +576,7 @@ model Review {
 
   @@unique([orderId, productId])
   @@index([productId, hiddenAt])
+  @@index([customerId])
 }
 
 // A comment under a review (parentId empty) or a reply to such a comment (only two levels).
@@ -597,6 +604,7 @@ model ReviewComment {
   reports     ReviewReport[]
 
   @@index([reviewId, createdAt])
+  @@index([customerId])
 }
 
 // Up (+1) or down (-1) vote by a signed-in customer on a review or a comment.
@@ -613,6 +621,8 @@ model ReviewVote {
 
   @@unique([customerId, reviewId])
   @@unique([customerId, commentId])
+  @@index([reviewId])
+  @@index([commentId])
 }
 
 // "Report" by a signed-in customer; staff see reported items first.
@@ -628,6 +638,8 @@ model ReviewReport {
 
   @@unique([customerId, reviewId])
   @@unique([customerId, commentId])
+  @@index([reviewId])
+  @@index([commentId])
 }
 
 // A customer's browser that gets push notifications: order status changes and replies to their
@@ -727,6 +739,7 @@ model PostComment {
   reports     PostCommentReport[]
 
   @@index([postId, createdAt])
+  @@index([customerId])
 }
 
 model PostCommentReport {
@@ -738,6 +751,7 @@ model PostCommentReport {
   createdAt  DateTime    @default(now())
 
   @@unique([customerId, commentId])
+  @@index([commentId])
 }
 
 // ---------- Shop costs (for profit and loss) ----------
@@ -811,4 +825,6 @@ model RecipeLine {
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
   quantity     Float      // in the ingredient's unit
   sortOrder    Int        @default(0)
+  @@index([recipeId])
+  @@index([ingredientId])
 }

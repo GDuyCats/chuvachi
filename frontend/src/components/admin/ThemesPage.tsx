@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   adminApi,
   AdminApiError,
@@ -339,32 +339,73 @@ function ThemeRow({
         <button type="button" onClick={onEdit} className="min-h-10 bg-black px-4 text-sm font-bold text-white">
           {s.edit}
         </button>
-        <details className="relative">
-          <summary className="flex min-h-10 cursor-pointer list-none items-center border-[1.5px] border-black px-3 text-sm font-bold [&::-webkit-details-marker]:hidden">
-            {s.more} ▾
-          </summary>
-          <div className="absolute right-0 top-full z-20 mt-1 flex w-56 flex-col border-[1.5px] border-black bg-white text-sm shadow-[4px_4px_0_#000]">
-            <button type="button" disabled={busy} onClick={onPin} className="min-h-11 px-4 text-left font-semibold hover:bg-surface">
-              {pinned ? s.pinOff : s.pinOn}
-            </button>
-            <button type="button" disabled={busy} onClick={onCopy} className="min-h-11 border-t border-line px-4 text-left font-semibold hover:bg-surface">
-              {s.copy}
-            </button>
-            <a
-              href={`/${lang}?themePreview=${theme.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex min-h-11 items-center px-4 font-semibold hover:bg-surface"
-            >
-              {s.previewSite} ↗
-            </a>
-            <button type="button" disabled={busy} onClick={onDelete} className="min-h-11 border-t border-line px-4 text-left font-semibold hover:bg-surface">
-              {s.delete}
-            </button>
-          </div>
-        </details>
+        <RowMenu label={`${s.more} ▾`}>
+          {(close) => (
+            <>
+              <button type="button" disabled={busy} onClick={() => { close(); onPin(); }} className="min-h-11 px-4 text-left font-semibold hover:bg-surface">
+                {pinned ? s.pinOff : s.pinOn}
+              </button>
+              <button type="button" disabled={busy} onClick={() => { close(); onCopy(); }} className="min-h-11 border-t border-line px-4 text-left font-semibold hover:bg-surface">
+                {s.copy}
+              </button>
+              <a
+                href={`/${lang}?themePreview=${theme.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={close}
+                className="flex min-h-11 items-center px-4 font-semibold hover:bg-surface"
+              >
+                {s.previewSite} ↗
+              </a>
+              <button type="button" disabled={busy} onClick={() => { close(); onDelete(); }} className="min-h-11 border-t border-line px-4 text-left font-semibold hover:bg-surface">
+                {s.delete}
+              </button>
+            </>
+          )}
+        </RowMenu>
       </div>
     </li>
+  );
+}
+
+// A small menu under a button. Closes on a tap anywhere outside it, on Escape, or after choosing.
+function RowMenu({ label, children }: { label: string; children: (close: () => void) => ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (event: PointerEvent) => {
+      if (!box.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  return (
+    <div ref={box} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        className="flex min-h-10 items-center border-[1.5px] border-black px-3 text-sm font-bold"
+      >
+        {label}
+      </button>
+      {open && (
+        <div role="menu" className="absolute right-0 top-full z-20 mt-1 flex w-56 flex-col border-[1.5px] border-black bg-white text-sm shadow-[4px_4px_0_#000]">
+          {children(() => setOpen(false))}
+        </div>
+      )}
+    </div>
   );
 }
 

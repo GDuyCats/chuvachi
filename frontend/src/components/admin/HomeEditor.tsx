@@ -431,7 +431,7 @@ function HeroSlidesSection({
                 <div className="flex min-w-0 items-center gap-3">
                   {slide.imageUrl && (
                     // eslint-disable-next-line @next/next/no-img-element -- small preview
-                    <img src={slide.imageUrl} alt="" className="h-12 w-16 shrink-0 object-cover" />
+                    <img loading="lazy" decoding="async" src={slide.imageUrl} alt="" className="h-12 w-16 shrink-0 object-cover" />
                   )}
                   <div className="flex min-w-0 flex-col gap-1">
                     <span className="font-bold">

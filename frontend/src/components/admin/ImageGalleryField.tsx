@@ -111,7 +111,7 @@ export function ImageGalleryField({ value, onChange, invalid = false, saveLabel 
         {value.map((url, index) => (
           <li key={url} className="relative aspect-square overflow-hidden bg-surface">
             {/* eslint-disable-next-line @next/next/no-img-element -- admin preview of an uploaded photo */}
-            <img src={url} alt={m.photoNumber.replace("{number}", String(index + 1))} className="h-full w-full object-cover" />
+            <img loading="lazy" decoding="async" src={url} alt={m.photoNumber.replace("{number}", String(index + 1))} className="h-full w-full object-cover" />
             {index === 0 && (
               <span className="absolute left-2 top-2 bg-black px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-white">
                 {m.cover}

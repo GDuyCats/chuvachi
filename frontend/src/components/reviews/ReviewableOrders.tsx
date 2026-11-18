@@ -144,7 +144,7 @@ function ReviewItem({
       <div className="flex items-center gap-3">
         {item.imageUrl && (
           // eslint-disable-next-line @next/next/no-img-element -- small cake photo
-          <img src={item.imageUrl} alt="" className="h-14 w-14 object-cover" />
+          <img loading="lazy" decoding="async" src={item.imageUrl} alt="" className="h-14 w-14 object-cover" />
         )}
         <div className="flex min-w-0 flex-col">
           <span className="font-bold">{item.name}</span>

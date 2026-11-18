@@ -122,7 +122,7 @@ export function PostsPage() {
               <div className="flex min-w-0 items-center gap-3">
                 {post.coverImageUrl && (
                   // eslint-disable-next-line @next/next/no-img-element -- small preview
-                  <img src={post.coverImageUrl} alt="" className="h-12 w-16 shrink-0 object-cover" />
+                  <img loading="lazy" decoding="async" src={post.coverImageUrl} alt="" className="h-12 w-16 shrink-0 object-cover" />
                 )}
                 <div className="flex min-w-0 flex-col gap-1">
                   <span className="font-bold">

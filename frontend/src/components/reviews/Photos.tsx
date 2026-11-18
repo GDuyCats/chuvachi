@@ -142,7 +142,7 @@ export function PhotoPicker({ photos, onChange, max, upload, labels, errorText, 
           {photos.map((url) => (
             <li key={url} className="relative h-20 w-20 border border-line">
               {/* eslint-disable-next-line @next/next/no-img-element -- preview of an uploaded photo */}
-              <img src={url} alt="" className="h-full w-full object-cover" />
+              <img loading="lazy" decoding="async" src={url} alt="" className="h-full w-full object-cover" />
               <button
                 type="button"
                 onClick={() => onChange(photos.filter((p) => p !== url))}

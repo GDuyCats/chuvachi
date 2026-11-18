@@ -111,7 +111,7 @@ function ProductSummary({ product }: { product: AdminProduct }) {
       <div className="flex h-20 w-20 shrink-0 items-center justify-center bg-surface text-[11px] text-muted">
         {product.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element -- small admin thumbnail
-          <img src={product.imageUrl} alt="" className="h-full w-full object-cover" />
+          <img loading="lazy" decoding="async" src={product.imageUrl} alt="" className="h-full w-full object-cover" />
         ) : (
           "—"
         )}

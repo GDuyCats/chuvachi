@@ -204,7 +204,7 @@ export function NewsBoard({
                   </header>
                   {post.coverImageUrl && (
                     // eslint-disable-next-line @next/next/no-img-element -- post cover
-                    <img src={post.coverImageUrl} alt="" className="max-h-[420px] w-full object-cover" />
+                    <img loading="lazy" decoding="async" src={post.coverImageUrl} alt="" className="max-h-[420px] w-full object-cover" />
                   )}
                   <div className="px-5 py-6 md:px-8 md:py-8">
                     <PostBody text={post.body} />

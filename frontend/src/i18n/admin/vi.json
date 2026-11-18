@@ -1373,7 +1373,7 @@
     "saved": "Đã lưu.",
     "saving": "Đang lưu…",
     "unsaved": "Có thay đổi chưa lưu.",
-    "previewNeedsSave": "Xem thử trên web thật dùng bản đã lưu, nhớ bấm Lưu trước.",
+    "previewNeedsSave": "\"Xem thử\" và \"Bật ngay\" dùng bản đã lưu, nhớ bấm Lưu trước.",
     "invalid": "Có ô chưa đúng, xem các ô được đánh dấu.",
     "unknownError": "Có lỗi xảy ra, thử lại nhé.",
     "leaveConfirm": "Có thay đổi chưa lưu. Vẫn quay lại?",
@@ -1453,20 +1453,8 @@
     },
     "effect": {
       "on": "Bật hiệu ứng",
-      "kind": "Kiểu",
-      "names": {
-        "none": "Không có",
-        "snow": "Tuyết rơi",
-        "apricot": "Hoa mai rơi",
-        "peach": "Hoa đào rơi",
-        "petals": "Cánh hoa rơi",
-        "hearts": "Trái tim rơi",
-        "stars": "Sao lấp lánh",
-        "confetti": "Pháo giấy",
-        "image": "Ảnh của bạn"
-      },
-      "image": "Ảnh sẽ rơi",
-      "imageHint": "Ảnh nhỏ nền trong suốt (ví dụ hình chiếc bánh). Cần có ảnh thì hiệu ứng mới chạy.",
+      "image": "Ảnh của bạn",
+      "imageHint": "Tối đa 3 ảnh nhỏ nền trong suốt (ví dụ hình chiếc bánh), rơi chung với các món trên.",
       "amount": "Số lượng",
       "speed": "Tốc độ",
       "size": "Kích cỡ",
@@ -1479,7 +1467,57 @@
       "where": "Hiện ở",
       "homeOnly": "Chỉ trang chủ",
       "allPages": "Toàn bộ web",
-      "hint": "Trên điện thoại số lượng tự giảm một nửa. Khách bật \"giảm chuyển động\" trên máy sẽ không thấy hiệu ứng. Hiệu ứng không che nút bấm."
+      "hint": "Trên điện thoại số lượng tự giảm một nửa. Khách bật \"giảm chuyển động\" trên máy sẽ không thấy hiệu ứng. Hiệu ứng không che nút bấm.",
+      "pieces": "Các món rơi (trộn cùng lúc)",
+      "noPieces": "Chưa chọn món nào. Chọn ở ô bên dưới.",
+      "addPiece": "+ Thêm món…",
+      "piecesFull": "Đã đủ 12 món",
+      "weight": "Tỉ lệ",
+      "weightFew": "Ít",
+      "weightSome": "Vừa",
+      "weightMany": "Nhiều",
+      "removePiece": "Bỏ {name}",
+      "addImage": "Thêm ảnh của bạn",
+      "sizeMix": "Độ chênh kích cỡ",
+      "mixSame": "Đều nhau",
+      "mixMixed": "To nhỏ lẫn lộn",
+      "groups": {
+        "winter": "Giáng sinh & mùa đông",
+        "tet": "Tết",
+        "love": "Valentine & hoa",
+        "halloween": "Halloween",
+        "midAutumn": "Trung thu",
+        "party": "Tiệc & khai trương"
+      },
+      "motions": {
+        "fall": "rơi xuống",
+        "rise": "bay lên",
+        "across": "bay ngang",
+        "twinkle": "lấp lánh tại chỗ"
+      },
+      "names": {
+        "snow": "Tuyết",
+        "ornaments": "Quả châu",
+        "candycanes": "Kẹo gậy",
+        "stars": "Sao lấp lánh",
+        "apricot": "Hoa mai",
+        "peach": "Hoa đào",
+        "envelopes": "Bao lì xì",
+        "coins": "Đồng xu vàng",
+        "hearts": "Trái tim",
+        "roses": "Hoa hồng",
+        "petals": "Cánh hoa",
+        "gifts": "Hộp quà",
+        "pumpkins": "Bí ngô",
+        "candy": "Kẹo",
+        "skulls": "Đầu lâu",
+        "bats": "Dơi",
+        "ghosts": "Ma trắng",
+        "lanterns": "Đèn lồng",
+        "mooncakes": "Bánh trung thu",
+        "confetti": "Pháo giấy",
+        "balloons": "Bóng bay"
+      }
     },
     "schedule": {
       "on": "Tự bật theo ngày",
@@ -1505,6 +1543,14 @@
       "defaultMessage": "(Chữ thông báo của trang Trang chủ)",
       "see": "Xem ngay"
     },
-    "loading": "Đang tải giao diện..."
+    "loading": "Đang tải giao diện...",
+    "pinOn": "Bật ngay",
+    "pinOff": "Tắt bật tay",
+    "pinOnDone": "Đã bật. Khách sẽ thấy sau khoảng 1–5 phút.",
+    "pinOffDone": "Đã tắt bật tay, quay về theo lịch.",
+    "pinnedUntil": "Đang bật tay · tự tắt sau ngày {date}",
+    "pinnedForever": "Đang bật tay · bật cho tới khi bạn tắt",
+    "pinExpired": "Giao diện bật tay đã qua ngày kết thúc nên đã tự tắt, web đang theo lịch.",
+    "pinEnded": "Giao diện này đã qua ngày kết thúc trong lịch. Sửa ngày (hoặc tick lặp mỗi năm) rồi bật lại nhé."
   }
 }

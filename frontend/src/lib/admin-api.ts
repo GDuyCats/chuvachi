@@ -1,7 +1,7 @@
 // Calls the admin API from the browser. The sign-in cookie is sent automatically
 // (credentials: "include"); JavaScript itself can never read it.
 
-import type { ThemeColors, ThemeEffectKind } from "./site-theme";
+import type { EffectPiece, ThemeColors } from "./site-theme";
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 
@@ -519,12 +519,13 @@ export type AdminTheme = {
   linkUrl: string | null;
   icon: string | null;
   iconUrl: string | null;
-  effect: ThemeEffectKind;
   effectOn: boolean;
-  effectImageUrl: string | null;
+  effectPieces: EffectPiece[];
+  effectImages: string[]; // up to 3 uploaded pictures
   effectAmount: number;
   effectSpeed: number;
   effectSize: number;
+  effectSizeMix: number; // 0-100
   effectAllPages: boolean;
   scheduleOn: boolean;
   startDate: string | null; // YYYY-MM-DD
@@ -537,7 +538,12 @@ export type ThemePreset = { key: string; nameVi: string; nameEn: string; colors:
 export type ThemeBundle = {
   themes: AdminTheme[];
   presets: ThemePreset[];
-  settings: { themesOff: boolean; themePinnedId: number | null };
+  settings: {
+    themesOff: boolean;
+    themePinnedId: number | null; // turned on by hand
+    pinnedUntil: string | null; // YYYY-MM-DD it turns off by itself; null = until turned off
+    pinExpired: boolean;
+  };
   activeId: number | null; // the look customers see right now
 };
 

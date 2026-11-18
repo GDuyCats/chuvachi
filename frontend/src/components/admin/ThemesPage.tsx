@@ -14,12 +14,15 @@ import {
   COLOR_PAIRS,
   contrastRatio,
   DEFAULT_COLORS,
-  THEME_EFFECTS,
+  MAX_EFFECT_IMAGES,
+  PIECE_GROUPS,
+  PIECE_MOTION,
   THEME_ICONS,
   type ColorKey,
+  type PieceKind,
   type ThemeColors,
-  type ThemeEffectKind,
 } from "@/lib/site-theme";
+import { PieceIcon } from "../theme/PieceIcon";
 import { isThemeIcon, ThemeIconSvg } from "../theme/ThemeIcon";
 import { useAdminI18n } from "./AdminI18n";
 import { AdminRowsSkeleton } from "./AdminSkeletons";
@@ -32,6 +35,7 @@ const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
 const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const READABLE = 4.5; // contrast ratio for comfortable reading
 const QUICK_LINKS = ["/menu", "/news", "/order", "/track"] as const;
+const MAX_PIECES = 12;
 
 function toInput(theme: AdminTheme): AdminThemeInput {
   const { id: _id, sortOrder: _sortOrder, ...rest } = theme;
@@ -75,6 +79,7 @@ export function ThemesPage() {
       return next;
     } catch (error) {
       if (error instanceof AdminApiError && error.status === 401) router.replace("/admin/login");
+      else if (error instanceof AdminValidationError && error.fields.includes("pinEnded")) toast.error(s.pinEnded);
       else toast.error(s.unknownError);
       return null;
     } finally {
@@ -85,6 +90,10 @@ export function ThemesPage() {
   if (failed) return <p className="text-sm">{s.loadFailed}</p>;
   if (!bundle) return <AdminRowsSkeleton label={s.loading} />;
 
+  // Turn a look on now (early, without waiting for its dates), or stop it.
+  const pin = (id: number | null) =>
+    void run(() => adminApi.themeSwitches(false, id), id === null ? s.pinOffDone : s.pinOnDone);
+
   const editing = editingId !== null ? bundle.themes.find((theme) => theme.id === editingId) : undefined;
   if (editing) {
     return (
@@ -92,6 +101,9 @@ export function ThemesPage() {
         key={editing.id}
         theme={editing}
         presets={bundle.presets}
+        settings={bundle.settings}
+        busy={busy}
+        onPin={pin}
         onBack={() => setEditingId(null)}
         onSaved={setBundle}
       />
@@ -128,6 +140,8 @@ export function ThemesPage() {
                   key={theme.id}
                   theme={theme}
                   showing={bundle.activeId === theme.id}
+                  pinned={bundle.settings.themePinnedId === theme.id && !bundle.settings.pinExpired}
+                  onPin={() => pin(bundle.settings.themePinnedId === theme.id && !bundle.settings.pinExpired ? null : theme.id)}
                   first={index === 0}
                   last={index === bundle.themes.length - 1}
                   busy={busy}
@@ -189,8 +203,21 @@ function ModePanel({ bundle, busy, onChange }: { bundle: ThemeBundle; busy: bool
           ))}
         </select>
       </label>
+      {bundle.settings.themePinnedId !== null && <PinNote settings={bundle.settings} />}
       <p className="text-xs text-muted">{s.modeHint}</p>
     </section>
+  );
+}
+
+// When a look turned on by hand turns off by itself.
+function PinNote({ settings }: { settings: ThemeBundle["settings"] }) {
+  const { t } = useAdminI18n();
+  const s = t.themes;
+  if (settings.pinExpired) return <p className="text-sm font-semibold">{s.pinExpired}</p>;
+  return (
+    <p className="text-sm font-semibold">
+      {settings.pinnedUntil ? s.pinnedUntil.replace("{date}", shortDate(settings.pinnedUntil, true)) : s.pinnedForever}
+    </p>
   );
 }
 
@@ -251,6 +278,8 @@ function Swatches({ colors }: { colors: ThemeColors }) {
 function ThemeRow({
   theme,
   showing,
+  pinned,
+  onPin,
   first,
   last,
   busy,
@@ -261,6 +290,8 @@ function ThemeRow({
 }: {
   theme: AdminTheme;
   showing: boolean;
+  pinned: boolean;
+  onPin: () => void;
   first: boolean;
   last: boolean;
   busy: boolean;
@@ -313,7 +344,10 @@ function ThemeRow({
             {s.more} ▾
           </summary>
           <div className="absolute right-0 top-full z-20 mt-1 flex w-56 flex-col border-[1.5px] border-black bg-white text-sm shadow-[4px_4px_0_#000]">
-            <button type="button" disabled={busy} onClick={onCopy} className="min-h-11 px-4 text-left font-semibold hover:bg-surface">
+            <button type="button" disabled={busy} onClick={onPin} className="min-h-11 px-4 text-left font-semibold hover:bg-surface">
+              {pinned ? s.pinOff : s.pinOn}
+            </button>
+            <button type="button" disabled={busy} onClick={onCopy} className="min-h-11 border-t border-line px-4 text-left font-semibold hover:bg-surface">
               {s.copy}
             </button>
             <a
@@ -352,11 +386,17 @@ function Section({ title, open = false, invalid = false, children }: { title: st
 function ThemeEditor({
   theme,
   presets,
+  settings,
+  busy: switching,
+  onPin,
   onBack,
   onSaved,
 }: {
   theme: AdminTheme;
   presets: ThemeBundle["presets"];
+  settings: ThemeBundle["settings"];
+  busy: boolean;
+  onPin: (id: number | null) => void;
   onBack: () => void;
   onSaved: (bundle: ThemeBundle) => void;
 }) {
@@ -408,6 +448,7 @@ function ThemeEditor({
   }
 
   const bad = (field: string) => badFields.includes(field);
+  const pinnedHere = settings.themePinnedId === theme.id && !settings.pinExpired;
 
   return (
     <div className="flex flex-col gap-5">
@@ -456,7 +497,7 @@ function ThemeEditor({
             <SmallImageUpload label={s.icon.own} hint={s.icon.ownHint} value={draft.iconUrl} onChange={(iconUrl) => update({ iconUrl })} />
           </Section>
 
-          <Section title={s.sections.effect} invalid={bad("effect") || bad("effectImageUrl")}>
+          <Section title={s.sections.effect} invalid={bad("effectPieces") || bad("effectImages")}>
             <EffectEditor draft={draft} update={update} />
           </Section>
 
@@ -528,6 +569,26 @@ function ThemeEditor({
         >
           {s.previewSite} ↗
         </a>
+        {pinnedHere ? (
+          <button
+            type="button"
+            onClick={() => onPin(null)}
+            disabled={switching}
+            className="flex min-h-12 items-center border-[1.5px] border-black px-5 text-sm font-bold disabled:opacity-50"
+          >
+            {s.pinOff}
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => onPin(theme.id)}
+            disabled={switching}
+            className="flex min-h-12 items-center border-[1.5px] border-black px-5 text-sm font-bold disabled:opacity-50"
+          >
+            {s.pinOn}
+          </button>
+        )}
+        {pinnedHere && <PinNote settings={settings} />}
         {dirty && <span className="text-sm font-semibold">{s.unsaved}</span>}
         {dirty && <span className="w-full text-xs text-muted">{s.previewNeedsSave}</span>}
       </div>
@@ -707,11 +768,17 @@ function MessageEditor({
 function EffectEditor({ draft, update }: { draft: AdminThemeInput; update: (changes: Partial<AdminThemeInput>) => void }) {
   const { t } = useAdminI18n();
   const e = t.themes.effect;
+  const chosen = new Set<string>(draft.effectPieces.map((piece) => piece.kind));
   const sliders = [
-    { key: "effectAmount", label: e.amount, low: e.few, high: e.many },
-    { key: "effectSpeed", label: e.speed, low: e.slow, high: e.fast },
-    { key: "effectSize", label: e.size, low: e.small, high: e.big },
+    { key: "effectAmount", label: e.amount, low: e.few, high: e.many, min: 10 },
+    { key: "effectSpeed", label: e.speed, low: e.slow, high: e.fast, min: 10 },
+    { key: "effectSize", label: e.size, low: e.small, high: e.big, min: 10 },
+    { key: "effectSizeMix", label: e.sizeMix, low: e.mixSame, high: e.mixMixed, min: 0 },
   ] as const;
+
+  function setPieces(pieces: AdminThemeInput["effectPieces"]) {
+    update({ effectPieces: pieces });
+  }
 
   return (
     <>
@@ -720,38 +787,108 @@ function EffectEditor({ draft, update }: { draft: AdminThemeInput; update: (chan
         {e.on}
       </label>
       <div className={`flex flex-col gap-4 ${draft.effectOn ? "" : "pointer-events-none opacity-50"}`}>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="flex flex-col gap-1.5 text-sm font-semibold">
-            {e.kind}
-            <select value={draft.effect} onChange={(event) => update({ effect: event.target.value as ThemeEffectKind })} className={input}>
-              {THEME_EFFECTS.map((kind) => (
-                <option key={kind} value={kind}>
-                  {e.names[kind]}
-                </option>
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-semibold">{e.pieces}</span>
+          {draft.effectPieces.length === 0 && draft.effectImages.length === 0 && <p className="text-xs text-muted">{e.noPieces}</p>}
+          {draft.effectPieces.length > 0 && (
+            <ul className="flex flex-col divide-y divide-line border-[1.5px] border-black">
+              {draft.effectPieces.map((piece) => (
+                <li key={piece.kind} className="flex items-center gap-3 px-3 py-2">
+                  <PieceIcon kind={piece.kind} />
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <span className="text-sm font-semibold">{e.names[piece.kind]}</span>
+                    <span className="text-xs text-muted">{e.motions[PIECE_MOTION[piece.kind]]}</span>
+                  </span>
+                  <select
+                    value={piece.weight}
+                    aria-label={e.weight}
+                    onChange={(event) =>
+                      setPieces(draft.effectPieces.map((item) => (item.kind === piece.kind ? { ...item, weight: Number(event.target.value) } : item)))
+                    }
+                    className="h-10 border-[1.5px] border-black bg-white px-2 text-sm"
+                  >
+                    <option value={1}>{e.weightFew}</option>
+                    <option value={2}>{e.weightSome}</option>
+                    <option value={3}>{e.weightMany}</option>
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => setPieces(draft.effectPieces.filter((item) => item.kind !== piece.kind))}
+                    aria-label={e.removePiece.replace("{name}", e.names[piece.kind])}
+                    className="flex h-10 w-10 items-center justify-center text-lg font-bold"
+                  >
+                    ×
+                  </button>
+                </li>
               ))}
-            </select>
-          </label>
-          <label className="flex flex-col gap-1.5 text-sm font-semibold">
-            {e.where}
-            <select
-              value={draft.effectAllPages ? "all" : "home"}
-              onChange={(event) => update({ effectAllPages: event.target.value === "all" })}
-              className={input}
-            >
-              <option value="home">{e.homeOnly}</option>
-              <option value="all">{e.allPages}</option>
-            </select>
-          </label>
+            </ul>
+          )}
+          <select
+            value=""
+            disabled={draft.effectPieces.length >= MAX_PIECES}
+            onChange={(event) => {
+              const kind = event.target.value as PieceKind;
+              if (kind && !chosen.has(kind)) setPieces([...draft.effectPieces, { kind, weight: 2 }]);
+            }}
+            className={input}
+          >
+            <option value="">{draft.effectPieces.length >= MAX_PIECES ? e.piecesFull : e.addPiece}</option>
+            {(Object.keys(PIECE_GROUPS) as (keyof typeof PIECE_GROUPS)[]).map((group) => (
+              <optgroup key={group} label={e.groups[group]}>
+                {(PIECE_GROUPS[group] as readonly PieceKind[]).map((kind) => (
+                  <option key={kind} value={kind} disabled={chosen.has(kind)}>
+                    {e.names[kind]}
+                    {chosen.has(kind) ? " ✓" : ""}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
         </div>
-        {draft.effect === "image" && (
-          <SmallImageUpload label={e.image} hint={e.imageHint} value={draft.effectImageUrl} onChange={(effectImageUrl) => update({ effectImageUrl })} />
-        )}
+
+        <div className="flex flex-col gap-3">
+          {draft.effectImages.map((url, index) => (
+            <SmallImageUpload
+              key={url}
+              label={`${e.image} ${index + 1}`}
+              hint=""
+              value={url}
+              onChange={(next) =>
+                update({
+                  effectImages: next
+                    ? draft.effectImages.map((item, i) => (i === index ? next : item))
+                    : draft.effectImages.filter((_, i) => i !== index),
+                })
+              }
+            />
+          ))}
+          {draft.effectImages.length < MAX_EFFECT_IMAGES && (
+            <SmallImageUpload
+              label={draft.effectImages.length === 0 ? e.image : e.addImage}
+              hint={e.imageHint}
+              value={null}
+              onChange={(next) => next && update({ effectImages: [...draft.effectImages, next] })}
+            />
+          )}
+        </div>
+
+        <label className="flex flex-col gap-1.5 text-sm font-semibold">
+          {e.where}
+          <select
+            value={draft.effectAllPages ? "all" : "home"}
+            onChange={(event) => update({ effectAllPages: event.target.value === "all" })}
+            className={input}
+          >
+            <option value="home">{e.homeOnly}</option>
+            <option value="all">{e.allPages}</option>
+          </select>
+        </label>
         {sliders.map((slider) => (
           <label key={slider.key} className="flex flex-col gap-1 text-sm font-semibold">
             {slider.label}
             <input
               type="range"
-              min={10}
+              min={slider.min}
               max={100}
               step={10}
               value={draft[slider.key]}
@@ -830,7 +967,7 @@ function SmallImageUpload({ label, hint, value, onChange }: { label: string; hin
           </button>
         )}
       </div>
-      <span className="text-xs text-muted">{hint}</span>
+      {hint && <span className="text-xs text-muted">{hint}</span>}
     </div>
   );
 }

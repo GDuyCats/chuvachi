@@ -3,18 +3,24 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import type { Locale } from "@/i18n/config";
-import type { ThemeColors, ThemeEffectView } from "@/lib/site-theme";
+import { PIECE_MOTION, type PieceKind, type PieceMotion, type ThemeColors, type ThemeEffectView } from "@/lib/site-theme";
+import { drawPiece } from "./effect-pieces";
 
 type Particle = {
+  kind: PieceKind | number; // a drawn piece, or the index of an uploaded picture
+  motion: PieceMotion;
   x: number;
   y: number;
   size: number;
-  fall: number; // px per frame (at 60 frames a second)
-  sway: number; // side-to-side distance
+  speed: number; // px per frame (at 60 frames a second)
+  sway: number; // side-to-side (or up-and-down) distance
   phase: number;
   spin: number;
   angle: number;
-  color: string;
+  pick: number; // steady 0-1, picks the piece's color
+  dir: 1 | -1; // pieces flying across: left to right or back
+  age: number; // twinkling pieces: ms since they appeared
+  life: number; // twinkling pieces: how long they show, ms
 };
 
 type Props = {
@@ -26,51 +32,21 @@ type Props = {
 
 const rand = (min: number, max: number) => min + Math.random() * (max - min);
 
-// Flower with five round petals (apricot and peach blossoms).
-function drawBlossom(ctx: CanvasRenderingContext2D, size: number, petal: string, middle: string) {
-  ctx.fillStyle = petal;
-  for (let i = 0; i < 5; i++) {
-    const a = (i * 2 * Math.PI) / 5;
-    ctx.beginPath();
-    ctx.arc(Math.cos(a) * size * 0.26, Math.sin(a) * size * 0.26, size * 0.22, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  ctx.fillStyle = middle;
-  ctx.beginPath();
-  ctx.arc(0, 0, size * 0.1, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-function drawHeart(ctx: CanvasRenderingContext2D, size: number) {
-  const s = size / 2;
-  ctx.beginPath();
-  ctx.moveTo(0, s * 0.7);
-  ctx.bezierCurveTo(-s * 1.2, -s * 0.1, -s * 0.6, -s * 1.1, 0, -s * 0.45);
-  ctx.bezierCurveTo(s * 0.6, -s * 1.1, s * 1.2, -s * 0.1, 0, s * 0.7);
-  ctx.fill();
-}
-
-function drawStar(ctx: CanvasRenderingContext2D, size: number) {
-  const outer = size / 2;
-  const inner = outer * 0.45;
-  ctx.beginPath();
-  for (let i = 0; i < 10; i++) {
-    const r = i % 2 === 0 ? outer : inner;
-    const a = (i * Math.PI) / 5 - Math.PI / 2;
-    ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
-  }
-  ctx.closePath();
-  ctx.fill();
-}
-
-// Snow, blossoms, hearts, stars, confetti or the admin's own picture falling gently over the page.
+// Several pieces (snow, pumpkins, hearts, the admin's own pictures...) mixed together: most fall,
+// some float up (ghosts, lanterns, balloons), bats fly across and stars twinkle in place. Pieces
+// come in mixed sizes, and bigger ones move a little slower, which gives some depth.
 // Never catches clicks, stops for visitors who ask for less motion, and uses fewer pieces on phones.
 export function ThemeEffect({ effect, lang, colors, contained = false }: Props) {
   const pathname = usePathname();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const onHome = pathname === `/${lang}` || pathname === `/${lang}/`;
   const show = contained || effect.allPages || onHome;
-  const { kind, imageUrl, amount, speed, size } = effect;
+  const { amount, speed, size, sizeMix } = effect;
+  // Strings keep the effect from restarting on every render when nothing changed.
+  // "?? []" guards against an older cached answer from the API, from before pieces could be mixed.
+  const piecesKey = (effect.pieces ?? []).map((piece) => `${piece.kind}:${piece.weight}`).join(",");
+  const imagesKey = (effect.images ?? []).join(" ");
+  const colorsKey = [colors.btn, colors.accent, colors.bar].filter(Boolean).join(",");
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -79,32 +55,66 @@ export function ThemeEffect({ effect, lang, colors, contained = false }: Props) 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let image: HTMLImageElement | null = null;
-    if (kind === "image" && imageUrl) {
-      image = new Image();
-      image.src = imageUrl;
+    // What can appear, with how often: few / some / many = 1 / 2 / 3; each picture counts as "some".
+    const pool: { kind: PieceKind | number; weight: number }[] = [];
+    for (const item of piecesKey ? piecesKey.split(",") : []) {
+      const [kind, weight] = item.split(":");
+      pool.push({ kind: kind as PieceKind, weight: Number(weight) || 2 });
     }
+    const pictures = (imagesKey ? imagesKey.split(" ") : []).map((url) => {
+      const image = new Image();
+      image.src = url;
+      return image;
+    });
+    pictures.forEach((_, index) => pool.push({ kind: index, weight: 2 }));
+    if (pool.length === 0) return;
+    const totalWeight = pool.reduce((sum, item) => sum + item.weight, 0);
+    const lookColors = colorsKey ? colorsKey.split(",") : [];
 
-    const confettiColors = [colors.btn, colors.accent, colors.bar, "#c9a227", "#e0436b", "#2f80ed", "#27ae60"].filter(
-      (color): color is string => Boolean(color),
-    );
     let width = 0;
     let height = 0;
     let particles: Particle[] = [];
 
-    const makeParticle = (anywhere: boolean): Particle => {
-      const pieceSize = (6 + (size / 100) * 20) * rand(0.6, 1.2);
-      return {
+    const pickKind = (): PieceKind | number => {
+      let roll = Math.random() * totalWeight;
+      for (const item of pool) {
+        roll -= item.weight;
+        if (roll <= 0) return item.kind;
+      }
+      return pool[0].kind;
+    };
+
+    const makeParticle = (fresh: boolean): Particle => {
+      const kind = pickKind();
+      const motion: PieceMotion = typeof kind === "number" ? "fall" : PIECE_MOTION[kind];
+      const spread = 0.15 + (sizeMix / 100) * 0.55; // 0 = nearly the same size, 100 = small and big mixed
+      const factor = 1 + rand(-1, 1) * spread;
+      const pieceSize = (8 + (size / 100) * 22) * factor;
+      const p: Particle = {
+        kind,
+        motion,
         x: rand(0, width),
-        y: anywhere ? rand(-height, height) : rand(-60, -pieceSize),
+        y: rand(0, height),
         size: pieceSize,
-        fall: (0.3 + (speed / 100) * 1.8) * rand(0.6, 1.2),
+        speed: (0.3 + (speed / 100) * 1.8) * rand(0.8, 1.15) * (1.2 - 0.25 * factor),
         sway: rand(0.2, 1.2),
         phase: rand(0, Math.PI * 2),
         spin: rand(-0.04, 0.04),
         angle: rand(0, Math.PI * 2),
-        color: confettiColors[Math.floor(Math.random() * confettiColors.length)] ?? "#c9a227",
+        pick: Math.random(),
+        dir: Math.random() < 0.5 ? 1 : -1,
+        age: 0,
+        life: rand(2500, 5000),
       };
+      // Pieces made at the start are spread over the screen; later ones come in from an edge.
+      if (motion === "fall") p.y = fresh ? rand(-height, height) : rand(-60, -pieceSize);
+      else if (motion === "rise") p.y = fresh ? rand(0, height * 2) : height + pieceSize + rand(0, 60);
+      else if (motion === "across") {
+        p.y = rand(0, height * 0.7);
+        p.x = fresh ? rand(-width, width) : p.dir > 0 ? -pieceSize * 2 : width + pieceSize * 2;
+        if (fresh && p.dir < 0) p.x = width - p.x;
+      } else if (fresh) p.age = rand(0, p.life);
+      return p;
     };
 
     const resize = () => {
@@ -124,76 +134,63 @@ export function ThemeEffect({ effect, lang, colors, contained = false }: Props) 
     const observer = contained && canvas.parentElement ? new ResizeObserver(resize) : null;
     if (observer && canvas.parentElement) observer.observe(canvas.parentElement);
 
-    const draw = (p: Particle, time: number) => {
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      switch (kind) {
-        case "snow":
-          ctx.fillStyle = "#ffffff";
-          ctx.strokeStyle = "rgba(110, 130, 150, 0.45)"; // a soft edge so flakes show on white pages too
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.arc(0, 0, p.size / 3, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.stroke();
-          break;
-        case "apricot":
-          ctx.rotate(p.angle);
-          drawBlossom(ctx, p.size, "#f2c230", "#b7700a");
-          break;
-        case "peach":
-          ctx.rotate(p.angle);
-          drawBlossom(ctx, p.size, "#f4a6c0", "#c2185b");
-          break;
-        case "petals":
-          ctx.rotate(p.angle);
-          ctx.fillStyle = "rgba(240, 160, 185, 0.9)";
-          ctx.beginPath();
-          ctx.ellipse(0, 0, p.size * 0.45, p.size * 0.22, 0, 0, Math.PI * 2);
-          ctx.fill();
-          break;
-        case "hearts":
-          ctx.rotate(Math.sin(p.angle) * 0.4);
-          ctx.fillStyle = "#e0436b";
-          drawHeart(ctx, p.size);
-          break;
-        case "stars":
-          ctx.globalAlpha = 0.45 + 0.55 * Math.abs(Math.sin(time / 600 + p.phase)); // twinkle
-          ctx.rotate(p.angle);
-          ctx.fillStyle = "#f2c94c";
-          drawStar(ctx, p.size);
-          break;
-        case "confetti":
-          ctx.rotate(p.angle);
-          ctx.scale(1, Math.cos(p.angle * 2)); // flips as it turns
-          ctx.fillStyle = p.color;
-          ctx.fillRect(-p.size * 0.3, -p.size * 0.15, p.size * 0.6, p.size * 0.3);
-          break;
-        case "image":
+    const isGone = (p: Particle): boolean => {
+      switch (p.motion) {
+        case "fall":
+          return p.y > height + p.size * 2 || p.x < -80 || p.x > width + 80;
+        case "rise":
+          return p.y < -p.size * 2.5 || p.x < -80 || p.x > width + 80;
+        case "across":
+          return p.dir > 0 ? p.x > width + p.size * 2 : p.x < -p.size * 2;
+        case "twinkle":
+          return p.age > p.life;
+      }
+    };
+
+    let frame = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const elapsed = Math.min(50, now - last);
+      const step = elapsed / (1000 / 60); // same speed on 60 Hz and 120 Hz screens
+      last = now;
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        const wobble = Math.sin(now / 1500 + p.phase) * p.sway * step;
+        if (p.motion === "fall") {
+          p.y += p.speed * step;
+          p.x += wobble;
+        } else if (p.motion === "rise") {
+          p.y -= p.speed * 0.6 * step;
+          p.x += wobble;
+        } else if (p.motion === "across") {
+          p.x += p.dir * p.speed * 2 * step;
+          p.y += Math.sin(now / 400 + p.phase) * 0.6 * step;
+        } else {
+          p.age += elapsed;
+        }
+        p.angle += p.spin * step;
+        if (isGone(p)) {
+          particles[i] = makeParticle(false);
+          continue;
+        }
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        if (p.motion === "twinkle") ctx.globalAlpha = Math.max(0, Math.sin((Math.PI * p.age) / p.life));
+        if (p.motion === "across" && p.dir < 0) ctx.scale(-1, 1);
+        if (typeof p.kind === "number") {
+          const image = pictures[p.kind];
           if (image?.complete && image.naturalWidth > 0) {
             ctx.rotate(Math.sin(p.angle) * 0.5);
             const ratio = image.naturalHeight / image.naturalWidth;
             const w = p.size * 1.4;
             ctx.drawImage(image, -w / 2, (-w * ratio) / 2, w, w * ratio);
           }
-          break;
-      }
-      ctx.restore();
-    };
-
-    let frame = 0;
-    let last = performance.now();
-    const tick = (now: number) => {
-      const step = Math.min(50, now - last) / (1000 / 60); // same speed on 60 Hz and 120 Hz screens
-      last = now;
-      ctx.clearRect(0, 0, width, height);
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-        p.y += p.fall * step;
-        p.x += Math.sin(now / 1500 + p.phase) * p.sway * step;
-        p.angle += p.spin * step;
-        if (p.y > height + p.size || p.x < -60 || p.x > width + 60) particles[i] = makeParticle(false);
-        else draw(p, now);
+        } else {
+          drawPiece(ctx, p.kind, p.size, { pick: p.pick, angle: p.angle, time: now, phase: p.phase, colors: lookColors });
+        }
+        ctx.restore();
       }
       frame = requestAnimationFrame(tick);
     };
@@ -205,7 +202,7 @@ export function ThemeEffect({ effect, lang, colors, contained = false }: Props) 
       observer?.disconnect();
       ctx.clearRect(0, 0, width, height);
     };
-  }, [show, contained, kind, imageUrl, amount, speed, size, colors.btn, colors.accent, colors.bar]);
+  }, [show, contained, piecesKey, imagesKey, colorsKey, amount, speed, size, sizeMix]);
 
   if (!show) return null;
   return (

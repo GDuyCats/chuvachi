@@ -419,6 +419,7 @@ model ShopSetting {
   reportAlertThreshold Int      @default(3)  // staff are told when a review or comment gets this many reports
   themesOff            Boolean  @default(false) // seasonal looks switched off: the site stays black and white
   themePinnedId        Int?     // a seasonal look turned on by hand, whatever its dates say
+  themePinnedAt        DateTime? @db.Date // the day it was turned on by hand; it turns off after the look's next end day
   updatedAt            DateTime @updatedAt
 }
 
@@ -845,9 +846,12 @@ model SiteTheme {
   linkUrl        String?   // where the message links to: "/news" or https://...
   icon           String?   // built-in icon by the logo, e.g. "tree"
   iconUrl        String?   // uploaded icon; used instead of the built-in one
-  effect         String    @default("none") // falling effect: none, snow, apricot, peach, hearts, petals, stars, confetti, image
+  effect         String    @default("none") // old single falling effect, read only when effectPieces is empty (kept so older looks still work)
   effectOn       Boolean   @default(true)
-  effectImageUrl String?   // the picture that falls when effect = image
+  effectImageUrl String?   // old single falling picture, read only when effectImages is empty
+  effectPieces   Json      @default("[]") // falling pieces mixed together: [{ "kind": "pumpkins", "weight": 2 }], weight 1-3 = few/some/many
+  effectImages   Json      @default("[]") // up to 3 uploaded pictures that fall with the pieces
+  effectSizeMix  Int       @default(40) // 0-100: 0 = all pieces about the same size, 100 = small and big mixed
   effectAmount   Int       @default(50) // 10-100
   effectSpeed    Int       @default(50) // 10-100
   effectSize     Int       @default(50) // 10-100

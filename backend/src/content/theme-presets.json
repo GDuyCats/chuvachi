@@ -14,7 +14,8 @@
     "messageEn": "Merry Christmas – order by 23 Dec for delivery in time",
     "linkUrl": "/menu",
     "icon": "tree",
-    "effect": "snow", "effectOn": true, "effectAmount": 50, "effectSpeed": 40, "effectSize": 50,
+    "effects": [{ "kind": "snow", "weight": 3 }, { "kind": "ornaments", "weight": 1 }, { "kind": "stars", "weight": 1 }],
+    "effectOn": true, "effectSizeMix": 50, "effectAmount": 50, "effectSpeed": 40, "effectSize": 50,
     "startDate": "2026-12-01", "endDate": "2026-12-26", "yearly": true
   },
   {
@@ -32,7 +33,8 @@
     "messageEn": "Sweet winter – Christmas cakes are here",
     "linkUrl": "/menu",
     "icon": "snowflake",
-    "effect": "snow", "effectOn": true, "effectAmount": 30, "effectSpeed": 30, "effectSize": 40,
+    "effects": [{ "kind": "snow", "weight": 3 }],
+    "effectOn": true, "effectSizeMix": 60, "effectAmount": 30, "effectSpeed": 30, "effectSize": 40,
     "startDate": "2026-12-01", "endDate": "2026-12-26", "yearly": true
   },
   {
@@ -50,7 +52,8 @@
     "messageEn": "Happy Lunar New Year – now taking Tet gift orders",
     "linkUrl": "/menu",
     "icon": "apricot",
-    "effect": "apricot", "effectOn": true, "effectAmount": 40, "effectSpeed": 40, "effectSize": 50,
+    "effects": [{ "kind": "apricot", "weight": 3 }, { "kind": "envelopes", "weight": 1 }, { "kind": "coins", "weight": 1 }],
+    "effectOn": true, "effectSizeMix": 40, "effectAmount": 40, "effectSpeed": 40, "effectSize": 50,
     "startDate": null, "endDate": null, "yearly": false
   },
   {
@@ -68,7 +71,8 @@
     "messageEn": "A peaceful spring – Tet cakes for gifting",
     "linkUrl": "/menu",
     "icon": "envelope",
-    "effect": "peach", "effectOn": true, "effectAmount": 40, "effectSpeed": 40, "effectSize": 50,
+    "effects": [{ "kind": "peach", "weight": 3 }, { "kind": "envelopes", "weight": 1 }],
+    "effectOn": true, "effectSizeMix": 40, "effectAmount": 40, "effectSpeed": 40, "effectSize": 50,
     "startDate": null, "endDate": null, "yearly": false
   },
   {
@@ -86,7 +90,8 @@
     "messageEn": "Sweet Valentine – a cake for your loved one",
     "linkUrl": "/menu",
     "icon": "heart",
-    "effect": "hearts", "effectOn": false, "effectAmount": 30, "effectSpeed": 40, "effectSize": 50,
+    "effects": [{ "kind": "hearts", "weight": 3 }, { "kind": "roses", "weight": 1 }, { "kind": "gifts", "weight": 1 }],
+    "effectOn": true, "effectSizeMix": 70, "effectAmount": 30, "effectSpeed": 40, "effectSize": 50,
     "startDate": "2027-02-07", "endDate": "2027-02-15", "yearly": true
   },
   {
@@ -104,7 +109,8 @@
     "messageEn": "Happy Women's Day – a cake for the women you love",
     "linkUrl": "/menu",
     "icon": "flower",
-    "effect": "petals", "effectOn": false, "effectAmount": 30, "effectSpeed": 40, "effectSize": 50,
+    "effects": [{ "kind": "petals", "weight": 2 }, { "kind": "roses", "weight": 1 }],
+    "effectOn": true, "effectSizeMix": 50, "effectAmount": 30, "effectSpeed": 40, "effectSize": 50,
     "startDate": "2027-03-05", "endDate": "2027-03-08", "yearly": true
   },
   {
@@ -122,7 +128,8 @@
     "messageEn": "Mid-Autumn reunion – cakes for the whole family",
     "linkUrl": "/menu",
     "icon": "lantern",
-    "effect": "stars", "effectOn": true, "effectAmount": 30, "effectSpeed": 30, "effectSize": 50,
+    "effects": [{ "kind": "lanterns", "weight": 2 }, { "kind": "stars", "weight": 2 }, { "kind": "mooncakes", "weight": 1 }],
+    "effectOn": true, "effectSizeMix": 40, "effectAmount": 30, "effectSpeed": 30, "effectSize": 50,
     "startDate": null, "endDate": null, "yearly": false
   },
   {
@@ -131,6 +138,7 @@
     "nameEn": "Halloween",
     "colors": {
       "btn": "#2b1b33", "btnInk": "#ffffff",
+      "head": "#1a0f1f", "headInk": "#ffffff",
       "bar": "#e06d06", "barInk": "#1a0f1f",
       "foot": "#2b1b33", "footInk": "#ffffff",
       "hero": "#2b1b33", "heroInk": "#ffffff",
@@ -140,7 +148,8 @@
     "messageEn": "Happy Halloween – trick or treat?",
     "linkUrl": "/menu",
     "icon": "pumpkin",
-    "effect": "none", "effectOn": false, "effectAmount": 30, "effectSpeed": 40, "effectSize": 50,
+    "effects": [{ "kind": "pumpkins", "weight": 2 }, { "kind": "candy", "weight": 2 }, { "kind": "skulls", "weight": 1 }, { "kind": "bats", "weight": 1 }],
+    "effectOn": true, "effectSizeMix": 50, "effectAmount": 30, "effectSpeed": 40, "effectSize": 50,
     "startDate": "2026-10-25", "endDate": "2026-10-31", "yearly": true
   },
   {
@@ -156,7 +165,8 @@
     "messageEn": "Happy birthday Chuvachi – thank you for being with us",
     "linkUrl": "/news",
     "icon": "star",
-    "effect": "confetti", "effectOn": true, "effectAmount": 40, "effectSpeed": 50, "effectSize": 50,
+    "effects": [{ "kind": "confetti", "weight": 3 }, { "kind": "balloons", "weight": 1 }],
+    "effectOn": true, "effectSizeMix": 40, "effectAmount": 40, "effectSpeed": 50, "effectSize": 50,
     "startDate": null, "endDate": null, "yearly": false
   },
   {
@@ -172,7 +182,8 @@
     "messageEn": "Limited-time offer – see the cakes on sale",
     "linkUrl": "/menu",
     "icon": "tag",
-    "effect": "none", "effectOn": false, "effectAmount": 30, "effectSpeed": 40, "effectSize": 50,
+    "effects": [{ "kind": "confetti", "weight": 1 }],
+    "effectOn": false, "effectSizeMix": 30, "effectAmount": 30, "effectSpeed": 40, "effectSize": 50,
     "startDate": null, "endDate": null, "yearly": false
   }
 ]

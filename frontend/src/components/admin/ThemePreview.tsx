@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from "react";
 import type { AdminThemeInput } from "@/lib/admin-api";
-import { DEFAULT_COLORS, type ThemeEffectKind } from "@/lib/site-theme";
+import { DEFAULT_COLORS } from "@/lib/site-theme";
 import { ThemeEffect } from "../theme/ThemeEffect";
 import { isThemeIcon, ThemeIconSvg } from "../theme/ThemeIcon";
 import { useAdminI18n } from "./AdminI18n";
@@ -17,8 +17,7 @@ export function ThemePreview({ look, phone }: Props) {
   const c = { ...DEFAULT_COLORS, ...look.colors };
   const paint = (bg: string, ink: string): CSSProperties => ({ background: bg, color: ink });
   const message = ((lang === "en" ? look.messageEn ?? look.messageVi : look.messageVi ?? look.messageEn) ?? "").split("\n")[0]?.trim();
-  const kind: ThemeEffectKind = look.effect;
-  const showEffect = look.effectOn && kind !== "none" && (kind !== "image" || Boolean(look.effectImageUrl));
+  const showEffect = look.effectOn && (look.effectPieces.length > 0 || look.effectImages.length > 0);
 
   const icon = look.iconUrl ? (
     // eslint-disable-next-line @next/next/no-img-element -- admin preview of an uploaded icon
@@ -104,11 +103,12 @@ export function ThemePreview({ look, phone }: Props) {
             lang={lang}
             colors={look.colors}
             effect={{
-              kind,
-              imageUrl: look.effectImageUrl,
+              pieces: look.effectPieces,
+              images: look.effectImages,
               amount: look.effectAmount,
               speed: look.effectSpeed,
               size: look.effectSize,
+              sizeMix: look.effectSizeMix,
               allPages: true,
             }}
           />

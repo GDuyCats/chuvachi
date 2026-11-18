@@ -40,8 +40,64 @@ export const ICONS = [
   "tag",
 ] as const;
 
-export const EFFECTS = ["none", "snow", "apricot", "peach", "petals", "hearts", "stars", "confetti", "image"] as const;
-export type EffectKind = (typeof EFFECTS)[number];
+// Pieces drawn by the shop pages that can fall (or float, fly, twinkle) together.
+export const PIECES = [
+  "snow",
+  "stars",
+  "ornaments",
+  "candycanes",
+  "gifts",
+  "apricot",
+  "peach",
+  "envelopes",
+  "coins",
+  "hearts",
+  "roses",
+  "petals",
+  "pumpkins",
+  "skulls",
+  "candy",
+  "bats",
+  "ghosts",
+  "lanterns",
+  "mooncakes",
+  "confetti",
+  "balloons",
+] as const;
+export type PieceKind = (typeof PIECES)[number];
+export type EffectPiece = { kind: PieceKind; weight: number }; // weight 1-3 = few / some / many
+export const MAX_EFFECT_IMAGES = 3;
+
+export const pieceSchema = z.object({ kind: z.enum(PIECES), weight: z.number().int().min(1).max(3) });
+
+function isPiece(kind: unknown): kind is PieceKind {
+  return typeof kind === "string" && (PIECES as readonly string[]).includes(kind);
+}
+
+// The falling pieces of a look. Looks saved before pieces could be mixed have one old "effect" instead.
+export function readPieces(theme: Pick<SiteTheme, "effectPieces" | "effect">): EffectPiece[] {
+  const pieces: EffectPiece[] = [];
+  if (Array.isArray(theme.effectPieces)) {
+    for (const item of theme.effectPieces) {
+      if (!item || typeof item !== "object" || Array.isArray(item)) continue;
+      const { kind, weight } = item as Record<string, unknown>;
+      if (isPiece(kind) && !pieces.some((piece) => piece.kind === kind)) {
+        pieces.push({ kind, weight: typeof weight === "number" ? Math.min(3, Math.max(1, Math.round(weight))) : 2 });
+      }
+    }
+  }
+  if (pieces.length === 0 && isPiece(theme.effect)) pieces.push({ kind: theme.effect, weight: 2 });
+  return pieces;
+}
+
+// Uploaded pictures that fall with the pieces (older looks: the one "effectImageUrl").
+export function readImages(theme: Pick<SiteTheme, "effectImages" | "effect" | "effectImageUrl">): string[] {
+  const images = Array.isArray(theme.effectImages)
+    ? theme.effectImages.filter((url): url is string => typeof url === "string" && url.length > 0)
+    : [];
+  if (images.length === 0 && theme.effect === "image" && theme.effectImageUrl) images.push(theme.effectImageUrl);
+  return images.slice(0, MAX_EFFECT_IMAGES);
+}
 
 const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Use a color like #8b1e2d");
 
@@ -78,20 +134,41 @@ export function isInSchedule(theme: Pick<SiteTheme, "scheduleOn" | "startDate" |
   return start <= end ? start <= day && day <= end : day >= start || day <= end;
 }
 
-export type ThemeSettings = { themesOff: boolean; themePinnedId: number | null };
+export type ThemeSettings = { themesOff: boolean; themePinnedId: number | null; themePinnedAt: Date | null };
 
 export async function loadThemeSettings(): Promise<ThemeSettings> {
-  const settings = await prisma.shopSetting.findUnique({ where: { id: 1 }, select: { themesOff: true, themePinnedId: true } });
-  return { themesOff: settings?.themesOff ?? false, themePinnedId: settings?.themePinnedId ?? null };
+  const settings = await prisma.shopSetting.findUnique({
+    where: { id: 1 },
+    select: { themesOff: true, themePinnedId: true, themePinnedAt: true },
+  });
+  return {
+    themesOff: settings?.themesOff ?? false,
+    themePinnedId: settings?.themePinnedId ?? null,
+    themePinnedAt: settings?.themePinnedAt ?? null,
+  };
 }
 
-// The look showing now: none when switched off, the one turned on by hand, or else the first
-// look (in list order) whose dates include today.
+// A look turned on by hand stays on until the end day of its dates: for yearly dates, the first
+// end day on or after the day it was turned on. Without dates it stays on until turned off.
+export function pinnedUntil(theme: Pick<SiteTheme, "endDate" | "yearly">, pinnedAt: Date | null): Date | null {
+  if (!theme.endDate) return null;
+  if (!theme.yearly) return theme.endDate;
+  const from = pinnedAt ?? vietnamToday();
+  const month = theme.endDate.getUTCMonth();
+  const day = theme.endDate.getUTCDate();
+  let end = new Date(Date.UTC(from.getUTCFullYear(), month, day));
+  if (end.getTime() < from.getTime()) end = new Date(Date.UTC(from.getUTCFullYear() + 1, month, day));
+  return end;
+}
+
+// The look showing now: none when switched off, the one turned on by hand (until its end day),
+// or else the first look (in list order) whose dates include today.
 export function pickActiveTheme<T extends SiteTheme>(themes: T[], settings: ThemeSettings, today: Date = vietnamToday()): T | null {
   if (settings.themesOff) return null;
   if (settings.themePinnedId !== null) {
     const pinned = themes.find((theme) => theme.id === settings.themePinnedId);
-    if (pinned) return pinned;
+    const until = pinned ? pinnedUntil(pinned, settings.themePinnedAt) : null;
+    if (pinned && (!until || today.getTime() <= until.getTime())) return pinned;
   }
   return themes.find((theme) => isInSchedule(theme, today)) ?? null;
 }
@@ -106,8 +183,9 @@ export async function findActiveTheme(): Promise<SiteTheme | null> {
 
 // What the shop pages need to show a look, in one language.
 export function publicTheme(theme: SiteTheme, locale: Locale) {
-  const kind = (EFFECTS as readonly string[]).includes(theme.effect) ? (theme.effect as EffectKind) : "none";
-  const showEffect = theme.effectOn && kind !== "none" && (kind !== "image" || Boolean(theme.effectImageUrl));
+  const pieces = readPieces(theme);
+  const images = readImages(theme);
+  const showEffect = theme.effectOn && (pieces.length > 0 || images.length > 0);
   return {
     id: theme.id,
     colors: readColors(theme.colors),
@@ -117,11 +195,12 @@ export function publicTheme(theme: SiteTheme, locale: Locale) {
     iconUrl: theme.iconUrl,
     effect: showEffect
       ? {
-          kind,
-          imageUrl: kind === "image" ? theme.effectImageUrl : null,
+          pieces,
+          images,
           amount: theme.effectAmount,
           speed: theme.effectSpeed,
           size: theme.effectSize,
+          sizeMix: theme.effectSizeMix,
           allPages: theme.effectAllPages,
         }
       : null,

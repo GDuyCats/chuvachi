@@ -7,15 +7,19 @@ import { parseLocale } from "../lib/locale";
 import { prisma } from "../lib/prisma";
 import {
   colorsSchema,
-  EFFECTS,
   ICONS,
   loadThemeSettings,
+  MAX_EFFECT_IMAGES,
   pickActiveTheme,
+  pieceSchema,
+  pinnedUntil,
   publicTheme,
   readColors,
+  readImages,
+  readPieces,
 } from "../lib/site-theme";
 import { deleteImageByUrl, isOwnImageUrl } from "../lib/storage";
-import { formatDateOnly, parseDateOnly } from "../lib/time";
+import { formatDateOnly, parseDateOnly, vietnamToday } from "../lib/time";
 
 // Seasonal looks: list, create (empty or from a ready-made preset), edit, copy, delete, order,
 // and the "turn on now" / "all off" switches. Admins only.
@@ -62,12 +66,18 @@ const themeSchema = z
     linkUrl,
     icon: z.enum(ICONS).nullable(),
     iconUrl: imageUrl,
-    effect: z.enum(EFFECTS),
     effectOn: z.boolean(),
-    effectImageUrl: imageUrl,
+    effectPieces: z
+      .array(pieceSchema)
+      .max(12)
+      .refine((pieces) => new Set(pieces.map((piece) => piece.kind)).size === pieces.length, "Each piece once"),
+    effectImages: z
+      .array(z.string().trim().max(500).refine((value) => isOwnImageUrl(value), "Upload the picture first"))
+      .max(MAX_EFFECT_IMAGES),
     effectAmount: level,
     effectSpeed: level,
     effectSize: level,
+    effectSizeMix: z.number().int().min(0).max(100),
     effectAllPages: z.boolean(),
     scheduleOn: z.boolean(),
     startDate: dateText,
@@ -88,12 +98,17 @@ type ThemeInput = z.infer<typeof themeSchema>;
 const idParam = z.coerce.number().int().positive();
 
 function toData(input: ThemeInput) {
-  const { startDate, endDate, colors, ...rest } = input;
+  const { startDate, endDate, colors, effectPieces, effectImages, ...rest } = input;
   // Only the colors that were picked are kept; the others stay black and white.
   const picked = Object.fromEntries(Object.entries(colors).filter(([, value]) => value)) as Prisma.InputJsonObject;
   return {
     ...rest,
     colors: picked,
+    effectPieces: effectPieces as Prisma.InputJsonArray,
+    effectImages: effectImages as Prisma.InputJsonArray,
+    // The old single effect is cleared so it never comes back when all pieces are removed.
+    effect: "none",
+    effectImageUrl: null,
     startDate: startDate ? parseDateOnly(startDate) : null,
     endDate: endDate ? parseDateOnly(endDate) : null,
   };
@@ -107,11 +122,12 @@ function presetData(preset: Preset, lang: "vi" | "en") {
     messageEn: preset.messageEn,
     linkUrl: preset.linkUrl,
     icon: preset.icon,
-    effect: preset.effect,
+    effectPieces: preset.effects as Prisma.InputJsonArray,
     effectOn: preset.effectOn,
     effectAmount: preset.effectAmount,
     effectSpeed: preset.effectSpeed,
     effectSize: preset.effectSize,
+    effectSizeMix: preset.effectSizeMix,
     // Presets come with suggested dates, but nothing turns on until the admin ticks "follow the dates".
     scheduleOn: false,
     startDate: preset.startDate ? parseDateOnly(preset.startDate) : null,
@@ -121,9 +137,12 @@ function presetData(preset: Preset, lang: "vi" | "en") {
 }
 
 function toRow(theme: SiteTheme) {
+  const { effect: _effect, effectImageUrl: _effectImageUrl, ...rest } = theme;
   return {
-    ...theme,
+    ...rest,
     colors: readColors(theme.colors),
+    effectPieces: readPieces(theme),
+    effectImages: readImages(theme),
     startDate: theme.startDate ? formatDateOnly(theme.startDate) : null,
     endDate: theme.endDate ? formatDateOnly(theme.endDate) : null,
   };
@@ -135,10 +154,17 @@ async function bundle() {
     loadThemeSettings(),
   ]);
   const active = pickActiveTheme(themes, settings);
+  const pinned = themes.find((theme) => theme.id === settings.themePinnedId);
+  const until = pinned ? pinnedUntil(pinned, settings.themePinnedAt) : null;
   return {
     themes: themes.map(toRow),
     presets: presets.map((preset) => ({ key: preset.key, nameVi: preset.nameVi, nameEn: preset.nameEn, colors: preset.colors, icon: preset.icon })),
-    settings,
+    settings: {
+      themesOff: settings.themesOff,
+      themePinnedId: pinned ? pinned.id : null,
+      pinnedUntil: until ? formatDateOnly(until) : null, // null = on until turned off
+      pinExpired: Boolean(pinned && until && vietnamToday().getTime() > until.getTime()),
+    },
     activeId: active?.id ?? null,
   };
 }
@@ -152,7 +178,9 @@ async function nextSortOrder(): Promise<number> {
 async function removeUnusedImages(urls: (string | null)[]): Promise<void> {
   for (const url of urls) {
     if (!url) continue;
-    const stillUsed = await prisma.siteTheme.count({ where: { OR: [{ iconUrl: url }, { effectImageUrl: url }] } });
+    const stillUsed = await prisma.siteTheme.count({
+      where: { OR: [{ iconUrl: url }, { effectImageUrl: url }, { effectImages: { array_contains: [url] } }] },
+    });
     if (stillUsed === 0) await deleteImageByUrl(url).catch(() => undefined);
   }
 }
@@ -183,12 +211,14 @@ adminThemesRouter.post("/:id/copy", async (req, res) => {
     res.status(404).json({ error: "NOT_FOUND" });
     return;
   }
-  const { id: _id, createdAt: _created, updatedAt: _updated, colors, ...rest } = source;
+  const { id: _id, createdAt: _created, updatedAt: _updated, colors, effectPieces: _pieces, effectImages: _images, ...rest } = source;
   const copySuffix = req.body?.lang === "en" ? " (copy)" : " (bản sao)";
   const theme = await prisma.siteTheme.create({
     data: {
       ...rest,
       colors: readColors(colors) as Prisma.InputJsonObject,
+      effectPieces: readPieces(source) as Prisma.InputJsonArray,
+      effectImages: readImages(source) as Prisma.InputJsonArray,
       name: `${source.name}${copySuffix}`.slice(0, 60),
       scheduleOn: false, // a copy never turns on by itself until the admin checks its dates
       sortOrder: await nextSortOrder(),
@@ -208,17 +238,23 @@ adminThemesRouter.put("/order", async (req, res) => {
   res.json(await bundle());
 });
 
-// PUT /api/admin/themes/switches - { themesOff, themePinnedId }: all looks off, or one turned on by hand.
+// PUT /api/admin/themes/switches - { themesOff, themePinnedId }: all looks off, or one turned on
+// by hand now (early, without waiting for its dates). It turns off by itself after its end day.
 adminThemesRouter.put("/switches", async (req, res) => {
   const parsed = z
     .object({ themesOff: z.boolean(), themePinnedId: z.number().int().positive().nullable() })
     .safeParse(req.body);
   if (!parsed.success) return badRequest(res);
+  const today = vietnamToday();
   if (parsed.data.themePinnedId !== null) {
-    const exists = await prisma.siteTheme.count({ where: { id: parsed.data.themePinnedId } });
-    if (!exists) return badRequest(res, ["themePinnedId"]);
+    const theme = await prisma.siteTheme.findUnique({ where: { id: parsed.data.themePinnedId } });
+    if (!theme) return badRequest(res, ["themePinnedId"]);
+    // A one-off look whose last day has passed would turn off at once.
+    const until = pinnedUntil(theme, today);
+    if (until && today.getTime() > until.getTime()) return badRequest(res, ["pinEnded"]);
   }
-  await prisma.shopSetting.upsert({ where: { id: 1 }, create: { id: 1, ...parsed.data }, update: parsed.data });
+  const data = { ...parsed.data, themePinnedAt: parsed.data.themePinnedId !== null ? today : null };
+  await prisma.shopSetting.upsert({ where: { id: 1 }, create: { id: 1, ...data }, update: data });
   res.json(await bundle());
 });
 
@@ -236,9 +272,8 @@ adminThemesRouter.put("/:id", async (req, res) => {
     return;
   }
   await prisma.siteTheme.update({ where: { id: id.data }, data: toData(parsed.data) });
-  await removeUnusedImages(
-    [before.iconUrl, before.effectImageUrl].filter((url) => url !== parsed.data.iconUrl && url !== parsed.data.effectImageUrl),
-  );
+  const kept = new Set([parsed.data.iconUrl, ...parsed.data.effectImages]);
+  await removeUnusedImages([before.iconUrl, before.effectImageUrl, ...readImages(before)].filter((url) => !kept.has(url)));
   res.json(await bundle());
 });
 
@@ -256,7 +291,7 @@ adminThemesRouter.delete("/:id", async (req, res) => {
     // A look turned on by hand that is deleted is turned off too.
     prisma.shopSetting.updateMany({ where: { id: 1, themePinnedId: theme.id }, data: { themePinnedId: null } }),
   ]);
-  await removeUnusedImages([theme.iconUrl, theme.effectImageUrl]);
+  await removeUnusedImages([theme.iconUrl, theme.effectImageUrl, ...readImages(theme)]);
   res.json(await bundle());
 });
 

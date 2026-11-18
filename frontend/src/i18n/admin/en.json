@@ -1373,7 +1373,7 @@
     "saved": "Saved.",
     "saving": "Saving…",
     "unsaved": "Unsaved changes.",
-    "previewNeedsSave": "Trying on the real site uses the saved version, so press Save first.",
+    "previewNeedsSave": "\"Try on the real site\" and \"Turn on now\" use the saved version, so press Save first.",
     "invalid": "Some fields need fixing; see the marked ones.",
     "unknownError": "Something went wrong, please try again.",
     "leaveConfirm": "You have unsaved changes. Go back anyway?",
@@ -1453,20 +1453,8 @@
     },
     "effect": {
       "on": "Effect on",
-      "kind": "Kind",
-      "names": {
-        "none": "None",
-        "snow": "Snow",
-        "apricot": "Apricot blossoms",
-        "peach": "Peach blossoms",
-        "petals": "Petals",
-        "hearts": "Hearts",
-        "stars": "Twinkling stars",
-        "confetti": "Confetti",
-        "image": "Your picture"
-      },
-      "image": "Falling picture",
-      "imageHint": "A small picture with a transparent background (e.g. a cake). The effect only runs once a picture is uploaded.",
+      "image": "Your picture",
+      "imageHint": "Up to 3 small pictures with a transparent background (e.g. a cake), falling with the pieces above.",
       "amount": "Amount",
       "speed": "Speed",
       "size": "Size",
@@ -1479,7 +1467,57 @@
       "where": "Shows on",
       "homeOnly": "Homepage only",
       "allPages": "Every page",
-      "hint": "Phones show half as many pieces. Visitors who ask their device for less motion don't see it. It never blocks buttons."
+      "hint": "Phones show half as many pieces. Visitors who ask their device for less motion don't see it. It never blocks buttons.",
+      "pieces": "Falling pieces (mixed together)",
+      "noPieces": "No pieces yet. Pick some below.",
+      "addPiece": "+ Add a piece…",
+      "piecesFull": "12 pieces is the most",
+      "weight": "How many",
+      "weightFew": "Few",
+      "weightSome": "Some",
+      "weightMany": "Many",
+      "removePiece": "Remove {name}",
+      "addImage": "Add your picture",
+      "sizeMix": "Size variety",
+      "mixSame": "All alike",
+      "mixMixed": "Small and big mixed",
+      "groups": {
+        "winter": "Christmas & winter",
+        "tet": "Tet",
+        "love": "Valentine & flowers",
+        "halloween": "Halloween",
+        "midAutumn": "Mid-Autumn",
+        "party": "Party & opening"
+      },
+      "motions": {
+        "fall": "falls down",
+        "rise": "floats up",
+        "across": "flies across",
+        "twinkle": "twinkles in place"
+      },
+      "names": {
+        "snow": "Snow",
+        "ornaments": "Baubles",
+        "candycanes": "Candy canes",
+        "stars": "Twinkling stars",
+        "apricot": "Apricot blossoms",
+        "peach": "Peach blossoms",
+        "envelopes": "Red envelopes",
+        "coins": "Gold coins",
+        "hearts": "Hearts",
+        "roses": "Roses",
+        "petals": "Petals",
+        "gifts": "Gift boxes",
+        "pumpkins": "Pumpkins",
+        "candy": "Sweets",
+        "skulls": "Skulls",
+        "bats": "Bats",
+        "ghosts": "Ghosts",
+        "lanterns": "Lanterns",
+        "mooncakes": "Mooncakes",
+        "confetti": "Confetti",
+        "balloons": "Balloons"
+      }
     },
     "schedule": {
       "on": "Turn on by dates",
@@ -1505,6 +1543,14 @@
       "defaultMessage": "(The bar text from the Homepage page)",
       "see": "See it"
     },
-    "loading": "Loading looks..."
+    "loading": "Loading looks...",
+    "pinOn": "Turn on now",
+    "pinOff": "Stop turning on by hand",
+    "pinOnDone": "Turned on. Customers see it within about 1–5 minutes.",
+    "pinOffDone": "Stopped; back to following the dates.",
+    "pinnedUntil": "On by hand · turns off after {date}",
+    "pinnedForever": "On by hand · stays on until you turn it off",
+    "pinExpired": "The look turned on by hand has passed its end day and turned off; the site follows the dates.",
+    "pinEnded": "This look's dates have already ended. Change the dates (or tick every year), then turn it on."
   }
 }

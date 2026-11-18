@@ -62,15 +62,54 @@ export const THEME_ICONS = [
 ] as const;
 export type ThemeIconName = (typeof THEME_ICONS)[number];
 
-export const THEME_EFFECTS = ["none", "snow", "apricot", "peach", "petals", "hearts", "stars", "confetti", "image"] as const;
-export type ThemeEffectKind = (typeof THEME_EFFECTS)[number];
+// Pieces that can fall (or float up, fly across, twinkle) together. Grouped by occasion for the admin.
+export const PIECE_GROUPS = {
+  winter: ["snow", "ornaments", "candycanes", "stars"],
+  tet: ["apricot", "peach", "envelopes", "coins"],
+  love: ["hearts", "roses", "petals", "gifts"],
+  halloween: ["pumpkins", "candy", "skulls", "bats", "ghosts"],
+  midAutumn: ["lanterns", "mooncakes"],
+  party: ["confetti", "balloons"],
+} as const;
+export type PieceKind = (typeof PIECE_GROUPS)[keyof typeof PIECE_GROUPS][number];
+export const PIECES = Object.values(PIECE_GROUPS).flat() as PieceKind[];
+
+// How each piece moves.
+export type PieceMotion = "fall" | "rise" | "across" | "twinkle";
+export const PIECE_MOTION: Record<PieceKind, PieceMotion> = {
+  snow: "fall",
+  ornaments: "fall",
+  candycanes: "fall",
+  stars: "twinkle",
+  apricot: "fall",
+  peach: "fall",
+  envelopes: "fall",
+  coins: "fall",
+  hearts: "fall",
+  roses: "fall",
+  petals: "fall",
+  gifts: "fall",
+  pumpkins: "fall",
+  candy: "fall",
+  skulls: "fall",
+  bats: "across",
+  ghosts: "rise",
+  lanterns: "rise",
+  mooncakes: "fall",
+  confetti: "fall",
+  balloons: "rise",
+};
+
+export type EffectPiece = { kind: PieceKind; weight: number }; // weight 1-3 = few / some / many
+export const MAX_EFFECT_IMAGES = 3;
 
 export type ThemeEffectView = {
-  kind: ThemeEffectKind;
-  imageUrl: string | null;
+  pieces: EffectPiece[];
+  images: string[]; // uploaded pictures falling with the pieces
   amount: number; // 10-100
   speed: number; // 10-100
   size: number; // 10-100
+  sizeMix: number; // 0-100: 0 = same size, 100 = small and big mixed
   allPages: boolean; // false = homepage only
 };
 

@@ -1,6 +1,7 @@
 import "server-only";
 import { cacheLife } from "next/cache";
 import type { Locale } from "@/i18n/config";
+import type { SiteThemeView } from "./site-theme";
 
 // Shapes returned by the backend API (see backend/src/routes/catalog.ts).
 
@@ -225,6 +226,18 @@ export async function getHomeContent(locale: Locale): Promise<HomeContent> {
     return { ...EMPTY_HOME, ...(await getJson<Partial<HomeContent>>(`/api/home?locale=${locale}`)) };
   } catch {
     return EMPTY_HOME;
+  }
+}
+
+// The seasonal look showing now (Christmas, Tet...), or null for the normal black and white.
+// Checked every few minutes, so a look that starts or ends by its dates shows up without a deploy.
+export async function getSiteTheme(locale: Locale): Promise<SiteThemeView | null> {
+  "use cache";
+  cacheLife("minutes");
+  try {
+    return (await getJson<{ theme: SiteThemeView | null }>(`/api/theme?locale=${locale}`)).theme;
+  } catch {
+    return null;
   }
 }
 

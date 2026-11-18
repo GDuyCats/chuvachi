@@ -1,6 +1,8 @@
 // Calls the admin API from the browser. The sign-in cookie is sent automatically
 // (credentials: "include"); JavaScript itself can never read it.
 
+import type { ThemeColors, ThemeEffectKind } from "./site-theme";
+
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 
 export type AdminStatus = "PENDING" | "CONFIRMED" | "PREPARING" | "READY" | "COMPLETED" | "CANCELLED";
@@ -504,7 +506,40 @@ export type AdminProduct = AdminProductInput & {
   options: (AdminOption & { id: number })[];
 };
 
-export type UploadKind = "product" | "banner" | "post";
+export type UploadKind = "product" | "banner" | "post" | "theme";
+
+// ---------- Seasonal looks ----------
+
+export type AdminTheme = {
+  id: number;
+  name: string;
+  colors: ThemeColors;
+  messageVi: string | null;
+  messageEn: string | null;
+  linkUrl: string | null;
+  icon: string | null;
+  iconUrl: string | null;
+  effect: ThemeEffectKind;
+  effectOn: boolean;
+  effectImageUrl: string | null;
+  effectAmount: number;
+  effectSpeed: number;
+  effectSize: number;
+  effectAllPages: boolean;
+  scheduleOn: boolean;
+  startDate: string | null; // YYYY-MM-DD
+  endDate: string | null;
+  yearly: boolean;
+  sortOrder: number;
+};
+export type AdminThemeInput = Omit<AdminTheme, "id" | "sortOrder">;
+export type ThemePreset = { key: string; nameVi: string; nameEn: string; colors: ThemeColors; icon: string };
+export type ThemeBundle = {
+  themes: AdminTheme[];
+  presets: ThemePreset[];
+  settings: { themesOff: boolean; themePinnedId: number | null };
+  activeId: number | null; // the look customers see right now
+};
 
 // ---------- Homepage ----------
 
@@ -807,6 +842,17 @@ export const adminApi = {
     body.append("image", file);
     return request<{ url: string }>(`/uploads/${kind}`, { method: "POST", body });
   },
+  getThemes: () => request<ThemeBundle>("/themes"),
+  createTheme: (preset: string | null, lang: "vi" | "en") =>
+    request<ThemeBundle & { createdId: number }>("/themes", { method: "POST", body: JSON.stringify({ preset, lang }) }),
+  copyTheme: (id: number, lang: "vi" | "en") =>
+    request<ThemeBundle & { createdId: number }>(`/themes/${id}/copy`, { method: "POST", body: JSON.stringify({ lang }) }),
+  saveTheme: (id: number, input: AdminThemeInput) =>
+    request<ThemeBundle>(`/themes/${id}`, { method: "PUT", body: JSON.stringify(input) }),
+  deleteTheme: (id: number) => request<ThemeBundle>(`/themes/${id}`, { method: "DELETE" }),
+  orderThemes: (ids: number[]) => request<ThemeBundle>("/themes/order", { method: "PUT", body: JSON.stringify({ ids }) }),
+  themeSwitches: (themesOff: boolean, themePinnedId: number | null) =>
+    request<ThemeBundle>("/themes/switches", { method: "PUT", body: JSON.stringify({ themesOff, themePinnedId }) }),
   listPosts: () => request<AdminPost[]>("/posts"),
   createPost: (post: PostInput) => request<AdminPost[]>("/posts", { method: "POST", body: JSON.stringify(post) }),
   updatePost: (id: number, post: PostInput) =>

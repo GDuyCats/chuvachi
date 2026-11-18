@@ -81,8 +81,6 @@ export function TrackOrder({ lang, labels, cancelReasons, reviewLabels, pushLabe
     };
   }, [searchParams, lang]);
 
-
-
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const cleanCode = code.trim().toUpperCase();
@@ -122,7 +120,7 @@ export function TrackOrder({ lang, labels, cancelReasons, reviewLabels, pushLabe
     void lookup(cleanCode, autoPhone);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once when the token arrives
   }, [autoPhone, botToken]);
-  
+
   const inputClass = "h-13 border-[1.5px] border-black px-3.5 text-[17px]";
 
   return (
@@ -159,7 +157,7 @@ export function TrackOrder({ lang, labels, cancelReasons, reviewLabels, pushLabe
         <button
           type="submit"
           disabled={loading}
-          className="h-13 bg-black px-8 font-bold text-white hover:bg-[#333333] disabled:opacity-60"
+          className="h-13 bg-btn px-8 font-bold text-btn-ink hover:bg-btn/85 disabled:opacity-60"
         >
           {loading ? labels.checking : labels.submit}
         </button>
@@ -270,7 +268,7 @@ function OrderDetails({
             const done = index < doneCount;
             return (
               <li key={step} className="flex flex-col gap-2" aria-current={index === doneCount - 1 ? "step" : undefined}>
-                <span className={`h-1.5 ${done ? "bg-black" : "bg-[#d4d4d4]"}`} />
+                <span className={`h-1.5 ${done ? "bg-accent" : "bg-[#d4d4d4]"}`} />
                 <span className={`text-xs md:text-sm ${done ? "font-bold text-black" : "text-[#595959]"}`}>
                   {labels.steps[step]}
                 </span>
@@ -292,8 +290,9 @@ function OrderDetails({
           <h3 className="text-[13px] font-bold uppercase tracking-widest">{labels.paymentTitle}</h3>
           <span className="font-semibold">{formatPrice(order.total, lang)}</span>
           <span
-            className={`self-start px-2 py-1 text-xs font-bold uppercase tracking-wider ${order.paymentStatus === "PAID" ? "bg-black text-white" : "border-[1.5px] border-black"
-              }`}
+            className={`self-start px-2 py-1 text-xs font-bold uppercase tracking-wider ${
+              order.paymentStatus === "PAID" ? "bg-accent text-accent-ink" : "border-[1.5px] border-black"
+            }`}
           >
             {paymentText}
           </span>

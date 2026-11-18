@@ -1,13 +1,16 @@
+import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Anton, Be_Vietnam_Pro } from "next/font/google";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { isLocale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { getHomeContent, getProducts, getShopInfo, type Product } from "@/lib/api";
+import { getHomeContent, getProducts, getShopInfo, getSiteTheme, type Product } from "@/lib/api";
 import { buildSearchIndex } from "@/lib/search-index";
+import { themeVars } from "@/lib/site-theme";
 import { SITE_URL } from "@/lib/site-url";
 import "../globals.css";
 
@@ -59,10 +62,11 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   if (!isLocale(lang)) {
     notFound();
   }
-  const [dict, home, shop, products] = await Promise.all([
+  const [dict, home, shop, theme, products] = await Promise.all([
     getDictionary(lang),
     getHomeContent(lang),
     getShopInfo(),
+    getSiteTheme(lang),
     // The search box still opens (with pages only) if the menu can't be loaded.
     getProducts(lang).catch((): Product[] => []),
   ]);
@@ -70,8 +74,14 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const pauseMessage = lang === "vi" ? shop.pauseMessageVi : shop.pauseMessageEn;
 
   return (
-    <html lang={lang} className={`${anton.variable} ${beVietnamPro.variable} h-full antialiased`}>
+    // The seasonal look's colors go on <html> as CSS variables (see globals.css), so they show from the first paint.
+    <html
+      lang={lang}
+      className={`${anton.variable} ${beVietnamPro.variable} h-full antialiased`}
+      style={themeVars(theme?.colors) as CSSProperties}
+    >
       <body className="flex min-h-full flex-col">
+        <ThemeProvider theme={theme} lang={lang} labels={dict.theme}>
         <AnnouncementBar lang={lang} content={home.announcement} linkLabel={dict.announcement.link} />
         {shop.orderingPaused && (
           // Shown on every page while staff have paused orders (admin, Settings).
@@ -83,6 +93,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
         <SiteHeader lang={lang} dict={dict.nav} searchIndex={searchIndex} searchLabels={dict.search} bellLabels={dict.bell} />
         <main className="flex-1">{children}</main>
         <SiteFooter lang={lang} dict={dict.footer} />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -13,6 +13,7 @@ const KINDS = {
   product: { folder: "products", maxSide: 1600, quality: 85 }, // longest side after resizing, in pixels
   banner: { folder: "banners", maxSide: 3200, quality: 92 }, // full screen width on sharp (retina) screens: keep it big
   post: { folder: "posts", maxSide: 1800, quality: 85 }, // cover and in-text photos of news posts
+  theme: { folder: "themes", maxSide: 400, quality: 90 }, // seasonal look: small icon by the logo and falling pictures (transparency kept)
 } as const;
 type UploadKind = keyof typeof KINDS;
 

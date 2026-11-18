@@ -277,7 +277,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
         {showUnavailableNote && <p className="bg-surface px-4 py-3 text-sm">{labels.unavailable}</p>}
         <h2 className="font-display text-4xl uppercase">{labels.emptyTitle}</h2>
         <p className="text-muted">{labels.emptyText}</p>
-        <Link href={`/${lang}/menu`} className="flex min-h-12 items-center bg-black px-8 font-bold text-white">
+        <Link href={`/${lang}/menu`} className="flex min-h-12 items-center bg-btn px-8 font-bold text-btn-ink">
           {labels.toMenu}
         </Link>
       </div>
@@ -286,7 +286,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
 
   const inputClass = "h-12 border-[1.5px] border-black px-3.5 text-base font-normal";
   const choiceClass = (selected: boolean) =>
-    `border-[1.5px] border-black ${selected ? "bg-black text-white" : "bg-white text-black hover:bg-surface"}`;
+    `border-[1.5px] border-black ${selected ? "bg-btn text-btn-ink" : "bg-white text-black hover:bg-surface"}`;
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-14">
@@ -644,7 +644,7 @@ export function CheckoutForm({ lang, catalog, labels, photoComingSoon }: Props) 
         <button
           type="submit"
           disabled={!settings || submitting || settings.orderingPaused}
-          className="min-h-14 bg-black text-[17px] font-bold text-white hover:bg-[#333333] disabled:opacity-60"
+          className="min-h-14 bg-btn text-[17px] font-bold text-btn-ink hover:bg-btn/85 disabled:opacity-60"
         >
           {submitting ? labels.placing : `${labels.placeOrder} · ${formatPrice(total, lang)}`}
         </button>

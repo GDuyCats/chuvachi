@@ -6,6 +6,10 @@
   "announcement": {
     "link": "See it"
   },
+  "theme": {
+    "previewing": "Previewing a seasonal look (only you can see it)",
+    "exit": "Stop preview"
+  },
   "nav": {
     "label": "Main menu",
     "menu": "Menu",

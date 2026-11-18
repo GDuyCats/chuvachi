@@ -178,7 +178,7 @@ function ReviewItem({
             onBusyChange={setUploading}
           />
           )}
-          <button type="submit" disabled={busy || uploading} className="min-h-11 self-start bg-black px-5 text-sm font-bold text-white disabled:opacity-50">
+          <button type="submit" disabled={busy || uploading} className="min-h-11 self-start bg-btn px-5 text-sm font-bold text-btn-ink disabled:opacity-50">
             {busy ? labels.sending : item.review ? labels.form.update : labels.form.submit}
           </button>
         </form>

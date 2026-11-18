@@ -102,7 +102,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[s
                 {product.category.name}
               </span>
               {product.isNew && (
-                <span className="bg-black px-2 py-1 text-[11px] font-bold uppercase tracking-widest text-white">
+                <span className="bg-accent px-2 py-1 text-[11px] font-bold uppercase tracking-widest text-accent-ink">
                   {dict.product.new}
                 </span>
               )}

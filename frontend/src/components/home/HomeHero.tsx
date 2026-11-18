@@ -90,7 +90,7 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
   }
 
   const iconButton =
-    "flex h-11 w-11 items-center justify-center border-[1.5px] border-white text-white hover:bg-white hover:text-black";
+    "flex h-11 w-11 items-center justify-center border-[1.5px] border-hero-ink text-hero-ink hover:bg-hero-ink hover:text-hero";
 
   return (
     <section
@@ -106,7 +106,7 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
         touchStart.current = event.touches[0].clientX;
       }}
       onTouchEnd={onTouchEnd}
-      className="relative overflow-hidden bg-[#141414] text-white"
+      className="relative overflow-hidden bg-hero text-hero-ink"
     >
       <div className="grid">
         {slides.map((slide, i) => {
@@ -171,7 +171,7 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
               <div
                 key={i}
                 {...slideProps}
-                className={`relative col-start-1 row-start-1 min-h-[480px] overflow-hidden md:min-h-[560px] ${motion}`}
+                className={`relative col-start-1 row-start-1 min-h-[480px] overflow-hidden text-white md:min-h-[560px] ${motion}`}
                 style={{ ...frame, ...sizes, ...(pointVars(desktopPoint, mobilePoint) as CSSProperties) }}
               >
                 <div className={framed}>
@@ -230,7 +230,7 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
                 <Link
                   href={href}
                   {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  className="mt-2 self-start bg-white px-10 py-3.5 text-[calc(15px*var(--body-s,1))] font-bold text-black hover:bg-[#e5e5e5]"
+                  className="mt-2 self-start bg-hero-ink px-10 py-3.5 text-[calc(15px*var(--body-s,1))] font-bold text-hero hover:opacity-85"
                 >
                   {slide.cta ?? labels.heroCta}
                 </Link>
@@ -272,7 +272,7 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
                 aria-current={i === index ? "true" : undefined}
                 className="flex h-11 w-6 items-center justify-center"
               >
-                <span className={`block h-2 rounded-full bg-white transition-all ${i === index ? "w-6" : "w-2 opacity-40"}`} />
+                <span className={`block h-2 rounded-full bg-hero-ink transition-all ${i === index ? "w-6" : "w-2 opacity-40"}`} />
               </button>
             ))}
           </div>

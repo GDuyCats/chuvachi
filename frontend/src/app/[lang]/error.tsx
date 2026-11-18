@@ -18,7 +18,7 @@ export default function ShopError({ error, reset }: { error: Error & { digest?: 
 
   return (
     <SystemMessage code="!" title={t.errorTitle} body={t.errorBody} links={[{ href: `/${lang}`, label: t.toHome }]}>
-      <button type="button" onClick={reset} className="min-h-12 bg-black px-8 font-bold text-white hover:bg-[#333333]">
+      <button type="button" onClick={reset} className="min-h-12 bg-btn px-8 font-bold text-btn-ink hover:bg-btn/85">
         {t.retry}
       </button>
     </SystemMessage>

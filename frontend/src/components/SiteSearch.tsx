@@ -28,7 +28,7 @@ export function SiteSearch(props: Props) {
   return (
     <Suspense
       fallback={
-        <span aria-hidden="true" className="flex h-11 w-11 items-center justify-center text-ink">
+        <span aria-hidden="true" className="flex h-11 w-11 items-center justify-center text-head-ink">
           <SearchIcon />
         </span>
       }
@@ -180,7 +180,7 @@ function SearchBox({ lang, index, labels }: Props) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label={labels.open}
-        className="flex h-11 w-11 items-center justify-center text-ink"
+        className="flex h-11 w-11 items-center justify-center text-head-ink"
       >
         <SearchIcon />
       </button>
@@ -192,7 +192,7 @@ function SearchBox({ lang, index, labels }: Props) {
             aria-modal="true"
             aria-label={labels.open}
             onClick={(event) => event.stopPropagation()}
-            className="mx-auto flex max-h-full w-full max-w-2xl flex-col bg-white md:mt-16 md:max-h-[75vh] md:border-[1.5px] md:border-black"
+            className="mx-auto flex max-h-full w-full max-w-2xl flex-col bg-white text-ink md:mt-16 md:max-h-[75vh] md:border-[1.5px] md:border-black"
           >
             <form
               onSubmit={(event) => {

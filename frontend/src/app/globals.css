@@ -9,6 +9,21 @@
   --color-muted: #555555;
   --color-line: #e5e5e5;
   --color-surface: #f2f2f2;
+
+  /* Colors a seasonal look can change (admin, "Seasonal looks"). The active look sets the --t-*
+     variables on <html>; without one, the fallbacks keep the site black and white. */
+  --color-btn: var(--t-btn, #000000); /* main buttons and chosen options */
+  --color-btn-ink: var(--t-btn-ink, #ffffff);
+  --color-head: var(--t-head, #ffffff); /* top bar with the logo and menu */
+  --color-head-ink: var(--t-head-ink, #000000);
+  --color-bar: var(--t-bar, #000000); /* thin message bar above it */
+  --color-bar-ink: var(--t-bar-ink, #ffffff);
+  --color-foot: var(--t-foot, #000000); /* footer */
+  --color-foot-ink: var(--t-foot-ink, #ffffff);
+  --color-hero: var(--t-hero, #141414); /* banner and the dark blocks of the homepage */
+  --color-hero-ink: var(--t-hero-ink, #ffffff);
+  --color-accent: var(--t-accent, #000000); /* small labels ("New"), badges, progress bars */
+  --color-accent-ink: var(--t-accent-ink, #ffffff);
 }
 
 /* Vietnamese accents sit above (and sometimes below) the letters, so tall display headings

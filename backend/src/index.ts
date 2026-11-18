@@ -26,6 +26,8 @@ import { reviewsRouter } from "./routes/reviews";
 import { homeRouter } from "./routes/home";
 import { accountRouter } from "./routes/account";
 import { shopInfoRouter } from "./routes/shop-info";
+import { themeRouter } from "./routes/theme";
+import { adminThemesRouter } from "./routes/admin-themes";
 import { startBackgroundJobs } from "./jobs/background-jobs";
 
 const app = express();
@@ -56,6 +58,7 @@ app.use("/api", catalogRouter);
 app.use("/api", ordersRouter);
 app.use("/api", shopInfoRouter);
 app.use("/api", homeRouter);
+app.use("/api", themeRouter);
 app.use("/api", accountRouter);
 app.use("/api", reviewsRouter);
 app.use("/api", customerPushRouter);
@@ -72,6 +75,7 @@ app.use("/api/admin/costing", adminCostingRouter);
 app.use("/api/admin/push", adminPushRouter);
 app.use("/api/admin/reviews", adminReviewsRouter);
 app.use("/api/admin/posts", adminPostsRouter);
+app.use("/api/admin/themes", adminThemesRouter);
 app.use("/api/admin", adminHomeRouter);
 app.use("/api/admin", adminSettingsRouter);
 

@@ -11,7 +11,7 @@ type Props = {
 };
 
 // Tiles take turns being black, white and grey.
-const tileStyles = ["bg-black text-white", "bg-white text-black", "bg-[#ededed] text-black"];
+const tileStyles = ["bg-hero text-hero-ink", "bg-white text-black", "bg-[#ededed] text-black"];
 
 // One tile per category (from the admin "Products" page), plus "New" when there are new cakes.
 export function CategoryTiles({ lang, title, newLabel, hasNew, categories }: Props) {

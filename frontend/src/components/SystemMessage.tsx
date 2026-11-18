@@ -25,7 +25,7 @@ export function SystemMessage({ code, title, body, links, children }: Props) {
             key={link.href}
             href={link.href}
             className={`flex min-h-12 items-center px-8 font-bold ${
-              link.primary ? "bg-black text-white hover:bg-[#333333]" : "border-[1.5px] border-black"
+              link.primary ? "bg-btn text-btn-ink hover:bg-btn/85" : "border-[1.5px] border-black"
             }`}
           >
             {link.label}

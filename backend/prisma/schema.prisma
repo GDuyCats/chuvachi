@@ -417,6 +417,8 @@ model ShopSetting {
   reviewWindowDays     Int      @default(30) // buyers may review (and edit or delete) this many days after delivery
   maxReviewPhotos      Int      @default(4)  // photos per review (0 = no photos)
   reportAlertThreshold Int      @default(3)  // staff are told when a review or comment gets this many reports
+  themesOff            Boolean  @default(false) // seasonal looks switched off: the site stays black and white
+  themePinnedId        Int?     // a seasonal look turned on by hand, whatever its dates say
   updatedAt            DateTime @updatedAt
 }
 
@@ -827,4 +829,34 @@ model RecipeLine {
   sortOrder    Int        @default(0)
   @@index([recipeId])
   @@index([ingredientId])
+}
+
+// ---------- Seasonal looks ----------
+
+// A look for a holiday (Christmas, Tet...): colors of the main parts of the shop pages, a message in
+// the top bar, a small icon by the logo and a falling effect. It shows between its dates, or when
+// turned on by hand. When dates of several looks overlap, the one higher in the list (lower sortOrder) wins.
+model SiteTheme {
+  id             Int       @id @default(autoincrement())
+  name           String
+  colors         Json      @default("{}") // { btn: "#8b1e2d", btnInk: "#ffffff", ... }; a missing color keeps black and white
+  messageVi      String?   // top bar message; one message per line, several lines take turns
+  messageEn      String?
+  linkUrl        String?   // where the message links to: "/news" or https://...
+  icon           String?   // built-in icon by the logo, e.g. "tree"
+  iconUrl        String?   // uploaded icon; used instead of the built-in one
+  effect         String    @default("none") // falling effect: none, snow, apricot, peach, hearts, petals, stars, confetti, image
+  effectOn       Boolean   @default(true)
+  effectImageUrl String?   // the picture that falls when effect = image
+  effectAmount   Int       @default(50) // 10-100
+  effectSpeed    Int       @default(50) // 10-100
+  effectSize     Int       @default(50) // 10-100
+  effectAllPages Boolean   @default(false) // false = homepage only
+  scheduleOn     Boolean   @default(false) // follow the dates below
+  startDate      DateTime? @db.Date
+  endDate        DateTime? @db.Date
+  yearly         Boolean   @default(false) // same days every year (the year of the dates is ignored)
+  sortOrder      Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }

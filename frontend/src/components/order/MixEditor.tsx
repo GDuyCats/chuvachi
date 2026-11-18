@@ -70,7 +70,7 @@ export function MixEditor({ flavors, boxSize, initial, labels, onSave, onCancel 
           type="button"
           disabled={filled !== boxSize}
           onClick={() => onSave(mix)}
-          className="min-h-10 bg-black px-4 text-sm font-bold text-white disabled:opacity-40"
+          className="min-h-10 bg-btn px-4 text-sm font-bold text-btn-ink disabled:opacity-40"
         >
           {labels.saveMix}
         </button>

@@ -215,7 +215,7 @@ function EditForm({
         </p>
       )}
       <div className="flex flex-wrap gap-2">
-        <button type="submit" disabled={busy} className="min-h-12 bg-black px-6 font-bold text-white hover:bg-[#333333] disabled:opacity-60">
+        <button type="submit" disabled={busy} className="min-h-12 bg-btn px-6 font-bold text-btn-ink hover:bg-btn/85 disabled:opacity-60">
           {busy ? labels.saving : labels.save}
         </button>
         <button type="button" onClick={onCancel} className="min-h-12 px-4 font-semibold underline">

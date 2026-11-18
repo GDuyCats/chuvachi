@@ -74,7 +74,7 @@ export function MyOrders({ lang, labels, accountLabels, statusLabels, cancelReas
           <p>{labels.signInText}</p>
           <Link
             href={`/${lang}/login?next=${encodeURIComponent(`/${lang}/orders`)}`}
-            className="flex min-h-11 items-center bg-black px-6 font-bold text-white"
+            className="flex min-h-11 items-center bg-btn px-6 font-bold text-btn-ink"
           >
             {labels.signIn}
           </Link>

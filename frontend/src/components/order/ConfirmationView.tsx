@@ -44,7 +44,7 @@ export function ConfirmationView({ lang, labels, pushLabels }: Props) {
       <div className="flex flex-col items-start gap-4 py-10">
         <h1 className="font-display text-4xl uppercase md:text-5xl">{labels.missingTitle}</h1>
         <p className="text-muted">{labels.missingText}</p>
-        <Link href={`/${lang}/track`} className="flex min-h-12 items-center bg-black px-8 font-bold text-white">
+        <Link href={`/${lang}/track`} className="flex min-h-12 items-center bg-btn px-8 font-bold text-btn-ink">
           {labels.track}
         </Link>
       </div>
@@ -71,7 +71,7 @@ export function ConfirmationView({ lang, labels, pushLabels }: Props) {
   return (
     <div className="flex flex-col gap-10">
       <div className="flex flex-col gap-3.5">
-        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-black text-white motion-safe:animate-[circle-in_300ms_ease-out]">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-ink motion-safe:animate-[circle-in_300ms_ease-out]">
           <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
             <path
               d="M5 12.5l4.5 4.5L19 7.5"
@@ -174,7 +174,7 @@ export function ConfirmationView({ lang, labels, pushLabels }: Props) {
       <div className="flex flex-wrap gap-3">
         <Link
           href={`/${lang}/track?code=${encodeURIComponent(order.code)}`}
-          className="flex min-h-13 items-center bg-black px-7 font-bold text-white"
+          className="flex min-h-13 items-center bg-btn px-7 font-bold text-btn-ink"
         >
           {labels.track}
         </Link>

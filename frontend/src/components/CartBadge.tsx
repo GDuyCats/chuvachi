@@ -16,7 +16,7 @@ export function CartBadge() {
     // A new key on every change replays the little "bump" animation.
     <span
       key={count}
-      className="animate-badge-bump absolute right-0 top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-black px-1 text-[11px] font-bold text-white"
+      className="animate-badge-bump absolute right-0 top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold text-accent-ink"
     >
       {count > 99 ? "99+" : count}
     </span>

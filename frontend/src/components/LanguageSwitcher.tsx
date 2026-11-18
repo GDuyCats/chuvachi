@@ -40,7 +40,7 @@ function SwitcherForCurrentPage(props: Props) {
 
 function Buttons({ current, label, hrefFor }: Props & { hrefFor: (locale: Locale) => string }) {
   return (
-    <div role="group" aria-label={label} className="flex border-[1.5px] border-black text-[13px] font-bold">
+    <div role="group" aria-label={label} className="flex border-[1.5px] border-current text-[13px] font-bold">
       {locales.map((locale) => {
         const active = locale === current;
         return (
@@ -49,7 +49,7 @@ function Buttons({ current, label, hrefFor }: Props & { hrefFor: (locale: Locale
             href={hrefFor(locale)}
             onClick={() => rememberLocale(locale)}
             aria-current={active ? "true" : undefined}
-            className={`flex min-h-10 items-center px-3 ${active ? "bg-black text-white" : "bg-white text-black"}`}
+            className={`flex min-h-10 items-center px-3 ${active ? "bg-head-ink text-head" : "bg-head text-head-ink"}`}
           >
             {locale.toUpperCase()}
           </Link>

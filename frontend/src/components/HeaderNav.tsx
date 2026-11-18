@@ -19,7 +19,7 @@ export function HeaderNav({ label, links }: { label: string; links: NavLink[] })
       className="no-scrollbar order-3 flex w-full gap-6 overflow-x-auto whitespace-nowrap text-[15px] font-semibold md:order-none md:w-auto md:gap-9"
     >
       {links.map((link) => (
-        <Link key={link.label} href={link.href} onClick={(event) => onClick(event, link.href)} className="py-2 hover:text-muted">
+        <Link key={link.label} href={link.href} onClick={(event) => onClick(event, link.href)} className="py-2 hover:opacity-60">
           {link.label}
         </Link>
       ))}

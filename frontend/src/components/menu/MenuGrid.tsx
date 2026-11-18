@@ -90,7 +90,7 @@ export function MenuGrid({ lang, items, labels, cardLabels }: Props) {
                 onClick={() => choose(filter.id)}
                 aria-pressed={selected}
                 className={`min-h-11 shrink-0 border-[1.5px] border-black px-4 text-sm font-bold uppercase tracking-wide ${
-                  selected ? "bg-black text-white" : "bg-white text-black hover:bg-surface"
+                  selected ? "bg-btn text-btn-ink" : "bg-white text-black hover:bg-surface"
                 }`}
               >
                 {filter.label}

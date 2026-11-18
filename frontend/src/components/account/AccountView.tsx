@@ -79,7 +79,7 @@ export function AccountView({ lang, labels, reviewLabels, pushLabels }: Props) {
           // eslint-disable-next-line @next/next/no-img-element -- small Google profile photo
           <img src={profile.avatarUrl} alt="" referrerPolicy="no-referrer" className="h-16 w-16 rounded-full object-cover" />
         ) : (
-          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-black font-display text-2xl text-white">
+          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-accent font-display text-2xl text-accent-ink">
             {profile.name.charAt(0).toUpperCase()}
           </span>
         )}
@@ -128,7 +128,7 @@ export function OrdersSection({
       {orders.length === 0 ? (
         <div className="flex flex-col items-start gap-3 border border-dashed border-[#a8a8a8] p-6">
           <p className="text-muted">{labels.noOrders}</p>
-          <Link href={`/${lang}/menu`} className="flex min-h-11 items-center bg-black px-6 font-bold text-white">
+          <Link href={`/${lang}/menu`} className="flex min-h-11 items-center bg-btn px-6 font-bold text-btn-ink">
             {labels.toMenu}
           </Link>
         </div>
@@ -150,7 +150,7 @@ export function OrdersSection({
                     <span className="font-bold tracking-[0.06em]">{order.code}</span>
                     <span
                       className={`px-2 py-1 text-[11px] font-bold uppercase tracking-wider ${
-                        order.status === "CANCELLED" ? "border border-black" : "bg-black text-white"
+                        order.status === "CANCELLED" ? "border border-black" : "bg-accent text-accent-ink"
                       }`}
                     >
                       {status}
@@ -327,7 +327,7 @@ function ProfileSection({
             />
           </label>
         </div>
-        <button type="submit" disabled={busy} className="min-h-12 self-start bg-black px-8 font-bold text-white hover:bg-[#333333] disabled:opacity-60">
+        <button type="submit" disabled={busy} className="min-h-12 self-start bg-btn px-8 font-bold text-btn-ink hover:bg-btn/85 disabled:opacity-60">
           {busy ? labels.working : labels.save}
         </button>
       </form>
@@ -376,7 +376,7 @@ function DangerSection({ lang, labels }: { lang: Locale; labels: Dictionary["acc
               type="button"
               disabled={busy}
               onClick={() => run(accountApi.deleteMe)}
-              className="min-h-11 bg-black px-5 text-sm font-bold text-white disabled:opacity-60"
+              className="min-h-11 bg-btn px-5 text-sm font-bold text-btn-ink disabled:opacity-60"
             >
               {labels.deleteConfirm}
             </button>

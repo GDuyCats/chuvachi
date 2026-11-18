@@ -239,7 +239,7 @@ export function ProductOptions({
 
   const optionButton = (selected: boolean, available = true) =>
     available
-      ? `border-[1.5px] border-black ${selected ? "bg-black text-white" : "bg-white text-black hover:bg-surface"}`
+      ? `border-[1.5px] border-black ${selected ? "bg-btn text-btn-ink" : "bg-white text-black hover:bg-surface"}`
       : "cursor-not-allowed border-[1.5px] border-dashed border-[#a8a8a8] bg-white text-[#8a8a8a]";
 
   // [−] [n] [+] control where the number can also be typed; "label" names it for screen readers.
@@ -413,7 +413,7 @@ export function ProductOptions({
         type="button"
         onClick={handleAdd}
         disabled={!canOrder}
-        className="min-h-13 bg-black px-6 text-base font-bold text-white hover:bg-[#333333] disabled:cursor-not-allowed disabled:bg-[#bdbdbd] disabled:text-white"
+        className="min-h-13 bg-btn px-6 text-base font-bold text-btn-ink hover:bg-btn/85 disabled:cursor-not-allowed disabled:bg-[#bdbdbd] disabled:text-white"
       >
         {blockedNote !== null
           ? availability === "COMING_SOON"

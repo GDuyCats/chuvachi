@@ -152,7 +152,7 @@ export function NewsBoard({
                 )}
                 <div className="flex flex-1 flex-col gap-2 p-5">
                   <span className="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em]">
-                    {card.pinned && <span className="bg-black px-1.5 py-0.5 text-white">{labels.pinned}</span>}
+                    {card.pinned && <span className="bg-accent px-1.5 py-0.5 text-accent-ink">{labels.pinned}</span>}
                     <span>{labels.categories[card.category]}</span>
                     <span className="font-semibold normal-case tracking-normal text-muted">{formatPostDate(card.publishedAt, lang)}</span>
                   </span>

@@ -72,7 +72,7 @@ export function ProductCard({
         />
         <div className="absolute left-2 top-2 flex gap-1.5 md:left-3 md:top-3">
           {isNew && (
-            <span className="bg-black px-2 py-1 text-[11px] font-bold uppercase tracking-widest text-white">{labels.new}</span>
+            <span className="bg-accent px-2 py-1 text-[11px] font-bold uppercase tracking-widest text-accent-ink">{labels.new}</span>
           )}
           {availability === "AVAILABLE" ? (
             <SoldOutBadge soldOutUntil={soldOutUntil} label={labels.soldOut} />

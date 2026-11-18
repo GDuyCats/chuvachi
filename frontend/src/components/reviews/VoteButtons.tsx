@@ -12,7 +12,7 @@ type Props = {
 // Up and down vote, like Reddit: tap again to take the vote back. Shows up minus down.
 export function VoteButtons({ up, down, myVote, onVote, labels, disabled = false }: Props) {
   const button = (active: boolean) =>
-    `flex h-9 w-9 items-center justify-center border-[1.5px] ${active ? "border-black bg-black text-white" : "border-transparent hover:border-black"} disabled:opacity-40`;
+    `flex h-9 w-9 items-center justify-center border-[1.5px] ${active ? "border-btn bg-btn text-btn-ink" : "border-transparent hover:border-black"} disabled:opacity-40`;
   return (
     <div className="flex items-center gap-1">
       <button

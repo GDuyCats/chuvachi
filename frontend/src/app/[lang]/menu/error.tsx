@@ -13,7 +13,7 @@ export default function MenuError({ reset }: { error: Error; reset: () => void }
     <section className="flex flex-col items-start gap-4 px-4 py-20 md:px-10">
       <h1 className="font-display text-4xl uppercase md:text-5xl">{t.menuTitle}</h1>
       <p className="text-muted">{t.menuBody}</p>
-      <button type="button" onClick={reset} className="min-h-12 bg-black px-8 font-bold text-white">
+      <button type="button" onClick={reset} className="min-h-12 bg-btn px-8 font-bold text-btn-ink">
         {t.retry}
       </button>
     </section>

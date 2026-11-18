@@ -23,11 +23,11 @@ export function SeasonalBlock({ lang, season, labels, productLabels }: Props) {
       </div>
 
       <div className="flex flex-col gap-8 lg:flex-row">
-        <div className="flex flex-col justify-between gap-6 rounded-xl bg-black p-7 text-white md:p-12 lg:w-[38%] lg:shrink-0">
+        <div className="flex flex-col justify-between gap-6 rounded-xl bg-hero p-7 text-hero-ink md:p-12 lg:w-[38%] lg:shrink-0">
           <div className="flex flex-col gap-4">
             {season.eyebrow && <span className="text-[13px] font-bold uppercase tracking-[0.16em]">{season.eyebrow}</span>}
             <h3 className="font-display text-5xl uppercase leading-[1.05] md:text-[64px]">{season.name}</h3>
-            {season.description && <p className="max-w-sm text-base text-[#d4d4d4]">{season.description}</p>}
+            {season.description && <p className="max-w-sm text-base text-hero-ink/80">{season.description}</p>}
           </div>
           <Link href={`/${lang}/menu`} className="self-start bg-white px-7 py-3.5 text-[15px] font-bold text-black hover:bg-[#e5e5e5]">
             {labels.cta}

@@ -87,7 +87,7 @@ export function ProductReviews({ lang, slug, labels }: Props) {
                 type="button"
                 aria-pressed={sort === option}
                 onClick={() => setSort(option)}
-                className={`min-h-10 px-3.5 ${sort === option ? "bg-black text-white" : "bg-white"}`}
+                className={`min-h-10 px-3.5 ${sort === option ? "bg-btn text-btn-ink" : "bg-white"}`}
               >
                 {option === "top" ? labels.sortTop : labels.sortNew}
               </button>
@@ -155,7 +155,7 @@ function Summary({ summary, labels }: { summary: ReviewSummary; labels: Labels }
             <li key={stars} className="grid grid-cols-[52px_1fr_32px] items-center gap-2 text-sm">
               <span>{labels.starsShort.replace("{count}", String(stars))}</span>
               <span className="h-2 bg-[#eeeeee]" aria-hidden="true">
-                <span className="block h-full bg-black" style={{ width: `${(count / top) * 100}%` }} />
+                <span className="block h-full bg-accent" style={{ width: `${(count / top) * 100}%` }} />
               </span>
               <span className="text-right text-muted">{count}</span>
             </li>
@@ -351,7 +351,7 @@ function CommentThread({ lang, reviewId, labels, signedIn, canAddPhoto, signInHr
       <div className="flex flex-wrap items-center gap-x-2 text-sm">
         <span className="font-bold">{comment.displayName}</span>
         {comment.isShop && (
-          <span className="bg-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">{labels.shop}</span>
+          <span className="bg-accent px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent-ink">{labels.shop}</span>
         )}
         <span className="text-muted">{formatDate(comment.createdAt, lang)}</span>
       </div>
@@ -491,7 +491,7 @@ function CommentForm({ reviewId, parent, labels, signedIn, canAddPhoto, signInHr
       )}
       {error && <p className="text-sm font-semibold">{error}</p>}
       <div className="flex gap-2">
-        <button type="submit" disabled={busy || uploading || (!text.trim() && photos.length === 0)} className="min-h-10 bg-black px-4 text-sm font-bold text-white disabled:opacity-50">
+        <button type="submit" disabled={busy || uploading || (!text.trim() && photos.length === 0)} className="min-h-10 bg-btn px-4 text-sm font-bold text-btn-ink disabled:opacity-50">
           {busy ? labels.sending : labels.send}
         </button>
         {onCancel && (

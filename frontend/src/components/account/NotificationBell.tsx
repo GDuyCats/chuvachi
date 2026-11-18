@@ -129,13 +129,13 @@ export function NotificationBell({ lang, labels }: { lang: Locale; labels: Label
         aria-label={buttonLabel}
         aria-expanded={open}
         aria-haspopup="dialog"
-        className="relative flex h-11 w-11 items-center justify-center text-ink"
+        className="relative flex h-11 w-11 items-center justify-center text-head-ink"
       >
         <BellIcon />
         {unread > 0 && (
           <span
             key={unread}
-            className="animate-badge-bump absolute right-0 top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-black px-1 text-[11px] font-bold text-white"
+            className="animate-badge-bump absolute right-0 top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold text-accent-ink"
           >
             {unread > 99 ? "99+" : unread}
           </span>
@@ -146,7 +146,7 @@ export function NotificationBell({ lang, labels }: { lang: Locale; labels: Label
         <div
           role="dialog"
           aria-label={labels.title}
-          className="fixed inset-x-4 top-20 z-40 flex max-h-[70vh] flex-col border-[1.5px] border-black bg-white shadow-[4px_4px_0_#000] md:absolute md:inset-x-auto md:right-0 md:top-full md:mt-2 md:w-[380px]"
+          className="fixed inset-x-4 top-20 z-40 flex max-h-[70vh] flex-col border-[1.5px] border-black bg-white shadow-[4px_4px_0_#000] md:absolute md:inset-x-auto md:right-0 md:top-full md:mt-2 md:w-[380px] text-ink"
         >
           <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
             <span className="font-bold">{labels.title}</span>
@@ -163,7 +163,7 @@ export function NotificationBell({ lang, labels }: { lang: Locale; labels: Label
               <Link
                 href={`/${lang}/login`}
                 onClick={() => setOpen(false)}
-                className="flex min-h-11 items-center justify-center bg-black px-4 font-bold text-white"
+                className="flex min-h-11 items-center justify-center bg-btn px-4 font-bold text-btn-ink"
               >
                 {labels.signIn}
               </Link>
@@ -192,7 +192,7 @@ export function NotificationBell({ lang, labels }: { lang: Locale; labels: Label
                         >
                           <span
                             aria-hidden="true"
-                            className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${item.read ? "bg-transparent" : "bg-black"}`}
+                            className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${item.read ? "bg-transparent" : "bg-accent"}`}
                           />
                           <span className="flex min-w-0 flex-col gap-0.5">
                             <span className={`text-sm ${item.read ? "font-semibold" : "font-bold"}`}>{item.title}</span>

@@ -6,6 +6,10 @@
   "announcement": {
     "link": "Xem ngay"
   },
+  "theme": {
+    "previewing": "Đang xem thử giao diện (chỉ bạn thấy)",
+    "exit": "Thoát xem thử"
+  },
   "nav": {
     "label": "Menu chính",
     "menu": "Menu",

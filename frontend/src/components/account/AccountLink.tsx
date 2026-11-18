@@ -30,10 +30,10 @@ export function AccountLink({ lang, signInLabel, accountLabel }: Props) {
     <Link
       href={profile ? `/${lang}/account` : `/${lang}/login`}
       aria-label={profile ? accountLabel : signInLabel}
-      className="flex h-11 w-11 items-center justify-center text-ink"
+      className="flex h-11 w-11 items-center justify-center text-head-ink"
     >
       {profile ? (
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-black text-[13px] font-bold text-white">
+        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-[13px] font-bold text-accent-ink">
           {profile.name.charAt(0).toUpperCase()}
         </span>
       ) : (

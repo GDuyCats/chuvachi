@@ -7,6 +7,7 @@ import { CartBadge } from "./CartBadge";
 import { HeaderNav } from "./HeaderNav";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { SiteSearch } from "./SiteSearch";
+import { ThemeLogoIcon } from "./theme/ThemeLogoIcon";
 import type { SearchIndex } from "@/lib/search-index";
 
 type Props = {
@@ -29,9 +30,11 @@ export function SiteHeader({ lang, dict, searchIndex, searchLabels, bellLabels }
   ];
 
   return (
-    <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-line px-4 py-4 md:px-10">
-      <Link href={`/${lang}`} className="font-display text-2xl tracking-[0.18em] text-black md:text-3xl">
+    <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-line bg-head px-4 py-4 text-head-ink md:px-10">
+      <Link href={`/${lang}`} className="flex items-center gap-2 font-display text-2xl tracking-[0.18em] md:text-3xl">
         CHUVACHI
+        {/* Small seasonal icon (Christmas tree, apricot blossom...) while a seasonal look is on. */}
+        <ThemeLogoIcon />
       </Link>
 
       {/* On phones the menu moves to its own row and scrolls sideways. */}
@@ -45,7 +48,7 @@ export function SiteHeader({ lang, dict, searchIndex, searchLabels, bellLabels }
         <Link
           href={`/${lang}/order`}
           aria-label={dict.cart}
-          className="relative flex h-11 w-11 items-center justify-center text-ink"
+          className="relative flex h-11 w-11 items-center justify-center text-head-ink"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M5 8h14l-1 12H6z" stroke="currentColor" strokeWidth="2" fill="none" strokeLinejoin="round" />

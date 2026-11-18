@@ -1,0 +1,178 @@
+[
+  {
+    "key": "christmas",
+    "nameVi": "Giáng sinh cổ điển",
+    "nameEn": "Classic Christmas",
+    "colors": {
+      "btn": "#8b1e2d", "btnInk": "#ffffff",
+      "bar": "#1f3d2b", "barInk": "#ffffff",
+      "foot": "#1f3d2b", "footInk": "#ffffff",
+      "hero": "#1f3d2b", "heroInk": "#ffffff",
+      "accent": "#8b1e2d", "accentInk": "#ffffff"
+    },
+    "messageVi": "Giáng sinh an lành – đặt bánh trước 23/12 để giao kịp",
+    "messageEn": "Merry Christmas – order by 23 Dec for delivery in time",
+    "linkUrl": "/menu",
+    "icon": "tree",
+    "effect": "snow", "effectOn": true, "effectAmount": 50, "effectSpeed": 40, "effectSize": 50,
+    "startDate": "2026-12-01", "endDate": "2026-12-26", "yearly": true
+  },
+  {
+    "key": "christmas-snow",
+    "nameVi": "Giáng sinh tuyết trắng",
+    "nameEn": "White Christmas",
+    "colors": {
+      "btn": "#2f4858", "btnInk": "#ffffff",
+      "bar": "#c9d3da", "barInk": "#1d2e38",
+      "foot": "#2f4858", "footInk": "#ffffff",
+      "hero": "#2f4858", "heroInk": "#ffffff",
+      "accent": "#2f4858", "accentInk": "#ffffff"
+    },
+    "messageVi": "Mùa đông ngọt ngào – bánh Giáng sinh đã có mặt",
+    "messageEn": "Sweet winter – Christmas cakes are here",
+    "linkUrl": "/menu",
+    "icon": "snowflake",
+    "effect": "snow", "effectOn": true, "effectAmount": 30, "effectSpeed": 30, "effectSize": 40,
+    "startDate": "2026-12-01", "endDate": "2026-12-26", "yearly": true
+  },
+  {
+    "key": "tet-apricot",
+    "nameVi": "Tết hoa mai",
+    "nameEn": "Tet – apricot blossom",
+    "colors": {
+      "btn": "#b3121f", "btnInk": "#ffffff",
+      "bar": "#b3121f", "barInk": "#ffe08a",
+      "foot": "#8e0e18", "footInk": "#ffffff",
+      "hero": "#8e0e18", "heroInk": "#ffe08a",
+      "accent": "#d4a017", "accentInk": "#1a1a1a"
+    },
+    "messageVi": "Chúc mừng năm mới – nhận đặt bánh biếu Tết",
+    "messageEn": "Happy Lunar New Year – now taking Tet gift orders",
+    "linkUrl": "/menu",
+    "icon": "apricot",
+    "effect": "apricot", "effectOn": true, "effectAmount": 40, "effectSpeed": 40, "effectSize": 50,
+    "startDate": null, "endDate": null, "yearly": false
+  },
+  {
+    "key": "tet-peach",
+    "nameVi": "Tết hoa đào",
+    "nameEn": "Tet – peach blossom",
+    "colors": {
+      "btn": "#c2185b", "btnInk": "#ffffff",
+      "bar": "#c2185b", "barInk": "#ffffff",
+      "foot": "#7a0e2e", "footInk": "#ffffff",
+      "hero": "#7a0e2e", "heroInk": "#ffffff",
+      "accent": "#b3121f", "accentInk": "#ffffff"
+    },
+    "messageVi": "Xuân sang an khang – bánh Tết làm quà biếu",
+    "messageEn": "A peaceful spring – Tet cakes for gifting",
+    "linkUrl": "/menu",
+    "icon": "envelope",
+    "effect": "peach", "effectOn": true, "effectAmount": 40, "effectSpeed": 40, "effectSize": 50,
+    "startDate": null, "endDate": null, "yearly": false
+  },
+  {
+    "key": "valentine",
+    "nameVi": "Valentine 14/2",
+    "nameEn": "Valentine's Day",
+    "colors": {
+      "btn": "#c8102e", "btnInk": "#ffffff",
+      "bar": "#f4c2c2", "barInk": "#7a0019",
+      "foot": "#7a0019", "footInk": "#ffffff",
+      "hero": "#7a0019", "heroInk": "#ffffff",
+      "accent": "#c8102e", "accentInk": "#ffffff"
+    },
+    "messageVi": "Valentine ngọt ngào – bánh cho người thương",
+    "messageEn": "Sweet Valentine – a cake for your loved one",
+    "linkUrl": "/menu",
+    "icon": "heart",
+    "effect": "hearts", "effectOn": false, "effectAmount": 30, "effectSpeed": 40, "effectSize": 50,
+    "startDate": "2027-02-07", "endDate": "2027-02-15", "yearly": true
+  },
+  {
+    "key": "women-day",
+    "nameVi": "Ngày Phụ nữ 8/3 & 20/10",
+    "nameEn": "Women's Day",
+    "colors": {
+      "btn": "#b44a6e", "btnInk": "#ffffff",
+      "bar": "#f6e7e1", "barInk": "#7d2e48",
+      "foot": "#7d2e48", "footInk": "#ffffff",
+      "hero": "#7d2e48", "heroInk": "#ffffff",
+      "accent": "#b44a6e", "accentInk": "#ffffff"
+    },
+    "messageVi": "Mừng ngày Phụ nữ – tặng bánh cho người phụ nữ bạn thương",
+    "messageEn": "Happy Women's Day – a cake for the women you love",
+    "linkUrl": "/menu",
+    "icon": "flower",
+    "effect": "petals", "effectOn": false, "effectAmount": 30, "effectSpeed": 40, "effectSize": 50,
+    "startDate": "2027-03-05", "endDate": "2027-03-08", "yearly": true
+  },
+  {
+    "key": "mid-autumn",
+    "nameVi": "Trung thu",
+    "nameEn": "Mid-Autumn Festival",
+    "colors": {
+      "btn": "#b85a0e", "btnInk": "#ffffff",
+      "bar": "#1b2a41", "barInk": "#ffc97a",
+      "foot": "#1b2a41", "footInk": "#ffffff",
+      "hero": "#1b2a41", "heroInk": "#ffffff",
+      "accent": "#d9731a", "accentInk": "#1b2a41"
+    },
+    "messageVi": "Trung thu đoàn viên – đặt bánh tặng gia đình",
+    "messageEn": "Mid-Autumn reunion – cakes for the whole family",
+    "linkUrl": "/menu",
+    "icon": "lantern",
+    "effect": "stars", "effectOn": true, "effectAmount": 30, "effectSpeed": 30, "effectSize": 50,
+    "startDate": null, "endDate": null, "yearly": false
+  },
+  {
+    "key": "halloween",
+    "nameVi": "Halloween",
+    "nameEn": "Halloween",
+    "colors": {
+      "btn": "#2b1b33", "btnInk": "#ffffff",
+      "bar": "#e06d06", "barInk": "#1a0f1f",
+      "foot": "#2b1b33", "footInk": "#ffffff",
+      "hero": "#2b1b33", "heroInk": "#ffffff",
+      "accent": "#e06d06", "accentInk": "#1a0f1f"
+    },
+    "messageVi": "Halloween vui vẻ – bánh ngọt hay bị ghẹo?",
+    "messageEn": "Happy Halloween – trick or treat?",
+    "linkUrl": "/menu",
+    "icon": "pumpkin",
+    "effect": "none", "effectOn": false, "effectAmount": 30, "effectSpeed": 40, "effectSize": 50,
+    "startDate": "2026-10-25", "endDate": "2026-10-31", "yearly": true
+  },
+  {
+    "key": "anniversary",
+    "nameVi": "Khai trương / Sinh nhật tiệm",
+    "nameEn": "Opening / Shop birthday",
+    "colors": {
+      "btn": "#111111", "btnInk": "#ffffff",
+      "bar": "#c9a227", "barInk": "#111111",
+      "accent": "#c9a227", "accentInk": "#111111"
+    },
+    "messageVi": "Mừng sinh nhật Chuvachi – cảm ơn bạn đã đồng hành",
+    "messageEn": "Happy birthday Chuvachi – thank you for being with us",
+    "linkUrl": "/news",
+    "icon": "star",
+    "effect": "confetti", "effectOn": true, "effectAmount": 40, "effectSpeed": 50, "effectSize": 50,
+    "startDate": null, "endDate": null, "yearly": false
+  },
+  {
+    "key": "sale",
+    "nameVi": "Khuyến mãi / Sale",
+    "nameEn": "Sale",
+    "colors": {
+      "btn": "#111111", "btnInk": "#e5d21b",
+      "bar": "#e5d21b", "barInk": "#111111",
+      "accent": "#e5d21b", "accentInk": "#111111"
+    },
+    "messageVi": "Ưu đãi có hạn – xem ngay các bánh đang giảm giá",
+    "messageEn": "Limited-time offer – see the cakes on sale",
+    "linkUrl": "/menu",
+    "icon": "tag",
+    "effect": "none", "effectOn": false, "effectAmount": 30, "effectSpeed": 40, "effectSize": 50,
+    "startDate": null, "endDate": null, "yearly": false
+  }
+]

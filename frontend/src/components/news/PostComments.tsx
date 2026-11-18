@@ -109,7 +109,7 @@ export function PostComments({ lang, slug, labels }: { lang: Locale; slug: strin
       <div className="flex flex-wrap items-center gap-x-2 text-sm">
         <span className="font-bold">{comment.displayName}</span>
         {comment.isShop && (
-          <span className="bg-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">{labels.shop}</span>
+          <span className="bg-accent px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent-ink">{labels.shop}</span>
         )}
         <span className="text-muted">{formatWhen(comment.createdAt, lang)}</span>
       </div>
@@ -231,7 +231,7 @@ function CommentForm({ base, parent, labels, signedIn, signInHref, onDone, onCan
       />
       {error && <p className="text-sm font-semibold">{error}</p>}
       <div className="flex gap-2">
-        <button type="submit" disabled={busy || !text.trim()} className="min-h-10 bg-black px-4 text-sm font-bold text-white disabled:opacity-50">
+        <button type="submit" disabled={busy || !text.trim()} className="min-h-10 bg-btn px-4 text-sm font-bold text-btn-ink disabled:opacity-50">
           {busy ? labels.sending : labels.send}
         </button>
         {onCancel && (

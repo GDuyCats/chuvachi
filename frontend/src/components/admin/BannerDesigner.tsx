@@ -185,16 +185,19 @@ export function BannerDesigner({
             </label>
           )}
           {!fullWidth && (
-            <label className="flex flex-col gap-1.5 text-sm font-semibold">
+            <label className={`flex flex-col gap-1.5 text-sm font-semibold ${asSplitAlign(look.splitAlign) === "spread" ? "opacity-50" : ""}`}>
               {d.gap}: {splitGapPx(look.splitGap)} px
               <input
                 type="range"
                 min={1}
                 max={16}
                 value={look.splitGap}
+                disabled={asSplitAlign(look.splitAlign) === "spread"}
                 onChange={(e) => onChange({ splitGap: Number(e.target.value) })}
-                className="accent-black"
+                className="accent-black disabled:cursor-not-allowed"
               />
+              {/* "Spread" pushes text and photo to opposite edges, so the space fills itself. */}
+              {asSplitAlign(look.splitAlign) === "spread" && <span className="text-xs font-normal text-muted">{d.gapSpreadHint}</span>}
             </label>
           )}
           {!fullWidth && (

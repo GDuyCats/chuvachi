@@ -625,6 +625,7 @@
       "bodySize": "Cỡ chữ nhỏ, mô tả và nút",
       "sizeHint": "100% là cỡ bình thường. Áp dụng cho cả máy tính và điện thoại; trên điện thoại chữ vẫn nhỏ hơn máy tính theo cùng tỉ lệ. Tiêu đề dài mà để quá to trên điện thoại sẽ bị xuống dòng nhiều, nhớ xem thử ở chế độ Điện thoại.",
       "gap": "Khoảng cách chữ – ảnh",
+      "gapSpreadHint": "Đang chọn \"Dàn đều\" nên chữ và ảnh bị đẩy ra hai mép, khoảng cách tự giãn hết. Muốn chỉnh khoảng cách, chọn \"Dồn trái\", \"Ra giữa\" hoặc \"Dồn phải\" ở bên dưới.",
       "side": "Ảnh nằm bên",
       "sideLeft": "Trái",
       "sideRight": "Phải",

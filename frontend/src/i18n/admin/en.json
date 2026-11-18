@@ -625,6 +625,7 @@
       "bodySize": "Small line, description and button size",
       "sizeHint": "100% is the normal size. It applies to computers and phones; phones stay smaller than computers in the same proportion. A long title set very large wraps a lot on phones, so check the Phone preview.",
       "gap": "Space between text and photo",
+      "gapSpreadHint": "With \"Spread\" the text and photo are pushed to opposite edges, so the space fills itself. To set the space, pick \"Left\", \"Center\" or \"Right\" below.",
       "side": "Photo on the",
       "sideLeft": "Left",
       "sideRight": "Right",

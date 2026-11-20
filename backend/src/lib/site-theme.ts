@@ -134,17 +134,23 @@ export function isInSchedule(theme: Pick<SiteTheme, "scheduleOn" | "startDate" |
   return start <= end ? start <= day && day <= end : day >= start || day <= end;
 }
 
-export type ThemeSettings = { themesOff: boolean; themePinnedId: number | null; themePinnedAt: Date | null };
+export type ThemeSettings = {
+  themesOff: boolean;
+  themePinnedId: number | null;
+  themePinnedAt: Date | null;
+  themeDefaultId: number | null;
+};
 
 export async function loadThemeSettings(): Promise<ThemeSettings> {
   const settings = await prisma.shopSetting.findUnique({
     where: { id: 1 },
-    select: { themesOff: true, themePinnedId: true, themePinnedAt: true },
+    select: { themesOff: true, themePinnedId: true, themePinnedAt: true, themeDefaultId: true },
   });
   return {
     themesOff: settings?.themesOff ?? false,
     themePinnedId: settings?.themePinnedId ?? null,
     themePinnedAt: settings?.themePinnedAt ?? null,
+    themeDefaultId: settings?.themeDefaultId ?? null,
   };
 }
 
@@ -162,7 +168,7 @@ export function pinnedUntil(theme: Pick<SiteTheme, "endDate" | "yearly">, pinned
 }
 
 // The look showing now: none when switched off, the one turned on by hand (until its end day),
-// or else the first look (in list order) whose dates include today.
+// else the first look (in list order) whose dates include today, else the everyday default look.
 export function pickActiveTheme<T extends SiteTheme>(themes: T[], settings: ThemeSettings, today: Date = vietnamToday()): T | null {
   if (settings.themesOff) return null;
   if (settings.themePinnedId !== null) {
@@ -170,7 +176,9 @@ export function pickActiveTheme<T extends SiteTheme>(themes: T[], settings: Them
     const until = pinned ? pinnedUntil(pinned, settings.themePinnedAt) : null;
     if (pinned && (!until || today.getTime() <= until.getTime())) return pinned;
   }
-  return themes.find((theme) => isInSchedule(theme, today)) ?? null;
+  const scheduled = themes.find((theme) => isInSchedule(theme, today));
+  if (scheduled) return scheduled;
+  return settings.themeDefaultId !== null ? (themes.find((theme) => theme.id === settings.themeDefaultId) ?? null) : null;
 }
 
 export async function findActiveTheme(): Promise<SiteTheme | null> {

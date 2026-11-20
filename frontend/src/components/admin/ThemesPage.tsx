@@ -117,7 +117,12 @@ export function ThemesPage() {
         <p className="text-sm text-muted">{s.hint}</p>
       </div>
 
-      <ModePanel bundle={bundle} busy={busy} onChange={(off, pinned) => run(() => adminApi.themeSwitches(off, pinned), t.themes.saved)} />
+      <ModePanel
+        bundle={bundle}
+        busy={busy}
+        onChange={(off, pinned) => run(() => adminApi.themeSwitches(off, pinned), t.themes.saved)}
+        onDefault={(id) => run(() => adminApi.setDefaultTheme(id), t.themes.saved)}
+      />
 
       <CreatePanel
         bundle={bundle}
@@ -141,6 +146,8 @@ export function ThemesPage() {
                   theme={theme}
                   showing={bundle.activeId === theme.id}
                   pinned={bundle.settings.themePinnedId === theme.id && !bundle.settings.pinExpired}
+                  isDefault={bundle.settings.themeDefaultId === theme.id}
+                  onDefault={() => void run(() => adminApi.setDefaultTheme(bundle.settings.themeDefaultId === theme.id ? null : theme.id), s.saved)}
                   onPin={() => pin(bundle.settings.themePinnedId === theme.id && !bundle.settings.pinExpired ? null : theme.id)}
                   first={index === 0}
                   last={index === bundle.themes.length - 1}
@@ -169,7 +176,17 @@ export function ThemesPage() {
 }
 
 // What customers see now, and the one dropdown that picks: automatic / all off / one look on now.
-function ModePanel({ bundle, busy, onChange }: { bundle: ThemeBundle; busy: boolean; onChange: (off: boolean, pinned: number | null) => void }) {
+function ModePanel({
+  bundle,
+  busy,
+  onChange,
+  onDefault,
+}: {
+  bundle: ThemeBundle;
+  busy: boolean;
+  onChange: (off: boolean, pinned: number | null) => void;
+  onDefault: (id: number | null) => void;
+}) {
   const { t } = useAdminI18n();
   const s = t.themes;
   const { themesOff, themePinnedId } = bundle.settings;
@@ -205,7 +222,45 @@ function ModePanel({ bundle, busy, onChange }: { bundle: ThemeBundle; busy: bool
       </label>
       {bundle.settings.themePinnedId !== null && <PinNote settings={bundle.settings} />}
       <p className="text-xs text-muted">{s.modeHint}</p>
+      <label className="flex flex-col gap-1.5 text-sm font-semibold md:max-w-md">
+        {s.defaultLook}
+        <select
+          value={bundle.settings.themeDefaultId ?? ""}
+          disabled={busy}
+          onChange={(event) => onDefault(event.target.value ? Number(event.target.value) : null)}
+          className={input}
+        >
+          <option value="">{s.defaultNone}</option>
+          {bundle.themes.map((theme) => (
+            <option key={theme.id} value={theme.id}>
+              {theme.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <p className="text-xs text-muted">{s.defaultHint}</p>
     </section>
+  );
+}
+
+// Ready-made looks in two groups: everyday color sets, then holidays.
+function PresetOptions({ presets }: { presets: ThemeBundle["presets"] }) {
+  const { t, lang } = useAdminI18n();
+  const s = t.themes;
+  return (
+    <>
+      {(["everyday", "holiday"] as const).map((group) => (
+        <optgroup key={group} label={group === "everyday" ? s.presetEveryday : s.presetGroup}>
+          {presets
+            .filter((item) => item.group === group)
+            .map((item) => (
+              <option key={item.key} value={item.key}>
+                {lang === "en" ? item.nameEn : item.nameVi}
+              </option>
+            ))}
+        </optgroup>
+      ))}
+    </>
   );
 }
 
@@ -222,7 +277,7 @@ function PinNote({ settings }: { settings: ThemeBundle["settings"] }) {
 }
 
 function CreatePanel({ bundle, busy, onCreate }: { bundle: ThemeBundle; busy: boolean; onCreate: (preset: string | null) => void }) {
-  const { t, lang } = useAdminI18n();
+  const { t } = useAdminI18n();
   const s = t.themes;
   const [preset, setPreset] = useState(bundle.presets[0]?.key ?? "");
   const chosen = bundle.presets.find((item) => item.key === preset);
@@ -234,13 +289,7 @@ function CreatePanel({ bundle, busy, onCreate }: { bundle: ThemeBundle; busy: bo
         <label className="flex flex-1 flex-col gap-1.5 text-sm font-semibold">
           {s.createFrom}
           <select value={preset} onChange={(event) => setPreset(event.target.value)} className={input}>
-            <optgroup label={s.presetGroup}>
-              {bundle.presets.map((item) => (
-                <option key={item.key} value={item.key}>
-                  {lang === "en" ? item.nameEn : item.nameVi}
-                </option>
-              ))}
-            </optgroup>
+            <PresetOptions presets={bundle.presets} />
             <option value="">{s.blank}</option>
           </select>
         </label>
@@ -280,6 +329,8 @@ function ThemeRow({
   showing,
   pinned,
   onPin,
+  isDefault,
+  onDefault,
   first,
   last,
   busy,
@@ -292,6 +343,8 @@ function ThemeRow({
   showing: boolean;
   pinned: boolean;
   onPin: () => void;
+  isDefault: boolean;
+  onDefault: () => void;
   first: boolean;
   last: boolean;
   busy: boolean;
@@ -332,6 +385,7 @@ function ThemeRow({
         <span className="flex flex-wrap items-center gap-2 font-semibold">
           {theme.name}
           {showing && <span className="bg-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">{s.showing}</span>}
+          {isDefault && <span className="border border-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">{s.defaultBadge}</span>}
         </span>
         <span className="text-xs text-muted">{when}</span>
       </div>
@@ -344,6 +398,9 @@ function ThemeRow({
             <>
               <button type="button" disabled={busy} onClick={() => { close(); onPin(); }} className="min-h-11 px-4 text-left font-semibold hover:bg-surface">
                 {pinned ? s.pinOff : s.pinOn}
+              </button>
+              <button type="button" disabled={busy} onClick={() => { close(); onDefault(); }} className="min-h-11 border-t border-line px-4 text-left font-semibold hover:bg-surface">
+                {isDefault ? s.unsetDefault : s.setDefault}
               </button>
               <button type="button" disabled={busy} onClick={() => { close(); onCopy(); }} className="min-h-11 border-t border-line px-4 text-left font-semibold hover:bg-surface">
                 {s.copy}
@@ -648,7 +705,7 @@ function ColorsEditor({
   onColor: (key: ColorKey, value: string | null) => void;
   onReplace: (colors: ThemeColors) => void;
 }) {
-  const { t, lang } = useAdminI18n();
+  const { t } = useAdminI18n();
   const c = t.themes.colors;
 
   return (
@@ -665,11 +722,7 @@ function ColorsEditor({
           className={input}
         >
           <option value="">{c.fromPresetPick}</option>
-          {presets.map((item) => (
-            <option key={item.key} value={item.key}>
-              {lang === "en" ? item.nameEn : item.nameVi}
-            </option>
-          ))}
+          <PresetOptions presets={presets} />
         </select>
       </label>
 

@@ -534,7 +534,14 @@ export type AdminTheme = {
   sortOrder: number;
 };
 export type AdminThemeInput = Omit<AdminTheme, "id" | "sortOrder">;
-export type ThemePreset = { key: string; nameVi: string; nameEn: string; colors: ThemeColors; icon: string };
+export type ThemePreset = {
+  key: string;
+  group: "everyday" | "holiday"; // everyday color sets, or holiday looks
+  nameVi: string;
+  nameEn: string;
+  colors: ThemeColors;
+  icon: string | null;
+};
 export type ThemeBundle = {
   themes: AdminTheme[];
   presets: ThemePreset[];
@@ -543,6 +550,7 @@ export type ThemeBundle = {
     themePinnedId: number | null; // turned on by hand
     pinnedUntil: string | null; // YYYY-MM-DD it turns off by itself; null = until turned off
     pinExpired: boolean;
+    themeDefaultId: number | null; // everyday look shown when no holiday look is on
   };
   activeId: number | null; // the look customers see right now
 };
@@ -857,6 +865,8 @@ export const adminApi = {
     request<ThemeBundle>(`/themes/${id}`, { method: "PUT", body: JSON.stringify(input) }),
   deleteTheme: (id: number) => request<ThemeBundle>(`/themes/${id}`, { method: "DELETE" }),
   orderThemes: (ids: number[]) => request<ThemeBundle>("/themes/order", { method: "PUT", body: JSON.stringify({ ids }) }),
+  setDefaultTheme: (themeDefaultId: number | null) =>
+    request<ThemeBundle>("/themes/default", { method: "PUT", body: JSON.stringify({ themeDefaultId }) }),
   themeSwitches: (themesOff: boolean, themePinnedId: number | null) =>
     request<ThemeBundle>("/themes/switches", { method: "PUT", body: JSON.stringify({ themesOff, themePinnedId }) }),
   listPosts: () => request<AdminPost[]>("/posts"),

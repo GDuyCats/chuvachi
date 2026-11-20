@@ -1348,7 +1348,7 @@
     "create": "New look",
     "createFrom": "Start from",
     "blank": "Blank (set everything yourself)",
-    "presetGroup": "Ready-made",
+    "presetGroup": "Holidays",
     "createButton": "Create",
     "created": "Created. Adjust it, then press Save.",
     "empty": "No looks yet. Pick a ready-made one above to start.",
@@ -1551,6 +1551,13 @@
     "pinnedUntil": "On by hand · turns off after {date}",
     "pinnedForever": "On by hand · stays on until you turn it off",
     "pinExpired": "The look turned on by hand has passed its end day and turned off; the site follows the dates.",
-    "pinEnded": "This look's dates have already ended. Change the dates (or tick every year), then turn it on."
+    "pinEnded": "This look's dates have already ended. Change the dates (or tick every year), then turn it on.",
+    "presetEveryday": "Everyday colors",
+    "defaultLook": "Default look (when no holiday is on)",
+    "defaultNone": "Black and white (original)",
+    "defaultHint": "Shows all year. On holiday dates the holiday look takes over by itself, then the default comes back.",
+    "defaultBadge": "Default",
+    "setDefault": "Make default",
+    "unsetDefault": "Stop being default"
   }
 }

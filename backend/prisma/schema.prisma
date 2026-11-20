@@ -420,6 +420,7 @@ model ShopSetting {
   themesOff            Boolean  @default(false) // seasonal looks switched off: the site stays black and white
   themePinnedId        Int?     // a seasonal look turned on by hand, whatever its dates say
   themePinnedAt        DateTime? @db.Date // the day it was turned on by hand; it turns off after the look's next end day
+  themeDefaultId       Int?     // the everyday look, shown whenever no holiday look is on (null = black and white)
   updatedAt            DateTime @updatedAt
 }
 

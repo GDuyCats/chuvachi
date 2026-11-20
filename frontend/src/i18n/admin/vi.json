@@ -1348,7 +1348,7 @@
     "create": "Tạo giao diện mới",
     "createFrom": "Bắt đầu từ",
     "blank": "Trống (tự chỉnh từ đầu)",
-    "presetGroup": "Mẫu có sẵn",
+    "presetGroup": "Dịp lễ",
     "createButton": "Tạo",
     "created": "Đã tạo. Chỉnh rồi bấm Lưu nhé.",
     "empty": "Chưa có giao diện nào. Chọn một mẫu ở trên để bắt đầu.",
@@ -1551,6 +1551,13 @@
     "pinnedUntil": "Đang bật tay · tự tắt sau ngày {date}",
     "pinnedForever": "Đang bật tay · bật cho tới khi bạn tắt",
     "pinExpired": "Giao diện bật tay đã qua ngày kết thúc nên đã tự tắt, web đang theo lịch.",
-    "pinEnded": "Giao diện này đã qua ngày kết thúc trong lịch. Sửa ngày (hoặc tick lặp mỗi năm) rồi bật lại nhé."
+    "pinEnded": "Giao diện này đã qua ngày kết thúc trong lịch. Sửa ngày (hoặc tick lặp mỗi năm) rồi bật lại nhé.",
+    "presetEveryday": "Bộ màu thường ngày",
+    "defaultLook": "Giao diện mặc định (khi không có dịp lễ)",
+    "defaultNone": "Đen trắng (như gốc)",
+    "defaultHint": "Giao diện này hiện quanh năm. Tới ngày lễ (theo lịch) thì giao diện lễ tự thay, hết lễ tự quay về mặc định.",
+    "defaultBadge": "Mặc định",
+    "setDefault": "Đặt làm mặc định",
+    "unsetDefault": "Bỏ mặc định"
   }
 }

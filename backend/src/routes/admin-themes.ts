@@ -158,12 +158,13 @@ async function bundle() {
   const until = pinned ? pinnedUntil(pinned, settings.themePinnedAt) : null;
   return {
     themes: themes.map(toRow),
-    presets: presets.map((preset) => ({ key: preset.key, nameVi: preset.nameVi, nameEn: preset.nameEn, colors: preset.colors, icon: preset.icon })),
+    presets: presets.map((preset) => ({ key: preset.key, group: preset.group, nameVi: preset.nameVi, nameEn: preset.nameEn, colors: preset.colors, icon: preset.icon })),
     settings: {
       themesOff: settings.themesOff,
       themePinnedId: pinned ? pinned.id : null,
       pinnedUntil: until ? formatDateOnly(until) : null, // null = on until turned off
       pinExpired: Boolean(pinned && until && vietnamToday().getTime() > until.getTime()),
+      themeDefaultId: themes.some((theme) => theme.id === settings.themeDefaultId) ? settings.themeDefaultId : null,
     },
     activeId: active?.id ?? null,
   };
@@ -258,6 +259,19 @@ adminThemesRouter.put("/switches", async (req, res) => {
   res.json(await bundle());
 });
 
+// PUT /api/admin/themes/default - { themeDefaultId }: the everyday look shown whenever no holiday
+// look is on (null = black and white).
+adminThemesRouter.put("/default", async (req, res) => {
+  const parsed = z.object({ themeDefaultId: z.number().int().positive().nullable() }).safeParse(req.body);
+  if (!parsed.success) return badRequest(res);
+  if (parsed.data.themeDefaultId !== null) {
+    const exists = await prisma.siteTheme.count({ where: { id: parsed.data.themeDefaultId } });
+    if (!exists) return badRequest(res, ["themeDefaultId"]);
+  }
+  await prisma.shopSetting.upsert({ where: { id: 1 }, create: { id: 1, ...parsed.data }, update: parsed.data });
+  res.json(await bundle());
+});
+
 // PUT /api/admin/themes/:id - save a look.
 adminThemesRouter.put("/:id", async (req, res) => {
   const id = idParam.safeParse(req.params.id);
@@ -290,6 +304,7 @@ adminThemesRouter.delete("/:id", async (req, res) => {
     prisma.siteTheme.delete({ where: { id: theme.id } }),
     // A look turned on by hand that is deleted is turned off too.
     prisma.shopSetting.updateMany({ where: { id: 1, themePinnedId: theme.id }, data: { themePinnedId: null } }),
+    prisma.shopSetting.updateMany({ where: { id: 1, themeDefaultId: theme.id }, data: { themeDefaultId: null } }),
   ]);
   await removeUnusedImages([theme.iconUrl, theme.effectImageUrl, ...readImages(theme)]);
   res.json(await bundle());

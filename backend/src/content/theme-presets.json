@@ -1,189 +1,610 @@
 [
   {
+    "key": "lilac",
+    "group": "everyday",
+    "nameVi": "Tím mộng mơ",
+    "nameEn": "Dreamy lilac",
+    "colors": {
+      "btn": "#5b21b6",
+      "btnInk": "#ffffff",
+      "head": "#f4f0ff",
+      "headInk": "#2a0a4a",
+      "bar": "#6d28d9",
+      "barInk": "#f4f0ff",
+      "foot": "#1e0b3a",
+      "footInk": "#e9e3ff",
+      "hero": "#2a0a4a",
+      "heroInk": "#f4f0ff",
+      "accent": "#7c3aed",
+      "accentInk": "#ffffff"
+    },
+    "messageVi": null,
+    "messageEn": null,
+    "linkUrl": null,
+    "icon": null,
+    "effects": [],
+    "effectOn": false,
+    "effectSizeMix": 40,
+    "effectAmount": 40,
+    "effectSpeed": 40,
+    "effectSize": 50,
+    "startDate": null,
+    "endDate": null,
+    "yearly": false
+  },
+  {
+    "key": "midnight-violet",
+    "group": "everyday",
+    "nameVi": "Tím đêm",
+    "nameEn": "Midnight violet",
+    "colors": {
+      "btn": "#3b0f6b",
+      "btnInk": "#ffffff",
+      "head": "#160626",
+      "headInk": "#ece8ff",
+      "bar": "#7c3aed",
+      "barInk": "#ffffff",
+      "foot": "#160626",
+      "footInk": "#ece8ff",
+      "hero": "#160626",
+      "heroInk": "#ece8ff",
+      "accent": "#a78bfa",
+      "accentInk": "#160626"
+    },
+    "messageVi": null,
+    "messageEn": null,
+    "linkUrl": null,
+    "icon": null,
+    "effects": [],
+    "effectOn": false,
+    "effectSizeMix": 40,
+    "effectAmount": 40,
+    "effectSpeed": 40,
+    "effectSize": 50,
+    "startDate": null,
+    "endDate": null,
+    "yearly": false
+  },
+  {
+    "key": "mocha",
+    "group": "everyday",
+    "nameVi": "Kem cà phê",
+    "nameEn": "Coffee cream",
+    "colors": {
+      "btn": "#5c3d2e",
+      "btnInk": "#ffffff",
+      "head": "#faf6f0",
+      "headInk": "#3a2a20",
+      "bar": "#5c3d2e",
+      "barInk": "#f5ebdd",
+      "foot": "#3a2a20",
+      "footInk": "#f5ebdd",
+      "hero": "#3a2a20",
+      "heroInk": "#f5ebdd",
+      "accent": "#b8865b",
+      "accentInk": "#1f150f"
+    },
+    "messageVi": null,
+    "messageEn": null,
+    "linkUrl": null,
+    "icon": null,
+    "effects": [],
+    "effectOn": false,
+    "effectSizeMix": 40,
+    "effectAmount": 40,
+    "effectSpeed": 40,
+    "effectSize": 50,
+    "startDate": null,
+    "endDate": null,
+    "yearly": false
+  },
+  {
+    "key": "mint",
+    "group": "everyday",
+    "nameVi": "Xanh bạc hà",
+    "nameEn": "Mint",
+    "colors": {
+      "btn": "#1f5e4f",
+      "btnInk": "#ffffff",
+      "head": "#ffffff",
+      "headInk": "#123a31",
+      "bar": "#cfeee4",
+      "barInk": "#123a31",
+      "foot": "#123a31",
+      "footInk": "#e6f6f0",
+      "hero": "#123a31",
+      "heroInk": "#e6f6f0",
+      "accent": "#23735e",
+      "accentInk": "#ffffff"
+    },
+    "messageVi": null,
+    "messageEn": null,
+    "linkUrl": null,
+    "icon": null,
+    "effects": [],
+    "effectOn": false,
+    "effectSizeMix": 40,
+    "effectAmount": 40,
+    "effectSpeed": 40,
+    "effectSize": 50,
+    "startDate": null,
+    "endDate": null,
+    "yearly": false
+  },
+  {
+    "key": "rose",
+    "group": "everyday",
+    "nameVi": "Hồng phấn",
+    "nameEn": "Dusty rose",
+    "colors": {
+      "btn": "#9d3b5a",
+      "btnInk": "#ffffff",
+      "head": "#fff5f7",
+      "headInk": "#4a1a2a",
+      "bar": "#f6d6df",
+      "barInk": "#4a1a2a",
+      "foot": "#4a1a2a",
+      "footInk": "#fbe9ee",
+      "hero": "#4a1a2a",
+      "heroInk": "#fbe9ee",
+      "accent": "#a8456a",
+      "accentInk": "#ffffff"
+    },
+    "messageVi": null,
+    "messageEn": null,
+    "linkUrl": null,
+    "icon": null,
+    "effects": [],
+    "effectOn": false,
+    "effectSizeMix": 40,
+    "effectAmount": 40,
+    "effectSpeed": 40,
+    "effectSize": 50,
+    "startDate": null,
+    "endDate": null,
+    "yearly": false
+  },
+  {
+    "key": "navy",
+    "group": "everyday",
+    "nameVi": "Xanh navy",
+    "nameEn": "Navy",
+    "colors": {
+      "btn": "#1d3557",
+      "btnInk": "#ffffff",
+      "head": "#ffffff",
+      "headInk": "#1d3557",
+      "bar": "#1d3557",
+      "barInk": "#f1faee",
+      "foot": "#0f1f33",
+      "footInk": "#e8eef5",
+      "hero": "#1d3557",
+      "heroInk": "#f1faee",
+      "accent": "#c1121f",
+      "accentInk": "#ffffff"
+    },
+    "messageVi": null,
+    "messageEn": null,
+    "linkUrl": null,
+    "icon": null,
+    "effects": [],
+    "effectOn": false,
+    "effectSizeMix": 40,
+    "effectAmount": 40,
+    "effectSpeed": 40,
+    "effectSize": 50,
+    "startDate": null,
+    "endDate": null,
+    "yearly": false
+  },
+  {
     "key": "christmas",
+    "group": "holiday",
     "nameVi": "Giáng sinh cổ điển",
     "nameEn": "Classic Christmas",
     "colors": {
-      "btn": "#8b1e2d", "btnInk": "#ffffff",
-      "bar": "#1f3d2b", "barInk": "#ffffff",
-      "foot": "#1f3d2b", "footInk": "#ffffff",
-      "hero": "#1f3d2b", "heroInk": "#ffffff",
-      "accent": "#8b1e2d", "accentInk": "#ffffff"
+      "btn": "#8b1e2d",
+      "btnInk": "#ffffff",
+      "bar": "#1f3d2b",
+      "barInk": "#ffffff",
+      "foot": "#1f3d2b",
+      "footInk": "#ffffff",
+      "hero": "#1f3d2b",
+      "heroInk": "#ffffff",
+      "accent": "#8b1e2d",
+      "accentInk": "#ffffff"
     },
     "messageVi": "Giáng sinh an lành – đặt bánh trước 23/12 để giao kịp",
     "messageEn": "Merry Christmas – order by 23 Dec for delivery in time",
     "linkUrl": "/menu",
     "icon": "tree",
-    "effects": [{ "kind": "snow", "weight": 3 }, { "kind": "ornaments", "weight": 1 }, { "kind": "stars", "weight": 1 }],
-    "effectOn": true, "effectSizeMix": 50, "effectAmount": 50, "effectSpeed": 40, "effectSize": 50,
-    "startDate": "2026-12-01", "endDate": "2026-12-26", "yearly": true
+    "effects": [
+      {
+        "kind": "snow",
+        "weight": 3
+      },
+      {
+        "kind": "ornaments",
+        "weight": 1
+      },
+      {
+        "kind": "stars",
+        "weight": 1
+      }
+    ],
+    "effectOn": true,
+    "effectSizeMix": 50,
+    "effectAmount": 50,
+    "effectSpeed": 40,
+    "effectSize": 50,
+    "startDate": "2026-12-01",
+    "endDate": "2026-12-26",
+    "yearly": true
   },
   {
     "key": "christmas-snow",
+    "group": "holiday",
     "nameVi": "Giáng sinh tuyết trắng",
     "nameEn": "White Christmas",
     "colors": {
-      "btn": "#2f4858", "btnInk": "#ffffff",
-      "bar": "#c9d3da", "barInk": "#1d2e38",
-      "foot": "#2f4858", "footInk": "#ffffff",
-      "hero": "#2f4858", "heroInk": "#ffffff",
-      "accent": "#2f4858", "accentInk": "#ffffff"
+      "btn": "#2f4858",
+      "btnInk": "#ffffff",
+      "bar": "#c9d3da",
+      "barInk": "#1d2e38",
+      "foot": "#2f4858",
+      "footInk": "#ffffff",
+      "hero": "#2f4858",
+      "heroInk": "#ffffff",
+      "accent": "#2f4858",
+      "accentInk": "#ffffff"
     },
     "messageVi": "Mùa đông ngọt ngào – bánh Giáng sinh đã có mặt",
     "messageEn": "Sweet winter – Christmas cakes are here",
     "linkUrl": "/menu",
     "icon": "snowflake",
-    "effects": [{ "kind": "snow", "weight": 3 }],
-    "effectOn": true, "effectSizeMix": 60, "effectAmount": 30, "effectSpeed": 30, "effectSize": 40,
-    "startDate": "2026-12-01", "endDate": "2026-12-26", "yearly": true
+    "effects": [
+      {
+        "kind": "snow",
+        "weight": 3
+      }
+    ],
+    "effectOn": true,
+    "effectSizeMix": 60,
+    "effectAmount": 30,
+    "effectSpeed": 30,
+    "effectSize": 40,
+    "startDate": "2026-12-01",
+    "endDate": "2026-12-26",
+    "yearly": true
   },
   {
     "key": "tet-apricot",
+    "group": "holiday",
     "nameVi": "Tết hoa mai",
     "nameEn": "Tet – apricot blossom",
     "colors": {
-      "btn": "#b3121f", "btnInk": "#ffffff",
-      "bar": "#b3121f", "barInk": "#ffe08a",
-      "foot": "#8e0e18", "footInk": "#ffffff",
-      "hero": "#8e0e18", "heroInk": "#ffe08a",
-      "accent": "#d4a017", "accentInk": "#1a1a1a"
+      "btn": "#b3121f",
+      "btnInk": "#ffffff",
+      "bar": "#b3121f",
+      "barInk": "#ffe08a",
+      "foot": "#8e0e18",
+      "footInk": "#ffffff",
+      "hero": "#8e0e18",
+      "heroInk": "#ffe08a",
+      "accent": "#d4a017",
+      "accentInk": "#1a1a1a"
     },
     "messageVi": "Chúc mừng năm mới – nhận đặt bánh biếu Tết",
     "messageEn": "Happy Lunar New Year – now taking Tet gift orders",
     "linkUrl": "/menu",
     "icon": "apricot",
-    "effects": [{ "kind": "apricot", "weight": 3 }, { "kind": "envelopes", "weight": 1 }, { "kind": "coins", "weight": 1 }],
-    "effectOn": true, "effectSizeMix": 40, "effectAmount": 40, "effectSpeed": 40, "effectSize": 50,
-    "startDate": null, "endDate": null, "yearly": false
+    "effects": [
+      {
+        "kind": "apricot",
+        "weight": 3
+      },
+      {
+        "kind": "envelopes",
+        "weight": 1
+      },
+      {
+        "kind": "coins",
+        "weight": 1
+      }
+    ],
+    "effectOn": true,
+    "effectSizeMix": 40,
+    "effectAmount": 40,
+    "effectSpeed": 40,
+    "effectSize": 50,
+    "startDate": null,
+    "endDate": null,
+    "yearly": false
   },
   {
     "key": "tet-peach",
+    "group": "holiday",
     "nameVi": "Tết hoa đào",
     "nameEn": "Tet – peach blossom",
     "colors": {
-      "btn": "#c2185b", "btnInk": "#ffffff",
-      "bar": "#c2185b", "barInk": "#ffffff",
-      "foot": "#7a0e2e", "footInk": "#ffffff",
-      "hero": "#7a0e2e", "heroInk": "#ffffff",
-      "accent": "#b3121f", "accentInk": "#ffffff"
+      "btn": "#c2185b",
+      "btnInk": "#ffffff",
+      "bar": "#c2185b",
+      "barInk": "#ffffff",
+      "foot": "#7a0e2e",
+      "footInk": "#ffffff",
+      "hero": "#7a0e2e",
+      "heroInk": "#ffffff",
+      "accent": "#b3121f",
+      "accentInk": "#ffffff"
     },
     "messageVi": "Xuân sang an khang – bánh Tết làm quà biếu",
     "messageEn": "A peaceful spring – Tet cakes for gifting",
     "linkUrl": "/menu",
     "icon": "envelope",
-    "effects": [{ "kind": "peach", "weight": 3 }, { "kind": "envelopes", "weight": 1 }],
-    "effectOn": true, "effectSizeMix": 40, "effectAmount": 40, "effectSpeed": 40, "effectSize": 50,
-    "startDate": null, "endDate": null, "yearly": false
+    "effects": [
+      {
+        "kind": "peach",
+        "weight": 3
+      },
+      {
+        "kind": "envelopes",
+        "weight": 1
+      }
+    ],
+    "effectOn": true,
+    "effectSizeMix": 40,
+    "effectAmount": 40,
+    "effectSpeed": 40,
+    "effectSize": 50,
+    "startDate": null,
+    "endDate": null,
+    "yearly": false
   },
   {
     "key": "valentine",
+    "group": "holiday",
     "nameVi": "Valentine 14/2",
     "nameEn": "Valentine's Day",
     "colors": {
-      "btn": "#c8102e", "btnInk": "#ffffff",
-      "bar": "#f4c2c2", "barInk": "#7a0019",
-      "foot": "#7a0019", "footInk": "#ffffff",
-      "hero": "#7a0019", "heroInk": "#ffffff",
-      "accent": "#c8102e", "accentInk": "#ffffff"
+      "btn": "#c8102e",
+      "btnInk": "#ffffff",
+      "bar": "#f4c2c2",
+      "barInk": "#7a0019",
+      "foot": "#7a0019",
+      "footInk": "#ffffff",
+      "hero": "#7a0019",
+      "heroInk": "#ffffff",
+      "accent": "#c8102e",
+      "accentInk": "#ffffff"
     },
     "messageVi": "Valentine ngọt ngào – bánh cho người thương",
     "messageEn": "Sweet Valentine – a cake for your loved one",
     "linkUrl": "/menu",
     "icon": "heart",
-    "effects": [{ "kind": "hearts", "weight": 3 }, { "kind": "roses", "weight": 1 }, { "kind": "gifts", "weight": 1 }],
-    "effectOn": true, "effectSizeMix": 70, "effectAmount": 30, "effectSpeed": 40, "effectSize": 50,
-    "startDate": "2027-02-07", "endDate": "2027-02-15", "yearly": true
+    "effects": [
+      {
+        "kind": "hearts",
+        "weight": 3
+      },
+      {
+        "kind": "roses",
+        "weight": 1
+      },
+      {
+        "kind": "gifts",
+        "weight": 1
+      }
+    ],
+    "effectOn": true,
+    "effectSizeMix": 70,
+    "effectAmount": 30,
+    "effectSpeed": 40,
+    "effectSize": 50,
+    "startDate": "2027-02-07",
+    "endDate": "2027-02-15",
+    "yearly": true
   },
   {
     "key": "women-day",
+    "group": "holiday",
     "nameVi": "Ngày Phụ nữ 8/3 & 20/10",
     "nameEn": "Women's Day",
     "colors": {
-      "btn": "#b44a6e", "btnInk": "#ffffff",
-      "bar": "#f6e7e1", "barInk": "#7d2e48",
-      "foot": "#7d2e48", "footInk": "#ffffff",
-      "hero": "#7d2e48", "heroInk": "#ffffff",
-      "accent": "#b44a6e", "accentInk": "#ffffff"
+      "btn": "#b44a6e",
+      "btnInk": "#ffffff",
+      "bar": "#f6e7e1",
+      "barInk": "#7d2e48",
+      "foot": "#7d2e48",
+      "footInk": "#ffffff",
+      "hero": "#7d2e48",
+      "heroInk": "#ffffff",
+      "accent": "#b44a6e",
+      "accentInk": "#ffffff"
     },
     "messageVi": "Mừng ngày Phụ nữ – tặng bánh cho người phụ nữ bạn thương",
     "messageEn": "Happy Women's Day – a cake for the women you love",
     "linkUrl": "/menu",
     "icon": "flower",
-    "effects": [{ "kind": "petals", "weight": 2 }, { "kind": "roses", "weight": 1 }],
-    "effectOn": true, "effectSizeMix": 50, "effectAmount": 30, "effectSpeed": 40, "effectSize": 50,
-    "startDate": "2027-03-05", "endDate": "2027-03-08", "yearly": true
+    "effects": [
+      {
+        "kind": "petals",
+        "weight": 2
+      },
+      {
+        "kind": "roses",
+        "weight": 1
+      }
+    ],
+    "effectOn": true,
+    "effectSizeMix": 50,
+    "effectAmount": 30,
+    "effectSpeed": 40,
+    "effectSize": 50,
+    "startDate": "2027-03-05",
+    "endDate": "2027-03-08",
+    "yearly": true
   },
   {
     "key": "mid-autumn",
+    "group": "holiday",
     "nameVi": "Trung thu",
     "nameEn": "Mid-Autumn Festival",
     "colors": {
-      "btn": "#b85a0e", "btnInk": "#ffffff",
-      "bar": "#1b2a41", "barInk": "#ffc97a",
-      "foot": "#1b2a41", "footInk": "#ffffff",
-      "hero": "#1b2a41", "heroInk": "#ffffff",
-      "accent": "#d9731a", "accentInk": "#1b2a41"
+      "btn": "#b85a0e",
+      "btnInk": "#ffffff",
+      "bar": "#1b2a41",
+      "barInk": "#ffc97a",
+      "foot": "#1b2a41",
+      "footInk": "#ffffff",
+      "hero": "#1b2a41",
+      "heroInk": "#ffffff",
+      "accent": "#d9731a",
+      "accentInk": "#1b2a41"
     },
     "messageVi": "Trung thu đoàn viên – đặt bánh tặng gia đình",
     "messageEn": "Mid-Autumn reunion – cakes for the whole family",
     "linkUrl": "/menu",
     "icon": "lantern",
-    "effects": [{ "kind": "lanterns", "weight": 2 }, { "kind": "stars", "weight": 2 }, { "kind": "mooncakes", "weight": 1 }],
-    "effectOn": true, "effectSizeMix": 40, "effectAmount": 30, "effectSpeed": 30, "effectSize": 50,
-    "startDate": null, "endDate": null, "yearly": false
+    "effects": [
+      {
+        "kind": "lanterns",
+        "weight": 2
+      },
+      {
+        "kind": "stars",
+        "weight": 2
+      },
+      {
+        "kind": "mooncakes",
+        "weight": 1
+      }
+    ],
+    "effectOn": true,
+    "effectSizeMix": 40,
+    "effectAmount": 30,
+    "effectSpeed": 30,
+    "effectSize": 50,
+    "startDate": null,
+    "endDate": null,
+    "yearly": false
   },
   {
     "key": "halloween",
+    "group": "holiday",
     "nameVi": "Halloween",
     "nameEn": "Halloween",
     "colors": {
-      "btn": "#2b1b33", "btnInk": "#ffffff",
-      "head": "#1a0f1f", "headInk": "#ffffff",
-      "bar": "#e06d06", "barInk": "#1a0f1f",
-      "foot": "#2b1b33", "footInk": "#ffffff",
-      "hero": "#2b1b33", "heroInk": "#ffffff",
-      "accent": "#e06d06", "accentInk": "#1a0f1f"
+      "btn": "#2b1b33",
+      "btnInk": "#ffffff",
+      "head": "#1a0f1f",
+      "headInk": "#ffffff",
+      "bar": "#e06d06",
+      "barInk": "#1a0f1f",
+      "foot": "#2b1b33",
+      "footInk": "#ffffff",
+      "hero": "#2b1b33",
+      "heroInk": "#ffffff",
+      "accent": "#e06d06",
+      "accentInk": "#1a0f1f"
     },
     "messageVi": "Halloween vui vẻ – bánh ngọt hay bị ghẹo?",
     "messageEn": "Happy Halloween – trick or treat?",
     "linkUrl": "/menu",
     "icon": "pumpkin",
-    "effects": [{ "kind": "pumpkins", "weight": 2 }, { "kind": "candy", "weight": 2 }, { "kind": "skulls", "weight": 1 }, { "kind": "bats", "weight": 1 }],
-    "effectOn": true, "effectSizeMix": 50, "effectAmount": 30, "effectSpeed": 40, "effectSize": 50,
-    "startDate": "2026-10-25", "endDate": "2026-10-31", "yearly": true
+    "effects": [
+      {
+        "kind": "pumpkins",
+        "weight": 2
+      },
+      {
+        "kind": "candy",
+        "weight": 2
+      },
+      {
+        "kind": "skulls",
+        "weight": 1
+      },
+      {
+        "kind": "bats",
+        "weight": 1
+      }
+    ],
+    "effectOn": true,
+    "effectSizeMix": 50,
+    "effectAmount": 30,
+    "effectSpeed": 40,
+    "effectSize": 50,
+    "startDate": "2026-10-25",
+    "endDate": "2026-10-31",
+    "yearly": true
   },
   {
     "key": "anniversary",
+    "group": "holiday",
     "nameVi": "Khai trương / Sinh nhật tiệm",
     "nameEn": "Opening / Shop birthday",
     "colors": {
-      "btn": "#111111", "btnInk": "#ffffff",
-      "bar": "#c9a227", "barInk": "#111111",
-      "accent": "#c9a227", "accentInk": "#111111"
+      "btn": "#111111",
+      "btnInk": "#ffffff",
+      "bar": "#c9a227",
+      "barInk": "#111111",
+      "accent": "#c9a227",
+      "accentInk": "#111111"
     },
     "messageVi": "Mừng sinh nhật Chuvachi – cảm ơn bạn đã đồng hành",
     "messageEn": "Happy birthday Chuvachi – thank you for being with us",
     "linkUrl": "/news",
     "icon": "star",
-    "effects": [{ "kind": "confetti", "weight": 3 }, { "kind": "balloons", "weight": 1 }],
-    "effectOn": true, "effectSizeMix": 40, "effectAmount": 40, "effectSpeed": 50, "effectSize": 50,
-    "startDate": null, "endDate": null, "yearly": false
+    "effects": [
+      {
+        "kind": "confetti",
+        "weight": 3
+      },
+      {
+        "kind": "balloons",
+        "weight": 1
+      }
+    ],
+    "effectOn": true,
+    "effectSizeMix": 40,
+    "effectAmount": 40,
+    "effectSpeed": 50,
+    "effectSize": 50,
+    "startDate": null,
+    "endDate": null,
+    "yearly": false
   },
   {
     "key": "sale",
+    "group": "holiday",
     "nameVi": "Khuyến mãi / Sale",
     "nameEn": "Sale",
     "colors": {
-      "btn": "#111111", "btnInk": "#e5d21b",
-      "bar": "#e5d21b", "barInk": "#111111",
-      "accent": "#e5d21b", "accentInk": "#111111"
+      "btn": "#111111",
+      "btnInk": "#e5d21b",
+      "bar": "#e5d21b",
+      "barInk": "#111111",
+      "accent": "#e5d21b",
+      "accentInk": "#111111"
     },
     "messageVi": "Ưu đãi có hạn – xem ngay các bánh đang giảm giá",
     "messageEn": "Limited-time offer – see the cakes on sale",
     "linkUrl": "/menu",
     "icon": "tag",
-    "effects": [{ "kind": "confetti", "weight": 1 }],
-    "effectOn": false, "effectSizeMix": 30, "effectAmount": 30, "effectSpeed": 40, "effectSize": 50,
-    "startDate": null, "endDate": null, "yearly": false
+    "effects": [
+      {
+        "kind": "confetti",
+        "weight": 1
+      }
+    ],
+    "effectOn": false,
+    "effectSizeMix": 30,
+    "effectAmount": 30,
+    "effectSpeed": 40,
+    "effectSize": 50,
+    "startDate": null,
+    "endDate": null,
+    "yearly": false
   }
 ]

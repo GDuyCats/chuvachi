@@ -1561,6 +1561,10 @@
     "defaultHint": "Giao diện này hiện quanh năm. Tới ngày lễ (theo lịch) thì giao diện lễ tự thay, hết lễ tự quay về mặc định.",
     "defaultBadge": "Mặc định",
     "setDefault": "Đặt làm mặc định",
-    "unsetDefault": "Bỏ mặc định"
+    "unsetDefault": "Bỏ mặc định",
+    "switchLook": "Chuyển sang giao diện khác",
+    "previousLook": "Giao diện trước",
+    "nextLook": "Giao diện sau",
+    "switchConfirm": "Giao diện này có thay đổi chưa lưu. Vẫn chuyển sang giao diện khác?"
   }
 }

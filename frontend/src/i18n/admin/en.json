@@ -1561,6 +1561,10 @@
     "defaultHint": "Shows all year. On holiday dates the holiday look takes over by itself, then the default comes back.",
     "defaultBadge": "Default",
     "setDefault": "Make default",
-    "unsetDefault": "Stop being default"
+    "unsetDefault": "Stop being default",
+    "switchLook": "Switch to another look",
+    "previousLook": "Previous look",
+    "nextLook": "Next look",
+    "switchConfirm": "This look has unsaved changes. Switch anyway?"
   }
 }

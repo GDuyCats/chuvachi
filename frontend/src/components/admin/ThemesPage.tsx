@@ -104,6 +104,8 @@ export function ThemesPage() {
         settings={bundle.settings}
         busy={busy}
         onPin={pin}
+        themes={bundle.themes}
+        onSwitch={setEditingId}
         onBack={() => setEditingId(null)}
         onSaved={setBundle}
       />
@@ -487,6 +489,8 @@ function ThemeEditor({
   settings,
   busy: switching,
   onPin,
+  themes,
+  onSwitch,
   onBack,
   onSaved,
 }: {
@@ -495,6 +499,8 @@ function ThemeEditor({
   settings: ThemeBundle["settings"];
   busy: boolean;
   onPin: (id: number | null) => void;
+  themes: AdminTheme[]; // all looks, to jump to another one without going back to the list
+  onSwitch: (id: number) => void;
   onBack: () => void;
   onSaved: (bundle: ThemeBundle) => void;
 }) {
@@ -545,14 +551,63 @@ function ThemeEditor({
     if (!dirty || window.confirm(s.leaveConfirm)) onBack();
   }
 
+  // Opens another look in the editor; asks first when this one has unsaved changes.
+  function switchTo(id: number) {
+    if (id === theme.id) return;
+    if (!dirty || window.confirm(s.switchConfirm)) onSwitch(id);
+  }
+  const index = themes.findIndex((item) => item.id === theme.id);
+  const previous = index > 0 ? themes[index - 1] : null;
+  const next = index >= 0 && index < themes.length - 1 ? themes[index + 1] : null;
+
   const bad = (field: string) => badFields.includes(field);
   const pinnedHere = settings.themePinnedId === theme.id && !settings.pinExpired;
 
   return (
     <div className="flex flex-col gap-5">
-      <button type="button" onClick={back} className="self-start py-2 text-sm font-semibold underline">
-        {s.back}
-      </button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <button type="button" onClick={back} className="py-2 text-sm font-semibold underline">
+          {s.back}
+        </button>
+        {/* Jump to another look: arrows for the one before/after in the list, or pick from the list. */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => previous && switchTo(previous.id)}
+            disabled={!previous}
+            aria-label={s.previousLook}
+            title={previous ? `${s.previousLook}: ${previous.name}` : s.previousLook}
+            className="flex h-11 w-11 items-center justify-center border-[1.5px] border-black text-lg font-bold disabled:opacity-30"
+          >
+            ‹
+          </button>
+          <label className="sr-only" htmlFor="theme-switcher">
+            {s.switchLook}
+          </label>
+          <select
+            id="theme-switcher"
+            value={theme.id}
+            onChange={(event) => switchTo(Number(event.target.value))}
+            className="h-11 max-w-[60vw] border-[1.5px] border-black bg-white px-3 text-sm font-semibold sm:w-64"
+          >
+            {themes.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.name}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={() => next && switchTo(next.id)}
+            disabled={!next}
+            aria-label={s.nextLook}
+            title={next ? `${s.nextLook}: ${next.name}` : s.nextLook}
+            className="flex h-11 w-11 items-center justify-center border-[1.5px] border-black text-lg font-bold disabled:opacity-30"
+          >
+            ›
+          </button>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div className="flex flex-col gap-4">

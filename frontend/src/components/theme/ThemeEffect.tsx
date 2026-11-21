@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import type { Locale } from "@/i18n/config";
 import { PIECE_MOTION, type PieceKind, type PieceMotion, type ThemeColors, type ThemeEffectView } from "@/lib/site-theme";
 import { drawPiece } from "./effect-pieces";
@@ -36,7 +36,18 @@ const rand = (min: number, max: number) => min + Math.random() * (max - min);
 // some float up (ghosts, lanterns, balloons), bats fly across and stars twinkle in place. Pieces
 // come in mixed sizes, and bigger ones move a little slower, which gives some depth.
 // Never catches clicks, stops for visitors who ask for less motion, and uses fewer pieces on phones.
-export function ThemeEffect({ effect, lang, colors, contained = false }: Props) {
+// It reads the current address (usePathname) to know whether this is the homepage, so it sits
+// inside <Suspense>: pages can then still be built ahead of time (without it, "next build" fails
+// with CLIENT_HOOK_DYNAMIC whenever a seasonal look with an effect is on).
+export function ThemeEffect(props: Props) {
+  return (
+    <Suspense fallback={null}>
+      <FallingPieces {...props} />
+    </Suspense>
+  );
+}
+
+function FallingPieces({ effect, lang, colors, contained = false }: Props) {
   const pathname = usePathname();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const onHome = pathname === `/${lang}` || pathname === `/${lang}/`;

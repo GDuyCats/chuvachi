@@ -38,6 +38,32 @@
     "welcome": {
       "title": "Chuvachi",
       "body": "Đã bật thông báo trên máy này."
+    },
+    "favorite": {
+      "backInStock": {
+        "title": "{product} đã có hàng trở lại",
+        "body": "Món bạn thích đặt được rồi, đặt sớm kẻo hết nhé."
+      },
+      "launched": {
+        "title": "{product} đã chính thức mở bán",
+        "body": "Món bạn chờ đã đặt được rồi."
+      },
+      "newOption": {
+        "title": "{product} có lựa chọn mới: {option}",
+        "body": "Món bạn thích vừa có thêm vị hoặc hộp mới, vào xem nhé."
+      },
+      "priceDrop": {
+        "title": "{product} đã giảm giá",
+        "body": "Giờ chỉ từ {price}."
+      }
+    },
+    "newCake": {
+      "title": "Bánh mới: {product}",
+      "body": "Chuvachi vừa ra món mới, vào xem nhé."
+    },
+    "newCakeSimilar": {
+      "title": "Bánh mới giống món bạn thích: {product}",
+      "body": "Cùng loại với món bạn đã thả tim, vào xem nhé."
     }
   },
   "en": {
@@ -79,6 +105,32 @@
     "welcome": {
       "title": "Chuvachi",
       "body": "Notifications are on for this device."
+    },
+    "favorite": {
+      "backInStock": {
+        "title": "{product} is back in stock",
+        "body": "A cake you love can be ordered again. Get it before it's gone!"
+      },
+      "launched": {
+        "title": "{product} is now on sale",
+        "body": "The cake you were waiting for can be ordered now."
+      },
+      "newOption": {
+        "title": "{product} has something new: {option}",
+        "body": "A cake you love has a new flavor or box. Take a look."
+      },
+      "priceDrop": {
+        "title": "{product} is cheaper now",
+        "body": "Now from {price}."
+      }
+    },
+    "newCake": {
+      "title": "New cake: {product}",
+      "body": "Chuvachi just made something new. Take a look."
+    },
+    "newCakeSimilar": {
+      "title": "A new cake like the ones you love: {product}",
+      "body": "Same kind as a cake you hearted. Take a look."
     }
   }
 }

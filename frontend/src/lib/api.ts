@@ -136,6 +136,7 @@ export async function getShopInfo(): Promise<ShopInfo> {
 }
 
 export type HomeProduct = {
+  id?: number; // older cached answers may not have it
   slug: string;
   name: string;
   price: number; // starting price in VND

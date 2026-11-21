@@ -1,8 +1,9 @@
-import { OrderStatus, Prisma, type CustomerPushSubscription } from "@prisma/client";
+import { Availability, OptionType, OrderStatus, Prisma, type CustomerPushSubscription } from "@prisma/client";
 import text from "../content/customer-alerts.json";
 import { parseLocale, pickText, type Locale } from "../lib/locale";
 import { prisma } from "../lib/prisma";
 import { deliverPush, isPushConfigured, type PushMessage } from "../lib/push";
+import { vietnamToday } from "../lib/time";
 
 // Notifications to customers: their order changed status, or someone answered their review
 // or comment. Each one goes to the bell list on the website (signed-in customers) and as a
@@ -15,6 +16,7 @@ const BELL_KEEP_DAYS = 90; // bell list entries older than this are deleted
 
 type Subscription = CustomerPushSubscription;
 type StatusKey = keyof typeof text.vi.status;
+type FavoriteKey = keyof typeof text.vi.favorite;
 type NoticeValues = Record<string, string | null>;
 
 // One notification, independent of language: the text is built for each reader.
@@ -51,7 +53,26 @@ export function renderNotice(locale: Locale, kind: string, values: NoticeValues)
       }),
     };
   }
+  if (kind.startsWith("favorite.")) {
+    const message = t.favorite[kind.slice("favorite.".length) as FavoriteKey];
+    if (!message) return { title: "Chuvachi", body: "" };
+    const filled = {
+      product: pickText(locale, values.productVi ?? "", values.productEn ?? ""),
+      option: pickText(locale, values.optionVi ?? "", values.optionEn ?? ""),
+      price: formatPrice(locale, Number(values.price ?? 0)),
+    };
+    return { title: fill(message.title, filled), body: fill(message.body, filled) };
+  }
+  if (kind === "newCake" || kind === "newCakeSimilar") {
+    const product = pickText(locale, values.productVi ?? "", values.productEn ?? "");
+    return { title: fill(t[kind].title, { product }), body: t[kind].body };
+  }
   return { title: "Chuvachi", body: "" };
+}
+
+function formatPrice(locale: Locale, amount: number): string {
+  const number = amount.toLocaleString(locale === "vi" ? "vi-VN" : "en-US");
+  return locale === "vi" ? `${number}đ` : `${number} VND`;
 }
 
 function toPush(locale: Locale, notice: Notice): PushMessage {
@@ -230,10 +251,170 @@ export async function purgeOldOrderWatches(): Promise<number> {
       order: { status: { in: [OrderStatus.COMPLETED, OrderStatus.CANCELLED] }, updatedAt: { lt: cutoff } },
     },
   });
-  // Browsers with no account and nothing left to follow are not needed any more.
-  await prisma.customerPushSubscription.deleteMany({ where: { customerId: null, watches: { none: {} } } });
+  // Browsers with no account and nothing left to follow (orders or favorite cakes) are not needed any more.
+  await prisma.customerPushSubscription.deleteMany({
+    where: { customerId: null, watches: { none: {} }, favorites: { none: {} } },
+  });
   await prisma.customerNotification.deleteMany({
     where: { createdAt: { lt: new Date(Date.now() - BELL_KEEP_DAYS * 24 * 60 * 60 * 1000) } },
   });
   return result.count;
+}
+
+// ---------- Favorite cakes ----------
+
+const FAN_GAP_MS = 20 * 60 * 60 * 1000; // at most about one notice a day per cake per person
+
+const snapshotSelect = {
+  id: true,
+  slug: true,
+  nameVi: true,
+  nameEn: true,
+  categoryId: true,
+  isActive: true,
+  availability: true,
+  soldOutUntil: true,
+  basePrice: true,
+  announced: true,
+  options: {
+    select: { id: true, type: true, nameVi: true, nameEn: true, isActive: true, availability: true, priceDelta: true },
+  },
+} satisfies Prisma.ProductSelect;
+
+export type ProductSnapshot = Prisma.ProductGetPayload<{ select: typeof snapshotSelect }>;
+
+// What a cake looks like now; taken before and after staff save it, to see what changed.
+export function productSnapshot(productId: number): Promise<ProductSnapshot | null> {
+  return prisma.product.findUnique({ where: { id: productId }, select: snapshotSelect });
+}
+
+// Can customers order it now? ("Sold out until" counts as sold out while that day hasn't passed.)
+function canOrder(product: ProductSnapshot, today: Date): boolean {
+  const pausedUntil = product.soldOutUntil && product.soldOutUntil.getTime() >= today.getTime();
+  return product.isActive && product.availability === Availability.AVAILABLE && !pausedUntil;
+}
+
+// The "from" price on a card: one portion with the cheapest active flavor.
+function fromPrice(product: ProductSnapshot): number {
+  const extras = product.options.filter((o) => o.isActive && o.type === OptionType.FLAVOR).map((o) => o.priceDelta);
+  return product.basePrice + (extras.length > 0 ? Math.min(...extras) : 0);
+}
+
+type FanEvent = { key: FavoriteKey; values: NoticeValues };
+
+// The one change worth telling fans about, most important first. Edits to text or photos,
+// and price rises, are never announced.
+function fanEvent(before: ProductSnapshot, after: ProductSnapshot, today: Date): FanEvent | null {
+  const names = { productVi: after.nameVi, productEn: after.nameEn };
+  if (!canOrder(after, today)) return null;
+  if (!canOrder(before, today)) {
+    return { key: before.availability === Availability.COMING_SOON ? "launched" : "backInStock", values: names };
+  }
+  const old = new Map(before.options.map((o) => [o.id, o]));
+  const added = after.options.filter((o) => o.isActive && o.availability === Availability.AVAILABLE && !old.get(o.id)?.isActive);
+  if (added.length > 0) {
+    return { key: "newOption", values: { ...names, optionVi: added[0].nameVi, optionEn: added[0].nameEn } };
+  }
+  // A flavor or box that was sold out can be ordered again.
+  const restocked = after.options.some(
+    (o) => o.isActive && o.availability === Availability.AVAILABLE && old.get(o.id)?.isActive && old.get(o.id)?.availability !== Availability.AVAILABLE,
+  );
+  if (restocked) return { key: "backInStock", values: names };
+  const price = fromPrice(after);
+  if (price < fromPrice(before)) return { key: "priceDrop", values: { ...names, price: String(price) } };
+  return null;
+}
+
+// Pushes to all browsers of these accounts and to these guest browsers, each once.
+async function subscriptionsFor(customerIds: number[], subscriptionIds: number[]): Promise<Subscription[]> {
+  if (customerIds.length === 0 && subscriptionIds.length === 0) return [];
+  return prisma.customerPushSubscription.findMany({
+    where: { OR: [{ customerId: { in: customerIds } }, { id: { in: subscriptionIds } }] },
+  });
+}
+
+// Everyone who opted in to "new cakes" (or hasn't chosen and has at least one favorite) hears about
+// a cake that goes on sale for the first time. People who like a cake of the same kind get a
+// warmer message; people who already hearted this very cake get the "now on sale" notice instead.
+async function announceNewCake(product: ProductSnapshot): Promise<void> {
+  const fans = await prisma.favorite.findMany({ where: { productId: product.id }, select: { customerId: true, subscriptionId: true } });
+  const fanCustomers = fans.flatMap((fan) => (fan.customerId ? [fan.customerId] : []));
+  const fanSubs = fans.flatMap((fan) => (fan.subscriptionId ? [fan.subscriptionId] : []));
+  // Opted in, or never chose and has at least one favorite.
+  const optedIn = (): Prisma.CustomerWhereInput[] => [{ newCakeAlerts: true }, { newCakeAlerts: null, favorites: { some: {} } }];
+  const guestOptedIn = (): Prisma.CustomerPushSubscriptionWhereInput[] => [
+    { newCakeAlerts: true },
+    { newCakeAlerts: null, favorites: { some: {} } },
+  ];
+  const sameKind = { where: { product: { categoryId: product.categoryId } }, select: { id: true }, take: 1 } as const;
+
+  const [customers, guests] = await Promise.all([
+    prisma.customer.findMany({
+      where: { id: { notIn: fanCustomers }, OR: optedIn() },
+      select: { id: true, favorites: sameKind },
+    }),
+    prisma.customerPushSubscription.findMany({
+      where: { customerId: null, id: { notIn: fanSubs }, OR: guestOptedIn() },
+      include: { favorites: sameKind },
+    }),
+  ]);
+
+  const notice = (kind: "newCake" | "newCakeSimilar"): Notice => ({
+    kind,
+    values: { productVi: product.nameVi, productEn: product.nameEn },
+    path: `/menu/${product.slug}`,
+    tag: `new-${product.id}`,
+  });
+  const similar = customers.filter((c) => c.favorites.length > 0).map((c) => c.id);
+  const plain = customers.filter((c) => c.favorites.length === 0).map((c) => c.id);
+  await saveToBell(similar, notice("newCakeSimilar"));
+  await saveToBell(plain, notice("newCake"));
+
+  const accountSubs = await subscriptionsFor([...similar, ...plain], []);
+  const similarSet = new Set(similar);
+  await Promise.all([
+    sendAll(accountSubs.filter((s) => s.customerId !== null && similarSet.has(s.customerId)), (l) => toPush(l, notice("newCakeSimilar"))),
+    sendAll(accountSubs.filter((s) => s.customerId === null || !similarSet.has(s.customerId)), (l) => toPush(l, notice("newCake"))),
+    sendAll(guests.filter((g) => g.favorites.length > 0), (l) => toPush(l, notice("newCakeSimilar"))),
+    sendAll(guests.filter((g) => g.favorites.length === 0), (l) => toPush(l, notice("newCake"))),
+  ]);
+}
+
+// After staff saved a cake: tells the people who hearted it about what changed, and announces a
+// cake that just went on sale for the first time. "notify" off = only remember that the new
+// cake was dealt with, tell nobody. Never throws: it must not block the staff action.
+export async function notifyProductFans(before: ProductSnapshot, after: ProductSnapshot, notify: boolean): Promise<void> {
+  try {
+    const today = vietnamToday();
+    if (!after.announced && canOrder(after, today)) {
+      await prisma.product.update({ where: { id: after.id }, data: { announced: true } });
+      if (notify) await announceNewCake(after);
+    }
+    if (!notify) return;
+    const event = fanEvent(before, after, today);
+    if (!event) return;
+
+    const fans = await prisma.favorite.findMany({
+      where: {
+        productId: after.id,
+        OR: [{ lastNotifiedAt: null }, { lastNotifiedAt: { lt: new Date(Date.now() - FAN_GAP_MS) } }],
+      },
+      select: { id: true, customerId: true, subscriptionId: true },
+    });
+    if (fans.length === 0) return;
+    await prisma.favorite.updateMany({ where: { id: { in: fans.map((fan) => fan.id) } }, data: { lastNotifiedAt: new Date() } });
+
+    const notice: Notice = {
+      kind: `favorite.${event.key}`,
+      values: event.values,
+      path: `/menu/${after.slug}`,
+      tag: `favorite-${after.id}`,
+    };
+    const customerIds = fans.flatMap((fan) => (fan.customerId ? [fan.customerId] : []));
+    const subscriptionIds = fans.flatMap((fan) => (fan.subscriptionId ? [fan.subscriptionId] : []));
+    await saveToBell(customerIds, notice);
+    await sendAll(await subscriptionsFor(customerIds, subscriptionIds), (locale) => toPush(locale, notice));
+  } catch (error) {
+    console.error("Favorite cake notification failed:", error);
+  }
 }

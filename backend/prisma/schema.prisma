@@ -103,6 +103,8 @@ model Product {
   updatedAt     DateTime        @updatedAt
   reviews       Review[]
   costRecipes   CostRecipe[]
+  favorites     Favorite[]
+  announced     Boolean         @default(true) // false until "new cake" was sent to customers (new cakes start false)
 }
 
 model ProductOption {
@@ -536,6 +538,8 @@ model Customer {
   postCommentReports PostCommentReport[]
   pushSubscriptions CustomerPushSubscription[]
   notifications     CustomerNotification[]
+  favorites         Favorite[]
+  newCakeAlerts     Boolean?          // "tell me about new cakes"; null = on once they have a favorite
 }
 
 // A signed-in browser. The cookie holds a random token; only its SHA-256 hash is stored here.
@@ -658,6 +662,8 @@ model CustomerPushSubscription {
   customer   Customer?        @relation(fields: [customerId], references: [id], onDelete: Cascade)
   createdAt  DateTime         @default(now())
   watches    OrderPushWatch[]
+  favorites  Favorite[]        // guests' favorite cakes, so their browser gets news about them
+  newCakeAlerts Boolean?       // guests: "tell me about new cakes"; null = on once they have a favorite
 
   @@index([customerId])
 }
@@ -864,4 +870,26 @@ model SiteTheme {
   sortOrder      Int       @default(0)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+}
+
+// ---------- Favorite cakes ----------
+
+// A cake someone hearted: a signed-in customer (customerId), or a guest's browser that has
+// push notifications on (subscriptionId). Guests without push keep favorites in their browser only.
+// They hear when it is back in stock, goes on sale for the first time, gets a new flavor or box,
+// or gets cheaper - at most once a day per cake.
+model Favorite {
+  id             Int                       @id @default(autoincrement())
+  productId      Int
+  product        Product                   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  customerId     Int?
+  customer       Customer?                 @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  subscriptionId Int?
+  subscription   CustomerPushSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  lastNotifiedAt DateTime?
+  createdAt      DateTime                  @default(now())
+
+  @@unique([customerId, productId])
+  @@unique([subscriptionId, productId])
+  @@index([productId])
 }

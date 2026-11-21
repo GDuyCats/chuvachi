@@ -15,7 +15,14 @@ export default async function AccountPage({ params }: PageProps<"/[lang]/account
 
   return (
     <section className="mx-auto w-full max-w-3xl px-4 pb-20 pt-10 md:px-10 md:pt-16">
-      <AccountView lang={lang} labels={dict.account} reviewLabels={dict.reviews} pushLabels={dict.push} />
+      <AccountView
+        lang={lang}
+        labels={dict.account}
+        reviewLabels={dict.reviews}
+        pushLabels={dict.push}
+        favoriteLabels={dict.favorites}
+        productLabels={dict.product}
+      />
     </section>
   );
 }

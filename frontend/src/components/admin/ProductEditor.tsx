@@ -114,6 +114,7 @@ export function ProductEditor() {
   const [categories, setCategories] = useState<AdminCategory[]>([]);
   const [slugTouched, setSlugTouched] = useState(Boolean(productId));
   const [saving, setSaving] = useState(false);
+  const [notifyFans, setNotifyFans] = useState(true); // tell customers who hearted this cake
   const [badFields, setBadFields] = useState<string[]>([]);
   const [loadFailed, setLoadFailed] = useState(false);
   const toast = useToast();
@@ -186,7 +187,8 @@ export function ProductEditor() {
     setSaving(true);
     setBadFields([]);
     try {
-      const saved = productId ? await adminApi.updateProduct(productId, form) : await adminApi.createProduct(form);
+      const input = { ...form, notifyFans };
+      const saved = productId ? await adminApi.updateProduct(productId, input) : await adminApi.createProduct(input);
       setForm(toInput(saved));
       toast.success(e.saved);
       if (!productId) {
@@ -301,9 +303,15 @@ export function ProductEditor() {
           </Link>
           <h1 className="font-display text-3xl uppercase md:text-[40px]">{productId ? e.editTitle : e.createTitle}</h1>
         </div>
-        <button type="submit" disabled={saving} className="min-h-11 bg-black px-6 font-bold text-white hover:bg-[#333333] disabled:opacity-60">
-          {saving ? e.saving : e.save}
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="flex min-h-11 items-center gap-2 text-sm font-semibold" title={e.notifyFansHint}>
+            <input type="checkbox" checked={notifyFans} onChange={(ev) => setNotifyFans(ev.target.checked)} className="h-5 w-5 accent-black" />
+            {e.notifyFans}
+          </label>
+          <button type="submit" disabled={saving} className="min-h-11 bg-black px-6 font-bold text-white hover:bg-[#333333] disabled:opacity-60">
+            {saving ? e.saving : e.save}
+          </button>
+        </div>
       </div>
 
       <Section title={e.basics}>

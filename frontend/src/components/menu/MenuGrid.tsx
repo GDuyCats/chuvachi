@@ -1,12 +1,21 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Availability } from "@/lib/api";
+import {
+  getFavoritesSavedSnapshot,
+  getFavoritesSnapshot,
+  getServerFavoritesSavedSnapshot,
+  getServerFavoritesSnapshot,
+  subscribeToFavorites,
+} from "@/lib/favorites";
 import { ProductCard, type ProductCardLabels } from "../ProductCard";
 
 export type MenuItem = {
+  id: number;
   slug: string;
   name: string;
   price: number;
@@ -28,6 +37,10 @@ export type MenuLabels = {
   countOther: string;
   view: string;
   empty: string;
+  favorites: string; // filter: the visitor's hearted cakes
+  favoritesEmpty: string;
+  favoritesNudge: string; // why to sign in or switch notifications on
+  favoritesSignIn: string;
 };
 
 type Props = {
@@ -39,6 +52,7 @@ type Props = {
 
 const ALL = "all";
 const NEW = "new";
+const FAVORITES = "favorites";
 
 // Category filter + product grid. Filtering happens in the browser, and the URL
 // is updated (?category=...) so a filtered menu can be shared as a link.
@@ -46,12 +60,15 @@ export function MenuGrid({ lang, items, labels, cardLabels }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const favoriteIds = useSyncExternalStore(subscribeToFavorites, getFavoritesSnapshot, getServerFavoritesSnapshot);
+  const favoritesSaved = useSyncExternalStore(subscribeToFavorites, getFavoritesSavedSnapshot, getServerFavoritesSavedSnapshot);
 
   // Build the filter list from the categories that actually have products.
   const categories = Array.from(new Map(items.map((item) => [item.categorySlug, item.categoryName])).entries());
   const filters = [
     { id: ALL, label: labels.all },
     ...(items.some((item) => item.isNew) ? [{ id: NEW, label: labels.new }] : []),
+    { id: FAVORITES, label: `♥ ${labels.favorites}` },
     ...categories.map(([id, label]) => ({ id, label })),
   ];
 
@@ -73,6 +90,7 @@ export function MenuGrid({ lang, items, labels, cardLabels }: Props) {
   const visible = items.filter((item) => {
     if (active === ALL) return true;
     if (active === NEW) return item.isNew;
+    if (active === FAVORITES) return favoriteIds.includes(item.id);
     return item.categorySlug === active;
   });
   const countText = visible.length === 1 ? labels.countOne : labels.countOther.replace("{count}", String(visible.length));
@@ -104,8 +122,18 @@ export function MenuGrid({ lang, items, labels, cardLabels }: Props) {
       </div>
 
       <div className="px-4 pb-20 pt-8 md:px-10">
+        {active === FAVORITES && !favoritesSaved && (
+          <p className="mb-6 text-sm text-muted">
+            {labels.favoritesNudge}{" "}
+            <Link href={`/${lang}/login?next=${encodeURIComponent(`/${lang}/menu?category=${FAVORITES}`)}`} className="font-semibold text-ink underline">
+              {labels.favoritesSignIn}
+            </Link>
+          </p>
+        )}
         {visible.length === 0 ? (
-          <p className="border border-dashed border-[#a8a8a8] p-8 text-center text-muted">{labels.empty}</p>
+          <p className="border border-dashed border-[#a8a8a8] p-8 text-center text-muted">
+            {active === FAVORITES ? labels.favoritesEmpty : labels.empty}
+          </p>
         ) : (
           <div key={active} className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-6 xl:grid-cols-4">
             {visible.map((item, index) => (
@@ -114,6 +142,7 @@ export function MenuGrid({ lang, items, labels, cardLabels }: Props) {
                 style={{ animationDelay: `${Math.min(index, 8) * 45}ms` }}
                 key={item.slug}
                 lang={lang}
+                productId={item.id}
                 slug={item.slug}
                 name={item.name}
                 price={item.price}

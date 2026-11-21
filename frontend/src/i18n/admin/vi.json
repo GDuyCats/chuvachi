@@ -421,7 +421,9 @@
       "availabilityHint": "Hết hàng hoặc Sắp ra mắt: bánh vẫn hiện trên menu kèm nhãn, nhưng khách không bấm đặt được. Giữ nguyên cho tới khi bạn đổi lại Đang bán.",
       "flavorLabel": "Vị {name}",
       "sizeLabel": "Quy cách {name}",
-      "flavorDailyLimit": "Tối đa mỗi ngày (phần)"
+      "flavorDailyLimit": "Tối đa mỗi ngày (phần)",
+      "notifyFans": "Báo khách đã thả tim",
+      "notifyFansHint": "Khi lưu, nếu món có hàng trở lại, mở bán, có vị/hộp mới hoặc giảm giá thì báo cho khách đã thả tim (mỗi món tối đa 1 lần/ngày). Món mới lần đầu mở bán cũng được báo cho khách muốn nhận tin bánh mới. Bỏ tick khi chỉ sửa vặt."
     },
     "loading": "Đang tải danh sách bánh...",
     "soldOutUntil": "Tạm hết đến {date}",
@@ -433,7 +435,8 @@
       "staffHint": "Nhân viên chỉ chỉnh được tình trạng (Đang bán / Hết hàng / Sắp ra mắt) của bánh và từng vị, Tạm hết đến ngày, Tối đa mỗi ngày của bánh và của từng vị. Muốn đổi giá, ảnh hay tên bánh thì nhờ admin.",
       "unlimited": "Không giới hạn"
     },
-    "flavorLimit": "{name}: tối đa {count}/ngày"
+    "flavorLimit": "{name}: tối đa {count}/ngày",
+    "favorites": "{count} người thích"
   },
   "close": "Đóng",
   "images": {

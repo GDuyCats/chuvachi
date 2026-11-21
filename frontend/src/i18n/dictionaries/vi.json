@@ -73,7 +73,9 @@
     "sold": "Đã bán {count}",
     "outOfStock": "Hết hàng",
     "comingSoon": "Sắp ra mắt",
-    "ratingShort": "{average} ({count})"
+    "ratingShort": "{average} ({count})",
+    "favoriteAdd": "Thêm vào yêu thích",
+    "favoriteRemove": "Bỏ khỏi yêu thích"
   },
   "menu": {
     "title": "Menu của tiệm",
@@ -85,7 +87,11 @@
     "countOne": "1 loại bánh",
     "countOther": "{count} loại bánh",
     "view": "Xem",
-    "empty": "Chưa có bánh trong mục này."
+    "empty": "Chưa có bánh trong mục này.",
+    "favorites": "Yêu thích",
+    "favoritesEmpty": "Bạn chưa thả tim món nào. Bấm ♡ trên ảnh bánh để lưu món bạn thích.",
+    "favoritesNudge": "Hiện món bạn thích được lưu trên máy này. Đăng nhập (hoặc bật thông báo) để lưu lâu dài và được báo khi món có hàng lại, có vị mới hay giảm giá.",
+    "favoritesSignIn": "Đăng nhập"
   },
   "productDetail": {
     "flavor": "Vị",
@@ -671,5 +677,14 @@
         "UNKNOWN": "Có lỗi xảy ra. Bạn thử lại giúp tiệm nhé."
       }
     }
+  },
+  "favorites": {
+    "title": "Món yêu thích",
+    "hint": "Các món bạn đã thả tim ♥. Khi món có hàng trở lại, mở bán, có vị mới hoặc giảm giá, tiệm sẽ báo bạn qua chuông thông báo (và trên điện thoại nếu bạn bật thông báo).",
+    "empty": "Bạn chưa thả tim món nào.",
+    "browse": "Xem menu",
+    "newCakes": "Báo cho tôi khi có bánh mới",
+    "newCakesHint": "Mỗi khi tiệm ra món mới, bạn sẽ nhận một thông báo.",
+    "saveFailed": "Chưa lưu được, bạn thử lại nhé."
   }
 }

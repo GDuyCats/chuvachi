@@ -497,6 +497,7 @@ export type AdminProductInput = {
   isNew: boolean;
   sortOrder: number;
   options: AdminOption[];
+  notifyFans?: boolean; // tell customers who hearted it what changed (default on)
 };
 
 export type AdminProduct = AdminProductInput & {
@@ -504,6 +505,7 @@ export type AdminProduct = AdminProductInput & {
   imageUrl: string | null; // cover photo
   category: AdminCategory;
   options: (AdminOption & { id: number })[];
+  _count?: { favorites: number }; // how many customers hearted it
 };
 
 export type UploadKind = "product" | "banner" | "post" | "theme";
@@ -781,6 +783,7 @@ export const adminApi = {
       dailyLimit: number | null;
       availability: AdminAvailability;
       options: { id: number; availability: AdminAvailability; dailyLimit?: number | null }[];
+      notifyFans?: boolean;
     },
   ) =>
     request<AdminProduct>(`/products/${id}/stock`, { method: "PUT", body: JSON.stringify(input) }),

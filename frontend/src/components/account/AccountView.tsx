@@ -10,6 +10,7 @@ import { formatLongDate, formatSlot } from "@/lib/delivery-time";
 import { formatPrice } from "@/lib/format";
 import { ApiError, fetchOrderSettings } from "@/lib/public-api";
 import { Skeleton, SkeletonGroup } from "../Skeleton";
+import { FavoritesSection } from "../favorites/FavoritesSection";
 import { AccountPushSetting } from "../push/PushControls";
 import { AccountReviews } from "../reviews/ReviewableOrders";
 
@@ -18,6 +19,8 @@ type Props = {
   labels: Dictionary["account"];
   reviewLabels: Dictionary["reviews"];
   pushLabels: Dictionary["push"];
+  favoriteLabels: Dictionary["favorites"];
+  productLabels: Dictionary["product"];
 };
 
 type Notice = { kind: "ok" | "error"; text: string } | null;
@@ -26,7 +29,7 @@ const inputClass = "h-12 w-full border-[1.5px] border-black px-3.5 text-base fon
 
 // The signed-in customer's page: their details, notifications, reviews and account actions.
 // Orders have their own page ("My orders", /[lang]/orders).
-export function AccountView({ lang, labels, reviewLabels, pushLabels }: Props) {
+export function AccountView({ lang, labels, reviewLabels, pushLabels, favoriteLabels, productLabels }: Props) {
   const router = useRouter();
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
   const [zones, setZones] = useState<{ id: number; name: string }[]>([]);
@@ -101,6 +104,7 @@ export function AccountView({ lang, labels, reviewLabels, pushLabels }: Props) {
           →
         </span>
       </Link>
+      <FavoritesSection lang={lang} labels={favoriteLabels} productLabels={productLabels} />
       <AccountPushSetting lang={lang} labels={pushLabels} />
       <AccountReviews lang={lang} labels={reviewLabels} />
       <ProfileSection labels={labels} profile={profile} zones={zones} onSaved={setProfile} />

@@ -421,7 +421,9 @@
       "availabilityHint": "Sold out or Coming soon: the cake stays on the menu with a label, but customers can't order it. Stays until you switch back to On sale.",
       "flavorLabel": "Flavor {name}",
       "sizeLabel": "Size {name}",
-      "flavorDailyLimit": "Max per day (portions)"
+      "flavorDailyLimit": "Max per day (portions)",
+      "notifyFans": "Tell customers who hearted it",
+      "notifyFansHint": "On save, if the cake is back in stock, goes on sale, gets a new flavor/box or gets cheaper, customers who hearted it are told (at most once a day per cake). A new cake going on sale for the first time is also announced to customers who want news of new cakes. Untick for small fixes."
     },
     "loading": "Loading products...",
     "soldOutUntil": "Sold out to {date}",
@@ -433,7 +435,8 @@
       "staffHint": "Staff can change the status (On sale / Sold out / Coming soon) of each cake and flavor, Sold out until, and the daily limit of each cake and flavor. Ask an admin to change prices, photos or names.",
       "unlimited": "No limit"
     },
-    "flavorLimit": "{name}: max {count}/day"
+    "flavorLimit": "{name}: max {count}/day",
+    "favorites": "{count} hearts"
   },
   "close": "Close",
   "images": {

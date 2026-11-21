@@ -6,6 +6,7 @@ import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { FavoritesSync } from "@/components/favorites/FavoritesSync";
 import { isLocale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { getHomeContent, getProducts, getShopInfo, getSiteTheme, type Product } from "@/lib/api";
@@ -82,6 +83,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
     >
       <body className="flex min-h-full flex-col">
         <ThemeProvider theme={theme} lang={lang} labels={dict.theme}>
+          <FavoritesSync lang={lang} />
         <AnnouncementBar lang={lang} content={home.announcement} linkLabel={dict.announcement.link} />
         {shop.orderingPaused && (
           // Shown on every page while staff have paused orders (admin, Settings).

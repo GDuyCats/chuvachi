@@ -148,6 +148,7 @@ homeRouter.get("/home", async (req, res) => {
             description: text(season.descriptionVi, season.descriptionEn),
             endDate: formatDateOnly(season.endDate),
             products: season.products.map(({ product }) => ({
+              id: product.id,
               slug: product.slug,
               name: pickText(locale, product.nameVi, product.nameEn),
               price: startingPrice(product.basePrice, product.options),

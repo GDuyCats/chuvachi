@@ -6,6 +6,9 @@ import { request } from "./public-api";
 
 export type PushSupport = "supported" | "unsupported" | "needsHomeScreen" | "blocked";
 
+// Fired when notifications are switched on or off in this browser (favorites then sync again).
+export const PUSH_CHANGED_EVENT = "chuvachi:push-changed";
+
 // The server's public key comes as base64url text; the browser wants bytes.
 function keyToBytes(base64url: string): Uint8Array<ArrayBuffer> {
   const padded = `${base64url}${"=".repeat((4 - (base64url.length % 4)) % 4)}`.replace(/-/g, "+").replace(/_/g, "/");
@@ -64,6 +67,7 @@ export async function enablePush(locale: Locale): Promise<string> {
       locale,
     }),
   });
+  window.dispatchEvent(new Event(PUSH_CHANGED_EVENT));
   return subscription.endpoint;
 }
 
@@ -75,6 +79,7 @@ export async function disablePush(): Promise<void> {
     body: JSON.stringify({ endpoint: subscription.endpoint }),
   });
   await subscription.unsubscribe();
+  window.dispatchEvent(new Event(PUSH_CHANGED_EVENT));
 }
 
 // This browser follows one order (proved with its phone number, or by the signed-in owner).

@@ -129,6 +129,11 @@ function ProductSummary({ product }: { product: AdminProduct }) {
           {product.isNew && (
             <span className="bg-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">{p.new}</span>
           )}
+          {(product._count?.favorites ?? 0) > 0 && (
+            <span className="border border-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+              ♥ {p.favorites.replace("{count}", String(product._count?.favorites ?? 0))}
+            </span>
+          )}
           {product.availability !== "AVAILABLE" && (
             <span className="border border-black bg-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
               {t.availability[product.availability]}
@@ -198,6 +203,7 @@ function StockEditor({ product, onSaved }: { product: AdminProduct; onSaved: (pr
   const isValidLimit = (value: number | null) => value === null || (Number.isInteger(value) && value >= 1);
   const flavorLimitsValid = Object.values(flavorLimits).every((text) => isValidLimit(toLimit(text)));
   const [busy, setBusy] = useState(false);
+  const [notifyFans, setNotifyFans] = useState(true); // tell customers who hearted this cake
 
   const limitNumber = dailyLimit.trim() === "" ? null : Number(dailyLimit);
   const limitValid = limitNumber === null || (Number.isInteger(limitNumber) && limitNumber >= 1);
@@ -215,6 +221,7 @@ function StockEditor({ product, onSaved }: { product: AdminProduct; onSaved: (pr
             availability: value,
             ...(Number(id) in flavorLimits ? { dailyLimit: toLimit(flavorLimits[Number(id)]) } : {}),
           })),
+          notifyFans,
         }),
       );
       toast.success(t.products.stock.saved);
@@ -304,6 +311,10 @@ function StockEditor({ product, onSaved }: { product: AdminProduct; onSaved: (pr
       <button type="button" disabled={busy || !limitValid || !flavorLimitsValid} onClick={save} className="h-11 bg-black px-5 text-sm font-bold text-white disabled:opacity-50">
         {t.products.stock.save}
       </button>
+      <label className="flex min-h-10 items-center gap-2 text-xs font-semibold sm:col-span-3" title={e.notifyFansHint}>
+        <input type="checkbox" checked={notifyFans} onChange={(ev) => setNotifyFans(ev.target.checked)} className="h-5 w-5 accent-black" />
+        {e.notifyFans}
+      </label>
     </div>
     </div>
   );

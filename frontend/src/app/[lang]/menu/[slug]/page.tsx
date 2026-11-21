@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { HeartButton } from "@/components/favorites/HeartButton";
 import { PhotoBox } from "@/components/PhotoBox";
 import { ProductCard, soldText } from "@/components/ProductCard";
 import { ProductReviews } from "@/components/reviews/ProductReviews";
@@ -110,7 +111,16 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[s
                 <span className="text-[13px] text-muted">{soldText(dict.product.sold, product.soldCount, locale)}</span>
               )}
             </div>
-            <h1 className="font-display text-5xl uppercase leading-[1.05] md:text-[64px]">{product.name}</h1>
+            <div className="flex items-start justify-between gap-4">
+              <h1 className="font-display text-5xl uppercase leading-[1.05] md:text-[64px]">{product.name}</h1>
+              <HeartButton
+                productId={product.id}
+                name={product.name}
+                labels={{ add: dict.product.favoriteAdd, remove: dict.product.favoriteRemove }}
+                size="page"
+                className="mt-1"
+              />
+            </div>
             {product.rating && product.rating.count > 0 && (
               <a href="#reviews" className="flex items-center gap-2 self-start text-sm">
                 <Stars
@@ -185,6 +195,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[s
               <ProductCard
                 key={item.slug}
                 lang={locale}
+                productId={item.id}
                 slug={item.slug}
                 name={item.name}
                 price={item.basePrice}

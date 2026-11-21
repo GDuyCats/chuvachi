@@ -5,6 +5,7 @@ import { requireAdminRole, requireStaff } from "../lib/auth";
 import { prisma } from "../lib/prisma";
 import { deleteImageByUrl, isOwnImageUrl } from "../lib/storage";
 import { formatDateOnly, parseDateOnly } from "../lib/time";
+import { notifyProductFans, productSnapshot } from "../services/customer-push";
 
 export const adminProductsRouter = Router();
 // Staff may read products and change stock (sold out, daily limit); everything else is for admins.
@@ -70,6 +71,8 @@ const productSchema = z.object({
   isNew: z.boolean(),
   sortOrder: z.number().int().min(0).max(1000),
   options: z.array(optionSchema).max(40),
+  // Tell customers who hearted this cake what changed (back in stock, cheaper, new flavor...).
+  notifyFans: z.boolean().default(true),
 });
 
 const categorySchema = z.object({
@@ -96,10 +99,11 @@ function isDuplicateSlug(error: unknown): boolean {
 const productInclude = {
   category: true,
   options: { orderBy: [{ type: "asc" }, { sortOrder: "asc" }, { id: "asc" }] },
+  _count: { select: { favorites: true } }, // how many people hearted it
 } satisfies Prisma.ProductInclude;
 
 function productData(input: z.infer<typeof productSchema>) {
-  const { options: _options, categoryId, images, soldOutUntil, ...fields } = input;
+  const { options: _options, notifyFans: _notifyFans, categoryId, images, soldOutUntil, ...fields } = input;
   const unique = [...new Set(images)];
   return {
     ...fields,
@@ -177,11 +181,14 @@ adminProductsRouter.post("/products", requireAdminRole, async (req, res) => {
   if (!parsed.success) return badRequest(res, parsed.error);
   try {
     const product = await prisma.$transaction(async (tx) => {
-      const created = await tx.product.create({ data: productData(parsed.data) });
+      // A new cake is announced to customers the first time it can be ordered.
+      const created = await tx.product.create({ data: { ...productData(parsed.data), announced: false } });
       await syncOptions(tx, created.id, parsed.data.options);
       return tx.product.findUniqueOrThrow({ where: { id: created.id }, include: productInclude });
     });
     console.log(`Product ${product.slug} created by admin ${req.admin!.email}`);
+    const snapshot = await productSnapshot(product.id);
+    if (snapshot) void notifyProductFans(snapshot, snapshot, parsed.data.notifyFans);
     res.status(201).json(toAdminProduct(product));
   } catch (error) {
     if (isDuplicateSlug(error)) {
@@ -200,12 +207,15 @@ adminProductsRouter.put("/products/:id", requireAdminRole, async (req, res) => {
   if (!parsed.success) return badRequest(res, parsed.error);
   try {
     const previous = await prisma.product.findUnique({ where: { id: id.data }, select: { imageUrl: true, images: true } });
+    const before = await productSnapshot(id.data);
     const product = await prisma.$transaction(async (tx) => {
       await tx.product.update({ where: { id: id.data }, data: productData(parsed.data) });
       await syncOptions(tx, id.data, parsed.data.options);
       return tx.product.findUniqueOrThrow({ where: { id: id.data }, include: productInclude });
     });
     console.log(`Product ${product.slug} updated by admin ${req.admin!.email}`);
+    const after = await productSnapshot(id.data);
+    if (before && after) void notifyProductFans(before, after, parsed.data.notifyFans);
     // Photos that were removed: delete their files from storage.
     if (previous) {
       const kept = new Set(product.images);
@@ -239,6 +249,7 @@ const stockSchema = productSchema.pick({ soldOutUntil: true, dailyLimit: true, a
     )
     .max(40)
     .default([]),
+  notifyFans: z.boolean().default(true),
 });
 
 // PUT /api/admin/products/:id/stock - availability, "sold out until" and "daily limit" only (allowed for staff)
@@ -248,6 +259,7 @@ adminProductsRouter.put("/products/:id/stock", async (req, res) => {
   if (!id.success) return badRequest(res);
   if (!parsed.success) return badRequest(res, parsed.error);
   try {
+    const before = await productSnapshot(id.data);
     const product = await prisma.$transaction(async (tx) => {
       for (const option of parsed.data.options) {
         // updateMany with productId so an option of another cake can't be changed through this one
@@ -273,6 +285,8 @@ adminProductsRouter.put("/products/:id/stock", async (req, res) => {
       });
     });
     console.log(`Stock of ${product.slug} updated by ${req.admin!.email}`);
+    const after = await productSnapshot(id.data);
+    if (before && after) void notifyProductFans(before, after, parsed.data.notifyFans);
     res.json(toAdminProduct(product));
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {

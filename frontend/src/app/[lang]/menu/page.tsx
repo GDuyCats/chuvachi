@@ -22,6 +22,7 @@ export default async function MenuPage({ params }: PageProps<"/[lang]/menu">) {
   const [dict, products] = await Promise.all([getDictionary(lang), getProducts(lang)]);
 
   const items: MenuItem[] = products.map((product) => ({
+    id: product.id,
     slug: product.slug,
     name: product.name,
     price: startingPrice(product),

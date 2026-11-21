@@ -73,7 +73,9 @@
     "sold": "{count} sold",
     "outOfStock": "Sold out",
     "comingSoon": "Coming soon",
-    "ratingShort": "{average} ({count})"
+    "ratingShort": "{average} ({count})",
+    "favoriteAdd": "Add to favorites",
+    "favoriteRemove": "Remove from favorites"
   },
   "menu": {
     "title": "Our menu",
@@ -85,7 +87,11 @@
     "countOne": "1 cake",
     "countOther": "{count} cakes",
     "view": "View",
-    "empty": "No cakes in this category yet."
+    "empty": "No cakes in this category yet.",
+    "favorites": "Favorites",
+    "favoritesEmpty": "No favorites yet. Tap ♡ on a cake's photo to save the ones you love.",
+    "favoritesNudge": "Your favorites are saved on this device. Sign in (or switch notifications on) to keep them and hear when they're back in stock, get a new flavor or get cheaper.",
+    "favoritesSignIn": "Sign in"
   },
   "productDetail": {
     "flavor": "Flavor",
@@ -671,5 +677,14 @@
         "UNKNOWN": "Something went wrong. Please try again."
       }
     }
+  },
+  "favorites": {
+    "title": "Favorite cakes",
+    "hint": "Cakes you hearted ♥. When one is back in stock, goes on sale, gets a new flavor or gets cheaper, we let you know in the bell (and on your phone if notifications are on).",
+    "empty": "No favorites yet.",
+    "browse": "See the menu",
+    "newCakes": "Tell me when there's a new cake",
+    "newCakesHint": "You'll get one notice each time we bring out a new cake.",
+    "saveFailed": "Couldn't save that, please try again."
   }
 }

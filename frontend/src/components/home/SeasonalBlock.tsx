@@ -45,6 +45,7 @@ export function SeasonalBlock({ lang, season, labels, productLabels }: Props) {
               <ProductCard
                 key={product.slug}
                 lang={lang}
+                productId={product.id}
                 slug={product.slug}
                 name={product.name}
                 price={product.price}

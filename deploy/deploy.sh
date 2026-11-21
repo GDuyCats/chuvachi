@@ -42,4 +42,6 @@ docker image prune -f >/dev/null
 docker builder prune -f --filter until=24h >/dev/null || true
 
 $COMPOSE ps
+# Remembered so the automatic deploy knows this commit is live (see auto-deploy.sh).
+git rev-parse HEAD >"$HOME/chuvachi/deployed-commit"
 echo "Done."

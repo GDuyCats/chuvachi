@@ -75,7 +75,8 @@
     "comingSoon": "Coming soon",
     "ratingShort": "{average} ({count})",
     "favoriteAdd": "Add to favorites",
-    "favoriteRemove": "Remove from favorites"
+    "favoriteRemove": "Remove from favorites",
+    "favoriteCount": "{count} likes"
   },
   "menu": {
     "title": "Our menu",

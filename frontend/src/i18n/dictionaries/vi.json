@@ -75,7 +75,8 @@
     "comingSoon": "Sắp ra mắt",
     "ratingShort": "{average} ({count})",
     "favoriteAdd": "Thêm vào yêu thích",
-    "favoriteRemove": "Bỏ khỏi yêu thích"
+    "favoriteRemove": "Bỏ khỏi yêu thích",
+    "favoriteCount": "{count} yêu thích"
   },
   "menu": {
     "title": "Menu của tiệm",

@@ -14,6 +14,7 @@ const productInclude = {
     where: { isActive: true },
     orderBy: { sortOrder: "asc" },
   },
+  _count: { select: { favorites: true } },
 } satisfies Prisma.ProductInclude;
 
 type ProductWithRelations = Prisma.ProductGetPayload<{ include: typeof productInclude }>;
@@ -40,6 +41,8 @@ function toProductResponse(product: ProductWithRelations, locale: Locale, soldCo
     soldOutUntil: product.soldOutUntil ? formatDateOnly(product.soldOutUntil) : null,
     // Portions sold so far; null when the shop hides it or the number is still below the minimum
     soldCount,
+    // How many people hearted it (accounts and browsers with notifications on)
+    favoriteCount: product._count.favorites,
     // Average stars and number of reviews, or null when nobody reviewed it yet
     rating,
     category: {

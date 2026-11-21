@@ -110,6 +110,11 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[s
               {product.soldCount != null && (
                 <span className="text-[13px] text-muted">{soldText(dict.product.sold, product.soldCount, locale)}</span>
               )}
+              {(product.favoriteCount ?? 0) > 0 && (
+                <span className="text-[13px] text-muted">
+                  ♥ {soldText(dict.product.favoriteCount, product.favoriteCount ?? 0, locale)}
+                </span>
+              )}
             </div>
             <div className="flex items-start justify-between gap-4">
               <h1 className="font-display text-5xl uppercase leading-[1.05] md:text-[64px]">{product.name}</h1>
@@ -196,6 +201,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/menu/[s
                 key={item.slug}
                 lang={locale}
                 productId={item.id}
+                favoriteCount={item.favoriteCount}
                 slug={item.slug}
                 name={item.name}
                 price={item.basePrice}

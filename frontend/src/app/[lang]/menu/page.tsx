@@ -29,6 +29,7 @@ export default async function MenuPage({ params }: PageProps<"/[lang]/menu">) {
     isNew: product.isNew,
     soldOutUntil: product.soldOutUntil,
     soldCount: product.soldCount ?? null,
+    favoriteCount: product.favoriteCount ?? 0,
     availability: product.availability ?? "AVAILABLE",
     rating: product.rating ?? null,
     imageUrl: product.imageUrl,

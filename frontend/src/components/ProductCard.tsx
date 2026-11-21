@@ -18,6 +18,7 @@ export type ProductCardLabels = {
   ratingShort?: string; // "{average} ({count})"
   favoriteAdd?: string;
   favoriteRemove?: string;
+  favoriteCount?: string; // "{count} likes"
 };
 
 type Props = {
@@ -29,6 +30,7 @@ type Props = {
   isNew: boolean;
   soldOutUntil?: string | null;
   soldCount?: number | null; // shown only when the shop turned it on
+  favoriteCount?: number; // people who hearted it; shown when above 0
   availability?: Availability;
   rating?: { average: number; count: number } | null;
   imageUrl: string | null;
@@ -53,6 +55,7 @@ export function ProductCard({
   isNew,
   soldOutUntil = null,
   soldCount = null,
+  favoriteCount = 0,
   availability = "AVAILABLE",
   rating = null,
   imageUrl,
@@ -103,6 +106,9 @@ export function ProductCard({
           )}
           {soldCount != null && labels.sold && (
             <span className="text-xs text-muted md:text-[13px]">{soldText(labels.sold, soldCount, lang)}</span>
+          )}
+          {favoriteCount > 0 && labels.favoriteCount && (
+            <span className="text-xs text-muted md:text-[13px]">♥ {soldText(labels.favoriteCount, favoriteCount, lang)}</span>
           )}
         </div>
         <div className="mt-auto flex flex-wrap items-center justify-between gap-x-2 gap-y-1">

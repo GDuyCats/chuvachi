@@ -98,12 +98,25 @@ export function ProductOptions({
     firstFlavorId !== null && flavors.find((f) => f.id === firstFlavorId)?.availability === "AVAILABLE"
       ? { [firstFlavorId]: 1 }
       : {};
+  // A box (4, 6...) starts split evenly over the flavors that can be ordered, e.g. a box of 6
+  // with 3 flavors = 2 + 2 + 2, a box of 4 with 3 flavors = 2 + 1 + 1. Customers then adjust.
+  const evenSplit = (boxSize: number): Record<number, number> => {
+    const open = flavors.filter((f) => f.availability === "AVAILABLE");
+    if (boxSize <= 1 || open.length === 0) return {};
+    const each = Math.floor(boxSize / open.length);
+    const extra = boxSize % open.length;
+    return Object.fromEntries(
+      open.map((f, index) => [f.id, each + (index < extra ? 1 : 0)] as const).filter(([, portions]) => portions > 0),
+    );
+  };
   const [packageId, setPackageId] = useState<number | null>(firstAvailable(packages));
   // Cakes with flavors: a quantity per flavor (e.g. 2 mango + 2 strawberry). Without flavors: one quantity.
   const [counts, setCounts] = useState<Record<number, number>>(startCounts);
   const [quantity, setQuantity] = useState(1);
   // Mixed box (box of 4, 6...): portions of each flavor in ONE box, and how many such boxes.
-  const [mix, setMix] = useState<Record<number, number>>({});
+  const [mix, setMix] = useState<Record<number, number>>(() =>
+    evenSplit(portionsPerUnit(packages.find((p) => p.id === firstAvailable(packages)) ?? null)),
+  );
   const [boxes, setBoxes] = useState(1);
   const [addedCount, setAddedCount] = useState<number | null>(null);
   const router = useRouter();
@@ -184,7 +197,7 @@ export function ProductOptions({
 
   function selectPackage(id: number) {
     setPackageId(id);
-    setMix({}); // a different box size needs a new split
+    setMix(evenSplit(portionsPerUnit(packages.find((p) => p.id === id) ?? null))); // a new size gets a new even split
     setBoxes(1);
   }
 
@@ -233,7 +246,7 @@ export function ProductOptions({
     if (lines) setAddedCount(cartItemCount(lines));
     setCounts(startCounts());
     setQuantity(1);
-    setMix({});
+    setMix(evenSplit(portions));
     setBoxes(1);
   }
 

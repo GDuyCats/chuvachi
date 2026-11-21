@@ -22,6 +22,7 @@ export type MenuItem = {
   isNew: boolean;
   soldOutUntil: string | null;
   soldCount: number | null;
+  favoriteCount: number;
   availability: Availability;
   rating: { average: number; count: number } | null;
   imageUrl: string | null;
@@ -149,6 +150,7 @@ export function MenuGrid({ lang, items, labels, cardLabels }: Props) {
                 isNew={item.isNew}
                 soldOutUntil={item.soldOutUntil}
                 soldCount={item.soldCount}
+                favoriteCount={item.favoriteCount}
                 availability={item.availability}
                 rating={item.rating}
                 imageUrl={item.imageUrl}

@@ -158,7 +158,7 @@ async function bundle() {
   const until = pinned ? pinnedUntil(pinned, settings.themePinnedAt) : null;
   return {
     themes: themes.map(toRow),
-    presets: presets.map((preset) => ({ key: preset.key, group: preset.group, nameVi: preset.nameVi, nameEn: preset.nameEn, colors: preset.colors, icon: preset.icon })),
+    presets, // whole presets, so the admin can preview one before creating a look from it
     settings: {
       themesOff: settings.themesOff,
       themePinnedId: pinned ? pinned.id : null,

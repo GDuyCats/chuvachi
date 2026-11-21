@@ -1389,8 +1389,7 @@
     },
     "colors": {
       "hint": "Parts without \"Change color\" ticked stay black and white. Tip: changing the buttons, the top bar and the footer is usually enough.",
-      "fromPreset": "Take colors from",
-      "fromPresetPick": "Pick a ready-made look…",
+      "fromPreset": "Color set",
       "change": "Change color",
       "background": "Background",
       "text": "Text",
@@ -1412,7 +1411,11 @@
         "foot": "The bottom of every page (contact, opening hours).",
         "hero": "Background of the text-beside-photo banner, the season block, category tiles.",
         "accent": "\"New\" labels, the cart count, order progress bars."
-      }
+      },
+      "fromPresetNone": "Black and white (no color set)",
+      "fromPresetCustom": "Custom (doesn't match a ready-made set)",
+      "fromPresetHint": "Pick a ready-made set, or the colors of a look you made, to replace all colors. To fine-tune single parts, open Colors below.",
+      "yourLooks": "Your looks"
     },
     "message": {
       "hint": "Leave empty to keep the bar's text from the \"Homepage\" page. One message per line; several lines take turns.",
@@ -1565,6 +1568,7 @@
     "switchLook": "Switch to another look",
     "previousLook": "Previous look",
     "nextLook": "Next look",
-    "switchConfirm": "This look has unsaved changes. Switch anyway?"
+    "switchConfirm": "This look has unsaved changes. Switch anyway?",
+    "createPreviewHint": "See it in the preview below, then press Create."
   }
 }

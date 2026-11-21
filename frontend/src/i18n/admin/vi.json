@@ -1389,8 +1389,7 @@
     },
     "colors": {
       "hint": "Ô nào không tick \"Đổi màu\" sẽ giữ đen trắng như bình thường. Mẹo: chỉ đổi nút, thanh thông báo và chân trang là đủ đẹp.",
-      "fromPreset": "Lấy bộ màu từ mẫu",
-      "fromPresetPick": "Chọn mẫu…",
+      "fromPreset": "Bộ màu",
       "change": "Đổi màu",
       "background": "Nền",
       "text": "Chữ",
@@ -1412,7 +1411,11 @@
         "foot": "Phần cuối trang (liên hệ, giờ mở cửa).",
         "hero": "Nền banner kiểu chữ cạnh ảnh, ô Mùa này, ô danh mục.",
         "accent": "Nhãn \"Mới\", số trên giỏ hàng, thanh tiến trình đơn."
-      }
+      },
+      "fromPresetNone": "Đen trắng (chưa chọn bộ màu)",
+      "fromPresetCustom": "Tự chỉnh (không giống bộ màu mẫu nào)",
+      "fromPresetHint": "Chọn bộ màu mẫu, hoặc lấy màu của một giao diện bạn đã tạo, để thay toàn bộ màu. Muốn chỉnh từng phần thì mở mục Màu bên dưới.",
+      "yourLooks": "Giao diện của bạn"
     },
     "message": {
       "hint": "Để trống thì thanh thông báo vẫn hiện chữ như trong trang \"Trang chủ\". Mỗi dòng là một câu, nhiều dòng sẽ thay nhau hiện.",
@@ -1565,6 +1568,7 @@
     "switchLook": "Chuyển sang giao diện khác",
     "previousLook": "Giao diện trước",
     "nextLook": "Giao diện sau",
-    "switchConfirm": "Giao diện này có thay đổi chưa lưu. Vẫn chuyển sang giao diện khác?"
+    "switchConfirm": "Giao diện này có thay đổi chưa lưu. Vẫn chuyển sang giao diện khác?",
+    "createPreviewHint": "Xem trước bên dưới, ưng rồi mới bấm Tạo."
   }
 }

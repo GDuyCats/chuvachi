@@ -9,6 +9,7 @@ import {
   type AdminTheme,
   type AdminThemeInput,
   type ThemeBundle,
+  type ThemePreset,
 } from "@/lib/admin-api";
 import {
   COLOR_PAIRS,
@@ -40,6 +41,38 @@ const MAX_PIECES = 12;
 function toInput(theme: AdminTheme): AdminThemeInput {
   const { id: _id, sortOrder: _sortOrder, ...rest } = theme;
   return rest;
+}
+
+// A ready-made look as an editable look, to preview it before creating anything.
+function presetLook(preset: ThemePreset | undefined, lang: "vi" | "en"): AdminThemeInput {
+  return {
+    name: preset ? (lang === "en" ? preset.nameEn : preset.nameVi) : "",
+    colors: preset?.colors ?? {},
+    messageVi: preset?.messageVi ?? null,
+    messageEn: preset?.messageEn ?? null,
+    linkUrl: preset?.linkUrl ?? null,
+    icon: preset?.icon ?? null,
+    iconUrl: null,
+    effectOn: preset?.effectOn ?? false,
+    effectPieces: preset?.effects ?? [],
+    effectImages: [],
+    effectAmount: preset?.effectAmount ?? 40,
+    effectSpeed: preset?.effectSpeed ?? 40,
+    effectSize: preset?.effectSize ?? 50,
+    effectSizeMix: preset?.effectSizeMix ?? 40,
+    effectAllPages: false,
+    scheduleOn: false,
+    startDate: preset?.startDate ?? null,
+    endDate: preset?.endDate ?? null,
+    yearly: preset?.yearly ?? false,
+  };
+}
+
+// Same colors, whatever the order or letter case.
+function sameColors(a: ThemeColors, b: ThemeColors): boolean {
+  const pick = (colors: ThemeColors) =>
+    COLOR_PAIRS.flatMap(({ bg, ink }) => [colors[bg]?.toLowerCase() ?? "", colors[ink]?.toLowerCase() ?? ""]).join(",");
+  return pick(a) === pick(b);
 }
 
 // "2026-12-01" -> "01/12" (or "01/12/2026" for one-off dates)
@@ -278,10 +311,12 @@ function PinNote({ settings }: { settings: ThemeBundle["settings"] }) {
   );
 }
 
+// Pick a ready-made look, see it in the preview, then create a look from it.
 function CreatePanel({ bundle, busy, onCreate }: { bundle: ThemeBundle; busy: boolean; onCreate: (preset: string | null) => void }) {
-  const { t } = useAdminI18n();
+  const { t, lang } = useAdminI18n();
   const s = t.themes;
   const [preset, setPreset] = useState(bundle.presets[0]?.key ?? "");
+  const [phone, setPhone] = useState(false);
   const chosen = bundle.presets.find((item) => item.key === preset);
 
   return (
@@ -304,13 +339,36 @@ function CreatePanel({ bundle, busy, onCreate }: { bundle: ThemeBundle; busy: bo
           {s.createButton}
         </button>
       </div>
-      {chosen && (
-        <div className="flex items-center gap-3">
-          <Swatches colors={chosen.colors} />
-          {isThemeIcon(chosen.icon) && <ThemeIconSvg name={chosen.icon} size={20} />}
-        </div>
-      )}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className="flex items-center gap-3">
+          {chosen && <Swatches colors={chosen.colors} />}
+          {chosen && isThemeIcon(chosen.icon) && <ThemeIconSvg name={chosen.icon} size={20} />}
+          <span className="text-xs text-muted">{s.createPreviewHint}</span>
+        </span>
+        <PreviewModeSwitch phone={phone} onChange={setPhone} />
+      </div>
+      <ThemePreview look={presetLook(chosen, lang)} phone={phone} />
     </section>
+  );
+}
+
+function PreviewModeSwitch({ phone, onChange }: { phone: boolean; onChange: (phone: boolean) => void }) {
+  const { t } = useAdminI18n();
+  const s = t.themes;
+  return (
+    <div className="flex">
+      {[false, true].map((isPhone) => (
+        <button
+          key={String(isPhone)}
+          type="button"
+          onClick={() => onChange(isPhone)}
+          aria-pressed={phone === isPhone}
+          className={`min-h-10 border-[1.5px] border-black px-3 text-xs font-bold [&+&]:-ml-[1.5px] ${phone === isPhone ? "bg-black text-white" : "bg-white"}`}
+        >
+          {isPhone ? s.preview.phone : s.preview.desktop}
+        </button>
+      ))}
+    </div>
   );
 }
 
@@ -385,7 +443,9 @@ function ThemeRow({
       )}
       <div className="flex min-w-0 flex-1 flex-col">
         <span className="flex flex-wrap items-center gap-2 font-semibold">
-          {theme.name}
+          <button type="button" onClick={onEdit} className="text-left hover:underline">
+            {theme.name}
+          </button>
           {showing && <span className="bg-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">{s.showing}</span>}
           {isDefault && <span className="border border-black px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">{s.defaultBadge}</span>}
         </span>
@@ -529,23 +589,39 @@ function ThemeEditor({
     setDirty(true);
   }
 
-  async function save() {
+  async function save(): Promise<boolean> {
     setBusy(true);
     setBadFields([]);
     try {
       onSaved(await adminApi.saveTheme(theme.id, draft));
       setDirty(false);
       toast.success(s.saved);
+      return true;
     } catch (error) {
       if (error instanceof AdminApiError && error.status === 401) router.replace("/admin/login");
       else if (error instanceof AdminValidationError) {
         setBadFields(error.fields);
         toast.error(s.invalid);
       } else toast.error(s.unknownError);
+      return false;
     } finally {
       setBusy(false);
     }
   }
+
+  // "Turn on now" shows the saved version, so unsaved changes are saved first.
+  async function turnOn() {
+    if (dirty && !(await save())) return;
+    onPin(theme.id);
+  }
+
+  // Warn before closing or reloading the tab with unsaved changes.
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (event: BeforeUnloadEvent) => event.preventDefault();
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
 
   function back() {
     if (!dirty || window.confirm(s.leaveConfirm)) onBack();
@@ -561,6 +637,11 @@ function ThemeEditor({
   const next = index >= 0 && index < themes.length - 1 ? themes[index + 1] : null;
 
   const bad = (field: string) => badFields.includes(field);
+  // Which color set the colors match now: a ready-made one first, else another look of the shop.
+  const otherLooks = themes.filter((item) => item.id !== theme.id);
+  const matchingPreset = presets.find((item) => sameColors(item.colors, draft.colors));
+  const matchingLook = otherLooks.find((item) => sameColors(item.colors, draft.colors));
+  const colorSource = matchingPreset ? matchingPreset.key : matchingLook ? `look:${matchingLook.id}` : "";
   const pinnedHere = settings.themePinnedId === theme.id && !settings.pinExpired;
 
   return (
@@ -612,6 +693,38 @@ function ThemeEditor({
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div className="flex flex-col gap-4">
           <label className="flex flex-col gap-1.5 text-sm font-semibold">
+            {s.colors.fromPreset}
+            {/* Ready-made sets (value = preset key) and the shop's other looks (value = "look:<id>"),
+                so colors fine-tuned once can be reused. Shows which set the colors match now. */}
+            <select
+              value={colorSource}
+              onChange={(event) => {
+                const value = event.target.value;
+                const other = value.startsWith("look:") ? otherLooks.find((item) => `look:${item.id}` === value) : undefined;
+                const preset = presets.find((item) => item.key === value);
+                const colors = other?.colors ?? preset?.colors;
+                if (colors) update({ colors: { ...colors } });
+              }}
+              className={input}
+            >
+              <option value="" disabled>
+                {Object.keys(draft.colors).length === 0 ? s.colors.fromPresetNone : s.colors.fromPresetCustom}
+              </option>
+              {otherLooks.length > 0 && (
+                <optgroup label={s.colors.yourLooks}>
+                  {otherLooks.map((item) => (
+                    <option key={item.id} value={`look:${item.id}`}>
+                      {item.name}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+              <PresetOptions presets={presets} />
+            </select>
+            <span className="text-xs font-normal text-muted">{s.colors.fromPresetHint}</span>
+          </label>
+
+          <label className="flex flex-col gap-1.5 text-sm font-semibold">
             {s.name}
             <input
               value={draft.name}
@@ -622,7 +735,7 @@ function ThemeEditor({
           </label>
 
           <Section title={s.sections.colors} open invalid={bad("colors")}>
-            <ColorsEditor colors={draft.colors} presets={presets} onColor={setColor} onReplace={(colors) => update({ colors })} />
+            <ColorsEditor colors={draft.colors} onColor={setColor} />
           </Section>
 
           <Section title={s.sections.message} invalid={bad("messageVi") || bad("messageEn") || bad("linkUrl")}>
@@ -691,19 +804,7 @@ function ThemeEditor({
         <div className="flex flex-col gap-3 lg:sticky lg:top-4 lg:self-start">
           <div className="flex items-center justify-between gap-3">
             <h2 className="font-bold">{s.preview.title}</h2>
-            <div className="flex">
-              {[false, true].map((isPhone) => (
-                <button
-                  key={String(isPhone)}
-                  type="button"
-                  onClick={() => setPhone(isPhone)}
-                  aria-pressed={phone === isPhone}
-                  className={`min-h-10 border-[1.5px] border-black px-3 text-xs font-bold [&+&]:-ml-[1.5px] ${phone === isPhone ? "bg-black text-white" : "bg-white"}`}
-                >
-                  {isPhone ? s.preview.phone : s.preview.desktop}
-                </button>
-              ))}
-            </div>
+            <PreviewModeSwitch phone={phone} onChange={setPhone} />
           </div>
           <ThemePreview look={draft} phone={phone} />
         </div>
@@ -734,7 +835,7 @@ function ThemeEditor({
         ) : (
           <button
             type="button"
-            onClick={() => onPin(theme.id)}
+            onClick={() => void turnOn()}
             disabled={switching}
             className="flex min-h-12 items-center border-[1.5px] border-black px-5 text-sm font-bold disabled:opacity-50"
           >
@@ -749,37 +850,13 @@ function ThemeEditor({
   );
 }
 
-function ColorsEditor({
-  colors,
-  presets,
-  onColor,
-  onReplace,
-}: {
-  colors: ThemeColors;
-  presets: ThemeBundle["presets"];
-  onColor: (key: ColorKey, value: string | null) => void;
-  onReplace: (colors: ThemeColors) => void;
-}) {
+function ColorsEditor({ colors, onColor }: { colors: ThemeColors; onColor: (key: ColorKey, value: string | null) => void }) {
   const { t } = useAdminI18n();
   const c = t.themes.colors;
 
   return (
     <>
       <p className="text-xs text-muted">{c.hint}</p>
-      <label className="flex flex-col gap-1.5 text-sm font-semibold">
-        {c.fromPreset}
-        <select
-          value=""
-          onChange={(event) => {
-            const preset = presets.find((item) => item.key === event.target.value);
-            if (preset) onReplace({ ...preset.colors });
-          }}
-          className={input}
-        >
-          <option value="">{c.fromPresetPick}</option>
-          <PresetOptions presets={presets} />
-        </select>
-      </label>
 
       <ul className="flex flex-col divide-y divide-line">
         {COLOR_PAIRS.map(({ part, bg, ink }) => {

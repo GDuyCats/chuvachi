@@ -543,6 +543,18 @@ export type ThemePreset = {
   nameEn: string;
   colors: ThemeColors;
   icon: string | null;
+  messageVi: string | null;
+  messageEn: string | null;
+  linkUrl: string | null;
+  effects: EffectPiece[];
+  effectOn: boolean;
+  effectAmount: number;
+  effectSpeed: number;
+  effectSize: number;
+  effectSizeMix: number;
+  startDate: string | null;
+  endDate: string | null;
+  yearly: boolean;
 };
 export type ThemeBundle = {
   themes: AdminTheme[];

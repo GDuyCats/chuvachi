@@ -252,9 +252,10 @@ export function AllOrdersPage() {
           <label className="flex items-center gap-2 self-end pb-2 text-sm font-semibold">
             <input
               type="checkbox"
+              role="switch"
               checked={filters.edited === "1"}
               onChange={(e) => set("edited", e.target.checked ? "1" : undefined)}
-              className="h-5 w-5 accent-black"
+              className="switch"
             />
             {h.editedOnly}
           </label>

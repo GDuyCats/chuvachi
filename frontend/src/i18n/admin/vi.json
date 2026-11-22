@@ -1576,5 +1576,12 @@
     "changes": "Có thay đổi chưa lưu",
     "leave": "Có thay đổi chưa lưu. Vẫn rời trang này?",
     "shortcut": "Bấm Ctrl + S để lưu nhanh"
+  },
+  "quick": {
+    "on": "Đang bật – bấm để tắt",
+    "off": "Đang tắt – bấm để bật",
+    "turnedOn": "Đã bật",
+    "turnedOff": "Đã tắt",
+    "failed": "Không đổi được, thử lại nhé."
   }
 }

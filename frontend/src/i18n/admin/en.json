@@ -1576,5 +1576,12 @@
     "changes": "Unsaved changes",
     "leave": "You have unsaved changes. Leave this page anyway?",
     "shortcut": "Press Ctrl + S to save"
+  },
+  "quick": {
+    "on": "On – click to turn off",
+    "off": "Off – click to turn on",
+    "turnedOn": "Turned on",
+    "turnedOff": "Turned off",
+    "failed": "Couldn't change it, please try again."
   }
 }

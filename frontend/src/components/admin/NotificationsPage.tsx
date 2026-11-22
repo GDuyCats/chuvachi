@@ -190,14 +190,15 @@ export function NotificationsPage() {
         <h2 className="font-display text-2xl uppercase tracking-wide">{n.email.title}</h2>
         <p className="text-sm">{n.email.hint.replace("{email}", me?.email ?? "")}</p>
         <label
-          className={`flex min-h-12 items-center gap-3 border-[1.5px] px-4 font-bold ${emailOn ? "border-black bg-black text-white" : "border-black"}`}
+          className="flex min-h-12 items-center gap-3 border-[1.5px] border-black px-4 font-bold"
         >
           <input
             type="checkbox"
+            role="switch"
             checked={emailOn}
             disabled={busy}
             onChange={(e) => void toggleEmail(e.target.checked)}
-            className="h-5 w-5 accent-white"
+            className="switch"
           />
           {emailOn ? n.email.on : n.email.off}
         </label>

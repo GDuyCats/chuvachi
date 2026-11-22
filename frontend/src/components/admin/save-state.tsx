@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAdminI18n } from "./AdminI18n";
+import { useToast } from "./Toast";
 
 // Shared "saved / unsaved" behaviour of the admin edit pages:
 // - the Save button reads "✓ Saved" and can't be pressed while nothing changed,
@@ -95,5 +96,47 @@ export function SaveButton({
         {saving ? savingLabel : dirty ? label : (idleLabel ?? `✓ ${u.saved}`)}
       </button>
     </span>
+  );
+}
+
+type QuickSwitchProps = {
+  checked: boolean;
+  onToggle: (next: boolean) => Promise<unknown>; // saves the change; throws when it fails
+  name: string; // what it switches, read out by screen readers ("Christmas banner")
+  disabled?: boolean;
+};
+
+// An on/off switch shown in a list, so an item can be turned on or off without opening it.
+// It saves straight away and shows the new position while saving.
+export function QuickSwitch({ checked, onToggle, name, disabled = false }: QuickSwitchProps) {
+  const { t } = useAdminI18n();
+  const q = t.quick;
+  const toast = useToast();
+  const [pending, setPending] = useState<boolean | null>(null); // the position being saved
+  const shown = pending ?? checked;
+
+  async function toggle(next: boolean) {
+    setPending(next);
+    try {
+      await onToggle(next);
+      toast.success(`${next ? q.turnedOn : q.turnedOff}: ${name}`);
+    } catch {
+      toast.error(q.failed);
+    } finally {
+      setPending(null);
+    }
+  }
+
+  return (
+    <input
+      type="checkbox"
+      role="switch"
+      checked={shown}
+      disabled={disabled || pending !== null}
+      onChange={(event) => void toggle(event.target.checked)}
+      aria-label={name}
+      title={shown ? q.on : q.off}
+      className="switch"
+    />
   );
 }

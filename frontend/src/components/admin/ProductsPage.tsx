@@ -15,11 +15,12 @@ import {
 import { useAdminMe } from "./AdminShell";
 import { useAdminI18n } from "./AdminI18n";
 import { AdminCardsSkeleton } from "./AdminSkeletons";
+import { QuickSwitch } from "./save-state";
 import { useToast } from "./Toast";
 
 export function ProductsPage() {
   const router = useRouter();
-  const { t } = useAdminI18n();
+  const { t, lang } = useAdminI18n();
   const me = useAdminMe();
   const isAdmin = me?.role === "ADMIN";
   const p = t.products;
@@ -70,14 +71,26 @@ export function ProductsPage() {
         <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
           {products.map((product) =>
             isAdmin ? (
-              <li key={product.id}>
-                <Link
-                  href={`/admin/products/edit?id=${product.id}`}
-                  className={`flex gap-4 border bg-white p-4 hover:border-black ${product.isActive ? "border-[#e0e0e0]" : "border-dashed border-[#a8a8a8] opacity-70"}`}
-                >
+              <li
+                key={product.id}
+                className={`flex flex-col border bg-white hover:border-black ${product.isActive ? "border-[#e0e0e0]" : "border-dashed border-[#a8a8a8]"}`}
+              >
+                <Link href={`/admin/products/edit?id=${product.id}`} className={`flex flex-1 gap-4 p-4 ${product.isActive ? "" : "opacity-70"}`}>
                   <ProductSummary product={product} />
                   <span className="self-center text-sm font-semibold underline">{p.edit}</span>
                 </Link>
+                {/* Show / hide on the website without opening the cake */}
+                <label className="flex min-h-11 items-center gap-2.5 border-t border-[#eeeeee] px-4 text-sm font-semibold">
+                  <QuickSwitch
+                    checked={product.isActive}
+                    name={lang === "vi" ? product.nameVi : product.nameEn}
+                    onToggle={async (isActive) => {
+                      const saved = await adminApi.setProductVisible(product.id, isActive);
+                      setProducts((list) => list?.map((item) => (item.id === saved.id ? saved : item)) ?? null);
+                    }}
+                  />
+                  {p.editor.visible}
+                </label>
               </li>
             ) : (
               <li
@@ -312,7 +325,7 @@ function StockEditor({ product, onSaved }: { product: AdminProduct; onSaved: (pr
         {t.products.stock.save}
       </button>
       <label className="flex min-h-10 items-center gap-2 text-xs font-semibold sm:col-span-3" title={e.notifyFansHint}>
-        <input type="checkbox" checked={notifyFans} onChange={(ev) => setNotifyFans(ev.target.checked)} className="h-5 w-5 accent-black" />
+        <input type="checkbox" role="switch" checked={notifyFans} onChange={(ev) => setNotifyFans(ev.target.checked)} className="switch" />
         {e.notifyFans}
       </label>
     </div>

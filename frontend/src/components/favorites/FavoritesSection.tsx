@@ -100,10 +100,11 @@ export function FavoritesSection({ lang, labels, productLabels }: Props) {
       <label className="flex min-h-12 items-start gap-3 border-[1.5px] border-black p-4">
         <input
           type="checkbox"
+          role="switch"
           checked={alerts}
           disabled={saving || list === null}
           onChange={(event) => void toggleAlerts(event.target.checked)}
-          className="mt-0.5 h-5 w-5 shrink-0 accent-black"
+          className="switch mt-0.5"
         />
         <span className="flex flex-col gap-0.5">
           <span className="font-semibold">{labels.newCakes}</span>

@@ -92,6 +92,7 @@ export function BannerDesigner({
             <label className="flex items-center gap-2 text-xs font-semibold">
               <input
                 type="checkbox"
+                role="switch"
                 checked={mobileAuto}
                 onChange={(e) =>
                   onChange(
@@ -100,7 +101,7 @@ export function BannerDesigner({
                       : { textXMobile: DEFAULT_MOBILE_POINT.x, textYMobile: DEFAULT_MOBILE_POINT.y },
                   )
                 }
-                className="h-4 w-4 accent-black"
+                className="switch"
               />
               {d.mobileAuto}
             </label>

@@ -296,7 +296,7 @@ export function ProductEditor() {
           </select>
         </label>
         <label className="flex h-11 items-center gap-2 text-sm font-semibold">
-          <input type="checkbox" checked={o.isActive} onChange={(ev) => updateOption(i, { isActive: ev.target.checked })} className="h-5 w-5 accent-black" />
+          <input type="checkbox" role="switch" checked={o.isActive} onChange={(ev) => updateOption(i, { isActive: ev.target.checked })} className="switch" />
           {e.active}
         </label>
         <button type="button" onClick={() => removeOption(i)} className="h-11 text-sm font-semibold underline">
@@ -316,7 +316,7 @@ export function ProductEditor() {
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <label className="flex min-h-11 items-center gap-2 text-sm font-semibold" title={e.notifyFansHint}>
-            <input type="checkbox" checked={notifyFans} onChange={(ev) => setNotifyFans(ev.target.checked)} className="h-5 w-5 accent-black" />
+            <input type="checkbox" role="switch" checked={notifyFans} onChange={(ev) => setNotifyFans(ev.target.checked)} className="switch" />
             {e.notifyFans}
           </label>
           <SaveButton dirty={dirty} saving={saving} label={e.save} savingLabel={e.saving} />
@@ -417,11 +417,11 @@ export function ProductEditor() {
         </label>
         <div className="flex flex-wrap gap-6">
           <label className="flex items-center gap-2.5 font-semibold">
-            <input type="checkbox" checked={form.isActive} onChange={(ev) => update("isActive", ev.target.checked)} className="h-5 w-5 accent-black" />
+            <input type="checkbox" role="switch" checked={form.isActive} onChange={(ev) => update("isActive", ev.target.checked)} className="switch" />
             {e.visible}
           </label>
           <label className="flex items-center gap-2.5 font-semibold">
-            <input type="checkbox" checked={form.isNew} onChange={(ev) => update("isNew", ev.target.checked)} className="h-5 w-5 accent-black" />
+            <input type="checkbox" role="switch" checked={form.isNew} onChange={(ev) => update("isNew", ev.target.checked)} className="switch" />
             {e.isNew}
           </label>
         </div>

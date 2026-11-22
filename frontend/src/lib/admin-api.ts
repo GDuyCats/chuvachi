@@ -788,6 +788,8 @@ export const adminApi = {
     request<AdminAccount[]>(`/accounts/${id}`, { method: "PUT", body: JSON.stringify(input) }),
   resetPassword: (id: number) =>
     request<TemporaryPasswordResult>(`/accounts/${id}/reset-password`, { method: "POST", body: "{}" }),
+  setProductVisible: (id: number, isActive: boolean) =>
+    request<AdminProduct>(`/products/${id}/visible`, { method: "PUT", body: JSON.stringify({ isActive }) }),
   updateStock: (
     id: number,
     input: {

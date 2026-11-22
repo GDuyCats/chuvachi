@@ -16,7 +16,7 @@ import {
   type SeasonInput,
 } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
-import { SaveButton, sameData, useUnsavedGuard } from "./save-state";
+import { QuickSwitch, SaveButton, sameData, useUnsavedGuard } from "./save-state";
 import { BannerDesigner } from "./BannerDesigner";
 import { BannerLinkPicker } from "./BannerLinkPicker";
 import { AdminFormSkeleton } from "./AdminSkeletons";
@@ -218,9 +218,10 @@ function ContentForm({
         <label className="flex items-center gap-2.5 font-semibold">
           <input
             type="checkbox"
+            role="switch"
             checked={draft.heroIsActive}
             onChange={(e) => update("heroIsActive", e.target.checked)}
-            className="h-5 w-5 accent-black"
+            className="switch"
           />
           {h.hero.show}
         </label>
@@ -397,6 +398,43 @@ const EMPTY_SLIDE: HeroSlideInput = {
   sortOrder: 0,
 };
 
+// Everything a slide save sends, with defaults for fields older slides don't have yet.
+function slideInput(initial: HeroSlideInput): HeroSlideInput {
+  return {
+    eyebrowVi: initial.eyebrowVi,
+    eyebrowEn: initial.eyebrowEn,
+    titleVi: initial.titleVi,
+    titleEn: initial.titleEn,
+    subtitleVi: initial.subtitleVi,
+    subtitleEn: initial.subtitleEn,
+    ctaVi: initial.ctaVi,
+    ctaEn: initial.ctaEn,
+    imageUrl: initial.imageUrl,
+    productId: initial.productId,
+    imageOnly: initial.imageOnly ?? false,
+    textOverlay: initial.textOverlay ?? false,
+    textX: initial.textX ?? 0,
+    textY: initial.textY ?? 50,
+    textXMobile: initial.textXMobile ?? null,
+    textYMobile: initial.textYMobile ?? null,
+    textAlign: initial.textAlign ?? "left",
+    focusX: initial.focusX ?? 50,
+    focusY: initial.focusY ?? 50,
+    titleScale: initial.titleScale ?? 100,
+    bodyScale: initial.bodyScale ?? 100,
+    imagePadding: initial.imagePadding ?? 0,
+    imageWidth: initial.imageWidth ?? 50,
+    imageSide: initial.imageSide ?? "right",
+    splitAlign: initial.splitAlign ?? "spread",
+    splitGap: initial.splitGap ?? 4,
+    linkUrl: initial.linkUrl ?? null,
+    startDate: initial.startDate,
+    endDate: initial.endDate,
+    isActive: initial.isActive,
+    sortOrder: initial.sortOrder,
+  };
+}
+
 function HeroSlidesSection({
   slides,
   products,
@@ -447,6 +485,12 @@ function HeroSlidesSection({
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
+                  <QuickSwitch
+                    checked={slide.isActive}
+                    disabled={editing !== null}
+                    name={(lang === "vi" ? slide.titleVi : slide.titleEn) || s.photoOnly}
+                    onToggle={async (isActive) => onSaved(await adminApi.updateHeroSlide(slide.id, { ...slideInput(slide), isActive }))}
+                  />
                   <span
                     className={`px-2 py-1 text-[11px] font-bold uppercase tracking-wider ${status(slide) === s.status.running ? "bg-black text-white" : "border border-black"}`}
                   >
@@ -507,39 +551,7 @@ function HeroSlideForm({
   const s = t.home.slides;
   const toast = useToast();
   const handleError = useSaveErrors();
-  const [draft, setDraft] = useState<HeroSlideInput>({
-    eyebrowVi: initial.eyebrowVi,
-    eyebrowEn: initial.eyebrowEn,
-    titleVi: initial.titleVi,
-    titleEn: initial.titleEn,
-    subtitleVi: initial.subtitleVi,
-    subtitleEn: initial.subtitleEn,
-    ctaVi: initial.ctaVi,
-    ctaEn: initial.ctaEn,
-    imageUrl: initial.imageUrl,
-    productId: initial.productId,
-    imageOnly: initial.imageOnly ?? false,
-    textOverlay: initial.textOverlay ?? false,
-    textX: initial.textX ?? 0,
-    textY: initial.textY ?? 50,
-    textXMobile: initial.textXMobile ?? null,
-    textYMobile: initial.textYMobile ?? null,
-    textAlign: initial.textAlign ?? "left",
-    focusX: initial.focusX ?? 50,
-    focusY: initial.focusY ?? 50,
-    titleScale: initial.titleScale ?? 100,
-    bodyScale: initial.bodyScale ?? 100,
-    imagePadding: initial.imagePadding ?? 0,
-    imageWidth: initial.imageWidth ?? 50,
-    imageSide: initial.imageSide ?? "right",
-    splitAlign: initial.splitAlign ?? "spread",
-    splitGap: initial.splitGap ?? 4,
-    linkUrl: initial.linkUrl ?? null,
-    startDate: initial.startDate,
-    endDate: initial.endDate,
-    isActive: initial.isActive,
-    sortOrder: initial.sortOrder,
-  });
+  const [draft, setDraft] = useState<HeroSlideInput>(() => slideInput(initial));
   const [start] = useState(draft); // as opened, to tell whether anything changed
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -672,7 +684,7 @@ function HeroSlideForm({
         </label>
       </div>
       <label className="flex items-center gap-2.5 font-semibold">
-        <input type="checkbox" checked={draft.isActive} onChange={(e) => update("isActive", e.target.checked)} className="h-5 w-5 accent-black" />
+        <input type="checkbox" role="switch" checked={draft.isActive} onChange={(e) => update("isActive", e.target.checked)} className="switch" />
         {s.active}
       </label>
 
@@ -722,6 +734,21 @@ const EMPTY_SEASON: SeasonInput = {
   productIds: [],
 };
 
+function seasonInput(initial: SeasonInput): SeasonInput {
+  return {
+    nameVi: initial.nameVi,
+    nameEn: initial.nameEn,
+    eyebrowVi: initial.eyebrowVi,
+    eyebrowEn: initial.eyebrowEn,
+    descriptionVi: initial.descriptionVi,
+    descriptionEn: initial.descriptionEn,
+    startDate: initial.startDate,
+    endDate: initial.endDate,
+    isActive: initial.isActive,
+    productIds: initial.productIds,
+  };
+}
+
 function SeasonsSection({
   seasons,
   products,
@@ -767,6 +794,12 @@ function SeasonsSection({
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
+                  <QuickSwitch
+                    checked={season.isActive}
+                    disabled={editing !== null}
+                    name={lang === "vi" ? season.nameVi : season.nameEn}
+                    onToggle={async (isActive) => onSaved(await adminApi.updateSeason(season.id, { ...seasonInput(season), isActive }))}
+                  />
                   <span
                     className={`px-2 py-1 text-[11px] font-bold uppercase tracking-wider ${status(season) === s.status.running ? "bg-black text-white" : "border border-black"}`}
                   >
@@ -821,18 +854,7 @@ function SeasonForm({
   const s = t.home.seasons;
   const toast = useToast();
   const handleError = useSaveErrors();
-  const [draft, setDraft] = useState<SeasonInput>({
-    nameVi: initial.nameVi,
-    nameEn: initial.nameEn,
-    eyebrowVi: initial.eyebrowVi,
-    eyebrowEn: initial.eyebrowEn,
-    descriptionVi: initial.descriptionVi,
-    descriptionEn: initial.descriptionEn,
-    startDate: initial.startDate,
-    endDate: initial.endDate,
-    isActive: initial.isActive,
-    productIds: initial.productIds,
-  });
+  const [draft, setDraft] = useState<SeasonInput>(() => seasonInput(initial));
   const [start] = useState(draft); // as opened, to tell whether anything changed
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -941,7 +963,7 @@ function SeasonForm({
       </fieldset>
 
       <label className="flex items-center gap-2.5 font-semibold">
-        <input type="checkbox" checked={draft.isActive} onChange={(e) => update("isActive", e.target.checked)} className="h-5 w-5 accent-black" />
+        <input type="checkbox" role="switch" checked={draft.isActive} onChange={(e) => update("isActive", e.target.checked)} className="switch" />
         {s.active}
       </label>
 
@@ -987,7 +1009,19 @@ function ComingSoonSection({ items, onSaved }: { items: AdminComingSoon[]; onSav
   const [draft, setDraft] = useState({ dateLabel: "", nameVi: "", nameEn: "" });
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => setRows(items), [items]);
+  // New saved list: take it, but keep what is still being typed in a row that wasn't saved.
+  const [savedItems, setSavedItems] = useState(items);
+  if (savedItems !== items) {
+    setSavedItems(items);
+    setRows((current) =>
+      items.map((item) => {
+        const local = current.find((row) => row.id === item.id);
+        const before = savedItems.find((row) => row.id === item.id);
+        const typing = local !== undefined && before !== undefined && !sameData({ ...local, isActive: false }, { ...before, isActive: false });
+        return typing && local ? { ...local, isActive: item.isActive } : item;
+      }),
+    );
+  }
 
   async function run(action: () => Promise<HomeBundle>, successText: string) {
     setBusy(true);
@@ -1045,8 +1079,17 @@ function ComingSoonSection({ items, onSaved }: { items: AdminComingSoon[]; onSav
                 className={`${cell} w-20`}
               />
             </label>
+            {/* Saves at once (only the on/off; anything typed in the row still needs its Save). */}
             <label className="flex min-h-11 items-center gap-2 text-sm font-semibold">
-              <input type="checkbox" checked={row.isActive} onChange={(e) => edit(row.id, { isActive: e.target.checked })} className="h-5 w-5 accent-black" />
+              <QuickSwitch
+                checked={row.isActive}
+                disabled={busy}
+                name={row.nameVi}
+                onToggle={async (isActive) => {
+                  const saved = items.find((item) => item.id === row.id) ?? row;
+                  onSaved(await adminApi.updateComingSoon(row.id, { ...toInput(saved), isActive }));
+                }}
+              />
               {c.show}
             </label>
             <button

@@ -237,6 +237,32 @@ adminProductsRouter.put("/products/:id", requireAdminRole, async (req, res) => {
   }
 });
 
+// PUT /api/admin/products/:id/visible  { isActive } - the "shown on the website" switch in the list
+adminProductsRouter.put("/products/:id/visible", requireAdminRole, async (req, res) => {
+  const id = idParam.safeParse(req.params.id);
+  const parsed = z.object({ isActive: z.boolean() }).safeParse(req.body);
+  if (!id.success) return badRequest(res);
+  if (!parsed.success) return badRequest(res, parsed.error);
+  try {
+    const before = await productSnapshot(id.data);
+    const product = await prisma.product.update({
+      where: { id: id.data },
+      data: { isActive: parsed.data.isActive },
+      include: productInclude,
+    });
+    console.log(`Product ${product.slug} ${parsed.data.isActive ? "shown" : "hidden"} by admin ${req.admin!.email}`);
+    const after = await productSnapshot(id.data);
+    if (before && after) void notifyProductFans(before, after, true);
+    res.json(toAdminProduct(product));
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+      res.status(404).json({ error: "NOT_FOUND" });
+      return;
+    }
+    throw error;
+  }
+});
+
 const stockSchema = productSchema.pick({ soldOutUntil: true, dailyLimit: true, availability: true }).extend({
   // Availability of each flavor or box size, by option id
   options: z

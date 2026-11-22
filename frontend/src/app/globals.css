@@ -119,6 +119,40 @@ textarea:focus-visible {
   }
 }
 
+/* On/off switch: put className="switch" (and role="switch") on a checkbox. The knob is a
+   background circle that slides across, so it works the same in every browser. */
+@utility switch {
+  appearance: none;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 1.5rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  background-color: #bdbdbd;
+  background-image: radial-gradient(circle at center, #ffffff 0 8px, transparent 8.5px);
+  background-size: 1.5rem 1.5rem;
+  background-repeat: no-repeat;
+  background-position: left center;
+  transition:
+    background-color 150ms,
+    background-position 150ms;
+  &:checked {
+    background-color: #000000;
+    background-position: right center;
+  }
+  &:focus-visible {
+    outline: 2px solid #000000;
+    outline-offset: 2px;
+  }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
 @keyframes heart-pop {
   45% {
     transform: scale(1.3);

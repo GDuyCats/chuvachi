@@ -14,7 +14,7 @@ import {
   type ShopSettings,
 } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
-import { SaveButton, sameData, useUnsavedGuard } from "./save-state";
+import { QuickSwitch, SaveButton, sameData, useUnsavedGuard } from "./save-state";
 import { useToast } from "./Toast";
 import { AdminFormSkeleton } from "./AdminSkeletons";
 
@@ -225,15 +225,14 @@ export function SettingsPage() {
 
         <Section id="settings-pause" title={s.pause.title} hint={s.pause.hint}>
           <label
-            className={`flex min-h-12 items-center gap-3 border-[1.5px] px-4 font-bold ${
-              draft.orderingPaused ? "border-black bg-black text-white" : "border-black"
-            }`}
+            className="flex min-h-12 items-center gap-3 border-[1.5px] border-black px-4 font-bold"
           >
             <input
               type="checkbox"
+              role="switch"
               checked={draft.orderingPaused}
               onChange={(e) => update("orderingPaused", e.target.checked)}
-              className="h-5 w-5 accent-white"
+              className="switch"
             />
             {draft.orderingPaused ? s.pause.on : s.pause.off}
           </label>
@@ -246,15 +245,14 @@ export function SettingsPage() {
 
         <Section id="settings-sold" title={s.sold.title} hint={s.sold.hint}>
           <label
-            className={`flex min-h-12 items-center gap-3 border-[1.5px] px-4 font-bold ${
-              draft.showSoldCount ? "border-black bg-black text-white" : "border-black"
-            }`}
+            className="flex min-h-12 items-center gap-3 border-[1.5px] border-black px-4 font-bold"
           >
             <input
               type="checkbox"
+              role="switch"
               checked={draft.showSoldCount}
               onChange={(e) => update("showSoldCount", e.target.checked)}
-              className="h-5 w-5 accent-white"
+              className="switch"
             />
             {draft.showSoldCount ? s.sold.on : s.sold.off}
           </label>
@@ -348,7 +346,19 @@ function ZonesSection({ zones, onSaved, onError }: SectionProps & { zones: Deliv
   const [newZone, setNewZone] = useState({ nameVi: "", nameEn: "" });
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => setRows(zones), [zones]);
+  // New saved list: take it, but keep what is still being typed in a row that wasn't saved.
+  const [savedZones, setSavedZones] = useState(zones);
+  if (savedZones !== zones) {
+    setSavedZones(zones);
+    setRows((current) =>
+      zones.map((zone) => {
+        const local = current.find((row) => row.id === zone.id);
+        const before = savedZones.find((row) => row.id === zone.id);
+        const typing = local !== undefined && before !== undefined && !sameData({ ...local, isActive: false }, { ...before, isActive: false });
+        return typing && local ? { ...local, isActive: zone.isActive } : zone;
+      }),
+    );
+  }
 
   async function run(action: () => Promise<SettingsBundle>) {
     setBusy(true);
@@ -391,11 +401,15 @@ function ZonesSection({ zones, onSaved, onError }: SectionProps & { zones: Deliv
               />
             </label>
             <label className="flex h-11 items-center gap-2 text-sm font-semibold">
-              <input
-                type="checkbox"
+              {/* Saves at once (only the on/off; typed names still need "Save row") */}
+              <QuickSwitch
                 checked={row.isActive}
-                onChange={(e) => edit(row.id, { isActive: e.target.checked })}
-                className="h-5 w-5 accent-black"
+                disabled={busy}
+                name={row.nameVi}
+                onToggle={async (isActive) => {
+                  const saved = zones.find((zone) => zone.id === row.id) ?? row;
+                  onSaved(await adminApi.updateZone({ ...saved, isActive }));
+                }}
               />
               {z.active}
             </label>

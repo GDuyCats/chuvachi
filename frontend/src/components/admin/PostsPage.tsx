@@ -6,7 +6,7 @@ import { adminApi, AdminApiError, AdminValidationError, type AdminPost, type Pos
 import { PostBody } from "../news/PostBody";
 import { PostCommentsPanel } from "./PostCommentsPanel";
 import { useAdminI18n } from "./AdminI18n";
-import { SaveButton, sameData, useUnsavedGuard } from "./save-state";
+import { QuickSwitch, SaveButton, sameData, useUnsavedGuard } from "./save-state";
 import { AdminRowsSkeleton } from "./AdminSkeletons";
 import { ImageUploadField } from "./ImageUploadField";
 import { useToast } from "./Toast";
@@ -40,6 +40,12 @@ function emptyPost(): PostInput {
     allowComments: true,
     publishAt: new Date().toISOString(),
   };
+}
+
+// What a save sends: the post without its read-only fields.
+function postInput(post: AdminPost): PostInput {
+  const { id: _id, createdAt: _c, updatedAt: _u, commentCount: _n, reportedComments: _r, ...input } = post;
+  return input;
 }
 
 // Admin "News" page: the list of posts and the editor.
@@ -135,7 +141,15 @@ export function PostsPage() {
                   </span>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <label className="flex min-h-11 items-center gap-2 text-sm font-semibold">
+                  <QuickSwitch
+                    checked={post.isPublished}
+                    name={post.titleVi}
+                    onToggle={async (isPublished) => setPosts(await adminApi.updatePost(post.id, { ...postInput(post), isPublished }))}
+                  />
+                  {p.published}
+                </label>
                 <span
                   className={`px-2 py-1 text-[11px] font-bold uppercase tracking-wider ${status(post) === p.status.live ? "bg-black text-white" : "border border-black"}`}
                 >
@@ -181,9 +195,7 @@ function PostEditor({
   const { t } = useAdminI18n();
   const p = t.posts;
   const [draft, setDraft] = useState<PostInput>(() => {
-    if (!post) return emptyPost();
-    const { id: _id, createdAt: _c, updatedAt: _u, commentCount: _n, reportedComments: _r, ...input } = post;
-    return input;
+    return post ? postInput(post) : emptyPost();
   });
   const [tab, setTab] = useState<"vi" | "en">("vi");
   const [preview, setPreview] = useState(false);
@@ -481,20 +493,21 @@ function PostEditor({
           <span className="text-xs font-normal text-muted">{p.publishAtHint}</span>
         </label>
         <label className="flex items-center gap-2.5 font-semibold">
-          <input type="checkbox" checked={draft.isPublished} onChange={(e) => update("isPublished", e.target.checked)} className="h-5 w-5 accent-black" />
+          <input type="checkbox" role="switch" checked={draft.isPublished} onChange={(e) => update("isPublished", e.target.checked)} className="switch" />
           {p.published}
         </label>
         <label className="flex items-center gap-2.5 font-semibold">
-          <input type="checkbox" checked={draft.isPinned} onChange={(e) => update("isPinned", e.target.checked)} className="h-5 w-5 accent-black" />
+          <input type="checkbox" role="switch" checked={draft.isPinned} onChange={(e) => update("isPinned", e.target.checked)} className="switch" />
           {p.pin}
         </label>
         <label className="flex flex-col gap-1 font-semibold">
           <span className="flex items-center gap-2.5">
             <input
               type="checkbox"
+              role="switch"
               checked={draft.allowComments}
               onChange={(e) => update("allowComments", e.target.checked)}
-              className="h-5 w-5 accent-black"
+              className="switch"
             />
             {p.allowComments}
           </span>

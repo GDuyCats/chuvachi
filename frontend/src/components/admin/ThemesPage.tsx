@@ -28,7 +28,7 @@ import { isThemeIcon, ThemeIconSvg } from "../theme/ThemeIcon";
 import { useAdminI18n } from "./AdminI18n";
 import { AdminRowsSkeleton } from "./AdminSkeletons";
 import { normalizeBannerLink } from "./BannerLinkPicker";
-import { SaveButton, sameData, useUnsavedGuard } from "./save-state";
+import { QuickSwitch, SaveButton, sameData, useUnsavedGuard } from "./save-state";
 import { ThemePreview } from "./ThemePreview";
 import { useToast } from "./Toast";
 
@@ -189,6 +189,7 @@ export function ThemesPage() {
                   last={index === bundle.themes.length - 1}
                   busy={busy}
                   onEdit={() => setEditingId(theme.id)}
+                  onSchedule={async (scheduleOn) => setBundle(await adminApi.saveTheme(theme.id, { ...toInput(theme), scheduleOn }))}
                   onMove={(step) => {
                     const ids = bundle.themes.map((item) => item.id);
                     const [moved] = ids.splice(index, 1);
@@ -396,6 +397,7 @@ function ThemeRow({
   last,
   busy,
   onEdit,
+  onSchedule,
   onMove,
   onCopy,
   onDelete,
@@ -410,6 +412,7 @@ function ThemeRow({
   last: boolean;
   busy: boolean;
   onEdit: () => void;
+  onSchedule: (on: boolean) => Promise<void>;
   onMove: (step: -1 | 1) => void;
   onCopy: () => void;
   onDelete: () => void;
@@ -453,6 +456,19 @@ function ThemeRow({
         <span className="text-xs text-muted">{when}</span>
       </div>
       <div className="flex items-center gap-2">
+        {/* "Follow the dates" on/off without opening the look; needs both dates first */}
+        <label
+          className="flex min-h-10 items-center gap-2 px-1 text-xs font-semibold"
+          title={theme.startDate && theme.endDate ? undefined : s.schedule.needDates}
+        >
+          <QuickSwitch
+            checked={theme.scheduleOn}
+            disabled={busy || (!theme.scheduleOn && !(theme.startDate && theme.endDate))}
+            name={theme.name}
+            onToggle={onSchedule}
+          />
+          <span className="hidden sm:inline">{s.schedule.on}</span>
+        </label>
         <button type="button" onClick={onEdit} className="min-h-10 bg-black px-4 text-sm font-bold text-white">
           {s.edit}
         </button>
@@ -766,7 +782,7 @@ function ThemeEditor({
 
           <Section title={s.sections.schedule} invalid={bad("startDate") || bad("endDate")}>
             <label className="flex min-h-11 items-center gap-2.5 text-sm font-semibold">
-              <input type="checkbox" checked={draft.scheduleOn} onChange={(event) => update({ scheduleOn: event.target.checked })} className="h-5 w-5 accent-black" />
+              <input type="checkbox" role="switch" checked={draft.scheduleOn} onChange={(event) => update({ scheduleOn: event.target.checked })} className="switch" />
               {s.schedule.on}
             </label>
             <div className={`grid grid-cols-1 gap-3 sm:grid-cols-2 ${draft.scheduleOn ? "" : "opacity-60"}`}>
@@ -790,7 +806,7 @@ function ThemeEditor({
               </label>
             </div>
             <label className="flex min-h-11 items-center gap-2.5 text-sm">
-              <input type="checkbox" checked={draft.yearly} onChange={(event) => update({ yearly: event.target.checked })} className="h-5 w-5 accent-black" />
+              <input type="checkbox" role="switch" checked={draft.yearly} onChange={(event) => update({ yearly: event.target.checked })} className="switch" />
               {s.schedule.yearly}
             </label>
             {draft.scheduleOn && (!draft.startDate || !draft.endDate) && <p className="text-sm font-semibold">{s.schedule.needDates}</p>}
@@ -868,6 +884,7 @@ function ColorsEditor({ colors, onColor }: { colors: ThemeColors; onColor: (key:
                 <label className="flex min-h-10 items-center gap-2 text-sm font-semibold">
                   <input
                     type="checkbox"
+                    role="switch"
                     checked={on}
                     onChange={(event) => {
                       if (event.target.checked) {
@@ -878,7 +895,7 @@ function ColorsEditor({ colors, onColor }: { colors: ThemeColors; onColor: (key:
                         onColor(ink, null);
                       }
                     }}
-                    className="h-5 w-5 accent-black"
+                    className="switch"
                   />
                   {c.change}
                 </label>
@@ -1003,7 +1020,7 @@ function EffectEditor({ draft, update }: { draft: AdminThemeInput; update: (chan
   return (
     <>
       <label className="flex min-h-11 items-center gap-2.5 text-sm font-semibold">
-        <input type="checkbox" checked={draft.effectOn} onChange={(event) => update({ effectOn: event.target.checked })} className="h-5 w-5 accent-black" />
+        <input type="checkbox" role="switch" checked={draft.effectOn} onChange={(event) => update({ effectOn: event.target.checked })} className="switch" />
         {e.on}
       </label>
       <div className={`flex flex-col gap-4 ${draft.effectOn ? "" : "pointer-events-none opacity-50"}`}>

@@ -28,6 +28,7 @@ import { isThemeIcon, ThemeIconSvg } from "../theme/ThemeIcon";
 import { useAdminI18n } from "./AdminI18n";
 import { AdminRowsSkeleton } from "./AdminSkeletons";
 import { normalizeBannerLink } from "./BannerLinkPicker";
+import { SaveButton, sameData, useUnsavedGuard } from "./save-state";
 import { ThemePreview } from "./ThemePreview";
 import { useToast } from "./Toast";
 
@@ -569,14 +570,12 @@ function ThemeEditor({
   const { t, lang } = useAdminI18n();
   const s = t.themes;
   const [draft, setDraft] = useState<AdminThemeInput>(() => toInput(theme));
-  const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState(false);
   const [badFields, setBadFields] = useState<string[]>([]);
   const [phone, setPhone] = useState(false);
 
   function update(changes: Partial<AdminThemeInput>) {
     setDraft((current) => ({ ...current, ...changes }));
-    setDirty(true);
   }
 
   function setColor(key: ColorKey, value: string | null) {
@@ -586,15 +585,21 @@ function ThemeEditor({
       else delete colors[key];
       return { ...current, colors };
     });
-    setDirty(true);
   }
+
+  // Unsaved = different from the saved look (changing something and back again is not a change).
+  const dirty = !sameData(draft, toInput(theme));
+  useUnsavedGuard(dirty);
 
   async function save(): Promise<boolean> {
     setBusy(true);
     setBadFields([]);
     try {
-      onSaved(await adminApi.saveTheme(theme.id, draft));
-      setDirty(false);
+      const next = await adminApi.saveTheme(theme.id, draft);
+      onSaved(next);
+      // Take the saved version (the server tidies empty texts etc.), so the page reads "Saved".
+      const savedTheme = next.themes.find((item) => item.id === theme.id);
+      if (savedTheme) setDraft(toInput(savedTheme));
       toast.success(s.saved);
       return true;
     } catch (error) {
@@ -614,14 +619,6 @@ function ThemeEditor({
     if (dirty && !(await save())) return;
     onPin(theme.id);
   }
-
-  // Warn before closing or reloading the tab with unsaved changes.
-  useEffect(() => {
-    if (!dirty) return;
-    const warn = (event: BeforeUnloadEvent) => event.preventDefault();
-    window.addEventListener("beforeunload", warn);
-    return () => window.removeEventListener("beforeunload", warn);
-  }, [dirty]);
 
   function back() {
     if (!dirty || window.confirm(s.leaveConfirm)) onBack();
@@ -645,7 +642,7 @@ function ThemeEditor({
   const pinnedHere = settings.themePinnedId === theme.id && !settings.pinExpired;
 
   return (
-    <div className="flex flex-col gap-5">
+    <div data-savable className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <button type="button" onClick={back} className="py-2 text-sm font-semibold underline">
           {s.back}
@@ -812,9 +809,7 @@ function ThemeEditor({
 
       {/* Save bar stays at the bottom of the screen while scrolling the long form. */}
       <div className="sticky bottom-0 z-20 -mx-4 flex flex-wrap items-center gap-3 border-t-[1.5px] border-black bg-white px-4 py-3 md:-mx-8 md:px-8">
-        <button type="button" onClick={save} disabled={busy} className="min-h-12 bg-black px-8 font-bold text-white disabled:opacity-50">
-          {busy ? s.saving : s.save}
-        </button>
+        <SaveButton type="button" onClick={() => void save()} dirty={dirty} saving={busy} label={s.save} savingLabel={s.saving} />
         <a
           href={`/${lang}?themePreview=${theme.id}`}
           target="_blank"
@@ -843,7 +838,6 @@ function ThemeEditor({
           </button>
         )}
         {pinnedHere && <PinNote settings={settings} />}
-        {dirty && <span className="text-sm font-semibold">{s.unsaved}</span>}
         {dirty && <span className="w-full text-xs text-muted">{s.previewNeedsSave}</span>}
       </div>
     </div>

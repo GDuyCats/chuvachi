@@ -1570,5 +1570,11 @@
     "nextLook": "Next look",
     "switchConfirm": "This look has unsaved changes. Switch anyway?",
     "createPreviewHint": "See it in the preview below, then press Create."
+  },
+  "unsaved": {
+    "saved": "Saved",
+    "changes": "Unsaved changes",
+    "leave": "You have unsaved changes. Leave this page anyway?",
+    "shortcut": "Press Ctrl + S to save"
   }
 }

@@ -17,6 +17,7 @@ import {
   type AdminProductInput,
 } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
+import { SaveButton, sameData, useUnsavedGuard } from "./save-state";
 import { AdminFormSkeleton } from "./AdminSkeletons";
 import { ImageGalleryField } from "./ImageGalleryField";
 import { useToast } from "./Toast";
@@ -117,12 +118,21 @@ export function ProductEditor() {
   const [notifyFans, setNotifyFans] = useState(true); // tell customers who hearted this cake
   const [badFields, setBadFields] = useState<string[]>([]);
   const [loadFailed, setLoadFailed] = useState(false);
+  // The last saved (or loaded) version; the page has unsaved changes when the form differs from it.
+  const [saved, setSaved] = useState<AdminProductInput | null>(productId ? null : EMPTY_PRODUCT);
   const toast = useToast();
+  const dirty = form !== null && saved !== null && !sameData(form, saved);
+  useUnsavedGuard(dirty);
 
   useEffect(() => {
     const loads: Promise<unknown>[] = [adminApi.listCategories().then(setCategories)];
     if (productId) {
-      loads.push(adminApi.getProduct(productId).then((product) => setForm(toInput(product))));
+      loads.push(
+        adminApi.getProduct(productId).then((product) => {
+          setForm(toInput(product));
+          setSaved(toInput(product));
+        }),
+      );
     }
     Promise.all(loads).catch((error: unknown) => {
       if (error instanceof AdminApiError && error.status === 401) {
@@ -188,11 +198,12 @@ export function ProductEditor() {
     setBadFields([]);
     try {
       const input = { ...form, notifyFans };
-      const saved = productId ? await adminApi.updateProduct(productId, input) : await adminApi.createProduct(input);
-      setForm(toInput(saved));
+      const result = productId ? await adminApi.updateProduct(productId, input) : await adminApi.createProduct(input);
+      setForm(toInput(result));
+      setSaved(toInput(result));
       toast.success(e.saved);
       if (!productId) {
-        router.replace(`/admin/products/edit?id=${saved.id}`);
+        router.replace(`/admin/products/edit?id=${result.id}`);
       }
     } catch (error) {
       if (error instanceof AdminApiError && error.status === 401) {
@@ -295,7 +306,7 @@ export function ProductEditor() {
     ));
 
   return (
-    <form onSubmit={save} className="flex flex-col gap-6">
+    <form onSubmit={save} data-savable className="flex flex-col gap-6">
       <div className="sticky top-0 z-20 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-[#e0e0e0] bg-[#fafafa]/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8">
         <div className="flex flex-col gap-1">
           <Link href="/admin/products" className="self-start py-1 text-sm font-semibold">
@@ -308,9 +319,7 @@ export function ProductEditor() {
             <input type="checkbox" checked={notifyFans} onChange={(ev) => setNotifyFans(ev.target.checked)} className="h-5 w-5 accent-black" />
             {e.notifyFans}
           </label>
-          <button type="submit" disabled={saving} className="min-h-11 bg-black px-6 font-bold text-white hover:bg-[#333333] disabled:opacity-60">
-            {saving ? e.saving : e.save}
-          </button>
+          <SaveButton dirty={dirty} saving={saving} label={e.save} savingLabel={e.saving} />
         </div>
       </div>
 

@@ -16,6 +16,7 @@ import {
   type SeasonInput,
 } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
+import { SaveButton, sameData, useUnsavedGuard } from "./save-state";
 import { BannerDesigner } from "./BannerDesigner";
 import { BannerLinkPicker } from "./BannerLinkPicker";
 import { AdminFormSkeleton } from "./AdminSkeletons";
@@ -124,6 +125,8 @@ function ContentForm({
   const [draft, setDraft] = useState(content);
   const [saving, setSaving] = useState(false);
   const [badFields, setBadFields] = useState<string[]>([]);
+  const dirty = !sameData(draft, content); // content = the saved version
+  useUnsavedGuard(dirty);
 
   useEffect(() => setDraft(content), [content]);
 
@@ -198,12 +201,10 @@ function ContentForm({
   );
 
   return (
-    <form onSubmit={save} className="flex flex-col gap-6">
+    <form onSubmit={save} data-savable className="flex flex-col gap-6">
       <div className="sticky top-0 z-20 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-[#e0e0e0] bg-[#fafafa]/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8">
         <h1 className="font-display text-3xl uppercase md:text-[40px]">{h.title}</h1>
-        <button type="submit" disabled={saving} className="min-h-11 bg-black px-6 font-bold text-white hover:bg-[#333333] disabled:opacity-60">
-          {saving ? h.saving : h.save}
-        </button>
+        <SaveButton dirty={dirty} saving={saving} label={h.save} savingLabel={h.saving} />
       </div>
 
       <Section id="home-announcement" title={h.announcement.title} hint={h.announcement.hint}>
@@ -539,9 +540,15 @@ function HeroSlideForm({
     isActive: initial.isActive,
     sortOrder: initial.sortOrder,
   });
+  const [start] = useState(draft); // as opened, to tell whether anything changed
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [badFields, setBadFields] = useState<string[]>([]);
+  const dirty = !sameData(draft, start);
+  useUnsavedGuard(dirty);
+  const cancel = () => {
+    if (!dirty || window.confirm(t.unsaved.leave)) onClose();
+  };
 
   function update<K extends keyof HeroSlideInput>(key: K, value: HeroSlideInput[K]) {
     setDraft((current) => ({ ...current, [key]: value }));
@@ -601,7 +608,7 @@ function HeroSlideForm({
   );
 
   return (
-    <form onSubmit={save} className="flex flex-col gap-4 p-4">
+    <form onSubmit={save} data-savable className="flex flex-col gap-4 p-4">
       <BannerLayoutPicker
         name={`slide-layout-${slideId ?? "new"}`}
         imageOnly={draft.imageOnly}
@@ -670,10 +677,8 @@ function HeroSlideForm({
       </label>
 
       <div className="flex flex-wrap items-center gap-3 border-t border-[#eeeeee] pt-4">
-        <button type="submit" disabled={busy} className="min-h-11 bg-black px-5 text-sm font-bold text-white disabled:opacity-60">
-          {busy ? t.home.saving : s.save}
-        </button>
-        <button type="button" disabled={busy} onClick={onClose} className="min-h-11 px-2 text-sm font-semibold underline">
+        <SaveButton dirty={dirty} saving={busy} label={s.save} savingLabel={t.home.saving} className="text-sm" />
+        <button type="button" disabled={busy} onClick={cancel} className="min-h-11 px-2 text-sm font-semibold underline">
           {s.cancel}
         </button>
         {slideId &&
@@ -828,9 +833,15 @@ function SeasonForm({
     isActive: initial.isActive,
     productIds: initial.productIds,
   });
+  const [start] = useState(draft); // as opened, to tell whether anything changed
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [badFields, setBadFields] = useState<string[]>([]);
+  const dirty = !sameData(draft, start);
+  useUnsavedGuard(dirty);
+  const cancel = () => {
+    if (!dirty || window.confirm(t.unsaved.leave)) onClose();
+  };
 
   function update<K extends keyof SeasonInput>(key: K, value: SeasonInput[K]) {
     setDraft((current) => ({ ...current, [key]: value }));
@@ -884,7 +895,7 @@ function SeasonForm({
   );
 
   return (
-    <form onSubmit={save} className="flex flex-col gap-4 p-4">
+    <form onSubmit={save} data-savable className="flex flex-col gap-4 p-4">
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {textInput("nameVi", s.nameVi, true)}
         {textInput("nameEn", s.nameEn, true)}
@@ -935,10 +946,8 @@ function SeasonForm({
       </label>
 
       <div className="flex flex-wrap items-center gap-3 border-t border-[#eeeeee] pt-4">
-        <button type="submit" disabled={busy} className="min-h-11 bg-black px-5 text-sm font-bold text-white disabled:opacity-60">
-          {busy ? t.home.saving : s.save}
-        </button>
-        <button type="button" disabled={busy} onClick={onClose} className="min-h-11 px-2 text-sm font-semibold underline">
+        <SaveButton dirty={dirty} saving={busy} label={s.save} savingLabel={t.home.saving} className="text-sm" />
+        <button type="button" disabled={busy} onClick={cancel} className="min-h-11 px-2 text-sm font-semibold underline">
           {s.cancel}
         </button>
         {seasonId &&

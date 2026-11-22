@@ -1570,5 +1570,11 @@
     "nextLook": "Giao diện sau",
     "switchConfirm": "Giao diện này có thay đổi chưa lưu. Vẫn chuyển sang giao diện khác?",
     "createPreviewHint": "Xem trước bên dưới, ưng rồi mới bấm Tạo."
+  },
+  "unsaved": {
+    "saved": "Đã lưu",
+    "changes": "Có thay đổi chưa lưu",
+    "leave": "Có thay đổi chưa lưu. Vẫn rời trang này?",
+    "shortcut": "Bấm Ctrl + S để lưu nhanh"
   }
 }

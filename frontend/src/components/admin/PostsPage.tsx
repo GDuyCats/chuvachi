@@ -1,11 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { adminApi, AdminApiError, AdminValidationError, type AdminPost, type PostCategory, type PostInput } from "@/lib/admin-api";
 import { PostBody } from "../news/PostBody";
 import { PostCommentsPanel } from "./PostCommentsPanel";
 import { useAdminI18n } from "./AdminI18n";
+import { SaveButton, sameData, useUnsavedGuard } from "./save-state";
 import { AdminRowsSkeleton } from "./AdminSkeletons";
 import { ImageUploadField } from "./ImageUploadField";
 import { useToast } from "./Toast";
@@ -190,6 +191,10 @@ function PostEditor({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [badFields, setBadFields] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  // The last saved version (or the post as opened), to tell whether anything changed.
+  const [savedDraft, setSavedDraft] = useState(draft);
+  const dirty = !sameData(draft, savedDraft);
+  useUnsavedGuard(dirty);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -216,6 +221,19 @@ function PostEditor({
       area.focus();
       area.setSelectionRange(start + before.length, start + before.length + selected.length);
     });
+  }
+
+  // Ctrl+B / Ctrl+I in the text box: bold / italic, like in Word.
+  function onBodyKey(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (!(event.ctrlKey || event.metaKey) || event.altKey || event.shiftKey) return;
+    const key = event.key.toLowerCase();
+    if (key === "b") {
+      event.preventDefault();
+      wrap("**", "**", p.toolBoldSample);
+    } else if (key === "i") {
+      event.preventDefault();
+      wrap("*", "*", p.toolItalicSample);
+    }
   }
 
   // Starts each selected line (or the current one) with a mark, e.g. "- " for a list.
@@ -259,8 +277,10 @@ function PostEditor({
   async function run(action: () => Promise<AdminPost[]>, done: string) {
     setBusy(true);
     setBadFields([]);
+    const sent = draft;
     try {
       onSaved(await action());
+      setSavedDraft(sent);
       toast.success(done);
     } catch (error) {
       if (error instanceof AdminApiError && error.status === 401) {
@@ -291,16 +311,20 @@ function PostEditor({
   const tool = "min-h-9 border-[1.5px] border-black bg-white px-2.5 text-sm font-bold hover:bg-[#ececec]";
 
   return (
-    <form onSubmit={save} className="flex max-w-4xl flex-col gap-5">
+    <form onSubmit={save} data-savable className="flex max-w-4xl flex-col gap-5">
       <div className="sticky top-0 z-20 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-[#e0e0e0] bg-[#fafafa]/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8">
         <h1 className="font-display text-3xl uppercase md:text-[40px]">{post ? p.editTitle : p.newTitle}</h1>
         <div className="flex items-center gap-3">
-          <button type="button" onClick={onClose} className="min-h-11 px-2 text-sm font-semibold underline">
+          <button
+            type="button"
+            onClick={() => {
+              if (!dirty || window.confirm(t.unsaved.leave)) onClose();
+            }}
+            className="min-h-11 px-2 text-sm font-semibold underline"
+          >
             {p.back}
           </button>
-          <button type="submit" disabled={busy || uploading} className="min-h-11 bg-black px-6 font-bold text-white disabled:opacity-60">
-            {busy ? p.saving : p.save}
-          </button>
+          <SaveButton dirty={dirty} saving={busy} disabled={uploading} label={p.save} savingLabel={p.saving} />
         </div>
       </div>
 
@@ -392,10 +416,10 @@ function PostEditor({
             <button type="button" className={tool} onClick={() => prefixLines(() => "## ")}>
               {p.toolHeading}
             </button>
-            <button type="button" className={tool} onClick={() => wrap("**", "**", p.toolBoldSample)}>
+            <button type="button" className={tool} title="Ctrl + B" onClick={() => wrap("**", "**", p.toolBoldSample)}>
               <strong>B</strong>
             </button>
-            <button type="button" className={tool} onClick={() => wrap("*", "*", p.toolItalicSample)}>
+            <button type="button" className={tool} title="Ctrl + I" onClick={() => wrap("*", "*", p.toolItalicSample)}>
               <em>I</em>
             </button>
             <button type="button" className={tool} onClick={() => prefixLines(() => "- ")}>
@@ -433,6 +457,7 @@ function PostEditor({
         ) : (
           <textarea
             ref={bodyRef}
+            onKeyDown={onBodyKey}
             required={tab === "vi"}
             rows={18}
             value={body}

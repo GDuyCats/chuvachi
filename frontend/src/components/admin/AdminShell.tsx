@@ -42,6 +42,24 @@ export function AdminShell({ children, adminOnly = false }: ShellProps) {
       });
   }, [router]);
 
+  // Ctrl+S (Cmd+S on a Mac) presses the Save button of the form being edited: the one around
+  // the cursor, else the first on the page. Never opens the browser's "Save page as".
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (!(event.ctrlKey || event.metaKey) || event.altKey || event.shiftKey || event.key.toLowerCase() !== "s") return;
+      event.preventDefault();
+      const focused = document.activeElement?.closest("[data-savable]");
+      const area = focused ?? document.querySelector("[data-savable]");
+      if (!area) return;
+      const button = [...area.querySelectorAll<HTMLButtonElement>("[data-save-button]")].find(
+        (candidate) => candidate.closest("[data-savable]") === area,
+      );
+      if (button && !button.disabled) button.click();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   async function signOut() {
     try {
       await adminApi.logout();

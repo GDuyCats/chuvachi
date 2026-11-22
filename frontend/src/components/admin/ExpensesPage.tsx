@@ -16,6 +16,7 @@ import {
 import { formatPrice } from "@/lib/format";
 import { vietnamTodayText } from "@/lib/shop-date";
 import { useAdminI18n } from "./AdminI18n";
+import { SaveButton, sameData, useUnsavedGuard } from "./save-state";
 import { useAdminMe } from "./AdminShell";
 import { AdminRowsSkeleton } from "./AdminSkeletons";
 import { useToast } from "./Toast";
@@ -262,6 +263,11 @@ function ExpenseForm({ expense, onClose, onSaved }: { expense: Expense | null; o
       : { spentOn: vietnamTodayText(), title: "", amount: 0, category: "INGREDIENT", note: null, photos: [] },
   );
   const [amountText, setAmountText] = useState(expense ? String(expense.amount) : "");
+  // Editing: savable once something changed. Adding: savable once the required boxes are filled.
+  const [start] = useState(() => ({ draft, amountText }));
+  const changed = !sameData({ draft, amountText }, start);
+  const filled = Boolean(draft.spentOn && draft.title.trim() && Number(amountText.replace(/[^\d]/g, "")) > 0);
+  useUnsavedGuard(changed);
   const [uploading, setUploading] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -328,10 +334,16 @@ function ExpenseForm({ expense, onClose, onSaved }: { expense: Expense | null; o
   const amountPreview = Number(amountText.replace(/[^\d]/g, ""));
 
   return (
-    <form onSubmit={submit} className="flex max-w-2xl flex-col gap-4">
+    <form onSubmit={submit} data-savable className="flex max-w-2xl flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-3xl uppercase">{expense ? x.editTitle : x.addTitle}</h1>
-        <button type="button" onClick={onClose} className="min-h-11 border-[1.5px] border-black px-4 font-semibold">
+        <button
+          type="button"
+          onClick={() => {
+            if (!changed || window.confirm(t.unsaved.leave)) onClose();
+          }}
+          className="min-h-11 border-[1.5px] border-black px-4 font-semibold"
+        >
           ← {x.back}
         </button>
       </div>
@@ -429,13 +441,15 @@ function ExpenseForm({ expense, onClose, onSaved }: { expense: Expense | null; o
         </div>
 
         {error && <p className="text-sm font-semibold">{error}</p>}
-        <button
-          type="submit"
-          disabled={saving || uploading > 0}
-          className="min-h-12 bg-black px-6 font-bold text-white disabled:opacity-60"
-        >
-          {saving ? x.saving : uploading > 0 ? t.images.uploading : x.save}
-        </button>
+        <SaveButton
+          dirty={changed && filled}
+          saving={saving}
+          disabled={uploading > 0}
+          label={uploading > 0 ? t.images.uploading : x.save}
+          savingLabel={x.saving}
+          idleLabel={expense ? undefined : x.save}
+          className="min-h-12 self-start"
+        />
       </div>
     </form>
   );

@@ -14,6 +14,7 @@ import {
   type ShopSettings,
 } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
+import { SaveButton, sameData, useUnsavedGuard } from "./save-state";
 import { useToast } from "./Toast";
 import { AdminFormSkeleton } from "./AdminSkeletons";
 
@@ -94,6 +95,10 @@ export function SettingsPage() {
       });
   }, [router]);
 
+  // Unsaved = the form differs from the saved settings.
+  const dirty = bundle !== null && draft !== null && !sameData(draft, toDraft(bundle.settings));
+  useUnsavedGuard(dirty);
+
   if (loadFailed) {
     return <p className="border-[1.5px] border-black bg-white p-4 font-semibold">{s.loadError}</p>;
   }
@@ -163,16 +168,10 @@ export function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <form onSubmit={save} className="flex flex-col gap-6">
+      <form onSubmit={save} data-savable className="flex flex-col gap-6">
         <div className="sticky top-0 z-20 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-[#e0e0e0] bg-[#fafafa]/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8">
           <h1 className="font-display text-3xl uppercase md:text-[40px]">{s.title}</h1>
-          <button
-            type="submit"
-            disabled={saving}
-            className="min-h-11 bg-black px-6 font-bold text-white hover:bg-[#333333] disabled:opacity-60"
-          >
-            {saving ? s.saving : s.save}
-          </button>
+          <SaveButton dirty={dirty} saving={saving} label={s.save} savingLabel={s.saving} />
         </div>
 
         <Section id="settings-bank" title={s.bank.title} hint={s.bank.hint}>

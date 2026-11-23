@@ -354,6 +354,13 @@
     "from": "Từ",
     "flavors": "{count} vị",
     "edit": "Sửa",
+    "search": "Tìm bánh",
+    "searchPlaceholder": "Gõ tên bánh…",
+    "noMatch": "Không có bánh nào khớp.",
+    "openAll": "Mở hết",
+    "closeAll": "Thu hết",
+    "groupCount": "{count} bánh",
+    "groupHidden": "{count} đang ẩn",
     "categories": {
       "title": "Loại bánh",
       "hint": "Các nhóm hiện thành nút lọc ở trang Menu. Slug là tên ngắn dùng trong đường link (ví dụ panna-cotta).",

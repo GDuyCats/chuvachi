@@ -354,6 +354,13 @@
     "from": "From",
     "flavors": "{count} flavors",
     "edit": "Edit",
+    "search": "Find a cake",
+    "searchPlaceholder": "Type a cake name…",
+    "noMatch": "No cake matches.",
+    "openAll": "Open all",
+    "closeAll": "Close all",
+    "groupCount": "{count} cakes",
+    "groupHidden": "{count} hidden",
     "categories": {
       "title": "Categories",
       "hint": "Groups shown as filters on the menu page. The slug is the short name used in links (e.g. panna-cotta).",

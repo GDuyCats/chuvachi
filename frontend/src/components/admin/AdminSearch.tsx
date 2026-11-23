@@ -51,6 +51,9 @@ const PLACES = [
 
 type Place = (typeof PLACES)[number];
 
+// Sent to the part of the page the search jumps to, so a folded part can open itself first.
+export const REVEAL_EVENT = "admin-reveal";
+
 // Waits (up to 6 seconds, while the page loads its data) for the part of the page, then scrolls to it
 // and outlines it for a moment.
 function scrollToTarget(id: string) {
@@ -59,6 +62,7 @@ function scrollToTarget(id: string) {
     const element = document.getElementById(id);
     if (element) {
       window.clearInterval(timer);
+      element.dispatchEvent(new CustomEvent(REVEAL_EVENT)); // a folded part opens itself
       element.scrollIntoView({ behavior: "smooth", block: "start" });
       element.classList.add("outline", "outline-2", "outline-offset-4", "outline-black");
       window.setTimeout(() => element.classList.remove("outline", "outline-2", "outline-offset-4", "outline-black"), 2000);

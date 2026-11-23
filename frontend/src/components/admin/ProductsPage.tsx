@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { formatPrice } from "@/lib/format";
 import {
   adminApi,
@@ -14,6 +14,7 @@ import {
 } from "@/lib/admin-api";
 import { useAdminMe } from "./AdminShell";
 import { useAdminI18n } from "./AdminI18n";
+import { REVEAL_EVENT } from "./AdminSearch";
 import { AdminCardsSkeleton } from "./AdminSkeletons";
 import { QuickSwitch, useEditableRows } from "./save-state";
 import { SortableList } from "./SortableList";
@@ -115,8 +116,10 @@ export function ProductsPage() {
       ) : products.length === 0 ? (
         <p className="border border-dashed border-[#a8a8a8] bg-white p-7 text-center text-muted">{p.empty}</p>
       ) : (
-        <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {products.map((product) =>
+        <ProductGroups
+          products={products}
+          categories={categories}
+          renderCard={(product) =>
             isAdmin ? (
               <li
                 key={product.id}
@@ -152,12 +155,155 @@ export function ProductsPage() {
                   onSaved={(saved) => setProducts((list) => list?.map((item) => (item.id === saved.id ? saved : item)) ?? null)}
                 />
               </li>
-            ),
-          )}
-        </ul>
+            )
+          }
+        />
       )}
 
       {isAdmin && <CategoriesSection categories={categories} onChanged={load} />}
+    </div>
+  );
+}
+
+// Where the open groups are remembered while this tab stays open (coming back from editing a
+// cake keeps its group open; a new visit starts with everything folded).
+const OPEN_GROUPS_KEY = "chuvachi.admin.productGroups";
+
+function readOpenGroups(): Set<number> {
+  try {
+    const saved = JSON.parse(window.sessionStorage.getItem(OPEN_GROUPS_KEY) ?? "[]") as unknown;
+    return new Set(Array.isArray(saved) ? saved.filter((id): id is number => typeof id === "number") : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function writeOpenGroups(ids: Set<number>) {
+  try {
+    window.sessionStorage.setItem(OPEN_GROUPS_KEY, JSON.stringify([...ids]));
+  } catch {
+    // storage blocked: the groups just won't be remembered
+  }
+}
+
+// Lower case without Vietnamese accents, so "tiramisu" finds "Tiramisù" and "banh" finds "bánh".
+function plain(text: string): string {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase();
+}
+
+// The cakes grouped by type, each group folded until its arrow is clicked. Typing in the search
+// box shows only the matching cakes and opens their groups.
+function ProductGroups({
+  products,
+  categories,
+  renderCard,
+}: {
+  products: AdminProduct[];
+  categories: AdminCategory[];
+  renderCard: (product: AdminProduct) => ReactNode;
+}) {
+  const { t, lang } = useAdminI18n();
+  const p = t.products;
+  const [open, setOpen] = useState<Set<number>>(() => (typeof window === "undefined" ? new Set() : readOpenGroups()));
+  const [query, setQuery] = useState("");
+  const term = plain(query.trim());
+
+  const matches = term
+    ? products.filter((product) => plain(`${product.nameVi} ${product.nameEn} ${product.slug}`).includes(term))
+    : products;
+
+  // Types in their menu order, then any type that is only known from a cake.
+  const types = [...categories].sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id);
+  for (const product of products) {
+    if (!types.some((type) => type.id === product.category.id)) types.push(product.category);
+  }
+  const groups = types
+    .map((type) => ({ type, items: matches.filter((product) => product.category.id === type.id) }))
+    .filter((group) => group.items.length > 0 || !term);
+
+  function change(next: Set<number>) {
+    setOpen(next);
+    writeOpenGroups(next);
+  }
+
+  function toggle(id: number) {
+    const next = new Set(open);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    change(next);
+  }
+
+  function search(text: string) {
+    setQuery(text);
+    const wanted = plain(text.trim());
+    if (!wanted) return;
+    // Open the groups that have a match, so the cakes show straight away.
+    const next = new Set(open);
+    for (const product of products) {
+      if (plain(`${product.nameVi} ${product.nameEn} ${product.slug}`).includes(wanted)) next.add(product.category.id);
+    }
+    change(next);
+  }
+
+  const allOpen = groups.length > 0 && groups.every((group) => open.has(group.type.id));
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <label className="flex min-w-0 flex-1 basis-60">
+          <span className="sr-only">{p.search}</span>
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => search(event.target.value)}
+            placeholder={p.searchPlaceholder}
+            className="h-11 w-full max-w-md border-[1.5px] border-black bg-white px-3 text-[15px]"
+          />
+        </label>
+        <button
+          type="button"
+          onClick={() => change(allOpen ? new Set() : new Set(groups.map((group) => group.type.id)))}
+          className="min-h-11 border-[1.5px] border-black bg-white px-4 text-sm font-bold"
+        >
+          {allOpen ? `▴ ${p.closeAll}` : `▾ ${p.openAll}`}
+        </button>
+      </div>
+
+      {groups.length === 0 && <p className="border border-dashed border-[#a8a8a8] bg-white p-5 text-center text-muted">{p.noMatch}</p>}
+
+      {groups.map(({ type, items }) => {
+        const isOpen = open.has(type.id);
+        const hidden = items.filter((product) => !product.isActive).length;
+        return (
+          <section key={type.id} className="border border-[#e0e0e0] bg-white">
+            <h2>
+              <button
+                type="button"
+                onClick={() => toggle(type.id)}
+                aria-expanded={isOpen}
+                className="flex min-h-14 w-full items-center gap-3 px-4 text-left hover:bg-surface"
+              >
+                <span aria-hidden="true" className={`text-sm transition-transform ${isOpen ? "" : "-rotate-90"}`}>
+                  ▾
+                </span>
+                <span className="font-display text-xl uppercase tracking-wide">{lang === "vi" ? type.nameVi : type.nameEn}</span>
+                <span className="text-sm text-muted">
+                  {p.groupCount.replace("{count}", String(items.length))}
+                  {hidden > 0 && ` · ${p.groupHidden.replace("{count}", String(hidden))}`}
+                </span>
+              </button>
+            </h2>
+            {isOpen && items.length > 0 && (
+              <ul className="grid grid-cols-1 gap-3 border-t border-[#eeeeee] p-3 md:grid-cols-2 xl:grid-cols-3">{items.map(renderCard)}</ul>
+            )}
+          </section>
+        );
+      })}
     </div>
   );
 }
@@ -415,82 +561,108 @@ function CategoriesSection({ categories, onChanged }: { categories: AdminCategor
 
   const cell = "h-11 w-full border-[1.5px] border-black bg-white px-3 text-[15px]";
 
+  // Folded until its arrow is clicked (or the admin search jumps here).
+  const [open, setOpen] = useState(false);
+  const section = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const element = section.current;
+    if (!element) return;
+    const reveal = () => setOpen(true);
+    element.addEventListener(REVEAL_EVENT, reveal);
+    return () => element.removeEventListener(REVEAL_EVENT, reveal);
+  }, []);
+
   return (
-    <section id="products-categories" className="flex scroll-mt-6 flex-col gap-4 border border-[#e0e0e0] bg-white p-5 md:p-6">
-      <div className="flex flex-col gap-1">
-        <h2 className="font-display text-2xl uppercase tracking-wide">{c.title}</h2>
-        <p className="text-sm text-muted">{c.hint}</p>
-      </div>
-      <SortableList
-        as="div"
-        items={rows}
-        getKey={(row) => row.id}
-        disabled={busy}
-        onReorder={async (ordered) => {
-          await adminApi.orderCategories(ordered.map((row) => row.id));
-          await onChanged();
-        }}
-        className="flex flex-col gap-3"
-        itemClassName="flex items-end gap-1 border-b border-[#eeeeee] bg-white pb-3"
-        renderItem={(row, handle) => (
-          <>
-            {handle}
-            <div className="grid flex-1 grid-cols-2 items-end gap-2 md:grid-cols-[1fr_1fr_1fr_auto]">
-              <label className="flex flex-col gap-1 text-xs font-semibold">
-                {c.slug}
-                <input value={row.slug} onChange={(e) => setRows(rows.map((r) => (r.id === row.id ? { ...r, slug: e.target.value } : r)))} className={cell} />
-              </label>
-              <label className="flex flex-col gap-1 text-xs font-semibold">
-                {c.nameVi}
-                <input value={row.nameVi} onChange={(e) => setRows(rows.map((r) => (r.id === row.id ? { ...r, nameVi: e.target.value } : r)))} className={cell} />
-              </label>
-              <label className="flex flex-col gap-1 text-xs font-semibold">
-                {c.nameEn}
-                <input value={row.nameEn} onChange={(e) => setRows(rows.map((r) => (r.id === row.id ? { ...r, nameEn: e.target.value } : r)))} className={cell} />
-              </label>
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-muted">
-                  {row._count?.products ?? 0} {c.products}
-                </span>
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={() => run(() => adminApi.updateCategory(row))}
-                  className="h-11 border-[1.5px] border-black px-4 text-sm font-bold disabled:opacity-60"
-                >
-                  {c.save}
-                </button>
-              </div>
-            </div>
-          </>
-        )}
-      />
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          run(async () => {
-            await adminApi.createCategory({ ...draft, sortOrder: rows.length + 1 });
-            setDraft({ slug: "", nameVi: "", nameEn: "" });
-          });
-        }}
-        className="grid grid-cols-2 items-end gap-2 md:grid-cols-[1fr_1fr_1fr_auto]"
-      >
-        <label className="flex flex-col gap-1 text-xs font-semibold">
-          {c.slug}
-          <input required value={draft.slug} placeholder="cheesecake" onChange={(e) => setDraft({ ...draft, slug: e.target.value })} className={cell} />
-        </label>
-        <label className="flex flex-col gap-1 text-xs font-semibold">
-          {c.nameVi}
-          <input required value={draft.nameVi} onChange={(e) => setDraft({ ...draft, nameVi: e.target.value })} className={cell} />
-        </label>
-        <label className="flex flex-col gap-1 text-xs font-semibold">
-          {c.nameEn}
-          <input required value={draft.nameEn} onChange={(e) => setDraft({ ...draft, nameEn: e.target.value })} className={cell} />
-        </label>
-        <button type="submit" disabled={busy} className="col-span-2 h-11 bg-black px-4 text-sm font-bold text-white disabled:opacity-60 md:col-span-1">
-          {c.add}
+    <section ref={section} id="products-categories" className="flex scroll-mt-6 flex-col border border-[#e0e0e0] bg-white">
+      <h2>
+        <button
+          type="button"
+          onClick={() => setOpen((value) => !value)}
+          aria-expanded={open}
+          className="flex min-h-14 w-full items-center gap-3 px-5 text-left hover:bg-surface md:px-6"
+        >
+          <span aria-hidden="true" className={`text-sm transition-transform ${open ? "" : "-rotate-90"}`}>
+            ▾
+          </span>
+          <span className="font-display text-2xl uppercase tracking-wide">{c.title}</span>
+          <span className="text-sm text-muted">({categories.length})</span>
         </button>
-      </form>
+      </h2>
+      {open && (
+        <div className="flex flex-col gap-4 border-t border-[#eeeeee] p-5 md:p-6">
+          <p className="text-sm text-muted">{c.hint}</p>
+          <SortableList
+            as="div"
+            items={rows}
+            getKey={(row) => row.id}
+            disabled={busy}
+            onReorder={async (ordered) => {
+              await adminApi.orderCategories(ordered.map((row) => row.id));
+              await onChanged();
+            }}
+            className="flex flex-col gap-3"
+            itemClassName="flex items-end gap-1 border-b border-[#eeeeee] bg-white pb-3"
+            renderItem={(row, handle) => (
+              <>
+                {handle}
+                <div className="grid flex-1 grid-cols-2 items-end gap-2 md:grid-cols-[1fr_1fr_1fr_auto]">
+                  <label className="flex flex-col gap-1 text-xs font-semibold">
+                    {c.slug}
+                    <input value={row.slug} onChange={(e) => setRows(rows.map((r) => (r.id === row.id ? { ...r, slug: e.target.value } : r)))} className={cell} />
+                  </label>
+                  <label className="flex flex-col gap-1 text-xs font-semibold">
+                    {c.nameVi}
+                    <input value={row.nameVi} onChange={(e) => setRows(rows.map((r) => (r.id === row.id ? { ...r, nameVi: e.target.value } : r)))} className={cell} />
+                  </label>
+                  <label className="flex flex-col gap-1 text-xs font-semibold">
+                    {c.nameEn}
+                    <input value={row.nameEn} onChange={(e) => setRows(rows.map((r) => (r.id === row.id ? { ...r, nameEn: e.target.value } : r)))} className={cell} />
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-muted">
+                      {row._count?.products ?? 0} {c.products}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => run(() => adminApi.updateCategory(row))}
+                      className="h-11 border-[1.5px] border-black px-4 text-sm font-bold disabled:opacity-60"
+                    >
+                      {c.save}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          />
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              run(async () => {
+                await adminApi.createCategory({ ...draft, sortOrder: rows.length + 1 });
+                setDraft({ slug: "", nameVi: "", nameEn: "" });
+              });
+            }}
+            className="grid grid-cols-2 items-end gap-2 md:grid-cols-[1fr_1fr_1fr_auto]"
+          >
+            <label className="flex flex-col gap-1 text-xs font-semibold">
+              {c.slug}
+              <input required value={draft.slug} placeholder="cheesecake" onChange={(e) => setDraft({ ...draft, slug: e.target.value })} className={cell} />
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-semibold">
+              {c.nameVi}
+              <input required value={draft.nameVi} onChange={(e) => setDraft({ ...draft, nameVi: e.target.value })} className={cell} />
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-semibold">
+              {c.nameEn}
+              <input required value={draft.nameEn} onChange={(e) => setDraft({ ...draft, nameEn: e.target.value })} className={cell} />
+            </label>
+            <button type="submit" disabled={busy} className="col-span-2 h-11 bg-black px-4 text-sm font-bold text-white disabled:opacity-60 md:col-span-1">
+              {c.add}
+            </button>
+          </form>
+        </div>
+      )}
     </section>
   );
 }

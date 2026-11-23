@@ -25,6 +25,11 @@ type SortableListProps<T> = {
   quiet?: boolean; // no "Order saved" message: the order is part of a form that has its own Save
 };
 
+// While dragging, stop the page from highlighting text the pointer passes over.
+function blockTextSelection(on: boolean) {
+  document.body.style.userSelect = on ? "none" : "";
+}
+
 const HOLD_MS = 220; // touch: how long to hold the handle before the row lifts
 const EDGE = 64; // px from the window edge where the page scrolls by itself while dragging
 
@@ -72,34 +77,6 @@ export function SortableList<T>({
     orderRef.current = next;
     setOrder(next);
   }
-
-  // The window listeners of a drag call the newest versions of these (they see the newest list).
-  const live = useRef({ move: (_event: globalThis.PointerEvent) => {}, end: (_keep: boolean) => {} });
-  useLayoutEffect(() => {
-    live.current = { move: onPointerMove, end };
-  });
-
-  // After the rows moved in the page, put the dragged row back under the pointer.
-  useLayoutEffect(() => {
-    if (drag.current?.started) placeDragged();
-  });
-
-  // Keep the keyboard focus on the handle of a row that was just moved with the arrow keys.
-  useEffect(() => {
-    if (focusKey.current === null) return;
-    rows.current.get(focusKey.current)?.querySelector<HTMLElement>("[data-sort-handle]")?.focus();
-    focusKey.current = null;
-  });
-
-  useEffect(
-    () => () => {
-      stopListening.current?.();
-      if (drag.current?.timer) window.clearTimeout(drag.current.timer);
-      if (scrollFrame.current) window.cancelAnimationFrame(scrollFrame.current);
-      document.body.style.userSelect = "";
-    },
-    [],
-  );
 
   async function save(nextKeys: Key[]) {
     const before = items.map(getKey);
@@ -182,7 +159,7 @@ export function SortableList<T>({
     current.timer = null;
     setDraggingKey(current.key);
     setLiveOrder(items.map(getKey));
-    document.body.style.userSelect = "none";
+    blockTextSelection(true);
     navigator.vibrate?.(10); // a small buzz on phones that support it: "picked up"
     if (!scrollFrame.current) scrollFrame.current = window.requestAnimationFrame(autoScroll);
   }
@@ -196,7 +173,7 @@ export function SortableList<T>({
     const element = rows.current.get(current.key);
     if (element) element.style.transform = "";
     drag.current = null;
-    document.body.style.userSelect = "";
+    blockTextSelection(false);
     setDraggingKey(null);
     if (!current.started) return;
     if (keep && orderRef.current) void save(orderRef.current);
@@ -275,6 +252,34 @@ export function SortableList<T>({
     setLiveOrder(keys);
     void save(keys);
   }
+
+  // The window listeners of a drag call the newest versions of these (they see the newest list).
+  const live = useRef({ move: (_event: globalThis.PointerEvent) => {}, end: (_keep: boolean) => {} });
+  useLayoutEffect(() => {
+    live.current = { move: onPointerMove, end };
+  });
+
+  // After the rows moved in the page, put the dragged row back under the pointer.
+  useLayoutEffect(() => {
+    if (drag.current?.started) placeDragged();
+  });
+
+  // Keep the keyboard focus on the handle of a row that was just moved with the arrow keys.
+  useEffect(() => {
+    if (focusKey.current === null) return;
+    rows.current.get(focusKey.current)?.querySelector<HTMLElement>("[data-sort-handle]")?.focus();
+    focusKey.current = null;
+  });
+
+  useEffect(
+    () => () => {
+      stopListening.current?.();
+      if (drag.current?.timer) window.clearTimeout(drag.current.timer);
+      if (scrollFrame.current) window.cancelAnimationFrame(scrollFrame.current);
+      blockTextSelection(false);
+    },
+    [],
+  );
 
   return (
     <Tag className={className} aria-busy={saving || undefined}>

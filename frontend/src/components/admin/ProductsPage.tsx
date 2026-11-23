@@ -15,7 +15,8 @@ import {
 import { useAdminMe } from "./AdminShell";
 import { useAdminI18n } from "./AdminI18n";
 import { AdminCardsSkeleton } from "./AdminSkeletons";
-import { QuickSwitch } from "./save-state";
+import { QuickSwitch, useEditableRows } from "./save-state";
+import { SortableList } from "./SortableList";
 import { useToast } from "./Toast";
 
 export function ProductsPage() {
@@ -27,6 +28,7 @@ export function ProductsPage() {
   const [products, setProducts] = useState<AdminProduct[] | null>(null);
   const [categories, setCategories] = useState<AdminCategory[]>([]);
   const [loadFailed, setLoadFailed] = useState(false);
+  const [reordering, setReordering] = useState(false); // the "change the menu order" view
 
   const load = useCallback(async () => {
     try {
@@ -58,14 +60,59 @@ export function ProductsPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-3xl uppercase md:text-[40px]">{p.title}</h1>
         {isAdmin && (
-          <Link href="/admin/products/edit" className="flex min-h-11 items-center bg-black px-5 font-bold text-white">
-            {p.newProduct}
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            {products.length > 1 && (
+              <button
+                type="button"
+                onClick={() => setReordering((on) => !on)}
+                aria-pressed={reordering}
+                className={`min-h-11 border-[1.5px] border-black px-4 font-bold ${reordering ? "bg-black text-white" : "bg-white"}`}
+              >
+                {reordering ? t.sort.doneReorder : `⠿ ${t.sort.reorder}`}
+              </button>
+            )}
+            {!reordering && (
+              <Link href="/admin/products/edit" className="flex min-h-11 items-center bg-black px-5 font-bold text-white">
+                {p.newProduct}
+              </Link>
+            )}
+          </div>
         )}
       </div>
       {!isAdmin && <p className="-mt-4 text-sm text-muted">{p.stock.staffHint}</p>}
 
-      {products.length === 0 ? (
+      {isAdmin && reordering ? (
+        <div className="flex flex-col gap-2">
+          <p className="text-sm text-muted">{t.sort.reorderHint}</p>
+          <SortableList
+            items={products}
+            getKey={(product) => product.id}
+            onReorder={async (ordered) => setProducts(await adminApi.orderProducts(ordered.map((product) => product.id)))}
+            className="flex max-w-2xl flex-col border border-[#e0e0e0] bg-white"
+            itemClassName={(product) =>
+              `flex items-center gap-3 border-b border-[#eeeeee] bg-white pr-4 last:border-b-0 ${product.isActive ? "" : "text-muted"}`
+            }
+            renderItem={(product, handle) => (
+              <>
+                {handle}
+                {product.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- small admin thumbnail
+                  <img loading="lazy" decoding="async" src={product.imageUrl} alt="" className="h-10 w-10 shrink-0 object-cover" />
+                ) : (
+                  <span className="h-10 w-10 shrink-0 bg-surface" />
+                )}
+                <span className="flex min-w-0 flex-1 flex-col py-2">
+                  <span className="truncate font-semibold">{lang === "vi" ? product.nameVi : product.nameEn}</span>
+                  <span className="text-xs text-muted">
+                    {lang === "vi" ? product.category.nameVi : product.category.nameEn}
+                    {product.isActive ? "" : ` · ${p.hidden}`}
+                  </span>
+                </span>
+              </>
+            )}
+          />
+        </div>
+      ) : products.length === 0 ? (
         <p className="border border-dashed border-[#a8a8a8] bg-white p-7 text-center text-muted">{p.empty}</p>
       ) : (
         <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -337,12 +384,10 @@ function CategoriesSection({ categories, onChanged }: { categories: AdminCategor
   const router = useRouter();
   const { t } = useAdminI18n();
   const c = t.products.categories;
-  const [rows, setRows] = useState(categories);
+  const [rows, setRows] = useEditableRows(categories);
   const [draft, setDraft] = useState({ slug: "", nameVi: "", nameEn: "" });
   const [busy, setBusy] = useState(false);
   const toast = useToast();
-
-  useEffect(() => setRows(categories), [categories]);
 
   async function run(action: () => Promise<unknown>) {
     setBusy(true);
@@ -376,45 +421,50 @@ function CategoriesSection({ categories, onChanged }: { categories: AdminCategor
         <h2 className="font-display text-2xl uppercase tracking-wide">{c.title}</h2>
         <p className="text-sm text-muted">{c.hint}</p>
       </div>
-      {rows.map((row) => (
-        <div key={row.id} className="grid grid-cols-2 items-end gap-2 border-b border-[#eeeeee] pb-3 md:grid-cols-[1fr_1fr_1fr_80px_auto]">
-          <label className="flex flex-col gap-1 text-xs font-semibold">
-            {c.slug}
-            <input value={row.slug} onChange={(e) => setRows(rows.map((r) => (r.id === row.id ? { ...r, slug: e.target.value } : r)))} className={cell} />
-          </label>
-          <label className="flex flex-col gap-1 text-xs font-semibold">
-            {c.nameVi}
-            <input value={row.nameVi} onChange={(e) => setRows(rows.map((r) => (r.id === row.id ? { ...r, nameVi: e.target.value } : r)))} className={cell} />
-          </label>
-          <label className="flex flex-col gap-1 text-xs font-semibold">
-            {c.nameEn}
-            <input value={row.nameEn} onChange={(e) => setRows(rows.map((r) => (r.id === row.id ? { ...r, nameEn: e.target.value } : r)))} className={cell} />
-          </label>
-          <label className="flex flex-col gap-1 text-xs font-semibold">
-            {c.order}
-            <input
-              type="number"
-              min={0}
-              value={row.sortOrder}
-              onChange={(e) => setRows(rows.map((r) => (r.id === row.id ? { ...r, sortOrder: Number(e.target.value) } : r)))}
-              className={cell}
-            />
-          </label>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-muted">
-              {row._count?.products ?? 0} {c.products}
-            </span>
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => run(() => adminApi.updateCategory(row))}
-              className="h-11 border-[1.5px] border-black px-4 text-sm font-bold disabled:opacity-60"
-            >
-              {c.save}
-            </button>
-          </div>
-        </div>
-      ))}
+      <SortableList
+        as="div"
+        items={rows}
+        getKey={(row) => row.id}
+        disabled={busy}
+        onReorder={async (ordered) => {
+          await adminApi.orderCategories(ordered.map((row) => row.id));
+          await onChanged();
+        }}
+        className="flex flex-col gap-3"
+        itemClassName="flex items-end gap-1 border-b border-[#eeeeee] bg-white pb-3"
+        renderItem={(row, handle) => (
+          <>
+            {handle}
+            <div className="grid flex-1 grid-cols-2 items-end gap-2 md:grid-cols-[1fr_1fr_1fr_auto]">
+              <label className="flex flex-col gap-1 text-xs font-semibold">
+                {c.slug}
+                <input value={row.slug} onChange={(e) => setRows(rows.map((r) => (r.id === row.id ? { ...r, slug: e.target.value } : r)))} className={cell} />
+              </label>
+              <label className="flex flex-col gap-1 text-xs font-semibold">
+                {c.nameVi}
+                <input value={row.nameVi} onChange={(e) => setRows(rows.map((r) => (r.id === row.id ? { ...r, nameVi: e.target.value } : r)))} className={cell} />
+              </label>
+              <label className="flex flex-col gap-1 text-xs font-semibold">
+                {c.nameEn}
+                <input value={row.nameEn} onChange={(e) => setRows(rows.map((r) => (r.id === row.id ? { ...r, nameEn: e.target.value } : r)))} className={cell} />
+              </label>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-muted">
+                  {row._count?.products ?? 0} {c.products}
+                </span>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => run(() => adminApi.updateCategory(row))}
+                  className="h-11 border-[1.5px] border-black px-4 text-sm font-bold disabled:opacity-60"
+                >
+                  {c.save}
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+      />
       <form
         onSubmit={(e) => {
           e.preventDefault();

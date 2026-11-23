@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { useAdminI18n } from "./AdminI18n";
 import { useToast } from "./Toast";
 
@@ -50,6 +50,30 @@ export function useUnsavedGuard(dirty: boolean): void {
       document.removeEventListener("click", onClick, true);
     };
   }, [dirty, message]);
+}
+
+// Rows edited in place (each with its own Save), kept in step with the saved list from the
+// server. When a new saved list arrives (another row saved, a switch flipped, rows dragged),
+// rows still being typed in keep their text; their on/off and position follow the saved list,
+// since those are saved by themselves.
+export function useEditableRows<T extends { id: number; isActive?: boolean; sortOrder: number }>(
+  saved: T[],
+): [T[], Dispatch<SetStateAction<T[]>>] {
+  const [rows, setRows] = useState(saved);
+  const [lastSaved, setLastSaved] = useState(saved);
+  if (lastSaved !== saved) {
+    setLastSaved(saved);
+    setRows((current) =>
+      saved.map((item) => {
+        const local = current.find((row) => row.id === item.id);
+        const before = lastSaved.find((row) => row.id === item.id);
+        if (!local || !before) return item;
+        const typing = !sameData({ ...local, isActive: null, sortOrder: 0 }, { ...before, isActive: null, sortOrder: 0 });
+        return typing ? { ...local, isActive: item.isActive, sortOrder: item.sortOrder } : item;
+      }),
+    );
+  }
+  return [rows, setRows];
 }
 
 type SaveButtonProps = {

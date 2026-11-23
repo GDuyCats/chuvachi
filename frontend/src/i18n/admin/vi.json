@@ -551,6 +551,8 @@
       "start": "Ngày bắt đầu",
       "end": "Ngày cuối",
       "products": "Bánh trong mùa này",
+      "productOrder": "Thứ tự hiện trên trang chủ",
+      "productOrderHint": "Nắm ⠿ kéo để đổi thứ tự, rồi bấm Lưu.",
       "active": "Bật mùa này",
       "save": "Lưu mùa",
       "cancel": "Hủy",
@@ -1355,7 +1357,7 @@
     "createButton": "Tạo",
     "created": "Đã tạo. Chỉnh rồi bấm Lưu nhé.",
     "empty": "Chưa có giao diện nào. Chọn một mẫu ở trên để bắt đầu.",
-    "listHint": "Hai giao diện trùng ngày thì cái nằm trên thắng. Dùng nút ↑ ↓ để đổi thứ tự.",
+    "listHint": "Hai giao diện trùng ngày thì cái nằm trên thắng. Nắm ⠿ kéo lên xuống để đổi thứ tự.",
     "showing": "Đang hiện",
     "noSchedule": "Chưa đặt lịch",
     "scheduleOff": "Không tự bật",
@@ -1583,5 +1585,13 @@
     "turnedOn": "Đã bật",
     "turnedOff": "Đã tắt",
     "failed": "Không đổi được, thử lại nhé."
+  },
+  "sort": {
+    "handle": "Nắm kéo để đổi thứ tự (hoặc chọn rồi bấm ↑ ↓)",
+    "saved": "Đã lưu thứ tự",
+    "failed": "Không lưu được thứ tự, thử lại nhé.",
+    "reorder": "Sắp xếp thứ tự",
+    "doneReorder": "Xong",
+    "reorderHint": "Nắm ⠿ kéo lên xuống để đổi thứ tự. Thả tay là lưu."
   }
 }

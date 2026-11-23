@@ -12,6 +12,7 @@ import {
   getServerFavoritesSnapshot,
   subscribeToFavorites,
 } from "@/lib/favorites";
+import { DragScroller } from "../DragScroller";
 import { ProductCard, type ProductCardLabels } from "../ProductCard";
 
 export type MenuItem = {
@@ -99,7 +100,7 @@ export function MenuGrid({ lang, items, labels, cardLabels }: Props) {
   return (
     <>
       <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-line bg-white px-4 pb-4 pt-6 md:px-10">
-        <div role="group" aria-label={labels.filterLabel} className="no-scrollbar flex max-w-full gap-2.5 overflow-x-auto">
+        <DragScroller role="group" aria-label={labels.filterLabel} className="no-scrollbar flex max-w-full gap-2.5 overflow-x-auto">
           {filters.map((filter) => {
             const selected = filter.id === active;
             return (
@@ -116,7 +117,7 @@ export function MenuGrid({ lang, items, labels, cardLabels }: Props) {
               </button>
             );
           })}
-        </div>
+        </DragScroller>
         <span className="text-sm text-muted" aria-live="polite">
           {countText}
         </span>

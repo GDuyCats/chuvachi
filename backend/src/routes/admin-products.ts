@@ -2,6 +2,7 @@ import { Router, type Response } from "express";
 import { Availability, OptionType, Prisma } from "@prisma/client";
 import { z } from "zod";
 import { requireAdminRole, requireStaff } from "../lib/auth";
+import { listOrderSchema } from "../lib/list-order";
 import { prisma } from "../lib/prisma";
 import { deleteImageByUrl, isOwnImageUrl } from "../lib/storage";
 import { formatDateOnly, parseDateOnly } from "../lib/time";
@@ -181,8 +182,12 @@ adminProductsRouter.post("/products", requireAdminRole, async (req, res) => {
   if (!parsed.success) return badRequest(res, parsed.error);
   try {
     const product = await prisma.$transaction(async (tx) => {
-      // A new cake is announced to customers the first time it can be ordered.
-      const created = await tx.product.create({ data: { ...productData(parsed.data), announced: false } });
+      // A new cake goes to the end of the menu (the order is changed by dragging in the list),
+      // and is announced to customers the first time it can be ordered.
+      const last = await tx.product.aggregate({ _max: { sortOrder: true } });
+      const created = await tx.product.create({
+        data: { ...productData(parsed.data), sortOrder: (last._max.sortOrder ?? -1) + 1, announced: false },
+      });
       await syncOptions(tx, created.id, parsed.data.options);
       return tx.product.findUniqueOrThrow({ where: { id: created.id }, include: productInclude });
     });
@@ -197,6 +202,18 @@ adminProductsRouter.post("/products", requireAdminRole, async (req, res) => {
     }
     throw error;
   }
+});
+
+// PUT /api/admin/products/order  { ids } - menu order after dragging the list; returns all cakes
+adminProductsRouter.put("/products/order", requireAdminRole, async (req, res) => {
+  const parsed = listOrderSchema.safeParse(req.body);
+  if (!parsed.success) return badRequest(res, parsed.error);
+  await prisma.$transaction(
+    parsed.data.ids.map((id, index) => prisma.product.updateMany({ where: { id }, data: { sortOrder: index } })),
+  );
+  console.log(`Menu order changed by admin ${req.admin!.email}`);
+  const products = await prisma.product.findMany({ orderBy: [{ sortOrder: "asc" }, { id: "asc" }], include: productInclude });
+  res.json(products.map(toAdminProduct));
 });
 
 // PUT /api/admin/products/:id
@@ -347,6 +364,16 @@ adminProductsRouter.post("/categories", requireAdminRole, async (req, res) => {
     }
     throw error;
   }
+});
+
+// PUT /api/admin/categories/order  { ids } - new order after dragging the list
+adminProductsRouter.put("/categories/order", requireAdminRole, async (req, res) => {
+  const parsed = listOrderSchema.safeParse(req.body);
+  if (!parsed.success) return badRequest(res, parsed.error);
+  await prisma.$transaction(
+    parsed.data.ids.map((id, index) => prisma.category.updateMany({ where: { id }, data: { sortOrder: index } })),
+  );
+  res.json({ ok: true });
 });
 
 // PUT /api/admin/categories/:id

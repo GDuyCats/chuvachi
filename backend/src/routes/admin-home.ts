@@ -2,6 +2,7 @@ import { Router, type Response } from "express";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { requireAdminRole, requireStaff } from "../lib/auth";
+import { listOrderSchema } from "../lib/list-order";
 import { prisma } from "../lib/prisma";
 import { deleteImageByUrl, isOwnImageUrl } from "../lib/storage";
 import { formatDateOnly, parseDateOnly } from "../lib/time";
@@ -265,6 +266,16 @@ adminHomeRouter.post("/hero-slides", async (req, res) => {
   res.status(201).json(await loadBundle());
 });
 
+// PUT /api/admin/hero-slides/order  { ids } - new order after dragging the list
+adminHomeRouter.put("/hero-slides/order", async (req, res) => {
+  const parsed = listOrderSchema.safeParse(req.body);
+  if (!parsed.success) return badRequest(res, parsed.error);
+  await prisma.$transaction(
+    parsed.data.ids.map((id, index) => prisma.heroSlide.updateMany({ where: { id }, data: { sortOrder: index } })),
+  );
+  res.json(await loadBundle());
+});
+
 // PUT /api/admin/hero-slides/:id
 adminHomeRouter.put("/hero-slides/:id", async (req, res) => {
   const id = idParam.safeParse(req.params.id);
@@ -376,6 +387,16 @@ adminHomeRouter.post("/coming-soon", async (req, res) => {
   if (!parsed.success) return badRequest(res, parsed.error);
   await prisma.comingSoonItem.create({ data: parsed.data });
   res.status(201).json(await loadBundle());
+});
+
+// PUT /api/admin/coming-soon/order  { ids } - new order after dragging the list
+adminHomeRouter.put("/coming-soon/order", async (req, res) => {
+  const parsed = listOrderSchema.safeParse(req.body);
+  if (!parsed.success) return badRequest(res, parsed.error);
+  await prisma.$transaction(
+    parsed.data.ids.map((id, index) => prisma.comingSoonItem.updateMany({ where: { id }, data: { sortOrder: index } })),
+  );
+  res.json(await loadBundle());
 });
 
 // PUT /api/admin/coming-soon/:id

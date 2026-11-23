@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { HomeContent } from "@/lib/api";
+import { DragScroller } from "../DragScroller";
 import { ProductCard } from "../ProductCard";
 
 type Props = {
@@ -11,7 +12,8 @@ type Props = {
   productLabels: Dictionary["product"];
 };
 
-// Big black season card on the left, swipeable product cards on the right.
+// Big black season card on the left, product cards on the right that can be swiped (phones)
+// or dragged with the mouse (computers).
 export function SeasonalBlock({ lang, season, labels, productLabels }: Props) {
   return (
     <section id="seasonal" className="flex flex-col gap-7 px-4 pb-16 md:px-10">
@@ -35,7 +37,7 @@ export function SeasonalBlock({ lang, season, labels, productLabels }: Props) {
         </div>
 
         <div className="min-w-0 flex-1">
-          <div
+          <DragScroller
             role="region"
             aria-label={labels.scrollHint}
             tabIndex={0}
@@ -57,7 +59,7 @@ export function SeasonalBlock({ lang, season, labels, productLabels }: Props) {
                 className="w-[75%] shrink-0 snap-start sm:w-[45%] xl:w-[calc((100%-48px)/3)]"
               />
             ))}
-          </div>
+          </DragScroller>
         </div>
       </div>
     </section>

@@ -18,6 +18,7 @@ import {
 } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
 import { SaveButton, sameData, useUnsavedGuard } from "./save-state";
+import { SortableList } from "./SortableList";
 import { AdminFormSkeleton } from "./AdminSkeletons";
 import { ImageGalleryField } from "./ImageGalleryField";
 import { useToast } from "./Toast";
@@ -235,75 +236,98 @@ export function ProductEditor() {
   const packages = form.options.map((o, i) => ({ o, i })).filter(({ o }) => o.type === "PACKAGE");
   const firstFlavor = flavors.find(({ o }) => o.isActive)?.o ?? null;
 
-  const optionRows = (rows: { o: AdminOption; i: number }[], kind: AdminOption["type"]) =>
-    rows.map(({ o, i }) => (
-      <div key={o.id ?? `new-${i}`} className="grid grid-cols-2 items-end gap-2 border-b border-[#eeeeee] pb-3 md:grid-cols-[1fr_1fr_110px_90px_140px_auto_auto]">
-        <label className="flex flex-col gap-1 text-xs font-semibold">
-          {e.optionNameVi}
-          <input value={o.nameVi} onChange={(ev) => updateOption(i, { nameVi: ev.target.value })} className={inputClass(`options.${i}.nameVi`)} />
-        </label>
-        <label className="flex flex-col gap-1 text-xs font-semibold">
-          {e.optionNameEn}
-          <input value={o.nameEn} onChange={(ev) => updateOption(i, { nameEn: ev.target.value })} className={inputClass(`options.${i}.nameEn`)} />
-        </label>
-        <label className="flex flex-col gap-1 text-xs font-semibold">
-          {kind === "FLAVOR" ? e.extraPrice : e.adjustment}
-          <input
-            type="number"
-            step={1000}
-            value={o.priceDelta}
-            onChange={(ev) => updateOption(i, { priceDelta: Number(ev.target.value) })}
-            className={inputClass(`options.${i}.priceDelta`)}
-          />
-        </label>
-        {kind === "PACKAGE" ? (
-          <label className="flex flex-col gap-1 text-xs font-semibold">
-            {e.portions}
-            <input
-              type="number"
-              min={1}
-              value={o.portions}
-              onChange={(ev) => updateOption(i, { portions: Number(ev.target.value) })}
-              className={inputClass(`options.${i}.portions`)}
-            />
-          </label>
-        ) : (
-          <label className="flex flex-col gap-1 text-xs font-semibold">
-            {e.flavorDailyLimit}
-            <input
-              type="number"
-              min={1}
-              inputMode="numeric"
-              placeholder={t.products.stock.unlimited}
-              value={o.dailyLimit ?? ""}
-              onChange={(ev) => updateOption(i, { dailyLimit: ev.target.value === "" ? null : Number(ev.target.value) })}
-              className={inputClass(`options.${i}.dailyLimit`)}
-            />
-          </label>
-        )}
-        <label className="flex flex-col gap-1 text-xs font-semibold">
-          {e.availability}
-          <select
-            value={o.availability}
-            onChange={(ev) => updateOption(i, { availability: ev.target.value as AdminAvailability })}
-            className={inputClass(`options.${i}.availability`)}
-          >
-            {AVAILABILITIES.map((value) => (
-              <option key={value} value={value}>
-                {t.availability[value]}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex h-11 items-center gap-2 text-sm font-semibold">
-          <input type="checkbox" role="switch" checked={o.isActive} onChange={(ev) => updateOption(i, { isActive: ev.target.checked })} className="switch" />
-          {e.active}
-        </label>
-        <button type="button" onClick={() => removeOption(i)} className="h-11 text-sm font-semibold underline">
-          {e.remove}
-        </button>
-      </div>
-    ));
+  // New order of the flavors (or box sizes) after dragging; saved with the cake.
+  function reorderOptions(kind: AdminOption["type"], ordered: { o: AdminOption }[]) {
+    setForm((current) => {
+      if (!current) return current;
+      const moved = ordered.map(({ o }, index) => ({ ...o, sortOrder: index }));
+      const others = current.options.filter((o) => o.type !== kind);
+      return { ...current, options: kind === "FLAVOR" ? [...moved, ...others] : [...others, ...moved] };
+    });
+  }
+
+  const optionRows = (rows: { o: AdminOption; i: number }[], kind: AdminOption["type"]) => (
+    <SortableList
+      as="div"
+      quiet
+      items={rows}
+      getKey={({ o, i }) => o.id ?? `new-${i}`}
+      onReorder={async (ordered) => reorderOptions(kind, ordered)}
+      className="flex flex-col gap-3"
+      itemClassName="flex items-end gap-1 border-b border-[#eeeeee] bg-white pb-3"
+      renderItem={({ o, i }, handle) => (
+        <>
+          {handle}
+          <div className="grid flex-1 grid-cols-2 items-end gap-2 md:grid-cols-[1fr_1fr_110px_90px_140px_auto_auto]">
+            <label className="flex flex-col gap-1 text-xs font-semibold">
+              {e.optionNameVi}
+              <input value={o.nameVi} onChange={(ev) => updateOption(i, { nameVi: ev.target.value })} className={inputClass(`options.${i}.nameVi`)} />
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-semibold">
+              {e.optionNameEn}
+              <input value={o.nameEn} onChange={(ev) => updateOption(i, { nameEn: ev.target.value })} className={inputClass(`options.${i}.nameEn`)} />
+            </label>
+            <label className="flex flex-col gap-1 text-xs font-semibold">
+              {kind === "FLAVOR" ? e.extraPrice : e.adjustment}
+              <input
+                type="number"
+                step={1000}
+                value={o.priceDelta}
+                onChange={(ev) => updateOption(i, { priceDelta: Number(ev.target.value) })}
+                className={inputClass(`options.${i}.priceDelta`)}
+              />
+            </label>
+            {kind === "PACKAGE" ? (
+              <label className="flex flex-col gap-1 text-xs font-semibold">
+                {e.portions}
+                <input
+                  type="number"
+                  min={1}
+                  value={o.portions}
+                  onChange={(ev) => updateOption(i, { portions: Number(ev.target.value) })}
+                  className={inputClass(`options.${i}.portions`)}
+                />
+              </label>
+            ) : (
+              <label className="flex flex-col gap-1 text-xs font-semibold">
+                {e.flavorDailyLimit}
+                <input
+                  type="number"
+                  min={1}
+                  inputMode="numeric"
+                  placeholder={t.products.stock.unlimited}
+                  value={o.dailyLimit ?? ""}
+                  onChange={(ev) => updateOption(i, { dailyLimit: ev.target.value === "" ? null : Number(ev.target.value) })}
+                  className={inputClass(`options.${i}.dailyLimit`)}
+                />
+              </label>
+            )}
+            <label className="flex flex-col gap-1 text-xs font-semibold">
+              {e.availability}
+              <select
+                value={o.availability}
+                onChange={(ev) => updateOption(i, { availability: ev.target.value as AdminAvailability })}
+                className={inputClass(`options.${i}.availability`)}
+              >
+                {AVAILABILITIES.map((value) => (
+                  <option key={value} value={value}>
+                    {t.availability[value]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex h-11 items-center gap-2 text-sm font-semibold">
+              <input type="checkbox" role="switch" checked={o.isActive} onChange={(ev) => updateOption(i, { isActive: ev.target.checked })} className="switch" />
+              {e.active}
+            </label>
+            <button type="button" onClick={() => removeOption(i)} className="h-11 text-sm font-semibold underline">
+              {e.remove}
+            </button>
+          </div>
+        </>
+      )}
+    />
+  );
 
   return (
     <form onSubmit={save} data-savable className="flex flex-col gap-6">
@@ -387,16 +411,6 @@ export function ProductEditor() {
               value={form.basePrice}
               onChange={(ev) => update("basePrice", Number(ev.target.value))}
               className={inputClass("basePrice")}
-            />
-          </label>
-          <label className="flex flex-col gap-1.5 text-sm font-semibold">
-            {e.order}
-            <input
-              type="number"
-              min={0}
-              value={form.sortOrder}
-              onChange={(ev) => update("sortOrder", Number(ev.target.value))}
-              className={inputClass("sortOrder")}
             />
           </label>
         </div>

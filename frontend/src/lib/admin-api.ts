@@ -914,6 +914,12 @@ export const adminApi = {
   updateHeroSlide: (id: number, slide: HeroSlideInput) =>
     request<HomeBundle>(`/hero-slides/${id}`, { method: "PUT", body: JSON.stringify(slide) }),
   deleteHeroSlide: (id: number) => request<HomeBundle>(`/hero-slides/${id}`, { method: "DELETE" }),
+  // "New order" calls after dragging a list: ids from top to bottom.
+  orderHeroSlides: (ids: number[]) => request<HomeBundle>("/hero-slides/order", { method: "PUT", body: JSON.stringify({ ids }) }),
+  orderComingSoon: (ids: number[]) => request<HomeBundle>("/coming-soon/order", { method: "PUT", body: JSON.stringify({ ids }) }),
+  orderProducts: (ids: number[]) => request<AdminProduct[]>("/products/order", { method: "PUT", body: JSON.stringify({ ids }) }),
+  orderCategories: (ids: number[]) => request<{ ok: true }>("/categories/order", { method: "PUT", body: JSON.stringify({ ids }) }),
+  orderZones: (ids: number[]) => request<SettingsBundle>("/zones/order", { method: "PUT", body: JSON.stringify({ ids }) }),
   listCategories: () => request<AdminCategory[]>("/categories"),
   createCategory: (input: Omit<AdminCategory, "id">) =>
     request<AdminCategory>("/categories", { method: "POST", body: JSON.stringify(input) }),

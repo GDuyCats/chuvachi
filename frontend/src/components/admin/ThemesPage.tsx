@@ -29,6 +29,7 @@ import { useAdminI18n } from "./AdminI18n";
 import { AdminRowsSkeleton } from "./AdminSkeletons";
 import { normalizeBannerLink } from "./BannerLinkPicker";
 import { QuickSwitch, SaveButton, sameData, useUnsavedGuard } from "./save-state";
+import { SortableList } from "./SortableList";
 import { ThemePreview } from "./ThemePreview";
 import { useToast } from "./Toast";
 
@@ -175,9 +176,16 @@ export function ThemesPage() {
         ) : (
           <>
             <p className="text-xs text-muted">{s.listHint}</p>
-            <ul className="flex flex-col gap-2">
-              {bundle.themes.map((theme, index) => (
+            <SortableList
+              items={bundle.themes}
+              getKey={(theme) => theme.id}
+              disabled={busy}
+              onReorder={async (ordered) => setBundle(await adminApi.orderThemes(ordered.map((theme) => theme.id)))}
+              className="flex flex-col gap-2"
+              itemClassName="flex flex-wrap items-center gap-3 border-[1.5px] border-black bg-white p-3 pl-1"
+              renderItem={(theme, handle) => (
                 <ThemeRow
+                  handle={handle}
                   key={theme.id}
                   theme={theme}
                   showing={bundle.activeId === theme.id}
@@ -185,17 +193,9 @@ export function ThemesPage() {
                   isDefault={bundle.settings.themeDefaultId === theme.id}
                   onDefault={() => void run(() => adminApi.setDefaultTheme(bundle.settings.themeDefaultId === theme.id ? null : theme.id), s.saved)}
                   onPin={() => pin(bundle.settings.themePinnedId === theme.id && !bundle.settings.pinExpired ? null : theme.id)}
-                  first={index === 0}
-                  last={index === bundle.themes.length - 1}
                   busy={busy}
                   onEdit={() => setEditingId(theme.id)}
                   onSchedule={async (scheduleOn) => setBundle(await adminApi.saveTheme(theme.id, { ...toInput(theme), scheduleOn }))}
-                  onMove={(step) => {
-                    const ids = bundle.themes.map((item) => item.id);
-                    const [moved] = ids.splice(index, 1);
-                    ids.splice(index + step, 0, moved);
-                    void run(() => adminApi.orderThemes(ids));
-                  }}
                   onCopy={() => void run(() => adminApi.copyTheme(theme.id, lang), s.copied)}
                   onDelete={() => {
                     if (window.confirm(s.deleteConfirm.replace("{name}", theme.name))) {
@@ -203,8 +203,8 @@ export function ThemesPage() {
                     }
                   }}
                 />
-              ))}
-            </ul>
+              )}
+            />
           </>
         )}
       </section>
@@ -387,33 +387,29 @@ function Swatches({ colors }: { colors: ThemeColors }) {
 }
 
 function ThemeRow({
+  handle,
   theme,
   showing,
   pinned,
   onPin,
   isDefault,
   onDefault,
-  first,
-  last,
   busy,
   onEdit,
   onSchedule,
-  onMove,
   onCopy,
   onDelete,
 }: {
+  handle: ReactNode;
   theme: AdminTheme;
   showing: boolean;
   pinned: boolean;
   onPin: () => void;
   isDefault: boolean;
   onDefault: () => void;
-  first: boolean;
-  last: boolean;
   busy: boolean;
   onEdit: () => void;
   onSchedule: (on: boolean) => Promise<void>;
-  onMove: (step: -1 | 1) => void;
   onCopy: () => void;
   onDelete: () => void;
 }) {
@@ -426,18 +422,9 @@ function ThemeRow({
   } else if (!theme.scheduleOn) {
     when = s.scheduleOff;
   }
-  const small = "flex h-9 w-9 items-center justify-center border-[1.5px] border-black text-sm font-bold disabled:opacity-30";
-
   return (
-    <li className="flex flex-wrap items-center gap-3 border-[1.5px] border-black bg-white p-3">
-      <div className="flex flex-col gap-1">
-        <button type="button" onClick={() => onMove(-1)} disabled={busy || first} aria-label={s.moveUp} className={small}>
-          ↑
-        </button>
-        <button type="button" onClick={() => onMove(1)} disabled={busy || last} aria-label={s.moveDown} className={small}>
-          ↓
-        </button>
-      </div>
+    <>
+      {handle}
       <Swatches colors={theme.colors} />
       {theme.iconUrl ? (
         // eslint-disable-next-line @next/next/no-img-element -- admin preview of an uploaded icon
@@ -500,7 +487,7 @@ function ThemeRow({
           )}
         </RowMenu>
       </div>
-    </li>
+    </>
   );
 }
 

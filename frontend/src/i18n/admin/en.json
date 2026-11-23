@@ -551,6 +551,8 @@
       "start": "First day",
       "end": "Last day",
       "products": "Cakes in this season",
+      "productOrder": "Order on the homepage",
+      "productOrderHint": "Drag ⠿ to change the order, then press Save.",
       "active": "Season is on",
       "save": "Save season",
       "cancel": "Cancel",
@@ -1355,7 +1357,7 @@
     "createButton": "Create",
     "created": "Created. Adjust it, then press Save.",
     "empty": "No looks yet. Pick a ready-made one above to start.",
-    "listHint": "When two looks share dates, the higher one wins. Use ↑ ↓ to change the order.",
+    "listHint": "When two looks share dates, the higher one wins. Drag ⠿ up or down to change the order.",
     "showing": "Showing",
     "noSchedule": "No dates",
     "scheduleOff": "Doesn't turn on by itself",
@@ -1583,5 +1585,13 @@
     "turnedOn": "Turned on",
     "turnedOff": "Turned off",
     "failed": "Couldn't change it, please try again."
+  },
+  "sort": {
+    "handle": "Drag to change the order (or focus it and press ↑ ↓)",
+    "saved": "Order saved",
+    "failed": "Couldn't save the order, please try again.",
+    "reorder": "Change order",
+    "doneReorder": "Done",
+    "reorderHint": "Drag ⠿ up or down to change the order. It saves when you let go."
   }
 }

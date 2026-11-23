@@ -41,7 +41,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </Reveal>
       )}
       <Reveal>
-        <ComingSoon title={dict.home.comingSoonTitle} items={home.comingSoon} />
+        <ComingSoon title={dict.home.comingSoonTitle} scrollLabel={dict.home.seasonal.scrollHint} items={home.comingSoon} />
       </Reveal>
     </>
   );

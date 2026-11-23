@@ -50,7 +50,8 @@ function fill(template: string, values: Record<string, number>): string {
 }
 
 // Full-width dark banner. With several slides it moves to the next one every few seconds
-// (cross-fade), pauses while the pointer or keyboard focus is on it, and can be swiped on phones.
+// (cross-fade), pauses while the pointer or keyboard focus is on it, and can be swiped on phones
+// or dragged sideways with the mouse.
 // All slides share one grid cell, so the banner keeps the height of the tallest slide.
 export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
   const [index, setIndex] = useState(0);
@@ -58,6 +59,8 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
   const [hovered, setHovered] = useState(false); // pointer or focus inside
   const [reducedMotion, setReducedMotion] = useState(false);
   const touchStart = useRef<number | null>(null);
+  const mouseStart = useRef<number | null>(null); // dragging the banner with the mouse
+  const dragged = useRef(false); // that drag changed the slide: the click after it opens nothing
   const many = slides.length > 1;
 
   useEffect(() => {
@@ -89,6 +92,15 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
     if (Math.abs(dx) > 50) go(index + (dx < 0 ? 1 : -1));
   }
 
+  // Computers: press on the banner, drag left or right and let go to change slide.
+  function onMouseRelease(clientX: number) {
+    if (mouseStart.current === null) return;
+    const dx = clientX - mouseStart.current;
+    mouseStart.current = null;
+    dragged.current = Math.abs(dx) > 8;
+    if (many && Math.abs(dx) > 60) go(index + (dx < 0 ? 1 : -1));
+  }
+
   const iconButton =
     "flex h-11 w-11 items-center justify-center border-[1.5px] border-hero-ink text-hero-ink hover:bg-hero-ink hover:text-hero";
 
@@ -106,7 +118,22 @@ export function HomeHero({ lang, slides, intervalSeconds, labels }: Props) {
         touchStart.current = event.touches[0].clientX;
       }}
       onTouchEnd={onTouchEnd}
-      className="relative overflow-hidden bg-hero text-hero-ink"
+      onPointerDown={(event) => {
+        dragged.current = false;
+        if (many && event.pointerType === "mouse" && event.button === 0) mouseStart.current = event.clientX;
+      }}
+      onPointerUp={(event) => onMouseRelease(event.clientX)}
+      onPointerLeave={(event) => onMouseRelease(event.clientX)}
+      onClickCapture={(event) => {
+        if (!dragged.current) return;
+        dragged.current = false;
+        event.preventDefault();
+        event.stopPropagation();
+      }}
+      onDragStart={(event) => {
+        if (many) event.preventDefault(); // photos and links would start a file drag instead
+      }}
+      className={`relative overflow-hidden bg-hero text-hero-ink ${many ? "select-none" : ""}`}
     >
       <div className="grid">
         {slides.map((slide, i) => {

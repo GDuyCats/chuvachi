@@ -16,7 +16,8 @@ import {
   type SeasonInput,
 } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
-import { QuickSwitch, SaveButton, sameData, useUnsavedGuard } from "./save-state";
+import { QuickSwitch, SaveButton, sameData, useEditableRows, useUnsavedGuard } from "./save-state";
+import { SortableList } from "./SortableList";
 import { BannerDesigner } from "./BannerDesigner";
 import { BannerLinkPicker } from "./BannerLinkPicker";
 import { AdminFormSkeleton } from "./AdminSkeletons";
@@ -460,14 +461,20 @@ function HeroSlidesSection({
   return (
     <Section id="home-slides" title={s.title} hint={s.hint}>
       {slides.length === 0 && editing !== "new" && <p className="text-sm text-muted">{s.empty}</p>}
-      <ul className="flex flex-col gap-3">
-        {slides.map((slide) => (
-          <li key={slide.id} className="border border-[#e0e0e0]">
-            {editing === slide.id ? (
+      <SortableList
+        items={slides}
+        getKey={(slide) => slide.id}
+        disabled={editing !== null}
+        onReorder={async (ordered) => onSaved(await adminApi.orderHeroSlides(ordered.map((slide) => slide.id)))}
+        className="flex flex-col gap-3"
+        itemClassName="border border-[#e0e0e0] bg-white"
+        renderItem={(slide, handle) =>
+          editing === slide.id ? (
               <HeroSlideForm initial={slide} slideId={slide.id} products={products} onSaved={onSaved} onClose={() => setEditing(null)} />
             ) : (
-              <div className="flex flex-wrap items-center justify-between gap-3 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 p-4 pl-1">
                 <div className="flex min-w-0 items-center gap-3">
+                  {handle}
                   {slide.imageUrl && (
                     // eslint-disable-next-line @next/next/no-img-element -- small preview
                     <img loading="lazy" decoding="async" src={slide.imageUrl} alt="" className="h-12 w-16 shrink-0 object-cover" />
@@ -506,10 +513,9 @@ function HeroSlidesSection({
                   </button>
                 </div>
               </div>
-            )}
-          </li>
-        ))}
-      </ul>
+            )
+        }
+      />
       {editing === "new" ? (
         <div className="border-[1.5px] border-black">
           <HeroSlideForm
@@ -669,17 +675,6 @@ function HeroSlideForm({
             value={draft.endDate ?? ""}
             onChange={(e) => update("endDate", e.target.value || null)}
             className={fieldClass("endDate")}
-          />
-        </label>
-        <label className="flex flex-col gap-1.5 text-sm font-semibold">
-          {s.order}
-          <input
-            type="number"
-            min={0}
-            max={1000}
-            value={draft.sortOrder}
-            onChange={(e) => update("sortOrder", Number(e.target.value))}
-            className={fieldClass("sortOrder")}
           />
         </label>
       </div>
@@ -870,15 +865,10 @@ function SeasonForm({
   }
 
   function toggleProduct(id: number, checked: boolean) {
-    // Keep the menu order, so the homepage shows cakes in the same order as the menu.
-    const chosen = new Set(draft.productIds);
-    if (checked) chosen.add(id);
-    else chosen.delete(id);
-    update(
-      "productIds",
-      products.filter((p) => chosen.has(p.id)).map((p) => p.id),
-    );
+    // A newly ticked cake goes last; the order can then be changed by dragging.
+    update("productIds", checked ? [...draft.productIds.filter((item) => item !== id), id] : draft.productIds.filter((item) => item !== id));
   }
+  const productById = new Map(products.map((product) => [product.id, product]));
 
   async function run(action: () => Promise<HomeBundle>, successText: string) {
     setBusy(true);
@@ -962,6 +952,30 @@ function SeasonForm({
         </div>
       </fieldset>
 
+      {draft.productIds.length > 1 && (
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-semibold">{s.productOrder}</span>
+          <span className="text-xs text-muted">{s.productOrderHint}</span>
+          <SortableList
+            quiet
+            items={draft.productIds}
+            getKey={(id) => id}
+            onReorder={async (ordered) => update("productIds", ordered)}
+            className="flex flex-col border border-[#e0e0e0]"
+            itemClassName="flex items-center gap-2 border-b border-[#eeeeee] bg-white pr-3 last:border-b-0"
+            renderItem={(id, handle) => {
+              const product = productById.get(id);
+              return (
+                <>
+                  {handle}
+                  <span className="text-[15px]">{product ? (lang === "vi" ? product.nameVi : product.nameEn) : `#${id}`}</span>
+                </>
+              );
+            }}
+          />
+        </div>
+      )}
+
       <label className="flex items-center gap-2.5 font-semibold">
         <input type="checkbox" role="switch" checked={draft.isActive} onChange={(e) => update("isActive", e.target.checked)} className="switch" />
         {s.active}
@@ -1005,23 +1019,9 @@ function ComingSoonSection({ items, onSaved }: { items: AdminComingSoon[]; onSav
   const c = t.home.comingSoon;
   const toast = useToast();
   const handleError = useSaveErrors();
-  const [rows, setRows] = useState(items);
+  const [rows, setRows] = useEditableRows(items);
   const [draft, setDraft] = useState({ dateLabel: "", nameVi: "", nameEn: "" });
   const [busy, setBusy] = useState(false);
-
-  // New saved list: take it, but keep what is still being typed in a row that wasn't saved.
-  const [savedItems, setSavedItems] = useState(items);
-  if (savedItems !== items) {
-    setSavedItems(items);
-    setRows((current) =>
-      items.map((item) => {
-        const local = current.find((row) => row.id === item.id);
-        const before = savedItems.find((row) => row.id === item.id);
-        const typing = local !== undefined && before !== undefined && !sameData({ ...local, isActive: false }, { ...before, isActive: false });
-        return typing && local ? { ...local, isActive: item.isActive } : item;
-      }),
-    );
-  }
 
   async function run(action: () => Promise<HomeBundle>, successText: string) {
     setBusy(true);
@@ -1046,71 +1046,73 @@ function ComingSoonSection({ items, onSaved }: { items: AdminComingSoon[]; onSav
 
   return (
     <Section id="home-coming-soon" title={c.title} hint={c.hint}>
-      {rows.map((row) => (
-        <div key={row.id} className="grid grid-cols-2 items-end gap-2 border-b border-[#eeeeee] pb-4 md:grid-cols-[110px_1fr_1fr_1fr_1fr]">
-          <label className="flex flex-col gap-1 text-xs font-semibold">
-            {c.date}
-            <input value={row.dateLabel} onChange={(e) => edit(row.id, { dateLabel: e.target.value })} className={cell} />
-          </label>
-          <label className="flex flex-col gap-1 text-xs font-semibold">
-            {c.nameVi}
-            <input value={row.nameVi} onChange={(e) => edit(row.id, { nameVi: e.target.value })} className={cell} />
-          </label>
-          <label className="flex flex-col gap-1 text-xs font-semibold">
-            {c.nameEn}
-            <input value={row.nameEn} onChange={(e) => edit(row.id, { nameEn: e.target.value })} className={cell} />
-          </label>
-          <label className="flex flex-col gap-1 text-xs font-semibold">
-            {c.noteVi}
-            <input value={row.noteVi ?? ""} onChange={(e) => edit(row.id, { noteVi: nullable(e.target.value) })} className={cell} />
-          </label>
-          <label className="flex flex-col gap-1 text-xs font-semibold">
-            {c.noteEn}
-            <input value={row.noteEn ?? ""} onChange={(e) => edit(row.id, { noteEn: nullable(e.target.value) })} className={cell} />
-          </label>
-          <div className="col-span-2 flex flex-wrap items-center gap-4 md:col-span-5">
-            <label className="flex items-center gap-2 text-xs font-semibold">
-              {c.order}
-              <input
-                type="number"
-                min={0}
-                value={row.sortOrder}
-                onChange={(e) => edit(row.id, { sortOrder: Number(e.target.value) })}
-                className={`${cell} w-20`}
-              />
-            </label>
-            {/* Saves at once (only the on/off; anything typed in the row still needs its Save). */}
-            <label className="flex min-h-11 items-center gap-2 text-sm font-semibold">
-              <QuickSwitch
-                checked={row.isActive}
-                disabled={busy}
-                name={row.nameVi}
-                onToggle={async (isActive) => {
-                  const saved = items.find((item) => item.id === row.id) ?? row;
-                  onSaved(await adminApi.updateComingSoon(row.id, { ...toInput(saved), isActive }));
-                }}
-              />
-              {c.show}
-            </label>
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => run(() => adminApi.updateComingSoon(row.id, toInput(row)), t.home.saved)}
-              className="min-h-11 border-[1.5px] border-black px-4 text-sm font-bold disabled:opacity-60"
-            >
-              {c.save}
-            </button>
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => run(() => adminApi.deleteComingSoon(row.id), c.deleted)}
-              className="min-h-11 px-2 text-sm font-semibold underline disabled:opacity-60"
-            >
-              {c.delete}
-            </button>
-          </div>
-        </div>
-      ))}
+      <SortableList
+        as="div"
+        items={rows}
+        getKey={(row) => row.id}
+        disabled={busy}
+        onReorder={async (ordered) => onSaved(await adminApi.orderComingSoon(ordered.map((row) => row.id)))}
+        className="flex flex-col gap-4"
+        itemClassName="flex items-start gap-1 border-b border-[#eeeeee] bg-white pb-4"
+        renderItem={(row, handle) => (
+          <>
+            <div className="pt-4">{handle}</div>
+            <div className="grid flex-1 grid-cols-2 items-end gap-2 md:grid-cols-[110px_1fr_1fr_1fr_1fr]">
+              <label className="flex flex-col gap-1 text-xs font-semibold">
+                {c.date}
+                <input value={row.dateLabel} onChange={(e) => edit(row.id, { dateLabel: e.target.value })} className={cell} />
+              </label>
+              <label className="flex flex-col gap-1 text-xs font-semibold">
+                {c.nameVi}
+                <input value={row.nameVi} onChange={(e) => edit(row.id, { nameVi: e.target.value })} className={cell} />
+              </label>
+              <label className="flex flex-col gap-1 text-xs font-semibold">
+                {c.nameEn}
+                <input value={row.nameEn} onChange={(e) => edit(row.id, { nameEn: e.target.value })} className={cell} />
+              </label>
+              <label className="flex flex-col gap-1 text-xs font-semibold">
+                {c.noteVi}
+                <input value={row.noteVi ?? ""} onChange={(e) => edit(row.id, { noteVi: nullable(e.target.value) })} className={cell} />
+              </label>
+              <label className="flex flex-col gap-1 text-xs font-semibold">
+                {c.noteEn}
+                <input value={row.noteEn ?? ""} onChange={(e) => edit(row.id, { noteEn: nullable(e.target.value) })} className={cell} />
+              </label>
+              <div className="col-span-2 flex flex-wrap items-center gap-4 md:col-span-5">
+                {/* Saves at once (only the on/off; anything typed in the row still needs its Save). */}
+                <label className="flex min-h-11 items-center gap-2 text-sm font-semibold">
+                  <QuickSwitch
+                    checked={row.isActive}
+                    disabled={busy}
+                    name={row.nameVi}
+                    onToggle={async (isActive) => {
+                      const saved = items.find((item) => item.id === row.id) ?? row;
+                      onSaved(await adminApi.updateComingSoon(row.id, { ...toInput(saved), isActive }));
+                    }}
+                  />
+                  {c.show}
+                </label>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => run(() => adminApi.updateComingSoon(row.id, toInput(row)), t.home.saved)}
+                  className="min-h-11 border-[1.5px] border-black px-4 text-sm font-bold disabled:opacity-60"
+                >
+                  {c.save}
+                </button>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => run(() => adminApi.deleteComingSoon(row.id), c.deleted)}
+                  className="min-h-11 px-2 text-sm font-semibold underline disabled:opacity-60"
+                >
+                  {c.delete}
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+      />
 
       <form
         onSubmit={async (e) => {

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { requireAdminRole, requireStaff } from "../lib/auth";
+import { listOrderSchema } from "../lib/list-order";
 import { prisma } from "../lib/prisma";
 import { isTelegramConfigured, sendTelegram } from "../lib/telegram";
 import { clockToMinutes, formatDateOnly, parseDateOnly, vietnamToday } from "../lib/time";
@@ -170,6 +171,19 @@ adminSettingsRouter.post("/zones", async (req, res) => {
   }
   await prisma.deliveryZone.create({ data: parsed.data });
   res.status(201).json(await loadEverything());
+});
+
+// PUT /api/admin/zones/order  { ids } - new order after dragging the list
+adminSettingsRouter.put("/zones/order", async (req, res) => {
+  const parsed = listOrderSchema.safeParse(req.body);
+  if (!parsed.success) {
+    validationError(res, parsed.error);
+    return;
+  }
+  await prisma.$transaction(
+    parsed.data.ids.map((id, index) => prisma.deliveryZone.updateMany({ where: { id }, data: { sortOrder: index } })),
+  );
+  res.json(await loadEverything());
 });
 
 // PUT /api/admin/zones/:id  (areas are switched off rather than deleted, so old orders keep their area)

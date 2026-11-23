@@ -14,7 +14,8 @@ import {
   type ShopSettings,
 } from "@/lib/admin-api";
 import { useAdminI18n } from "./AdminI18n";
-import { QuickSwitch, SaveButton, sameData, useUnsavedGuard } from "./save-state";
+import { QuickSwitch, SaveButton, sameData, useEditableRows, useUnsavedGuard } from "./save-state";
+import { SortableList } from "./SortableList";
 import { useToast } from "./Toast";
 import { AdminFormSkeleton } from "./AdminSkeletons";
 
@@ -342,23 +343,9 @@ type SectionProps = { onSaved: (bundle: SettingsBundle) => void; onError: (error
 function ZonesSection({ zones, onSaved, onError }: SectionProps & { zones: DeliveryZoneRow[] }) {
   const { t } = useAdminI18n();
   const z = t.settings.zones;
-  const [rows, setRows] = useState(zones);
+  const [rows, setRows] = useEditableRows(zones);
   const [newZone, setNewZone] = useState({ nameVi: "", nameEn: "" });
   const [busy, setBusy] = useState(false);
-
-  // New saved list: take it, but keep what is still being typed in a row that wasn't saved.
-  const [savedZones, setSavedZones] = useState(zones);
-  if (savedZones !== zones) {
-    setSavedZones(zones);
-    setRows((current) =>
-      zones.map((zone) => {
-        const local = current.find((row) => row.id === zone.id);
-        const before = savedZones.find((row) => row.id === zone.id);
-        const typing = local !== undefined && before !== undefined && !sameData({ ...local, isActive: false }, { ...before, isActive: false });
-        return typing && local ? { ...local, isActive: zone.isActive } : zone;
-      }),
-    );
-  }
 
   async function run(action: () => Promise<SettingsBundle>) {
     setBusy(true);
@@ -380,49 +367,51 @@ function ZonesSection({ zones, onSaved, onError }: SectionProps & { zones: Deliv
   return (
     <Section id="settings-zones" title={z.title} hint={z.hint}>
       <div className="flex flex-col gap-3">
-        {rows.map((row) => (
-          <div key={row.id} className="grid grid-cols-2 items-end gap-2 border-b border-[#eeeeee] pb-3 sm:grid-cols-[1fr_1fr_80px_auto_auto]">
-            <label className="flex flex-col gap-1 text-xs font-semibold">
-              {z.nameVi}
-              <input value={row.nameVi} onChange={(e) => edit(row.id, { nameVi: e.target.value })} className={cell} />
-            </label>
-            <label className="flex flex-col gap-1 text-xs font-semibold">
-              {z.nameEn}
-              <input value={row.nameEn} onChange={(e) => edit(row.id, { nameEn: e.target.value })} className={cell} />
-            </label>
-            <label className="flex flex-col gap-1 text-xs font-semibold">
-              {z.order}
-              <input
-                type="number"
-                min={0}
-                value={row.sortOrder}
-                onChange={(e) => edit(row.id, { sortOrder: Number(e.target.value) })}
-                className={cell}
-              />
-            </label>
-            <label className="flex h-11 items-center gap-2 text-sm font-semibold">
-              {/* Saves at once (only the on/off; typed names still need "Save row") */}
-              <QuickSwitch
-                checked={row.isActive}
-                disabled={busy}
-                name={row.nameVi}
-                onToggle={async (isActive) => {
-                  const saved = zones.find((zone) => zone.id === row.id) ?? row;
-                  onSaved(await adminApi.updateZone({ ...saved, isActive }));
-                }}
-              />
-              {z.active}
-            </label>
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => run(() => adminApi.updateZone(row))}
-              className="h-11 border-[1.5px] border-black px-4 text-sm font-bold disabled:opacity-60"
-            >
-              {z.saveRow}
-            </button>
-          </div>
-        ))}
+        <SortableList
+          as="div"
+          items={rows}
+          getKey={(row) => row.id}
+          disabled={busy}
+          onReorder={async (ordered) => onSaved(await adminApi.orderZones(ordered.map((row) => row.id)))}
+          className="flex flex-col gap-3"
+          itemClassName="flex items-end gap-1 border-b border-[#eeeeee] bg-white pb-3"
+          renderItem={(row, handle) => (
+            <>
+              {handle}
+              <div className="grid flex-1 grid-cols-2 items-end gap-2 sm:grid-cols-[1fr_1fr_auto_auto]">
+                <label className="flex flex-col gap-1 text-xs font-semibold">
+                  {z.nameVi}
+                  <input value={row.nameVi} onChange={(e) => edit(row.id, { nameVi: e.target.value })} className={cell} />
+                </label>
+                <label className="flex flex-col gap-1 text-xs font-semibold">
+                  {z.nameEn}
+                  <input value={row.nameEn} onChange={(e) => edit(row.id, { nameEn: e.target.value })} className={cell} />
+                </label>
+                <label className="flex h-11 items-center gap-2 text-sm font-semibold">
+                  {/* Saves at once (only the on/off; typed names still need "Save row") */}
+                  <QuickSwitch
+                    checked={row.isActive}
+                    disabled={busy}
+                    name={row.nameVi}
+                    onToggle={async (isActive) => {
+                      const saved = zones.find((zone) => zone.id === row.id) ?? row;
+                      onSaved(await adminApi.updateZone({ ...saved, isActive }));
+                    }}
+                  />
+                  {z.active}
+                </label>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => run(() => adminApi.updateZone(row))}
+                  className="h-11 border-[1.5px] border-black px-4 text-sm font-bold disabled:opacity-60"
+                >
+                  {z.saveRow}
+                </button>
+              </div>
+            </>
+          )}
+        />
         <form
           onSubmit={(e) => {
             e.preventDefault();
